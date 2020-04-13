@@ -2,7 +2,6 @@
 using Windows.UI.Popups;
 using MvvmCross.Base;
 using MvvmCross.Binding.BindingContext;
-using MvvmCross.Platforms.Uap.Views;
 using MvvmCross.ViewModels;
 using OSDPBench.Core.Interactions;
 using OSDPBench.Core.ViewModels;
@@ -12,10 +11,8 @@ namespace OSDPBenchUWP.Views
     /// <summary>
     /// The main page
     /// </summary>
-    public sealed partial class MainView : MvxWindowsPage, IMvxBindingContextOwner
+    public sealed partial class MainView : IMvxBindingContextOwner
     {
-        private MainViewModel MainViewModel => ViewModel as MainViewModel;
-
         public MainView()
         {
             InitializeComponent();

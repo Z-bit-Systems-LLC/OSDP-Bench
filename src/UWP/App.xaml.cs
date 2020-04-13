@@ -1,12 +1,11 @@
 ﻿using MvvmCross.Core;
-using MvxApplication = MvvmCross.Platforms.Uap.Views.MvxApplication;
 
 namespace OSDPBenchUWP
 {
     /// <summary>
     /// Provides application-specific behavior to supplement the default Application class.
     /// </summary>
-    sealed partial class App : MvxApplication
+    sealed partial class App
     {
         /// <summary>
         /// Initializes the singleton application object.  This is the first line of authored code
