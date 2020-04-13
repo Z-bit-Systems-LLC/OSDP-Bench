@@ -6,23 +6,24 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:views="using:MvvmCross.Platforms.Uap.Views"
     mc:Ignorable="d"
-    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
-    Loaded="MainView_OnLoaded">
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
-
-        <StackPanel Grid.Row="1" >
+        <StackPanel>
+            <TextBlock FontSize="48" Margin="20 10 20 10">Home</TextBlock>
+            <TextBlock FontSize="32" Margin="20 10 20 10">Serial Port</TextBlock>
             <ComboBox 
-                PlaceholderText="Pick a serial port" 
                 FontSize="24"
-                HorizontalAlignment="Center" Margin="0 20" Width="500" 
+                Margin="20 10 20 10" MinWidth="500" 
                 ItemsSource="{Binding AvailableSerialPorts}"
-                SelectedItem="{Binding SerialPortName, Mode=TwoWay}"/>
+                DisplayMemberPath="Description"
+                SelectedItem="{Binding SelectedSerialPort, Mode=TwoWay}"/>
+            <TextBlock FontSize="32" Margin="20 10 20 10">Baud Rate</TextBlock>
+            <ComboBox 
+                FontSize="24"
+                Margin="20 10 20 10" MinWidth="500" 
+                ItemsSource="{Binding AvailableBaudRates}"
+                SelectedItem="{Binding SelectedBaudRate, Mode=TwoWay}"/>
         </StackPanel>
-        
     </Grid>
 </views:MvxWindowsPage>

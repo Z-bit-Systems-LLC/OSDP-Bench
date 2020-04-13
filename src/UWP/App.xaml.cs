@@ -1,6 +1,5 @@
 ﻿using MvvmCross.Core;
-using MvvmCross.Platforms.Uap.Core;
-using MvvmCross.Platforms.Uap.Views;
+using MvxApplication = MvvmCross.Platforms.Uap.Views.MvxApplication;
 
 namespace OSDPBenchUWP
 {
@@ -20,7 +19,7 @@ namespace OSDPBenchUWP
 
         protected override void RegisterSetup()
         {
-            this.RegisterSetupType<MvxWindowsSetup<OSDPBench.Core.App>>();
+            this.RegisterSetupType<Setup>();
         }
     }
 }

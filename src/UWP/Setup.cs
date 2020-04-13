@@ -1,6 +1,9 @@
-﻿using MvvmCross.Logging;
+﻿using MvvmCross;
+using MvvmCross.IoC;
 using MvvmCross.Platforms.Uap.Core;
 using MvvmCross.ViewModels;
+using OSDPBench.Core.ViewModels;
+using OSDPBenchUWP.Platform;
 
 namespace OSDPBenchUWP
 {
@@ -9,6 +12,13 @@ namespace OSDPBenchUWP
         protected override IMvxApplication CreateApp()
         {
             return new OSDPBench.Core.App();
+        }
+
+        protected override void InitializeFirstChance()
+        {
+            Mvx.IoCProvider.RegisterSingleton<ISerialPort>(new UwpSerialPort());
+
+            base.InitializeFirstChance();
         }
     }
 }

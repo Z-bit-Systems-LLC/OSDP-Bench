@@ -1,18 +1,18 @@
 ﻿using System;
-using Windows.Devices.Enumeration;
-using Windows.Devices.SerialCommunication;
-using Windows.UI.Xaml;
+using Windows.UI.Popups;
+using MvvmCross.Base;
+using MvvmCross.Binding.BindingContext;
 using MvvmCross.Platforms.Uap.Views;
+using MvvmCross.ViewModels;
+using OSDPBench.Core.Interactions;
 using OSDPBench.Core.ViewModels;
-
-// The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
 
 namespace OSDPBenchUWP.Views
 {
     /// <summary>
     /// The main page
     /// </summary>
-    public sealed partial class MainView : MvxWindowsPage
+    public sealed partial class MainView : MvxWindowsPage, IMvxBindingContextOwner
     {
         private MainViewModel MainViewModel => ViewModel as MainViewModel;
 
@@ -21,14 +21,42 @@ namespace OSDPBenchUWP.Views
             InitializeComponent();
         }
 
-        private async void MainView_OnLoaded(object sender, RoutedEventArgs e)
+        private IMvxInteraction<Alert> _alertInteraction;
+        public IMvxInteraction<Alert> AlertInteraction
         {
-            foreach (var item in await DeviceInformation.FindAllAsync(SerialDevice.GetDeviceSelector()))
+            get => _alertInteraction;
+            set
             {
-                var serialDevice = await SerialDevice.FromIdAsync(item.Id);
-                MainViewModel.AvailableSerialPorts.Add(serialDevice.PortName);
-                serialDevice.Dispose();
+                if (_alertInteraction != null)
+                    _alertInteraction.Requested -= OnAlertInteractionRequested;
+
+                _alertInteraction = value;
+                _alertInteraction.Requested += OnAlertInteractionRequested;
             }
+        }
+
+        private static async void OnAlertInteractionRequested(object sender, MvxValueEventArgs<Alert> eventArgs)
+        {
+            var dialog = new MessageDialog(eventArgs.Value.Message);
+            await dialog.ShowAsync();
+        }
+
+        private IMvxBindingContext _bindingContext;
+        public IMvxBindingContext BindingContext
+        {
+            get => _bindingContext ?? (_bindingContext = new MvxBindingContext());
+            set => _bindingContext = value;
+        }
+
+        protected override void OnViewModelSet()
+        {
+            BindingContext.DataContext = ViewModel;
+
+            var set = this.CreateBindingSet<MainView, MainViewModel>();
+            set.Bind(this).For(view => view.AlertInteraction).To(viewModel => viewModel.AlertInteraction).OneWay();
+            set.Apply();
+            
+            base.OnViewModelSet();
         }
     }
 }
