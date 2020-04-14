@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using OSDPBench.Core.Models;
 
-namespace OSDPBench.Core.ViewModels
+namespace OSDPBench.Core.Platforms
 {
     public interface ISerialPort
     {

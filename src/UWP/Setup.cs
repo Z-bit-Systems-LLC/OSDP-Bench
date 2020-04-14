@@ -2,6 +2,7 @@
 using MvvmCross.IoC;
 using MvvmCross.Platforms.Uap.Core;
 using MvvmCross.ViewModels;
+using OSDPBench.Core.Platforms;
 using OSDPBench.Core.ViewModels;
 using OSDPBenchUWP.Platform;
 

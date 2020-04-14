@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Windows.Devices.Enumeration;
 using Windows.Devices.SerialCommunication;
 using OSDPBench.Core.Models;
-using OSDPBench.Core.ViewModels;
+using OSDPBench.Core.Platforms;
 
 namespace OSDPBenchUWP.Platform
 {

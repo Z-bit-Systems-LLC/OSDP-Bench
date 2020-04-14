@@ -2,6 +2,7 @@
 using MvvmCross.ViewModels;
 using OSDPBench.Core.Interactions;
 using OSDPBench.Core.Models;
+using OSDPBench.Core.Platforms;
 
 namespace OSDPBench.Core.ViewModels
 {
