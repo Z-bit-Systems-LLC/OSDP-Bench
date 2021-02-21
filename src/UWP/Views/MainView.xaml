@@ -5,25 +5,76 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:views="using:MvvmCross.Platforms.Uap.Views"
+    xmlns:controls="using:Microsoft.UI.Xaml.Controls"
+    xmlns:valueConverters="using:ValueConverters"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
+    <Page.Resources>
+        <ResourceDictionary>
+            <valueConverters:BoolNegationConverter x:Key="BoolNegationConverter" />
+        </ResourceDictionary>
+    </Page.Resources>
+
     <Grid>
-        <StackPanel>
-            <TextBlock FontSize="48" Margin="20 10 20 10">Home</TextBlock>
-            <TextBlock FontSize="32" Margin="20 10 20 10">Serial Port</TextBlock>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="2"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <StackPanel Grid.Column="0">
+            <TextBlock FontSize="32" Margin="20 10 20 0" Text="Serial Port" />
             <ComboBox 
                 FontSize="24"
-                Margin="20 10 20 10" MinWidth="500" 
+                Margin="20 10 20 10" MinWidth="300" 
                 ItemsSource="{Binding AvailableSerialPorts}"
                 DisplayMemberPath="Description"
                 SelectedItem="{Binding SelectedSerialPort, Mode=TwoWay}"/>
-            <TextBlock FontSize="32" Margin="20 10 20 10">Baud Rate</TextBlock>
-            <ComboBox 
+            <TextBlock FontSize="32" Margin="20 10 20 0" Text="Baud Rate" />
+            <!--<CheckBox 
+                Name="AutoDetectCheckBox"
+                    Margin="20 10 20 0"
+                    IsChecked="{Binding AutoDetectBaudRate}">
+                    <TextBlock 
+                        FontSize="24" 
+                        Text="Auto-Detect"
+                        Margin="0 -7 0 0" />
+                </CheckBox>-->
+                <ComboBox 
+                    FontSize="24"
+                    Margin="20 10 20 10" MinWidth="300" 
+                    ItemsSource="{Binding AvailableBaudRates}"
+                    SelectedItem="{Binding SelectedBaudRate, Mode=TwoWay}" />
+                    <!--IsEnabled="{Binding ElementName=AutoDetectCheckBox, Path=IsChecked, Converter={StaticResource BoolNegationConverter}}"/>-->
+            <TextBlock FontSize="32" Margin="20 10 20 0" Text="Address" />
+            <controls:NumberBox 
                 FontSize="24"
-                Margin="20 10 20 10" MinWidth="500" 
-                ItemsSource="{Binding AvailableBaudRates}"
-                SelectedItem="{Binding SelectedBaudRate, Mode=TwoWay}"/>
+                Value="0"
+                Margin="20 10 20 10" MaxWidth="300" 
+                HorizontalAlignment="Left"
+                SmallChange="1"
+                Minimum="0"
+                Maximum="255"
+                SpinButtonPlacementMode="Inline"/>
+            <Button
+                FontSize="24"
+                Margin="20 80 20 10"
+                HorizontalAlignment="Center"
+                Command="{Binding AttemptConnectCommand}" Content="Attempt to Connect"/>
+            <TextBlock 
+                FontSize="20"
+                Margin="20 10 20 10"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Stretch"
+                MaxWidth="300"
+                Text="{Binding StatusText}"/>
+        </StackPanel>
+        <Rectangle 
+            Grid.Column="1"
+            VerticalAlignment="Stretch" 
+            Width="2" Margin="0 20" Stroke="Black" />
+        <StackPanel Grid.Column="2">
+
         </StackPanel>
     </Grid>
 </views:MvxWindowsPage>

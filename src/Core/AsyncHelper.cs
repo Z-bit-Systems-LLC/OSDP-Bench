@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace OSDPBench.Core
 {
-    internal static class AsyncHelper
+    public static class AsyncHelper
     {
         private static readonly TaskFactory TaskFactory = new TaskFactory(CancellationToken.None,
             TaskCreationOptions.None, TaskContinuationOptions.None, TaskScheduler.Default);

@@ -5,6 +5,6 @@
     xmlns:views="using:MvvmCross.Platforms.Uap.Views">
 
     <Application.Resources>
-
+        <XamlControlsResources xmlns="using:Microsoft.UI.Xaml.Controls" />
     </Application.Resources>
 </views:MvxApplication>
