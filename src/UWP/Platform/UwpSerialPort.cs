@@ -11,32 +11,41 @@ using OSDPBench.Core.Platforms;
 
 namespace OSDPBenchUWP.Platform
 {
+    /// <summary>
+    /// Class UwpSerialPort.
+    /// Implements the <see cref="OSDPBench.Core.Platforms.ISerialPortConnection" />
+    /// </summary>
+    /// <seealso cref="OSDPBench.Core.Platforms.ISerialPortConnection" />
     public class UwpSerialPort : ISerialPortConnection
     {
         private SerialDevice _serialDevice;
 
-        public async Task<IEnumerable<SerialPort>> FindAvailableSerialPorts()
+        /// <inheritdoc />
+        public async Task<IEnumerable<AvailableSerialPort>> FindAvailableSerialPorts()
         {
-            var availableSerialPorts = new List<SerialPort>();
+            var availableSerialPorts = new List<AvailableSerialPort>();
 
             foreach (var item in await DeviceInformation.FindAllAsync(SerialDevice.GetDeviceSelector()))
             {
                 using (var serialDevice = await SerialDevice.FromIdAsync(item.Id))
                 {
-                    availableSerialPorts.Add(new SerialPort(item.Id, serialDevice.PortName, item.Name));
+                    availableSerialPorts.Add(new AvailableSerialPort(item.Id, serialDevice.PortName, item.Name));
                 }
             }
 
             return availableSerialPorts;
         }
 
-        public SerialPort SelectedSerialPort { get; set; }
+        /// <inheritdoc />
+        public AvailableSerialPort SelectedSerialPort { get; set; }
 
+        /// <inheritdoc />
         public void SetBaudRate(int baudRate)
         {
             BaudRate = baudRate;
         }
 
+        /// <inheritdoc />
         public void Open()
         {
             _serialDevice?.Dispose();
@@ -53,12 +62,14 @@ namespace OSDPBenchUWP.Platform
             }
         }
 
+        /// <inheritdoc />
         public void Close()
         {
             _serialDevice.Dispose();
             _serialDevice = null;
         }
 
+        /// <inheritdoc />
         public async Task WriteAsync(byte[] buffer)
         {
             using (var dataWriter = new DataWriter(_serialDevice.OutputStream))
@@ -75,6 +86,7 @@ namespace OSDPBenchUWP.Platform
             }
         }
 
+        /// <inheritdoc />
         public async Task<int> ReadAsync(byte[] buffer, CancellationToken token)
         {
             uint result;
@@ -94,10 +106,13 @@ namespace OSDPBenchUWP.Platform
             return (int)result;
         }
 
+        /// <inheritdoc />
         public int BaudRate { get; private set; } = 9600;
 
+        /// <inheritdoc />
         public bool IsOpen => _serialDevice != null;
 
+        /// <inheritdoc />
         public TimeSpan ReplyTimeout { get; set; } = TimeSpan.FromMilliseconds(200);
     }
 }

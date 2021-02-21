@@ -25,8 +25,8 @@ namespace OSDPBench.Core.Tests.ViewModels
         {
             Setup();
 
-            var serialPort = new Mock<ISerialPort>();
-            Ioc.RegisterSingleton(serialPort.Object);
+            var serialPortConnection = new Mock<ISerialPortConnection>();
+            Ioc.RegisterSingleton(serialPortConnection.Object);
 
             var mainViewModel = Ioc.IoCConstruct<MainViewModel>();
 
@@ -38,10 +38,10 @@ namespace OSDPBench.Core.Tests.ViewModels
         {
             Setup();
 
-            var serialPort = new Mock<ISerialPort>();
-            serialPort.Setup(expression => expression.FindAvailableSerialPorts())
-                .ReturnsAsync(new[] {new SerialPort("test1", "desc1"), new SerialPort("test2", "desc2")});
-            Ioc.RegisterSingleton(serialPort.Object);
+            var serialPortConnection = new Mock<ISerialPortConnection>();
+            serialPortConnection.Setup(expression => expression.FindAvailableSerialPorts())
+                .ReturnsAsync(new[] {new AvailableSerialPort("id1", "test1", "desc1"), new AvailableSerialPort("id2", "test2", "desc2")});
+            Ioc.RegisterSingleton(serialPortConnection.Object);
 
             var mainViewModel = Ioc.IoCConstruct<MainViewModel>();
             mainViewModel.ViewAppeared();

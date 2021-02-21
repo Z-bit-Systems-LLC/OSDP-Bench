@@ -16,12 +16,12 @@ namespace OSDPBench.Core.Platforms
         /// Available the serial ports
         /// </summary>
         /// <returns></returns>
-        Task<IEnumerable<SerialPort>> FindAvailableSerialPorts();
+        Task<IEnumerable<AvailableSerialPort>> FindAvailableSerialPorts();
 
         /// <summary>
         /// Gets or sets the selected serial port.
         /// </summary>
-        SerialPort SelectedSerialPort { get; set; }
+        AvailableSerialPort SelectedSerialPort { get; set; }
 
         /// <summary>
         /// Sets the baud rate.

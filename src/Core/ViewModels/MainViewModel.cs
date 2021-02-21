@@ -28,15 +28,15 @@ namespace OSDPBench.Core.ViewModels
             };
         }
 
-        public MvxObservableCollection<SerialPort> AvailableSerialPorts { get; } =
-            new MvxObservableCollection<SerialPort>();
+        public MvxObservableCollection<AvailableSerialPort> AvailableSerialPorts { get; } =
+            new MvxObservableCollection<AvailableSerialPort>();
 
         public MvxObservableCollection<uint> AvailableBaudRates { get; } = new MvxObservableCollection<uint>
             {9600, 14400, 19200, 38400, 57600, 115200};
 
-        private SerialPort _selectedSerialPort;
+        private AvailableSerialPort _selectedSerialPort;
 
-        public SerialPort SelectedSerialPort
+        public AvailableSerialPort SelectedSerialPort
         {
             get => _selectedSerialPort;
             set => SetProperty(ref _selectedSerialPort, value);

@@ -1,8 +1,8 @@
 ﻿namespace OSDPBench.Core.Models
 {
-    public class SerialPort
+    public class AvailableSerialPort
     {
-        public SerialPort(string id, string name, string description)
+        public AvailableSerialPort(string id, string name, string description)
         {
             Id = id;
             Name = name;
