@@ -72,7 +72,7 @@ namespace OSDPBenchUWP.Platform
         /// <inheritdoc />
         public async Task WriteAsync(byte[] buffer)
         {
-            using (var dataWriter = new DataWriter(_serialDevice.OutputStream))
+            using (var dataWriter = new DataWriter(_serialDevice?.OutputStream))
             {
                 try
                 {
@@ -90,7 +90,7 @@ namespace OSDPBenchUWP.Platform
         public async Task<int> ReadAsync(byte[] buffer, CancellationToken token)
         {
             uint result;
-            using (var dataReader = new DataReader(_serialDevice.InputStream) {InputStreamOptions = InputStreamOptions.Partial})
+            using (var dataReader = new DataReader(_serialDevice?.InputStream) {InputStreamOptions = InputStreamOptions.Partial})
             {
                 try
                 {

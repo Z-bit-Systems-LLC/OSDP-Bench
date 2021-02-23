@@ -70,6 +70,20 @@ namespace OSDPBench.Core.ViewModels
             set => SetProperty(ref _statusText, value);
         }
 
+        private IdentityLookup _identityLookup;
+        public IdentityLookup IdentityLookup
+        {
+            get => _identityLookup;
+            set => SetProperty(ref _identityLookup, value);
+        }
+
+        private bool _isReadyToConnect;
+        public bool IsReadyToConnect
+        {
+            get => _isReadyToConnect;
+            set => SetProperty(ref _isReadyToConnect, value);
+        }
+
         private MvxCommand _goConnectCommand;
 
         public System.Windows.Input.ICommand AttemptConnectCommand
@@ -86,32 +100,62 @@ namespace OSDPBench.Core.ViewModels
         {
             Task.Run(async () =>
             {
+                IsReadyToConnect = false;
+
                 _serialPort.SelectedSerialPort = SelectedSerialPort;
                 _serialPort.SetBaudRate((int)_selectedBaudRate);
+
+                IdentityLookup = new IdentityLookup(null);
+                _panel.Shutdown();
                 _connectionId = _panel.StartConnection(_serialPort);
 
-                StatusText = $"Attempting to connect at address {Address}";
+                StatusText = "Attempting to connect with plain text";
 
                 _panel.AddDevice(_connectionId, Address, true, false);
 
-                int count = 0;
-                while (!_isConnected && count++ < 5)
+                bool successfulConnection = WaitForConnection();
+
+                if (successfulConnection)
                 {
-                    Thread.Sleep(TimeSpan.FromSeconds(1));
+                    StatusText = "Connected";
+                    await GetIdentity();
+                    return;
                 }
+                
+                StatusText = "Attempting to connect with secure channel";
 
-                if (_isConnected)
+                _panel.Shutdown();
+                _connectionId = _panel.StartConnection(_serialPort);
+                _panel.AddDevice(_connectionId, Address, true, true);
+
+                successfulConnection = WaitForConnection();
+                if (successfulConnection)
                 {
-                    StatusText = $"Connected device at address {Address}";
-                    var report = await _panel.IdReport(_connectionId, Address);
-
-                    StatusText = $"{report.SerialNumber}";
+                    StatusText = "Connected";
+                    await GetIdentity();
                 }
                 else
                 {
-                    StatusText = $"Failed to connect to device at address {Address}";
+                    StatusText = "Failed to connect";
+                    IsReadyToConnect = true;
                 }
             });
+        }
+
+        private async Task GetIdentity()
+        {
+            IdentityLookup = new IdentityLookup(await _panel.IdReport(_connectionId, Address));
+        }
+
+        private bool WaitForConnection()
+        {
+            int count = 0;
+            while (!_isConnected && count++ < 5)
+            {
+                Thread.Sleep(TimeSpan.FromSeconds(1));
+            }
+
+            return _isConnected;
         }
 
         private readonly MvxInteraction<Alert> _alertInteraction =
@@ -121,20 +165,28 @@ namespace OSDPBench.Core.ViewModels
 
         public override void ViewAppeared()
         {
-            AvailableSerialPorts.AddRange(AsyncHelper.RunSync(() => _serialPort.FindAvailableSerialPorts()));
+            InitializeControls();
 
-            if (AvailableSerialPorts.Any())
+            base.ViewAppeared();
+        }
+
+        private void InitializeControls()
+        {
+            var foundAvailableSerialPorts = AsyncHelper.RunSync(() => _serialPort.FindAvailableSerialPorts()).ToArray();
+
+            if (foundAvailableSerialPorts.Any())
             {
+                AvailableSerialPorts.AddRange(foundAvailableSerialPorts);
                 SelectedSerialPort = AvailableSerialPorts.First();
+                IsReadyToConnect = true;
             }
             else
             {
                 _alertInteraction.Raise(new Alert("No serial ports are available."));
+                IsReadyToConnect = false;
             }
 
             SelectedBaudRate = 9600;
-
-            base.ViewAppeared();
         }
     }
 }
