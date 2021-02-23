@@ -12,7 +12,7 @@
 
     <Page.Resources>
         <ResourceDictionary>
-            <valueConverters:BoolNegationConverter x:Key="BoolNegationConverter" />
+            <valueConverters:BoolToVisibilityConverter TrueValue="Visible" FalseValue="Collapsed" x:Key="BoolToVisibilityConverter" />
         </ResourceDictionary>
     </Page.Resources>
 
@@ -56,12 +56,21 @@
                 Minimum="0"
                 Maximum="255"
                 SpinButtonPlacementMode="Inline"/>
-            <Button
-                FontSize="24"
-                Margin="20 80 20 10"
-                HorizontalAlignment="Center"
-                IsEnabled ="{Binding IsReadyToConnect}"
-                Command="{Binding AttemptConnectCommand}" Content="Attempt to Connect"/>
+            <StackPanel Margin="20 80 20 10">
+                <Button
+                    FontSize="24"
+                    HorizontalAlignment="Center"
+                    Visibility="{Binding IsReadyToConnect, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
+                    Command="{Binding AttemptConnectCommand}" 
+                    Content="Attempt to Connect"/>
+                <Button
+                    Margin="0 10 0 0"
+                    FontSize="24"
+                    HorizontalAlignment="Center"
+                    Command="{Binding ScanSerialPortsCommand}" 
+                    Content="Rescan Serial Ports"/>
+            </StackPanel>
+
             <TextBlock 
                 FontSize="20"
                 Margin="20 10 20 10"

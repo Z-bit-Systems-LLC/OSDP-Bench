@@ -142,6 +142,34 @@ namespace OSDPBench.Core.ViewModels
             });
         }
 
+        private MvxCommand _scanSerialPortsCommand;
+        public System.Windows.Input.ICommand ScanSerialPortsCommand
+        {
+            get
+            {
+                _scanSerialPortsCommand = _scanSerialPortsCommand ??
+                                          new MvxCommand(DoScanSerialPortsCommand);
+                return _scanSerialPortsCommand;
+            }
+        }
+
+        private void DoScanSerialPortsCommand()
+        {
+            var foundAvailableSerialPorts = AsyncHelper.RunSync(() => _serialPort.FindAvailableSerialPorts()).ToArray();
+
+            if (foundAvailableSerialPorts.Any())
+            {
+                AvailableSerialPorts.AddRange(foundAvailableSerialPorts);
+                SelectedSerialPort = AvailableSerialPorts.First();
+                IsReadyToConnect = true;
+            }
+            else
+            {
+                _alertInteraction.Raise(new Alert("No serial ports are available."));
+                IsReadyToConnect = false;
+            }
+        }
+
         private async Task GetIdentity()
         {
             IdentityLookup = new IdentityLookup(await _panel.IdReport(_connectionId, Address));
@@ -165,28 +193,11 @@ namespace OSDPBench.Core.ViewModels
 
         public override void ViewAppeared()
         {
-            InitializeControls();
-
-            base.ViewAppeared();
-        }
-
-        private void InitializeControls()
-        {
-            var foundAvailableSerialPorts = AsyncHelper.RunSync(() => _serialPort.FindAvailableSerialPorts()).ToArray();
-
-            if (foundAvailableSerialPorts.Any())
-            {
-                AvailableSerialPorts.AddRange(foundAvailableSerialPorts);
-                SelectedSerialPort = AvailableSerialPorts.First();
-                IsReadyToConnect = true;
-            }
-            else
-            {
-                _alertInteraction.Raise(new Alert("No serial ports are available."));
-                IsReadyToConnect = false;
-            }
+            DoScanSerialPortsCommand();
 
             SelectedBaudRate = 9600;
+
+            base.ViewAppeared();
         }
     }
 }
