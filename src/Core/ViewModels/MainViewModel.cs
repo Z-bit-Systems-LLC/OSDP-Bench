@@ -77,30 +77,37 @@ namespace OSDPBench.Core.ViewModels
             set => SetProperty(ref _identityLookup, value);
         }
 
-        private bool _isReadyToConnect;
-        public bool IsReadyToConnect
+        private bool _isReadyToDiscover;
+        public bool IsReadyToDiscover
         {
-            get => _isReadyToConnect;
-            set => SetProperty(ref _isReadyToConnect, value);
+            get => _isReadyToDiscover;
+            set => SetProperty(ref _isReadyToDiscover, value);
         }
 
-        private MvxCommand _goConnectCommand;
+        private bool _isDiscovering;
+        public bool IsDiscovering
+        {
+            get => _isDiscovering;
+            set => SetProperty(ref _isDiscovering, value);
+        }
 
-        public System.Windows.Input.ICommand AttemptConnectCommand
+        private MvxCommand _goDiscoverDeviceCommand;
+
+        public System.Windows.Input.ICommand DiscoverDeviceCommand
         {
             get
             {
-                _goConnectCommand = _goConnectCommand ??
-                                    new MvxCommand(DoAttemptConnectCommand);
-                return _goConnectCommand;
+                return _goDiscoverDeviceCommand = _goDiscoverDeviceCommand ??
+                                                  new MvxCommand(DoDiscoverDeviceCommand);
             }
         }
 
-        private void DoAttemptConnectCommand()
+        private void DoDiscoverDeviceCommand()
         {
             Task.Run(async () =>
             {
-                IsReadyToConnect = false;
+                IsReadyToDiscover = false;
+                IsDiscovering = true;
 
                 _serialPort.SelectedSerialPort = SelectedSerialPort;
                 _serialPort.SetBaudRate((int)_selectedBaudRate);
@@ -119,6 +126,8 @@ namespace OSDPBench.Core.ViewModels
                 {
                     StatusText = "Connected";
                     await GetIdentity();
+                    IsReadyToDiscover = true;
+                    IsDiscovering = false;
                     return;
                 }
                 
@@ -137,8 +146,10 @@ namespace OSDPBench.Core.ViewModels
                 else
                 {
                     StatusText = "Failed to connect";
-                    IsReadyToConnect = true;
                 }
+
+                IsReadyToDiscover = true;
+                IsDiscovering = false;
             });
         }
 
@@ -147,26 +158,28 @@ namespace OSDPBench.Core.ViewModels
         {
             get
             {
-                _scanSerialPortsCommand = _scanSerialPortsCommand ??
-                                          new MvxCommand(DoScanSerialPortsCommand);
-                return _scanSerialPortsCommand;
+                return _scanSerialPortsCommand = _scanSerialPortsCommand ??
+                                                 new MvxCommand(DoScanSerialPortsCommand);
             }
         }
 
         private void DoScanSerialPortsCommand()
         {
+            _panel.Shutdown();
+            
             var foundAvailableSerialPorts = AsyncHelper.RunSync(() => _serialPort.FindAvailableSerialPorts()).ToArray();
 
             if (foundAvailableSerialPorts.Any())
             {
+                AvailableSerialPorts.Clear();
                 AvailableSerialPorts.AddRange(foundAvailableSerialPorts);
                 SelectedSerialPort = AvailableSerialPorts.First();
-                IsReadyToConnect = true;
+                IsReadyToDiscover = true;
             }
             else
             {
                 _alertInteraction.Raise(new Alert("No serial ports are available."));
-                IsReadyToConnect = false;
+                IsReadyToDiscover = false;
             }
         }
 

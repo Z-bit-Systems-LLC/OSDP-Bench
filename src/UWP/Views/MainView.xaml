@@ -12,6 +12,7 @@
 
     <Page.Resources>
         <ResourceDictionary>
+            <valueConverters:BoolInverter x:Name="BoolInverter" />
             <valueConverters:BoolToVisibilityConverter TrueValue="Visible" FalseValue="Collapsed" x:Key="BoolToVisibilityConverter" />
         </ResourceDictionary>
     </Page.Resources>
@@ -27,6 +28,7 @@
             <ComboBox 
                 FontSize="24"
                 Margin="20 10 20 10" MinWidth="300" 
+                IsEnabled="{Binding IsDiscovering, Mode=OneWay, Converter={StaticResource BoolInverter}}"
                 ItemsSource="{Binding AvailableSerialPorts}"
                 DisplayMemberPath="Description"
                 SelectedItem="{Binding SelectedSerialPort, Mode=TwoWay}"/>
@@ -43,6 +45,7 @@
                 <ComboBox 
                     FontSize="24"
                     Margin="20 10 20 10" MinWidth="300" 
+                    IsEnabled="{Binding IsDiscovering, Mode=OneWay, Converter={StaticResource BoolInverter}}"
                     ItemsSource="{Binding AvailableBaudRates}"
                     SelectedItem="{Binding SelectedBaudRate, Mode=TwoWay}" />
                     <!--IsEnabled="{Binding ElementName=AutoDetectCheckBox, Path=IsChecked, Converter={StaticResource BoolNegationConverter}}"/>-->
@@ -51,6 +54,7 @@
                 FontSize="24"
                 Value="0"
                 Margin="20 10 20 10" MaxWidth="300" 
+                IsEnabled="{Binding IsDiscovering, Mode=OneWay, Converter={StaticResource BoolInverter}}"
                 HorizontalAlignment="Left"
                 SmallChange="1"
                 Minimum="0"
@@ -60,13 +64,14 @@
                 <Button
                     FontSize="24"
                     HorizontalAlignment="Center"
-                    Visibility="{Binding IsReadyToConnect, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
-                    Command="{Binding AttemptConnectCommand}" 
-                    Content="Attempt to Connect"/>
+                    Visibility="{Binding IsReadyToDiscover, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
+                    Command="{Binding DiscoverDeviceCommand, Mode=OneWay}" 
+                    Content="Discover"/>
                 <Button
                     Margin="0 10 0 0"
                     FontSize="24"
                     HorizontalAlignment="Center"
+                    IsEnabled="{Binding IsDiscovering, Mode=OneWay, Converter={StaticResource BoolInverter}}"
                     Command="{Binding ScanSerialPortsCommand}" 
                     Content="Rescan Serial Ports"/>
             </StackPanel>
@@ -82,7 +87,7 @@
         </StackPanel>
         <Rectangle 
             Grid.Column="1"
-            VerticalAlignment="Center" 
+            VerticalAlignment="Stretch"
             Width="2" Margin="0 20" Stroke="Black" />
         <StackPanel Grid.Column="2">
             <TextBlock

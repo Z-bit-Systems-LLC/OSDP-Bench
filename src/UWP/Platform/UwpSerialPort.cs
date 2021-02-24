@@ -29,7 +29,10 @@ namespace OSDPBenchUWP.Platform
             {
                 using (var serialDevice = await SerialDevice.FromIdAsync(item.Id))
                 {
-                    availableSerialPorts.Add(new AvailableSerialPort(item.Id, serialDevice.PortName, item.Name));
+                    if (serialDevice != null)
+                    {
+                        availableSerialPorts.Add(new AvailableSerialPort(item.Id, serialDevice.PortName, item.Name));
+                    }
                 }
             }
 
@@ -48,8 +51,6 @@ namespace OSDPBenchUWP.Platform
         /// <inheritdoc />
         public void Open()
         {
-            _serialDevice?.Dispose();
-
             _serialDevice = AsyncHelper.RunSync(() => SerialDevice.FromIdAsync(SelectedSerialPort.Id).AsTask());
 
             if (_serialDevice != null)
@@ -64,8 +65,8 @@ namespace OSDPBenchUWP.Platform
 
         /// <inheritdoc />
         public void Close()
-        {
-            _serialDevice.Dispose();
+        { 
+            _serialDevice?.Dispose();
             _serialDevice = null;
         }
 
