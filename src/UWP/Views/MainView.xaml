@@ -52,7 +52,7 @@
             <TextBlock FontSize="32" Margin="20 10 20 0" Text="Address" />
             <controls:NumberBox 
                 FontSize="24"
-                Value="0"
+                Value="{Binding Address, Mode=TwoWay}"
                 Margin="20 10 20 10" MaxWidth="300" 
                 IsEnabled="{Binding IsDiscovering, Mode=OneWay, Converter={StaticResource BoolInverter}}"
                 HorizontalAlignment="Left"

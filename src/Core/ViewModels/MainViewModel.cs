@@ -56,8 +56,8 @@ namespace OSDPBench.Core.ViewModels
             set => SetProperty(ref _autoDetectBaudRate, value);
         }
 
-        private byte _address;
-        public byte Address
+        private int _address;
+        public int Address
         {
             get => _address;
             set => SetProperty(ref _address, value);
@@ -118,7 +118,7 @@ namespace OSDPBench.Core.ViewModels
 
                 StatusText = "Attempting to connect with plain text";
 
-                _panel.AddDevice(_connectionId, Address, true, false);
+                _panel.AddDevice(_connectionId, (byte)Address, true, false);
 
                 bool successfulConnection = WaitForConnection();
 
@@ -135,7 +135,7 @@ namespace OSDPBench.Core.ViewModels
 
                 _panel.Shutdown();
                 _connectionId = _panel.StartConnection(_serialPort);
-                _panel.AddDevice(_connectionId, Address, true, true);
+                _panel.AddDevice(_connectionId, (byte)Address, true, true);
 
                 successfulConnection = WaitForConnection();
                 if (successfulConnection)
@@ -185,7 +185,7 @@ namespace OSDPBench.Core.ViewModels
 
         private async Task GetIdentity()
         {
-            IdentityLookup = new IdentityLookup(await _panel.IdReport(_connectionId, Address));
+            IdentityLookup = new IdentityLookup(await _panel.IdReport(_connectionId, (byte)Address));
         }
 
         private bool WaitForConnection()
