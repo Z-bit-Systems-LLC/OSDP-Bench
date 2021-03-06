@@ -30,3 +30,5 @@ _UpgradeReport_Files/
 [Pp]ackages/
 
 .DS_Store
+/src/UWP/AppPackages
+/src/UWP/BundleArtifacts

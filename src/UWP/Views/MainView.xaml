@@ -88,7 +88,7 @@
         <Rectangle 
             Grid.Column="1"
             VerticalAlignment="Stretch"
-            Width="2" Margin="0 20" Stroke="Black" />
+            Width="2" Margin="0 20" Stroke="{ThemeResource DefaultTextForegroundThemeBrush}" />
         <StackPanel Grid.Column="2">
             <TextBlock
                 FontSize="32"
