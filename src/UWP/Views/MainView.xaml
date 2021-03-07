@@ -60,6 +60,15 @@
                 Minimum="0"
                 Maximum="255"
                 SpinButtonPlacementMode="Inline"/>
+            <CheckBox 
+                    Margin="20 10 20 0"
+                    IsChecked="{Binding RequireSecureChannel, Mode=TwoWay}">
+                <TextBlock 
+                        FontSize="24" 
+                        Text="Require Secure Channel"
+                        TextWrapping="Wrap"
+                        Margin="0 -7 0 0" />
+            </CheckBox>
             <StackPanel Margin="20 80 20 10">
                 <Button
                     FontSize="24"
@@ -103,21 +112,89 @@
                 HorizontalAlignment="Center"
                 TextAlignment="Center"
                 TextWrapping="Wrap"
-                Text="{Binding IdentityLookup.VendorName}"/>
+                Text="{Binding IdentityLookup.VendorName}"
+                d:Text="ABC Corpation"/>
             <TextBlock
                 FontSize="20"
                 Margin="20 0 20 0"
                 HorizontalAlignment="Center"
                 TextAlignment="Center"
                 TextWrapping="Wrap"
-                Text="{Binding IdentityLookup.Model}"/>
+                Text="{Binding IdentityLookup.Model}"
+                d:Text="Reader"/>
             <TextBlock
                 FontSize="20"
                 Margin="20 0 20 0"
                 HorizontalAlignment="Center"
                 TextAlignment="Center"
                 TextWrapping="Wrap"
-                Text="{Binding IdentityLookup.VersionNumber}"/>
+                Text="{Binding IdentityLookup.VersionNumber}"
+                d:Text="1.2.4"/>
+            <TextBlock
+                FontSize="32"
+                Margin="20 40 20 0"
+                HorizontalAlignment="Center"
+                TextAlignment="Center"
+                TextWrapping="Wrap"
+                Text="Device Capabilities"/>
+            <Grid Margin="60 20 60 0" HorizontalAlignment="Stretch">
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" MinWidth="50"/>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Row="0" Grid.Column="1"
+                           Margin="20 0 20 0"
+                           FontSize="28"
+                           FontWeight="Bold"
+                           TextWrapping="Wrap"
+                           Text="Description"/>
+                <TextBlock Grid.Row="0" Grid.Column="2" 
+                           Margin="20 0 20 0"
+                           FontSize="28"
+                           FontWeight="Bold"
+                           TextWrapping="Wrap"
+                           Text="Action"/>
+
+                <TextBlock Grid.Row="1" Grid.Column="1" 
+                           Margin="20 10 20 10"
+                           FontSize="28"
+                           TextWrapping="Wrap"
+                           VerticalAlignment="Center"
+                           Text="Communication" />
+                <Button Grid.Row="1" Grid.Column="2"
+                        Margin="20 10 20 10"
+                        FontSize="16"
+                        HorizontalAlignment="Center"
+                        Content="Update"/>
+
+                <FontIcon Grid.Row="2" Grid.Column="0" 
+                          FontFamily="Segoe MDL2 Assets" 
+                          FontSize="32"
+                          Glyph="&#xF13E;" />
+                <TextBlock Grid.Row="2" Grid.Column="1" 
+                           Margin="20 10 20 10"
+                           FontSize="28"
+                           TextWrapping="Wrap"
+                           Text="CRC" />
+
+                <FontIcon Grid.Row="3" Grid.Column="0" 
+                          FontFamily="Segoe MDL2 Assets" 
+                          FontSize="32"
+                          Glyph="&#xF13E;" />
+                <TextBlock Grid.Row="3" Grid.Column="1" 
+                           Margin="20 10 20 10"
+                           FontSize="28"
+                           TextWrapping="Wrap"
+                           Text="Secure Channel" />
+            </Grid>
         </StackPanel>
     </Grid>
 </views:MvxWindowsPage>

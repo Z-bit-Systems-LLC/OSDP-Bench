@@ -1,7 +1,11 @@
 ﻿using System;
+using System.Collections;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using MvvmCross;
+using MvvmCross.Base;
 using MvvmCross.Commands;
 using MvvmCross.ViewModels;
 using OSDP.Net;
@@ -25,7 +29,36 @@ namespace OSDPBench.Core.ViewModels
             _panel.ConnectionStatusChanged += (sender, args) =>
             {
                 _isConnected = args.IsConnected;
+
+                var dispatcher = Mvx.IoCProvider.Resolve<IMvxMainThreadAsyncDispatcher>();
+                dispatcher.ExecuteOnMainThreadAsync(() =>
+                {
+                    StatusText = _isConnected ? "Connected" : "Failed to connect";
+                });
             };
+            _panel.NakReplyReceived += (sender, args) =>
+            {
+
+            };
+            _panel.RawCardDataReplyReceived += (sender, args) =>
+            {
+                var dispatcher = Mvx.IoCProvider.Resolve<IMvxMainThreadAsyncDispatcher>();
+                dispatcher.ExecuteOnMainThreadAsync(() =>
+                {
+                    _alertInteraction.Raise(new Alert($"Card read -> {FormatData(args.RawCardData.Data)}"));
+                });
+            };
+        }
+
+        private static string FormatData(BitArray bitArray)
+        {
+            var builder = new StringBuilder();
+            foreach (bool bit in bitArray)
+            {
+                builder.Append(bit ? "1" : "0");
+            }
+
+            return builder.ToString();
         }
 
         public MvxObservableCollection<AvailableSerialPort> AvailableSerialPorts { get; } =
@@ -63,6 +96,13 @@ namespace OSDPBench.Core.ViewModels
             set => SetProperty(ref _address, value);
         }
 
+        private bool _requireSecureChannel;
+        public bool RequireSecureChannel
+        {
+            get => _requireSecureChannel;
+            set => SetProperty(ref _requireSecureChannel, value);
+        }
+
         private string _statusText;
         public string StatusText
         {
@@ -76,6 +116,14 @@ namespace OSDPBench.Core.ViewModels
             get => _identityLookup;
             set => SetProperty(ref _identityLookup, value);
         }
+
+        private CapabilitiesLookup _capabilitiesLookup;
+        public CapabilitiesLookup CapabilitiesLookup
+        {
+            get => _capabilitiesLookup;
+            set => SetProperty(ref _capabilitiesLookup, value);
+        }
+
 
         private bool _isReadyToDiscover;
         public bool IsReadyToDiscover
@@ -113,39 +161,25 @@ namespace OSDPBench.Core.ViewModels
                 _serialPort.SetBaudRate((int)_selectedBaudRate);
 
                 IdentityLookup = new IdentityLookup(null);
+                CapabilitiesLookup = new CapabilitiesLookup(null);
+
                 _panel.Shutdown();
+
                 _connectionId = _panel.StartConnection(_serialPort);
 
-                StatusText = "Attempting to connect with plain text";
+                StatusText = "Attempting to connect";
 
-                _panel.AddDevice(_connectionId, (byte)Address, true, false);
+                _panel.AddDevice(_connectionId, (byte)Address, false, false);
 
                 bool successfulConnection = WaitForConnection();
 
                 if (successfulConnection)
                 {
-                    StatusText = "Connected";
                     await GetIdentity();
-                    IsReadyToDiscover = true;
-                    IsDiscovering = false;
-                    return;
-                }
-                
-                StatusText = "Attempting to connect with secure channel";
+                    await GetCapabilities();
 
-                _panel.Shutdown();
-                _connectionId = _panel.StartConnection(_serialPort);
-                _panel.AddDevice(_connectionId, (byte)Address, true, true);
-
-                successfulConnection = WaitForConnection();
-                if (successfulConnection)
-                {
-                    StatusText = "Connected";
-                    await GetIdentity();
-                }
-                else
-                {
-                    StatusText = "Failed to connect";
+                    _panel.AddDevice(_connectionId, (byte) Address, CapabilitiesLookup.CRC,
+                        RequireSecureChannel && CapabilitiesLookup.SecureChannel);
                 }
 
                 IsReadyToDiscover = true;
@@ -166,12 +200,16 @@ namespace OSDPBench.Core.ViewModels
         private void DoScanSerialPortsCommand()
         {
             _panel.Shutdown();
-            
+            IdentityLookup = new IdentityLookup(null);
+            CapabilitiesLookup = new CapabilitiesLookup(null);
+            StatusText = string.Empty;
+
+            AvailableSerialPorts.Clear();
+
             var foundAvailableSerialPorts = AsyncHelper.RunSync(() => _serialPort.FindAvailableSerialPorts()).ToArray();
 
             if (foundAvailableSerialPorts.Any())
             {
-                AvailableSerialPorts.Clear();
                 AvailableSerialPorts.AddRange(foundAvailableSerialPorts);
                 SelectedSerialPort = AvailableSerialPorts.First();
                 IsReadyToDiscover = true;
@@ -186,6 +224,11 @@ namespace OSDPBench.Core.ViewModels
         private async Task GetIdentity()
         {
             IdentityLookup = new IdentityLookup(await _panel.IdReport(_connectionId, (byte)Address));
+        }
+
+        private async Task GetCapabilities()
+        {
+            CapabilitiesLookup = new CapabilitiesLookup(await _panel.DeviceCapabilities(_connectionId, (byte) Address));
         }
 
         private bool WaitForConnection()

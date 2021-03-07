@@ -51,7 +51,14 @@ namespace OSDPBenchUWP.Platform
         /// <inheritdoc />
         public void Open()
         {
-            _serialDevice = AsyncHelper.RunSync(() => SerialDevice.FromIdAsync(SelectedSerialPort.Id).AsTask());
+            try
+            {
+                _serialDevice = AsyncHelper.RunSync(() => SerialDevice.FromIdAsync(SelectedSerialPort.Id).AsTask());
+            }
+            catch
+            {
+                return;
+            }
 
             if (_serialDevice != null)
             {
