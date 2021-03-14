@@ -14,6 +14,7 @@
         <ResourceDictionary>
             <valueConverters:BoolInverter x:Name="BoolInverter" />
             <valueConverters:BoolToVisibilityConverter TrueValue="Visible" FalseValue="Collapsed" x:Key="BoolToVisibilityConverter" />
+            <valueConverters:BoolToStringConverter x:Name="BoolToIcon" TrueValue="&#xF13E;" FalseValue="&#xF13D;" />
         </ResourceDictionary>
     </Page.Resources>
 
@@ -29,7 +30,7 @@
                 FontSize="24"
                 Margin="20 10 20 10" MinWidth="300" MaxWidth="300" 
                 IsEnabled="{Binding IsDiscovering, Mode=OneWay, Converter={StaticResource BoolInverter}}"
-                ItemsSource="{Binding AvailableSerialPorts, Mode=TwoWay}"
+                ItemsSource="{Binding AvailableSerialPorts, Mode=OneWay}"
                 DisplayMemberPath="Description"
                 SelectedItem="{Binding SelectedSerialPort, Mode=TwoWay}"/>
             <TextBlock FontSize="32" Margin="20 10 20 0" Text="Baud Rate" />
@@ -46,7 +47,7 @@
                     FontSize="24"
                     Margin="20 10 20 10" MinWidth="300" MaxWidth="300"
                     IsEnabled="{Binding IsDiscovering, Mode=OneWay, Converter={StaticResource BoolInverter}}"
-                    ItemsSource="{Binding AvailableBaudRates}"
+                    ItemsSource="{Binding AvailableBaudRates, Mode=OneWay}"
                     SelectedItem="{Binding SelectedBaudRate, Mode=TwoWay}" />
                     <!--IsEnabled="{Binding ElementName=AutoDetectCheckBox, Path=IsChecked, Converter={StaticResource BoolNegationConverter}}"/>-->
             <TextBlock FontSize="32" Margin="20 10 20 0" Text="Address" />
@@ -114,7 +115,7 @@
                 TextAlignment="Center"
                 TextWrapping="Wrap"
                 Text="{Binding IdentityLookup.VendorName}"
-                d:Text="ABC Corpation"/>
+                d:Text="ABC Corporation"/>
             <TextBlock
                 FontSize="20"
                 Margin="20 0 20 0"
@@ -179,7 +180,7 @@
                 <FontIcon Grid.Row="2" Grid.Column="0" 
                           FontFamily="Segoe MDL2 Assets" 
                           FontSize="32"
-                          Glyph="&#xF13E;" />
+                          Glyph="{Binding CapabilitiesLookup.CRC, Mode=OneWay, Converter={StaticResource BoolToIcon}, FallbackValue='&#xF13D;'}" />
                 <TextBlock Grid.Row="2" Grid.Column="1" 
                            Margin="20 10 20 10"
                            FontSize="28"
@@ -189,7 +190,7 @@
                 <FontIcon Grid.Row="3" Grid.Column="0" 
                           FontFamily="Segoe MDL2 Assets" 
                           FontSize="32"
-                          Glyph="&#xF13E;" />
+                          Glyph="{Binding CapabilitiesLookup.SecureChannel, Mode=OneWay, Converter={StaticResource BoolToIcon}, FallbackValue='&#xF13D;'}" />
                 <TextBlock Grid.Row="3" Grid.Column="1" 
                            Margin="20 10 20 10"
                            FontSize="28"
