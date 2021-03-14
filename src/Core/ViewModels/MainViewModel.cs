@@ -19,9 +19,10 @@ namespace OSDPBench.Core.ViewModels
     {
         private readonly ISerialPortConnection _serialPort;
         private readonly ControlPanel _panel = new ControlPanel();
-        
+
         private Guid _connectionId;
         private bool _isConnected;
+
 
         public MainViewModel(ISerialPortConnection serialPort)
         {
@@ -146,59 +147,59 @@ namespace OSDPBench.Core.ViewModels
             get
             {
                 return _goDiscoverDeviceCommand = _goDiscoverDeviceCommand ??
-                                                  new MvxCommand(DoDiscoverDeviceCommand);
+                                                  new MvxCommand(async () => { await DoDiscoverDeviceCommand(); });
             }
         }
 
-        private void DoDiscoverDeviceCommand()
+        private async Task DoDiscoverDeviceCommand()
         {
-            Task.Run(async () =>
+            IsReadyToDiscover = false;
+            IsDiscovering = true;
+
+            _serialPort.SelectedSerialPort = SelectedSerialPort;
+            _serialPort.SetBaudRate((int) _selectedBaudRate);
+
+            IdentityLookup = new IdentityLookup(null);
+            CapabilitiesLookup = new CapabilitiesLookup(null);
+
+            _panel.Shutdown();
+
+            _connectionId = _panel.StartConnection(_serialPort);
+
+            StatusText = "Attempting to connect";
+
+            _panel.AddDevice(_connectionId, (byte) Address, false, false);
+
+            bool successfulConnection = WaitForConnection();
+
+            if (successfulConnection)
             {
-                IsReadyToDiscover = false;
-                IsDiscovering = true;
+                await GetIdentity();
+                await GetCapabilities();
 
-                _serialPort.SelectedSerialPort = SelectedSerialPort;
-                _serialPort.SetBaudRate((int)_selectedBaudRate);
+                _panel.AddDevice(_connectionId, (byte) Address, CapabilitiesLookup.CRC,
+                    RequireSecureChannel && CapabilitiesLookup.SecureChannel);
+            }
 
-                IdentityLookup = new IdentityLookup(null);
-                CapabilitiesLookup = new CapabilitiesLookup(null);
-
-                _panel.Shutdown();
-
-                _connectionId = _panel.StartConnection(_serialPort);
-
-                StatusText = "Attempting to connect";
-
-                _panel.AddDevice(_connectionId, (byte)Address, false, false);
-
-                bool successfulConnection = WaitForConnection();
-
-                if (successfulConnection)
-                {
-                    await GetIdentity();
-                    await GetCapabilities();
-
-                    _panel.AddDevice(_connectionId, (byte) Address, CapabilitiesLookup.CRC,
-                        RequireSecureChannel && CapabilitiesLookup.SecureChannel);
-                }
-
-                IsReadyToDiscover = true;
-                IsDiscovering = false;
-            });
+            IsReadyToDiscover = true;
+            IsDiscovering = false;
         }
 
         private MvxCommand _scanSerialPortsCommand;
+
         public System.Windows.Input.ICommand ScanSerialPortsCommand
         {
             get
             {
                 return _scanSerialPortsCommand = _scanSerialPortsCommand ??
-                                                 new MvxCommand(DoScanSerialPortsCommand);
+                                                 new MvxCommand(async () => { await DoScanSerialPortsCommand(); });
             }
         }
 
-        private void DoScanSerialPortsCommand()
+        private async Task DoScanSerialPortsCommand()
         {
+            IsDiscovering = true;
+
             _panel.Shutdown();
             IdentityLookup = new IdentityLookup(null);
             CapabilitiesLookup = new CapabilitiesLookup(null);
@@ -206,11 +207,16 @@ namespace OSDPBench.Core.ViewModels
 
             AvailableSerialPorts.Clear();
 
-            var foundAvailableSerialPorts = AsyncHelper.RunSync(() => _serialPort.FindAvailableSerialPorts()).ToArray();
+            var foundAvailableSerialPorts = (await _serialPort.FindAvailableSerialPorts()).ToArray();
 
             if (foundAvailableSerialPorts.Any())
             {
-                AvailableSerialPorts.AddRange(foundAvailableSerialPorts);
+                // Ensure all ports are listed
+                for (var index = 0; index < foundAvailableSerialPorts.Length; index++)
+                {
+                    AvailableSerialPorts.Add(foundAvailableSerialPorts[index]);
+                }
+
                 SelectedSerialPort = AvailableSerialPorts.First();
                 IsReadyToDiscover = true;
             }
@@ -219,6 +225,8 @@ namespace OSDPBench.Core.ViewModels
                 _alertInteraction.Raise(new Alert("No serial ports are available."));
                 IsReadyToDiscover = false;
             }
+
+            IsDiscovering = false;
         }
 
         private async Task GetIdentity()
@@ -247,9 +255,9 @@ namespace OSDPBench.Core.ViewModels
 
         public IMvxInteraction<Alert> AlertInteraction => _alertInteraction;
 
-        public override void ViewAppeared()
+        public override async void ViewAppeared()
         {
-            DoScanSerialPortsCommand();
+            await DoScanSerialPortsCommand();
 
             SelectedBaudRate = 9600;
 
