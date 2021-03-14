@@ -23,7 +23,6 @@ namespace OSDPBench.Core.ViewModels
         private Guid _connectionId;
         private bool _isConnected;
 
-
         public MainViewModel(ISerialPortConnection serialPort)
         {
             _serialPort = serialPort;
@@ -124,8 +123,7 @@ namespace OSDPBench.Core.ViewModels
             get => _capabilitiesLookup;
             set => SetProperty(ref _capabilitiesLookup, value);
         }
-
-
+        
         private bool _isReadyToDiscover;
         public bool IsReadyToDiscover
         {
@@ -138,6 +136,13 @@ namespace OSDPBench.Core.ViewModels
         {
             get => _isDiscovering;
             set => SetProperty(ref _isDiscovering, value);
+        }
+
+        private bool _isDiscovered;
+        public bool IsDiscovered
+        {
+            get => _isDiscovered;
+            set => SetProperty(ref _isDiscovered, value);
         }
 
         private MvxCommand _goDiscoverDeviceCommand;
@@ -155,6 +160,7 @@ namespace OSDPBench.Core.ViewModels
         {
             IsReadyToDiscover = false;
             IsDiscovering = true;
+            IsDiscovered = false;
 
             _serialPort.SelectedSerialPort = SelectedSerialPort;
             _serialPort.SetBaudRate((int) _selectedBaudRate);
@@ -176,6 +182,8 @@ namespace OSDPBench.Core.ViewModels
             {
                 await GetIdentity();
                 await GetCapabilities();
+
+                IsDiscovered = true;
 
                 _panel.AddDevice(_connectionId, (byte) Address, CapabilitiesLookup.CRC,
                     RequireSecureChannel && CapabilitiesLookup.SecureChannel);
@@ -227,6 +235,22 @@ namespace OSDPBench.Core.ViewModels
             }
 
             IsDiscovering = false;
+        }
+
+        private MvxCommand _updateCommunicationCommand;
+
+        public System.Windows.Input.ICommand UpdateCommunicationCommand
+        {
+            get
+            {
+                return _updateCommunicationCommand = _updateCommunicationCommand ??
+                                                 new MvxCommand(DoUpdateCommunicationCommand);
+            }
+        }
+
+        private void DoUpdateCommunicationCommand()
+        {
+
         }
 
         private async Task GetIdentity()
