@@ -31,6 +31,13 @@ namespace OSDPBench.Core.ViewModels
             set => SetProperty(ref _address, value);
         }
 
+        private bool _isBusy;
+        public bool IsBusy
+        {
+            get => _isBusy;
+            set => SetProperty(ref _isBusy, value);
+        }
+
 
         public UpdateCommunicationViewModel(IMvxNavigationService navigationService, IDeviceManagementService deviceManagementService)
         {
@@ -53,16 +60,18 @@ namespace OSDPBench.Core.ViewModels
                 return _setCommunicationsCommand = _setCommunicationsCommand ??
                                                      new MvxCommand(async () =>
                                                      {
+                                                         IsBusy = true;
                                                          try
                                                          {
                                                              await DoSetCommunicationsCommand();
                                                          }
-                                                         catch (Exception exception)
+                                                         catch
                                                          {
                                                              _alertInteraction.Raise(
                                                                  new Alert(
                                                                      "Error while attempting to update communication settings."));
                                                          }
+                                                         IsBusy = false;
                                                      });
             }
         }

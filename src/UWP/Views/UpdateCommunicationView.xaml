@@ -6,8 +6,15 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:views="using:MvvmCross.Platforms.Uap.Views"
     xmlns:controls="using:Microsoft.UI.Xaml.Controls"
+    xmlns:valueConverters="using:ValueConverters"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Page.Resources>
+        <ResourceDictionary>
+            <valueConverters:BoolInverter x:Name="BoolInverter" />
+        </ResourceDictionary>
+    </Page.Resources>
 
     <Grid>
         <StackPanel>
@@ -40,6 +47,7 @@
                 <Button 
                     FontSize="24"
                     HorizontalAlignment="Center"
+                    IsEnabled="{Binding IsBusy, Mode=OneWay, Converter={StaticResource BoolInverter}}"
                     Command="{Binding SetCommunicationsCommand, Mode=OneWay}" 
                     Content="Set"/>
             </StackPanel>
