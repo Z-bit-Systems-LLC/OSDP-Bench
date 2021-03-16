@@ -1,64 +1,43 @@
 ﻿using System;
-using System.Collections;
 using System.Linq;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using MvvmCross;
 using MvvmCross.Base;
 using MvvmCross.Commands;
+using MvvmCross.Navigation;
 using MvvmCross.ViewModels;
-using OSDP.Net;
 using OSDPBench.Core.Interactions;
 using OSDPBench.Core.Models;
 using OSDPBench.Core.Platforms;
+using OSDPBench.Core.Services;
 
 namespace OSDPBench.Core.ViewModels
 {
     public class MainViewModel : MvxViewModel
     {
+        private readonly IMvxNavigationService _navigationService;
+        private readonly IDeviceManagementService _deviceManagementService;
         private readonly ISerialPortConnection _serialPort;
-        private readonly ControlPanel _panel = new ControlPanel();
 
-        private Guid _connectionId;
-        private bool _isConnected;
-
-        public MainViewModel(ISerialPortConnection serialPort)
+        public MainViewModel(IMvxNavigationService navigationService, IDeviceManagementService deviceManagementService,
+            ISerialPortConnection serialPort)
         {
-            _serialPort = serialPort;
-            _panel.ConnectionStatusChanged += (sender, args) =>
-            {
-                _isConnected = args.IsConnected;
+            _navigationService = navigationService ?? throw new ArgumentNullException(nameof(navigationService));
+            _deviceManagementService = deviceManagementService ??
+                                       throw new ArgumentNullException(nameof(deviceManagementService));
 
-                var dispatcher = Mvx.IoCProvider.Resolve<IMvxMainThreadAsyncDispatcher>();
-                dispatcher.ExecuteOnMainThreadAsync(() =>
-                {
-                    StatusText = _isConnected ? "Connected" : "Failed to connect";
-                });
-            };
-            _panel.NakReplyReceived += (sender, args) =>
-            {
+            _deviceManagementService.ConnectionStatusChange += DeviceManagementServiceOnConnectionStatusChange;
 
-            };
-            _panel.RawCardDataReplyReceived += (sender, args) =>
-            {
-                var dispatcher = Mvx.IoCProvider.Resolve<IMvxMainThreadAsyncDispatcher>();
-                dispatcher.ExecuteOnMainThreadAsync(() =>
-                {
-                    _alertInteraction.Raise(new Alert($"Card read -> {FormatData(args.RawCardData.Data)}"));
-                });
-            };
+            _serialPort = serialPort ?? throw new ArgumentNullException(nameof(serialPort));
         }
 
-        private static string FormatData(BitArray bitArray)
+        private void DeviceManagementServiceOnConnectionStatusChange(object sender, bool isConnected)
         {
-            var builder = new StringBuilder();
-            foreach (bool bit in bitArray)
+            var dispatcher = Mvx.IoCProvider.Resolve<IMvxMainThreadAsyncDispatcher>();
+            dispatcher.ExecuteOnMainThreadAsync(() =>
             {
-                builder.Append(bit ? "1" : "0");
-            }
-
-            return builder.ToString();
+                StatusText = isConnected ? "Connected" : "Failed to connect";
+            });
         }
 
         public MvxObservableCollection<AvailableSerialPort> AvailableSerialPorts { get; } =
@@ -109,20 +88,6 @@ namespace OSDPBench.Core.ViewModels
             get => _statusText;
             set => SetProperty(ref _statusText, value);
         }
-
-        private IdentityLookup _identityLookup;
-        public IdentityLookup IdentityLookup
-        {
-            get => _identityLookup;
-            set => SetProperty(ref _identityLookup, value);
-        }
-
-        private CapabilitiesLookup _capabilitiesLookup;
-        public CapabilitiesLookup CapabilitiesLookup
-        {
-            get => _capabilitiesLookup;
-            set => SetProperty(ref _capabilitiesLookup, value);
-        }
         
         private bool _isReadyToDiscover;
         public bool IsReadyToDiscover
@@ -145,6 +110,20 @@ namespace OSDPBench.Core.ViewModels
             set => SetProperty(ref _isDiscovered, value);
         }
 
+        private IdentityLookup _identityLookup;
+        public IdentityLookup IdentityLookup
+        {
+            get => _identityLookup;
+            set => SetProperty(ref _identityLookup, value);
+        }
+
+        private CapabilitiesLookup _capabilitiesLookup;
+        public CapabilitiesLookup CapabilitiesLookup
+        {
+            get => _capabilitiesLookup;
+            set => SetProperty(ref _capabilitiesLookup, value);
+        }
+
         private MvxCommand _goDiscoverDeviceCommand;
 
         public System.Windows.Input.ICommand DiscoverDeviceCommand
@@ -152,7 +131,18 @@ namespace OSDPBench.Core.ViewModels
             get
             {
                 return _goDiscoverDeviceCommand = _goDiscoverDeviceCommand ??
-                                                  new MvxCommand(async () => { await DoDiscoverDeviceCommand(); });
+                                                  new MvxCommand(async () =>
+                                                  {
+                                                      try
+                                                      {
+                                                          await DoDiscoverDeviceCommand();
+                                                      }
+                                                      catch
+                                                      {
+                                                          _alertInteraction.Raise(
+                                                              new Alert("Error while attempting to discover device."));
+                                                      }
+                                                  });
             }
         }
 
@@ -168,25 +158,17 @@ namespace OSDPBench.Core.ViewModels
             IdentityLookup = new IdentityLookup(null);
             CapabilitiesLookup = new CapabilitiesLookup(null);
 
-            _panel.Shutdown();
-
-            _connectionId = _panel.StartConnection(_serialPort);
-
             StatusText = "Attempting to connect";
 
-            _panel.AddDevice(_connectionId, (byte) Address, false, false);
-
-            bool successfulConnection = WaitForConnection();
-
-            if (successfulConnection)
+            IsDiscovered = await _deviceManagementService.DiscoverDevice(_serialPort, (byte)Address, RequireSecureChannel);
+            if (IsDiscovered)
             {
-                await GetIdentity();
-                await GetCapabilities();
-
-                IsDiscovered = true;
-
-                _panel.AddDevice(_connectionId, (byte) Address, CapabilitiesLookup.CRC,
-                    RequireSecureChannel && CapabilitiesLookup.SecureChannel);
+                IdentityLookup = _deviceManagementService.IdentityLookup;
+                CapabilitiesLookup = _deviceManagementService.CapabilitiesLookup;
+            }
+            else
+            {
+                StatusText = "Failed to get identity or capabilities from device";
             }
 
             IsReadyToDiscover = true;
@@ -200,15 +182,29 @@ namespace OSDPBench.Core.ViewModels
             get
             {
                 return _scanSerialPortsCommand = _scanSerialPortsCommand ??
-                                                 new MvxCommand(async () => { await DoScanSerialPortsCommand(); });
+                                                 new MvxCommand(async () =>
+                                                 {
+                                                     try
+                                                     {
+                                                         _deviceManagementService.Shutdown();
+
+                                                         await DoScanSerialPortsCommand();
+                                                     }
+                                                     catch
+                                                     {
+                                                         _alertInteraction.Raise(
+                                                             new Alert(
+                                                                 "Error while attempting to scan for serial ports."));
+                                                     }
+                                                 });
             }
         }
 
         private async Task DoScanSerialPortsCommand()
         {
+            IsDiscovered = false;
             IsDiscovering = true;
 
-            _panel.Shutdown();
             IdentityLookup = new IdentityLookup(null);
             CapabilitiesLookup = new CapabilitiesLookup(null);
             StatusText = string.Empty;
@@ -244,34 +240,32 @@ namespace OSDPBench.Core.ViewModels
             get
             {
                 return _updateCommunicationCommand = _updateCommunicationCommand ??
-                                                 new MvxCommand(DoUpdateCommunicationCommand);
+                                                     new MvxCommand(async () =>
+                                                     {
+                                                         try
+                                                         {
+                                                             await DoUpdateCommunicationCommand();
+                                                         }
+                                                         catch
+                                                         {
+                                                             _alertInteraction.Raise(new Alert("Error while attempting to update communication settings."));
+                                                         }
+                                                     });
             }
         }
 
-        private void DoUpdateCommunicationCommand()
+        private async Task DoUpdateCommunicationCommand()
         {
+            var result =  await _navigationService.Navigate<UpdateCommunicationViewModel, CommunicationParameters, CommunicationParameters>(
+                new CommunicationParameters(SelectedBaudRate, Address));
 
-        }
+            if (result == null) return;
 
-        private async Task GetIdentity()
-        {
-            IdentityLookup = new IdentityLookup(await _panel.IdReport(_connectionId, (byte)Address));
-        }
+            Address = result.Address;
+            SelectedBaudRate = result.BaudRate;
 
-        private async Task GetCapabilities()
-        {
-            CapabilitiesLookup = new CapabilitiesLookup(await _panel.DeviceCapabilities(_connectionId, (byte) Address));
-        }
-
-        private bool WaitForConnection()
-        {
-            int count = 0;
-            while (!_isConnected && count++ < 5)
-            {
-                Thread.Sleep(TimeSpan.FromSeconds(1));
-            }
-
-            return _isConnected;
+            _deviceManagementService.Shutdown();
+            await DoDiscoverDeviceCommand();
         }
 
         private readonly MvxInteraction<Alert> _alertInteraction =
@@ -279,13 +273,13 @@ namespace OSDPBench.Core.ViewModels
 
         public IMvxInteraction<Alert> AlertInteraction => _alertInteraction;
 
-        public override async void ViewAppeared()
+        public override async void Prepare()
         {
+            base.Prepare();
+
             await DoScanSerialPortsCommand();
 
             SelectedBaudRate = 9600;
-
-            base.ViewAppeared();
         }
     }
 }

@@ -1,0 +1,48 @@
+﻿<views:MvxWindowsPage
+    x:Class="OSDPBenchUWP.Views.UpdateCommunicationView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:views="using:MvvmCross.Platforms.Uap.Views"
+    xmlns:controls="using:Microsoft.UI.Xaml.Controls"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Grid>
+        <StackPanel>
+            <TextBlock
+                FontSize="32"
+                Margin="20 10 20 0"
+                HorizontalAlignment="Center"
+                TextAlignment="Center"
+                TextWrapping="Wrap"
+                Text="Update Device Communication Settings"/>
+            <TextBlock FontSize="32" Margin="20 10 20 0" Text="Baud Rate" />
+            <ComboBox 
+                FontSize="24"
+                Margin="20 10 20 10" MinWidth="300" MaxWidth="300"
+                ItemsSource="{Binding AvailableBaudRates, Mode=OneWay}"
+                SelectedItem="{Binding SelectedBaudRate, Mode=TwoWay}" />
+            <TextBlock FontSize="32" Margin="20 10 20 0" Text="Address" />
+            <controls:NumberBox 
+                FontSize="24"
+                Value="{Binding Address, Mode=TwoWay}"
+                Margin="20 10 20 10" MaxWidth="150" 
+                HorizontalAlignment="Left"
+                SmallChange="1"
+                Minimum="0"
+                Maximum="255"
+                SpinButtonPlacementMode="Inline"
+                AcceptsExpression="False"/>
+            <StackPanel Orientation="Horizontal"
+                        Margin="20 10 20 10">
+                <Button 
+                    FontSize="24"
+                    HorizontalAlignment="Center"
+                    Command="{Binding SetCommunicationsCommand, Mode=OneWay}" 
+                    Content="Set"/>
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+</views:MvxWindowsPage>
