@@ -90,7 +90,7 @@ namespace OSDPBenchUWP.Platform
                 try
                 {
                     dataWriter.WriteBytes(buffer);
-                    await dataWriter.StoreAsync();
+                    await dataWriter.StoreAsync().AsTask();
                 }
                 finally
                 {

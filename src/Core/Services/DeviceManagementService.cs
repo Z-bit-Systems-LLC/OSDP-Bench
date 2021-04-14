@@ -9,6 +9,11 @@ using OSDPBench.Core.Platforms;
 
 namespace OSDPBench.Core.Services
 {
+    /// <summary>
+    /// Class DeviceManagementService.
+    /// Implements the <see cref="OSDPBench.Core.Services.IDeviceManagementService" />
+    /// </summary>
+    /// <seealso cref="OSDPBench.Core.Services.IDeviceManagementService" />
     public class DeviceManagementService : IDeviceManagementService
     {
         private readonly ControlPanel _panel;
@@ -18,6 +23,11 @@ namespace OSDPBench.Core.Services
         private byte _address;
         private bool _requireSecureChannel;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DeviceManagementService"/> class.
+        /// </summary>
+        /// <param name="panel">The panel.</param>
+        /// <exception cref="ArgumentNullException">panel</exception>
         public DeviceManagementService(ControlPanel panel)
         {
             _panel = panel ?? throw new ArgumentNullException(nameof(panel));
@@ -29,8 +39,10 @@ namespace OSDPBench.Core.Services
             };
         }
 
+        /// <inheritdoc />
         public IdentityLookup IdentityLookup { get; private set; }
 
+        /// <inheritdoc />
         public CapabilitiesLookup CapabilitiesLookup { get; private set; }
 
 
@@ -61,6 +73,7 @@ namespace OSDPBench.Core.Services
             return await WaitForConnection();
         }
 
+        /// <inheritdoc />
         public async Task<CommunicationParameters> SetCommunicationCommand(
             CommunicationParameters communicationParameters)
         {
@@ -79,11 +92,13 @@ namespace OSDPBench.Core.Services
 
         }
 
+        /// <inheritdoc />
         public void Shutdown()
         {
             _panel.Shutdown();
         }
 
+        /// <inheritdoc />
         public event EventHandler<bool> ConnectionStatusChange;
         protected virtual void OnConnectionStatusChange(bool e)
         {
@@ -93,7 +108,7 @@ namespace OSDPBench.Core.Services
         private async Task<bool> WaitForConnection()
         {
             int count = 0;
-            while (!_isConnected && count++ < 1)
+            while (!_isConnected && count++ < 10)
             {
                 await Task.Delay(TimeSpan.FromMilliseconds(100));
             }
