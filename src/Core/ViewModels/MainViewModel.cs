@@ -168,7 +168,7 @@ namespace OSDPBench.Core.ViewModels
             }
             else
             {
-                StatusText = "Failed to get identity or capabilities from device";
+                StatusText = "Failed to connect to device";
             }
 
             IsReadyToDiscover = true;
@@ -186,8 +186,6 @@ namespace OSDPBench.Core.ViewModels
                                                  {
                                                      try
                                                      {
-                                                         _deviceManagementService.Shutdown();
-
                                                          await DoScanSerialPortsCommand();
                                                      }
                                                      catch
@@ -204,6 +202,8 @@ namespace OSDPBench.Core.ViewModels
         {
             IsDiscovered = false;
             IsDiscovering = true;
+
+            _deviceManagementService.Shutdown();
 
             IdentityLookup = new IdentityLookup(null);
             CapabilitiesLookup = new CapabilitiesLookup(null);

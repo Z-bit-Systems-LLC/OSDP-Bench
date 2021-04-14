@@ -48,8 +48,10 @@ namespace OSDPBench.Core.Services
             bool successfulConnection = await WaitForConnection();
 
             if (!successfulConnection)
+            {
                 return false;
-
+            }
+            
             await GetIdentity();
             await GetCapabilities();
 
@@ -91,9 +93,9 @@ namespace OSDPBench.Core.Services
         private async Task<bool> WaitForConnection()
         {
             int count = 0;
-            while (!_isConnected && count++ < 5)
+            while (!_isConnected && count++ < 1)
             {
-                await Task.Delay(TimeSpan.FromSeconds(1));
+                await Task.Delay(TimeSpan.FromMilliseconds(100));
             }
 
             return _isConnected;
