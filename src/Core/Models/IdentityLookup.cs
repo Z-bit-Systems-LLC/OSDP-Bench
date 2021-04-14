@@ -15,7 +15,9 @@ namespace OSDPBench.Core.Models
                 Models = new[]
                 {
                     new {Number = 1, Name = "OSM-1000"}
-                }
+                },
+                ResetInstructions = "The reset command should be sent right after powering on the device. Do you want to continue?",
+                CanSendResetCommand = true
             },
             new {
                 VendorCode = "DA-0D-38",
@@ -23,7 +25,9 @@ namespace OSDPBench.Core.Models
                 Models = new[]
                 {
                     new {Number = 1, Name = "Reader"}
-                }
+                },
+                ResetInstructions = "The reset command should be sent right after powering on the device. Do you want to continue?",
+                CanSendResetCommand = true
             },
             new {
                 VendorCode = "00-06-8E", 
@@ -31,7 +35,9 @@ namespace OSDPBench.Core.Models
                 Models = new[]
                 {
                     new {Number = 1, Name = "Signo"}
-                }
+                },
+                ResetInstructions = "Use HID Reader Manager mobile application to reset settings.",
+                CanSendResetCommand = false
             },
             new {
                 VendorCode = "5C-26-23",
@@ -41,7 +47,9 @@ namespace OSDPBench.Core.Models
                     new {Number = 10, Name = "Ethos ET10"},
                     new {Number = 20, Name = "Ethos ET20"},
                     new {Number = 25, Name = "Ethos ET25"}
-                }
+                },
+                ResetInstructions = "To return to OSDP auto-detect mode (default mode), tilt the reader 45 degrees to simulate tamper and cycle power in this state. The power up sequence should indicate OSDP auto-detect with 4 beeps.",
+                CanSendResetCommand = false
             }
         };
 
@@ -63,6 +71,9 @@ namespace OSDPBench.Core.Models
                 {
                     Model = foundModel.Name.ToString();
                 }
+
+                ResetInstructions = foundDevice.ResetInstructions.ToString();
+                CanSendResetCommand = foundDevice.CanSendResetCommand;
             }
 
             VersionNumber =
@@ -74,5 +85,9 @@ namespace OSDPBench.Core.Models
         public string Model { get; } = string.Empty;
 
         public string VersionNumber { get; } = string.Empty;
+
+        public string ResetInstructions { get; } = "No reset instructions are available for this device.";
+
+        public bool CanSendResetCommand { get; } = false;
     }
 }

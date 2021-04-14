@@ -38,6 +38,32 @@ namespace OSDPBenchUWP.Views
             await dialog.ShowAsync();
         }
 
+        private IMvxInteraction<YesNoQuestion> _yesNoInteraction;
+        public IMvxInteraction<YesNoQuestion> YesNoInteraction
+        {
+            get => _yesNoInteraction;
+            set
+            {
+                if (_yesNoInteraction != null)
+                    _yesNoInteraction.Requested -= OnYesNoInteractionRequested;
+
+                _yesNoInteraction = value;
+                _yesNoInteraction.Requested += OnYesNoInteractionRequested;
+            }
+        }
+
+        private static async void OnYesNoInteractionRequested(object sender, MvxValueEventArgs<YesNoQuestion> eventArgs)
+        {
+            var dialog = new MessageDialog(eventArgs.Value.Question);
+            dialog.Commands.Add(new UICommand("Yes", null));
+            dialog.Commands.Add(new UICommand("No", null));
+            dialog.DefaultCommandIndex = 0;
+            dialog.CancelCommandIndex = 1;
+            var command = await dialog.ShowAsync();
+
+            eventArgs.Value.YesNoCallback(command.Label == "Yes");
+        }
+
         private IMvxBindingContext _bindingContext;
         public IMvxBindingContext BindingContext
         {
@@ -51,6 +77,7 @@ namespace OSDPBenchUWP.Views
 
             var set = this.CreateBindingSet<MainView, MainViewModel>();
             set.Bind(this).For(view => view.AlertInteraction).To(viewModel => viewModel.AlertInteraction).OneWay();
+            set.Bind(this).For(view => view.YesNoInteraction).To(viewModel => viewModel.YesNoInteraction).OneWay();
             set.Apply();
             
             base.OnViewModelSet();

@@ -43,13 +43,13 @@
                         Text="Auto-Detect"
                         Margin="0 -7 0 0" />
                 </CheckBox>-->
-                <ComboBox 
+            <ComboBox 
                     FontSize="24"
                     Margin="20 10 20 10" MinWidth="300" MaxWidth="300"
                     IsEnabled="{Binding IsDiscovering, Mode=OneWay, Converter={StaticResource BoolInverter}}"
                     ItemsSource="{Binding AvailableBaudRates, Mode=OneWay}"
                     SelectedItem="{Binding SelectedBaudRate, Mode=TwoWay}" />
-                    <!--IsEnabled="{Binding ElementName=AutoDetectCheckBox, Path=IsChecked, Converter={StaticResource BoolNegationConverter}}"/>-->
+            <!--IsEnabled="{Binding ElementName=AutoDetectCheckBox, Path=IsChecked, Converter={StaticResource BoolNegationConverter}}"/>-->
             <TextBlock FontSize="32" Margin="20 10 20 0" Text="Address" />
             <controls:NumberBox 
                 FontSize="24"
@@ -143,10 +143,11 @@
                 Text="Device Capabilities"/>
             <Grid Margin="60 20 60 0" HorizontalAlignment="Stretch">
                 <Grid.RowDefinitions>
-                    <RowDefinition />
-                    <RowDefinition />
-                    <RowDefinition />
-                    <RowDefinition />
+                    <RowDefinition Height="37*" />
+                    <RowDefinition Height="57*" />
+                    <RowDefinition Height="57*" />
+                    <RowDefinition Height="57*" />
+                    <RowDefinition Height="57*" />
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" MinWidth="50"/>
@@ -199,6 +200,18 @@
                            FontSize="28"
                            TextWrapping="Wrap"
                            Text="Secure Channel" />
+
+                <TextBlock Grid.Row="4" Grid.Column="1" 
+                           Margin="20 10 20 10"
+                           FontSize="28"
+                           TextWrapping="Wrap"
+                           Text="Reset Device" />
+                <Button Grid.Row="4" Grid.Column="2"
+                        Margin="20 10 20 10"
+                        FontSize="16"
+                        HorizontalAlignment="Center"
+                        Content="Reset"
+                        Command="{Binding ResetDeviceCommand, Mode=OneWay}"/>
             </Grid>
         </StackPanel>
     </Grid>

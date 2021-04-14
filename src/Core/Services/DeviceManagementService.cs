@@ -3,9 +3,11 @@ using System.Collections;
 using System.Text;
 using System.Threading.Tasks;
 using OSDP.Net;
-using OSDP.Net.Model.CommandData;
+using OSDP.Net.Model.ReplyData;
 using OSDPBench.Core.Models;
 using OSDPBench.Core.Platforms;
+using CommunicationConfiguration = OSDP.Net.Model.CommandData.CommunicationConfiguration;
+using ManufacturerSpecific = OSDP.Net.Model.CommandData.ManufacturerSpecific;
 
 namespace OSDPBench.Core.Services
 {
@@ -89,7 +91,35 @@ namespace OSDPBench.Core.Services
             {
                 return communicationParameters;
             }
+        }
 
+        /// <inheritdoc />
+        public async Task ResetDevice()
+        {
+            var result = await _panel.ManufacturerSpecificCommand(_connectionId, _address,
+                new ManufacturerSpecific(new byte[] { 0xCA, 0x44, 0x6C}, new byte[] {0x05}));
+
+            if (!result.Ack)
+            {
+                throw new Exception($"Failed to reset.{Environment.NewLine}{Environment.NewLine}{ToFormattedText(result.Nak.ErrorCode)}");
+            }
+        }
+
+        private static string ToFormattedText(ErrorCode value)
+        {
+            var builder = new StringBuilder();
+
+            foreach (var character in value.ToString())
+            {
+                if (char.IsUpper(character))
+                {
+                    builder.Append(" ");
+                }
+
+                builder.Append(character);
+            }
+
+            return builder.ToString().TrimStart();
         }
 
         /// <inheritdoc />

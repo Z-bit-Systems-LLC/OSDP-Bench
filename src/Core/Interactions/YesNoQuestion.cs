@@ -4,7 +4,14 @@ namespace OSDPBench.Core.Interactions
 {
     public class YesNoQuestion
     {
-        public Action<bool> YesNoCallback { get; set; }
-        public string Question { get; set; }
+        public YesNoQuestion(string question, Action<bool> yesNoCallback)
+        {
+            Question = question;
+            YesNoCallback = yesNoCallback;
+        }
+
+        public Action<bool> YesNoCallback { get; }
+
+        public string Question { get; }
     }
 }

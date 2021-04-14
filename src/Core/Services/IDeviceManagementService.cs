@@ -34,6 +34,11 @@ namespace OSDPBench.Core.Services
         Task<CommunicationParameters> SetCommunicationCommand(CommunicationParameters communicationParameters);
 
         /// <summary>
+        /// Resets the device.
+        /// </summary>
+        Task ResetDevice();
+
+        /// <summary>
         /// Shuts down this communications.
         /// </summary>
         void Shutdown();

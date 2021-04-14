@@ -36,7 +36,7 @@ namespace OSDPBench.Core.ViewModels
             var dispatcher = Mvx.IoCProvider.Resolve<IMvxMainThreadAsyncDispatcher>();
             dispatcher.ExecuteOnMainThreadAsync(() =>
             {
-                StatusText = isConnected ? "Connected" : "Failed to connect";
+                StatusText = isConnected ? "Connected" : "Attempting to connect";
             });
         }
 
@@ -268,10 +268,74 @@ namespace OSDPBench.Core.ViewModels
             await DoDiscoverDeviceCommand();
         }
 
+        private MvxCommand _goResetDeviceCommand;
+
+        /// <summary>
+        /// Gets the reset device command.
+        /// </summary>
+        /// <value>The reset device command.</value>
+        public System.Windows.Input.ICommand ResetDeviceCommand
+        {
+            get
+            {
+                return _goResetDeviceCommand = _goResetDeviceCommand ??
+                                                  new MvxCommand( () =>
+                                                  {
+                                                      try
+                                                      {
+                                                          DoDiscoverResetCommand();
+                                                      }
+                                                      catch
+                                                      {
+                                                          _alertInteraction.Raise(
+                                                              new Alert("Error while attempting to reset device."));
+                                                      }
+                                                  });
+            }
+        }
+
+        private void DoDiscoverResetCommand()
+        {
+            if (!IdentityLookup.CanSendResetCommand)
+            {
+                _alertInteraction.Raise(
+                    new Alert(IdentityLookup.ResetInstructions));
+                return;
+            }
+
+            _yesNoInteraction.Raise(new YesNoQuestion(IdentityLookup.ResetInstructions, async result =>
+            {
+                if (!result) return;
+                try
+                {
+                    await _deviceManagementService.ResetDevice();
+                    _alertInteraction.Raise(new Alert("Successfully sent reset command."));
+                }
+                catch (Exception exception)
+                {
+                    _alertInteraction.Raise(new Alert(exception.Message));
+                }
+            }));
+        }
+
         private readonly MvxInteraction<Alert> _alertInteraction =
             new MvxInteraction<Alert>();
 
+        /// <summary>
+        /// Gets the alert interaction.
+        /// </summary>
+        /// <value>The alert interaction.</value>
         public IMvxInteraction<Alert> AlertInteraction => _alertInteraction;
+
+        
+        private readonly MvxInteraction<YesNoQuestion> _yesNoInteraction =
+            new MvxInteraction<YesNoQuestion>();
+
+        /// <summary>
+        /// Gets the yes no interaction.
+        /// </summary>
+        /// <value>The yes no interaction.</value>
+        public IMvxInteraction<YesNoQuestion> YesNoInteraction => _yesNoInteraction;
 
         public override async void Prepare()
         {
