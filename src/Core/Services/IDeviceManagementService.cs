@@ -47,5 +47,10 @@ namespace OSDPBench.Core.Services
         /// Occurs when connection status changes.
         /// </summary>
         event EventHandler<bool> ConnectionStatusChange;
+
+        /// <summary>
+        /// Occurs when NAK reply received.
+        /// </summary>
+        event EventHandler<string> NakReplyReceived;
     }
 }

@@ -27,6 +27,7 @@ namespace OSDPBench.Core.ViewModels
                                        throw new ArgumentNullException(nameof(deviceManagementService));
 
             _deviceManagementService.ConnectionStatusChange += DeviceManagementServiceOnConnectionStatusChange;
+            _deviceManagementService.NakReplyReceived += DeviceManagementServiceOnNakReplyReceived;
 
             _serialPort = serialPort ?? throw new ArgumentNullException(nameof(serialPort));
         }
@@ -37,6 +38,15 @@ namespace OSDPBench.Core.ViewModels
             dispatcher.ExecuteOnMainThreadAsync(() =>
             {
                 StatusText = isConnected ? "Connected" : "Attempting to connect";
+            });
+        }
+
+        private void DeviceManagementServiceOnNakReplyReceived(object sender, string errorMessage)
+        {
+            var dispatcher = Mvx.IoCProvider.Resolve<IMvxMainThreadAsyncDispatcher>();
+            dispatcher.ExecuteOnMainThreadAsync(() =>
+            {
+                NakText = errorMessage;
             });
         }
 
@@ -88,7 +98,14 @@ namespace OSDPBench.Core.ViewModels
             get => _statusText;
             set => SetProperty(ref _statusText, value);
         }
-        
+
+        private string _nakText;
+        public string NakText
+        {
+            get => _nakText;
+            set => SetProperty(ref _nakText, value);
+        }
+
         private bool _isReadyToDiscover;
         public bool IsReadyToDiscover
         {
@@ -159,6 +176,7 @@ namespace OSDPBench.Core.ViewModels
             CapabilitiesLookup = new CapabilitiesLookup(null);
 
             StatusText = "Attempting to connect";
+            NakText = string.Empty;
 
             IsDiscovered = await _deviceManagementService.DiscoverDevice(_serialPort, (byte)Address, RequireSecureChannel);
             if (IsDiscovered)
@@ -207,7 +225,9 @@ namespace OSDPBench.Core.ViewModels
 
             IdentityLookup = new IdentityLookup(null);
             CapabilitiesLookup = new CapabilitiesLookup(null);
+
             StatusText = string.Empty;
+            NakText = string.Empty;
 
             AvailableSerialPorts.Clear();
 
@@ -256,6 +276,8 @@ namespace OSDPBench.Core.ViewModels
 
         private async Task DoUpdateCommunicationCommand()
         {
+            NakText = string.Empty;
+
             var result =  await _navigationService.Navigate<UpdateCommunicationViewModel, CommunicationParameters, CommunicationParameters>(
                 new CommunicationParameters(SelectedBaudRate, Address));
 
@@ -296,6 +318,8 @@ namespace OSDPBench.Core.ViewModels
 
         private void DoDiscoverResetCommand()
         {
+            NakText = string.Empty;
+
             if (!IdentityLookup.CanSendResetCommand)
             {
                 _alertInteraction.Raise(

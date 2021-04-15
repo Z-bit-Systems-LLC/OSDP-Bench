@@ -95,6 +95,15 @@
                 MaxWidth="300"
                 TextWrapping="Wrap"
                 Text="{Binding StatusText}"/>
+            <TextBlock 
+                FontSize="20"
+                Margin="20 10 20 10"
+                HorizontalAlignment="Center"
+                TextAlignment="Center"
+                MaxWidth="300"
+                TextWrapping="Wrap"
+                FontWeight="Bold"
+                Text="{Binding NakText}"/>
         </StackPanel>
         <Rectangle 
             Grid.Column="1"

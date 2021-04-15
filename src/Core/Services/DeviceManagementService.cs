@@ -39,6 +39,11 @@ namespace OSDPBench.Core.Services
                 _isConnected = args.IsConnected;
                 OnConnectionStatusChange(_isConnected);
             };
+
+            _panel.NakReplyReceived += (sender, args) =>
+            {
+                OnNakReplyReceived(ToFormattedText(args.Nak.ErrorCode));
+            };
         }
 
         /// <inheritdoc />
@@ -101,7 +106,7 @@ namespace OSDPBench.Core.Services
 
             if (!result.Ack)
             {
-                throw new Exception($"Failed to reset.{Environment.NewLine}{Environment.NewLine}{ToFormattedText(result.Nak.ErrorCode)}");
+                throw new Exception("Reset command failed.");
             }
         }
 
@@ -130,9 +135,16 @@ namespace OSDPBench.Core.Services
 
         /// <inheritdoc />
         public event EventHandler<bool> ConnectionStatusChange;
-        protected virtual void OnConnectionStatusChange(bool e)
+        protected virtual void OnConnectionStatusChange(bool isConnected)
         {
-            ConnectionStatusChange?.Invoke(this, e);
+            ConnectionStatusChange?.Invoke(this, isConnected);
+        }
+
+        /// <inheritdoc />
+        public event EventHandler<string> NakReplyReceived;
+        protected virtual void OnNakReplyReceived(string errorMessage)
+        {
+            NakReplyReceived?.Invoke(this, errorMessage);
         }
 
         private async Task<bool> WaitForConnection()
