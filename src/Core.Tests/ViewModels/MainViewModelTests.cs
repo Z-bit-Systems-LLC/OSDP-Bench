@@ -1,10 +1,12 @@
 using Moq;
 using MvvmCross.Base;
+using MvvmCross.Navigation;
 using MvvmCross.Tests;
 using MvvmCross.Views;
 using NUnit.Framework;
 using OSDPBench.Core.Models;
 using OSDPBench.Core.Platforms;
+using OSDPBench.Core.Services;
 using OSDPBench.Core.ViewModels;
 
 namespace OSDPBench.Core.Tests.ViewModels
@@ -25,8 +27,9 @@ namespace OSDPBench.Core.Tests.ViewModels
         {
             Setup();
 
-            var serialPortConnection = new Mock<ISerialPortConnection>();
-            Ioc.RegisterSingleton(serialPortConnection.Object);
+            Ioc.RegisterSingleton(new Mock<IMvxNavigationService>().Object);
+            Ioc.RegisterSingleton(new Mock<IDeviceManagementService>().Object);
+            Ioc.RegisterSingleton(new Mock<ISerialPortConnection>().Object);
 
             var mainViewModel = Ioc.IoCConstruct<MainViewModel>();
 
@@ -38,13 +41,18 @@ namespace OSDPBench.Core.Tests.ViewModels
         {
             Setup();
 
+            Ioc.RegisterSingleton(new Mock<IMvxNavigationService>().Object);
+            Ioc.RegisterSingleton(new Mock<IDeviceManagementService>().Object);
             var serialPortConnection = new Mock<ISerialPortConnection>();
             serialPortConnection.Setup(expression => expression.FindAvailableSerialPorts())
-                .ReturnsAsync(new[] {new AvailableSerialPort("id1", "test1", "desc1"), new AvailableSerialPort("id2", "test2", "desc2")});
+                .ReturnsAsync(new[]
+                {
+                    new AvailableSerialPort("id1", "test1", "desc1"), new AvailableSerialPort("id2", "test2", "desc2")
+                });
             Ioc.RegisterSingleton(serialPortConnection.Object);
 
             var mainViewModel = Ioc.IoCConstruct<MainViewModel>();
-            mainViewModel.ViewAppeared();
+            mainViewModel.Prepare();
 
             Assert.AreEqual(2, mainViewModel.AvailableSerialPorts.Count);
         }
