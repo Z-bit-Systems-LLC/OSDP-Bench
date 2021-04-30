@@ -1,5 +1,6 @@
 ﻿using System;
 using Windows.UI.Popups;
+using Windows.UI.Xaml.Navigation;
 using MvvmCross.Base;
 using MvvmCross.Binding.BindingContext;
 using MvvmCross.ViewModels;
@@ -24,8 +25,7 @@ namespace OSDPBenchUWP.Views
             get => _alertInteraction;
             set
             {
-                if (_alertInteraction != null)
-                    _alertInteraction.Requested -= OnAlertInteractionRequested;
+                if (_alertInteraction != null) _alertInteraction.Requested -= OnAlertInteractionRequested;
 
                 _alertInteraction = value;
                 _alertInteraction.Requested += OnAlertInteractionRequested;
@@ -44,8 +44,7 @@ namespace OSDPBenchUWP.Views
             get => _yesNoInteraction;
             set
             {
-                if (_yesNoInteraction != null)
-                    _yesNoInteraction.Requested -= OnYesNoInteractionRequested;
+                if (_yesNoInteraction != null) _yesNoInteraction.Requested -= OnYesNoInteractionRequested;
 
                 _yesNoInteraction = value;
                 _yesNoInteraction.Requested += OnYesNoInteractionRequested;
@@ -73,14 +72,24 @@ namespace OSDPBenchUWP.Views
 
         protected override void OnViewModelSet()
         {
+            base.OnViewModelSet();
+
             BindingContext.DataContext = ViewModel;
 
-            var set = this.CreateBindingSet<MainView, MainViewModel>();
-            set.Bind(this).For(view => view.AlertInteraction).To(viewModel => viewModel.AlertInteraction).OneWay();
-            set.Bind(this).For(view => view.YesNoInteraction).To(viewModel => viewModel.YesNoInteraction).OneWay();
-            set.Apply();
-            
-            base.OnViewModelSet();
+            using (var set = this.CreateBindingSet<MainView, MainViewModel>())
+            {
+                set.Bind(this).For(view => view.AlertInteraction).To(viewModel => viewModel.AlertInteraction).OneWay();
+                set.Bind(this).For(view => view.YesNoInteraction).To(viewModel => viewModel.YesNoInteraction).OneWay();
+                set.Apply();
+            }
+        }
+
+        protected override void OnNavigatedFrom(NavigationEventArgs eventArgs)
+        {
+            base.OnNavigatedFrom(eventArgs);
+
+            _alertInteraction.Requested -= OnAlertInteractionRequested;
+            _yesNoInteraction.Requested -= OnYesNoInteractionRequested;
         }
     }
 }

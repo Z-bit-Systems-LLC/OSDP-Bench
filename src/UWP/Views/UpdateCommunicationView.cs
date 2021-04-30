@@ -1,5 +1,6 @@
 ﻿using System;
 using Windows.UI.Popups;
+using Windows.UI.Xaml.Navigation;
 using MvvmCross.Base;
 using MvvmCross.Binding.BindingContext;
 using MvvmCross.ViewModels;
@@ -21,8 +22,7 @@ namespace OSDPBenchUWP.Views
             get => _alertInteraction;
             set
             {
-                if (_alertInteraction != null)
-                    _alertInteraction.Requested -= OnAlertInteractionRequested;
+                if (_alertInteraction != null) _alertInteraction.Requested -= OnAlertInteractionRequested;
 
                 _alertInteraction = value;
                 _alertInteraction.Requested += OnAlertInteractionRequested;
@@ -44,13 +44,22 @@ namespace OSDPBenchUWP.Views
 
         protected override void OnViewModelSet()
         {
+            base.OnViewModelSet();
+
             BindingContext.DataContext = ViewModel;
 
-            var set = this.CreateBindingSet<UpdateCommunicationView, UpdateCommunicationViewModel>();
-            set.Bind(this).For(view => view.AlertInteraction).To(viewModel => viewModel.AlertInteraction).OneWay();
-            set.Apply();
+            using (var set = this.CreateBindingSet<UpdateCommunicationView, UpdateCommunicationViewModel>())
+            {
+                set.Bind(this).For(view => view.AlertInteraction).To(viewModel => viewModel.AlertInteraction).OneWay();
+                set.Apply();
+            }
+        }
 
-            base.OnViewModelSet();
+        protected override void OnNavigatedFrom(NavigationEventArgs eventArgs)
+        {
+            base.OnNavigatedFrom(eventArgs);
+
+            _alertInteraction.Requested -= OnAlertInteractionRequested;
         }
     }
 }
