@@ -37,7 +37,7 @@ namespace OSDPBench.Core.ViewModels
             var dispatcher = Mvx.IoCProvider.Resolve<IMvxMainThreadAsyncDispatcher>();
             dispatcher.ExecuteOnMainThreadAsync(() =>
             {
-                StatusText = isConnected ? "Connected" : "Attempting to connect";
+                if (isConnected) StatusText = "Connected";
             });
         }
 
@@ -170,15 +170,25 @@ namespace OSDPBench.Core.ViewModels
             IsDiscovered = false;
 
             _serialPort.SelectedSerialPort = SelectedSerialPort;
-            _serialPort.SetBaudRate((int) _selectedBaudRate);
 
             IdentityLookup = new IdentityLookup(null);
             CapabilitiesLookup = new CapabilitiesLookup(null);
 
-            StatusText = "Attempting to connect";
+            StatusText = "Attempting to discover device";
             NakText = string.Empty;
 
-            IsDiscovered = await _deviceManagementService.DiscoverDevice(_serialPort, (byte)Address, RequireSecureChannel);
+            foreach (var baudRate in AvailableBaudRates)
+            {
+                StatusText = $"Attempting to discover device at {baudRate}";
+                _serialPort.SetBaudRate((int)baudRate);
+                IsDiscovered = await _deviceManagementService.DiscoverDevice(_serialPort, (byte)Address, RequireSecureChannel);
+                if (IsDiscovered)
+                {
+                    _selectedBaudRate = baudRate;
+                    break;
+                }
+            }
+            
             if (IsDiscovered)
             {
                 IdentityLookup = _deviceManagementService.IdentityLookup;

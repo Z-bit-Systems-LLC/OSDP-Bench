@@ -46,7 +46,7 @@
             <ComboBox 
                     FontSize="24"
                     Margin="20 10 20 10" MinWidth="300" MaxWidth="300"
-                    IsEnabled="{Binding IsDiscovering, Mode=OneWay, Converter={StaticResource BoolInverter}}"
+                    IsEnabled="False"
                     ItemsSource="{Binding AvailableBaudRates, Mode=OneWay}"
                     SelectedItem="{Binding SelectedBaudRate, Mode=TwoWay}" />
             <!--IsEnabled="{Binding ElementName=AutoDetectCheckBox, Path=IsChecked, Converter={StaticResource BoolNegationConverter}}"/>-->
