@@ -15,7 +15,7 @@ namespace OSDPBench.Core.ViewModels
         private readonly IDeviceManagementService _deviceManagementService;
 
         public MvxObservableCollection<uint> AvailableBaudRates { get; } = new MvxObservableCollection<uint>
-            {9600, 14400, 19200, 38400, 57600, 115200};
+            {9600, 14400, 19200, 38400, 57600, 115200, 230400};
 
         private uint _selectedBaudRate;
         public uint SelectedBaudRate
@@ -37,7 +37,6 @@ namespace OSDPBench.Core.ViewModels
             get => _isBusy;
             set => SetProperty(ref _isBusy, value);
         }
-
 
         public UpdateCommunicationViewModel(IMvxNavigationService navigationService, IDeviceManagementService deviceManagementService)
         {

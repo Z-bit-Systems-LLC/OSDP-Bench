@@ -7,6 +7,7 @@
     xmlns:views="using:MvvmCross.Platforms.Uap.Views"
     xmlns:controls="using:Microsoft.UI.Xaml.Controls"
     xmlns:valueConverters="using:ValueConverters"
+    xmlns:converters="using:OSDPBenchUWP.Converters"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
@@ -15,6 +16,7 @@
             <valueConverters:BoolInverter x:Name="BoolInverter" />
             <valueConverters:BoolToVisibilityConverter TrueValue="Visible" FalseValue="Collapsed" x:Key="BoolToVisibilityConverter" />
             <valueConverters:BoolToStringConverter x:Name="BoolToIcon" TrueValue="&#xF13E;" FalseValue="&#xF13D;" />
+            <converters:StatusLevelConverter x:Name="StatusLevelConverter" />
         </ResourceDictionary>
     </Page.Resources>
 
@@ -34,22 +36,12 @@
                 DisplayMemberPath="Description"
                 SelectedItem="{Binding SelectedSerialPort, Mode=TwoWay}"/>
             <TextBlock FontSize="32" Margin="20 10 20 0" Text="Baud Rate" />
-            <!--<CheckBox 
-                Name="AutoDetectCheckBox"
-                    Margin="20 10 20 0"
-                    IsChecked="{Binding AutoDetectBaudRate}">
-                    <TextBlock 
-                        FontSize="24" 
-                        Text="Auto-Detect"
-                        Margin="0 -7 0 0" />
-                </CheckBox>-->
             <ComboBox 
                     FontSize="24"
                     Margin="20 10 20 10" MinWidth="300" MaxWidth="300"
                     IsEnabled="False"
                     ItemsSource="{Binding AvailableBaudRates, Mode=OneWay}"
                     SelectedItem="{Binding SelectedBaudRate, Mode=TwoWay}" />
-            <!--IsEnabled="{Binding ElementName=AutoDetectCheckBox, Path=IsChecked, Converter={StaticResource BoolNegationConverter}}"/>-->
             <TextBlock FontSize="32" Margin="20 10 20 0" Text="Address" />
             <controls:NumberBox 
                 FontSize="24"
@@ -88,21 +80,23 @@
             </StackPanel>
 
             <TextBlock 
-                FontSize="20"
+                FontSize="26"
                 Margin="20 10 20 10"
                 HorizontalAlignment="Center"
                 TextAlignment="Center"
                 MaxWidth="300"
                 TextWrapping="Wrap"
+                Foreground="{Binding StatusLevel, Mode=OneWay, Converter={StaticResource StatusLevelConverter}}"
                 Text="{Binding StatusText}"/>
             <TextBlock 
-                FontSize="20"
+                FontSize="26"
                 Margin="20 10 20 10"
                 HorizontalAlignment="Center"
                 TextAlignment="Center"
                 MaxWidth="300"
                 TextWrapping="Wrap"
                 FontWeight="Bold"
+                Foreground="Red"
                 Text="{Binding NakText}"/>
         </StackPanel>
         <Rectangle 

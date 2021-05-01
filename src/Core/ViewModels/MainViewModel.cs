@@ -44,10 +44,7 @@ namespace OSDPBench.Core.ViewModels
         private void DeviceManagementServiceOnNakReplyReceived(object sender, string errorMessage)
         {
             var dispatcher = Mvx.IoCProvider.Resolve<IMvxMainThreadAsyncDispatcher>();
-            dispatcher.ExecuteOnMainThreadAsync(() =>
-            {
-                NakText = errorMessage;
-            });
+            dispatcher.ExecuteOnMainThreadAsync(() => { NakText = errorMessage; });
         }
 
         public MvxObservableCollection<AvailableSerialPort> AvailableSerialPorts { get; } =
@@ -65,6 +62,7 @@ namespace OSDPBench.Core.ViewModels
         }
 
         private uint _selectedBaudRate;
+
         public uint SelectedBaudRate
         {
             get => _selectedBaudRate;
@@ -72,6 +70,7 @@ namespace OSDPBench.Core.ViewModels
         }
 
         private bool _autoDetectBaudRate;
+
         public bool AutoDetectBaudRate
         {
             get => _autoDetectBaudRate;
@@ -79,6 +78,7 @@ namespace OSDPBench.Core.ViewModels
         }
 
         private int _address;
+
         public int Address
         {
             get => _address;
@@ -86,6 +86,7 @@ namespace OSDPBench.Core.ViewModels
         }
 
         private bool _requireSecureChannel;
+
         public bool RequireSecureChannel
         {
             get => _requireSecureChannel;
@@ -93,13 +94,19 @@ namespace OSDPBench.Core.ViewModels
         }
 
         private string _statusText;
+
         public string StatusText
         {
             get => _statusText;
-            set => SetProperty(ref _statusText, value);
+            set
+            {
+                SetProperty(ref _statusText, value);
+                StatusLevel = IsDiscovering ? StatusLevel.Processing : StatusLevel.None;
+            }
         }
 
         private string _nakText;
+
         public string NakText
         {
             get => _nakText;
@@ -107,6 +114,7 @@ namespace OSDPBench.Core.ViewModels
         }
 
         private bool _isReadyToDiscover;
+
         public bool IsReadyToDiscover
         {
             get => _isReadyToDiscover;
@@ -114,6 +122,7 @@ namespace OSDPBench.Core.ViewModels
         }
 
         private bool _isDiscovering;
+
         public bool IsDiscovering
         {
             get => _isDiscovering;
@@ -121,13 +130,27 @@ namespace OSDPBench.Core.ViewModels
         }
 
         private bool _isDiscovered;
+
         public bool IsDiscovered
         {
             get => _isDiscovered;
-            set => SetProperty(ref _isDiscovered, value);
+            set
+            {
+                SetProperty(ref _isDiscovered, value);
+            }
+        }
+
+
+        private StatusLevel _statusLevel;
+
+        public StatusLevel StatusLevel
+        {
+            get => _statusLevel;
+            set => SetProperty(ref _statusLevel, value);
         }
 
         private IdentityLookup _identityLookup;
+
         public IdentityLookup IdentityLookup
         {
             get => _identityLookup;
@@ -135,6 +158,7 @@ namespace OSDPBench.Core.ViewModels
         }
 
         private CapabilitiesLookup _capabilitiesLookup;
+
         public CapabilitiesLookup CapabilitiesLookup
         {
             get => _capabilitiesLookup;
@@ -180,15 +204,16 @@ namespace OSDPBench.Core.ViewModels
             foreach (var baudRate in AvailableBaudRates)
             {
                 StatusText = $"Attempting to discover device at {baudRate}";
-                _serialPort.SetBaudRate((int)baudRate);
-                IsDiscovered = await _deviceManagementService.DiscoverDevice(_serialPort, (byte)Address, RequireSecureChannel);
+                _serialPort.SetBaudRate((int) baudRate);
+                IsDiscovered =
+                    await _deviceManagementService.DiscoverDevice(_serialPort, (byte) Address, RequireSecureChannel);
                 if (IsDiscovered)
                 {
                     _selectedBaudRate = baudRate;
                     break;
                 }
             }
-            
+
             if (IsDiscovered)
             {
                 IdentityLookup = _deviceManagementService.IdentityLookup;
@@ -197,6 +222,7 @@ namespace OSDPBench.Core.ViewModels
             else
             {
                 StatusText = "Failed to connect to device";
+                StatusLevel = StatusLevel.Error;
             }
 
             IsReadyToDiscover = true;
@@ -256,7 +282,7 @@ namespace OSDPBench.Core.ViewModels
             }
             else
             {
-                _alertInteraction.Raise(new Alert("No serial ports are available."));
+                _alertInteraction.Raise(new Alert("No serial ports are available.  Make sure that required drivers are installed."));
                 IsReadyToDiscover = false;
             }
 
@@ -278,7 +304,9 @@ namespace OSDPBench.Core.ViewModels
                                                          }
                                                          catch
                                                          {
-                                                             _alertInteraction.Raise(new Alert("Error while attempting to update communication settings."));
+                                                             _alertInteraction.Raise(
+                                                                 new Alert(
+                                                                     "Error while attempting to update communication settings."));
                                                          }
                                                      });
             }
@@ -288,8 +316,9 @@ namespace OSDPBench.Core.ViewModels
         {
             NakText = string.Empty;
 
-            var result =  await _navigationService.Navigate<UpdateCommunicationViewModel, CommunicationParameters, CommunicationParameters>(
-                new CommunicationParameters(SelectedBaudRate, Address));
+            var result = await _navigationService
+                .Navigate<UpdateCommunicationViewModel, CommunicationParameters, CommunicationParameters>(
+                    new CommunicationParameters(SelectedBaudRate, Address));
 
             if (result == null) return;
 
@@ -311,18 +340,18 @@ namespace OSDPBench.Core.ViewModels
             get
             {
                 return _goResetDeviceCommand = _goResetDeviceCommand ??
-                                                  new MvxCommand( () =>
-                                                  {
-                                                      try
-                                                      {
-                                                          DoDiscoverResetCommand();
-                                                      }
-                                                      catch
-                                                      {
-                                                          _alertInteraction.Raise(
-                                                              new Alert("Error while attempting to reset device."));
-                                                      }
-                                                  });
+                                               new MvxCommand(() =>
+                                               {
+                                                   try
+                                                   {
+                                                       DoDiscoverResetCommand();
+                                                   }
+                                                   catch
+                                                   {
+                                                       _alertInteraction.Raise(
+                                                           new Alert("Error while attempting to reset device."));
+                                                   }
+                                               });
             }
         }
 
@@ -361,7 +390,7 @@ namespace OSDPBench.Core.ViewModels
         /// <value>The alert interaction.</value>
         public IMvxInteraction<Alert> AlertInteraction => _alertInteraction;
 
-        
+
         private readonly MvxInteraction<YesNoQuestion> _yesNoInteraction =
             new MvxInteraction<YesNoQuestion>();
 
@@ -379,5 +408,11 @@ namespace OSDPBench.Core.ViewModels
 
             SelectedBaudRate = 9600;
         }
+    }
+    public enum StatusLevel
+    {
+        None,
+        Processing,
+        Error
     }
 }
