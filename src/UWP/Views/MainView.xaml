@@ -77,6 +77,12 @@
                     IsEnabled="{Binding IsDiscovering, Mode=OneWay, Converter={StaticResource BoolInverter}}"
                     Command="{Binding ScanSerialPortsCommand}" 
                     Content="Rescan Serial Ports"/>
+                <Button
+                    Margin="0 10 0 0"
+                    FontSize="24"
+                    HorizontalAlignment="Center"
+                    Click="AboutButton_OnClick"
+                    Content="About"/>
             </StackPanel>
 
             <TextBlock 
@@ -99,6 +105,7 @@
                 Foreground="Red"
                 Text="{Binding NakText}"/>
         </StackPanel>
+
         <Rectangle 
             Grid.Column="1"
             VerticalAlignment="Stretch"

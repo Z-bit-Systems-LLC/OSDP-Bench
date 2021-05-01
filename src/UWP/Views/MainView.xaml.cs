@@ -1,5 +1,6 @@
 ﻿using System;
 using Windows.UI.Popups;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Navigation;
 using MvvmCross.Base;
 using MvvmCross.Binding.BindingContext;
@@ -90,6 +91,12 @@ namespace OSDPBenchUWP.Views
 
             _alertInteraction.Requested -= OnAlertInteractionRequested;
             _yesNoInteraction.Requested -= OnYesNoInteractionRequested;
+        }
+
+        private async void AboutButton_OnClick(object sender, RoutedEventArgs eventArgs)
+        {
+            var dialog = new MessageDialog($"OSDP-Bench{Environment.NewLine}{Environment.NewLine}Brought to you by Z-bit");
+            await dialog.ShowAsync();
         }
     }
 }
