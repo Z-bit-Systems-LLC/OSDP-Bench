@@ -9,7 +9,7 @@
   <Identity
     Name="Z-bitco.OSDPBench"
     Publisher="CN=5F9ECF22-A4DC-44B4-A020-C94E84581231"
-    Version="1.0.10.0" />
+    Version="1.0.12.0" />
 
   <mp:PhoneIdentity PhoneProductId="fc9f860c-352e-4a7a-a364-9eb3d28d98f9" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 

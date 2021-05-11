@@ -37,7 +37,16 @@ namespace OSDPBench.Core.ViewModels
             var dispatcher = Mvx.IoCProvider.Resolve<IMvxMainThreadAsyncDispatcher>();
             dispatcher.ExecuteOnMainThreadAsync(() =>
             {
-                if (isConnected) StatusText = "Connected";
+                if (isConnected)
+                {
+                    StatusText = "Connected";
+                    NakText = string.Empty;
+                }
+                else if (IsDiscovered)
+                {
+                    StatusText = "Lost Connection";
+                    StatusLevel = StatusLevel.Error;
+                }
             });
         }
 
@@ -51,7 +60,7 @@ namespace OSDPBench.Core.ViewModels
             new MvxObservableCollection<AvailableSerialPort>();
 
         public MvxObservableCollection<uint> AvailableBaudRates { get; } = new MvxObservableCollection<uint>
-            {9600, 14400, 19200, 38400, 57600, 115200};
+            {9600, 14400, 19200, 38400, 57600, 115200, 230400};
 
         private AvailableSerialPort _selectedSerialPort;
 
@@ -134,13 +143,9 @@ namespace OSDPBench.Core.ViewModels
         public bool IsDiscovered
         {
             get => _isDiscovered;
-            set
-            {
-                SetProperty(ref _isDiscovered, value);
-            }
+            set => SetProperty(ref _isDiscovered, value);
         }
-
-
+        
         private StatusLevel _statusLevel;
 
         public StatusLevel StatusLevel
@@ -207,11 +212,11 @@ namespace OSDPBench.Core.ViewModels
                 _serialPort.SetBaudRate((int) baudRate);
                 IsDiscovered =
                     await _deviceManagementService.DiscoverDevice(_serialPort, (byte) Address, RequireSecureChannel);
-                if (IsDiscovered)
-                {
-                    _selectedBaudRate = baudRate;
-                    break;
-                }
+
+                if (!IsDiscovered) continue;
+
+                _selectedBaudRate = baudRate;
+                break;
             }
 
             if (IsDiscovered)
@@ -221,6 +226,7 @@ namespace OSDPBench.Core.ViewModels
             }
             else
             {
+                _deviceManagementService.Shutdown();
                 StatusText = "Failed to connect to device";
                 StatusLevel = StatusLevel.Error;
             }

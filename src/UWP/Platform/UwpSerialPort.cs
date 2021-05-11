@@ -78,6 +78,8 @@ namespace OSDPBenchUWP.Platform
         /// <inheritdoc />
         public void Close()
         {
+            _serialDevice?.InputStream?.Dispose();
+            _serialDevice?.OutputStream?.Dispose();
             _serialDevice?.Dispose();
             _serialDevice = null;
         }
@@ -103,7 +105,8 @@ namespace OSDPBenchUWP.Platform
         public async Task<int> ReadAsync(byte[] buffer, CancellationToken token)
         {
             uint result;
-            using (var dataReader = new DataReader(_serialDevice?.InputStream) {InputStreamOptions = InputStreamOptions.Partial})
+            using (var dataReader = new DataReader(_serialDevice?.InputStream)
+                {InputStreamOptions = InputStreamOptions.Partial})
             {
                 try
                 {
@@ -116,7 +119,7 @@ namespace OSDPBenchUWP.Platform
                 }
             }
 
-            return (int)result;
+            return (int) result;
         }
 
         /// <inheritdoc />
