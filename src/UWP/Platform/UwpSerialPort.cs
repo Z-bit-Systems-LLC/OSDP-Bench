@@ -65,14 +65,13 @@ namespace OSDPBenchUWP.Platform
                 return;
             }
 
-            if (_serialDevice != null)
-            {
-                _serialDevice.BaudRate = (uint) BaudRate;
-                _serialDevice.Parity = SerialParity.None;
-                _serialDevice.StopBits = SerialStopBitCount.One;
-                _serialDevice.DataBits = 8;
-                _serialDevice.Handshake = SerialHandshake.None;
-            }
+            if (_serialDevice == null) return;
+
+            _serialDevice.BaudRate = (uint) BaudRate;
+            _serialDevice.Parity = SerialParity.None;
+            _serialDevice.StopBits = SerialStopBitCount.One;
+            _serialDevice.DataBits = 8;
+            _serialDevice.Handshake = SerialHandshake.None;
         }
 
         /// <inheritdoc />
@@ -89,6 +88,8 @@ namespace OSDPBenchUWP.Platform
         {
             using (var dataWriter = new DataWriter(_serialDevice?.OutputStream))
             {
+                if (_serialDevice == null) return;
+
                 try
                 {
                     dataWriter.WriteBytes(buffer);
@@ -110,6 +111,8 @@ namespace OSDPBenchUWP.Platform
             {
                 try
                 {
+                    if (_serialDevice == null) return 0;
+
                     result = await dataReader.LoadAsync((uint) buffer.Length).AsTask(token);
                     dataReader.ReadBytes(buffer);
                 }
