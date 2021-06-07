@@ -20,20 +20,32 @@ namespace OSDPBenchUWP.Platform
     {
         private SerialDevice _serialDevice;
 
+        private static readonly SemaphoreSlim SerialDeviceSemaphore = new SemaphoreSlim(1, 1);
+
         /// <inheritdoc />
         public async Task<IEnumerable<AvailableSerialPort>> FindAvailableSerialPorts()
         {
             var availableSerialPorts = new List<AvailableSerialPort>();
 
-            foreach (var item in await DeviceInformation.FindAllAsync(SerialDevice.GetDeviceSelector()))
+            await SerialDeviceSemaphore.WaitAsync();
+
+            try
             {
-                using (var serialDevice = await SerialDevice.FromIdAsync(item.Id))
+                foreach (var item in await DeviceInformation.FindAllAsync(SerialDevice.GetDeviceSelector()))
                 {
-                    if (serialDevice != null)
+                    using (var serialDevice = await SerialDevice.FromIdAsync(item.Id))
                     {
-                        availableSerialPorts.Add(new AvailableSerialPort(item.Id, serialDevice.PortName, item.Name));
+                        if (serialDevice != null)
+                        {
+                            availableSerialPorts.Add(new AvailableSerialPort(item.Id, serialDevice.PortName,
+                                item.Name));
+                        }
                     }
                 }
+            }
+            finally
+            {
+                SerialDeviceSemaphore.Release();
             }
 
             return availableSerialPorts;
@@ -51,6 +63,8 @@ namespace OSDPBenchUWP.Platform
         /// <inheritdoc />
         public void Open()
         {
+            SerialDeviceSemaphore.WaitAsync().GetAwaiter().GetResult();
+
             try
             {
                 var selectedSerialPortId = SelectedSerialPort.Id;
@@ -59,70 +73,98 @@ namespace OSDPBenchUWP.Platform
                 {
                     _serialDevice = AsyncHelper.RunSync(() => SerialDevice.FromIdAsync(selectedSerialPortId).AsTask());
                 }
+                
+                if (_serialDevice == null) return;
+
+                _serialDevice.BaudRate = (uint)BaudRate;
+                _serialDevice.Parity = SerialParity.None;
+                _serialDevice.StopBits = SerialStopBitCount.One;
+                _serialDevice.DataBits = 8;
+                _serialDevice.Handshake = SerialHandshake.None;
             }
-            catch
+            finally
             {
-                return;
+                SerialDeviceSemaphore.Release();
             }
-
-            if (_serialDevice == null) return;
-
-            _serialDevice.BaudRate = (uint) BaudRate;
-            _serialDevice.Parity = SerialParity.None;
-            _serialDevice.StopBits = SerialStopBitCount.One;
-            _serialDevice.DataBits = 8;
-            _serialDevice.Handshake = SerialHandshake.None;
         }
 
         /// <inheritdoc />
         public void Close()
         {
-            _serialDevice?.InputStream?.Dispose();
-            _serialDevice?.OutputStream?.Dispose();
-            _serialDevice?.Dispose();
-            _serialDevice = null;
+            SerialDeviceSemaphore.WaitAsync().GetAwaiter().GetResult();
+
+            try
+            {
+                _serialDevice?.Dispose();
+                _serialDevice = null;
+            }
+            finally
+            {
+                SerialDeviceSemaphore.Release();
+            }
         }
 
         /// <inheritdoc />
         public async Task WriteAsync(byte[] buffer)
         {
-            using (var dataWriter = new DataWriter(_serialDevice?.OutputStream))
+            await SerialDeviceSemaphore.WaitAsync();
+
+            try
             {
                 if (_serialDevice == null) return;
 
-                try
+                using (var dataWriter = new DataWriter(_serialDevice?.OutputStream))
                 {
-                    dataWriter.WriteBytes(buffer);
-                    await dataWriter.StoreAsync().AsTask();
+                    try
+                    {
+                        dataWriter.WriteBytes(buffer);
+                        await dataWriter.StoreAsync().AsTask();
+                    }
+                    finally
+                    {
+                        dataWriter.DetachStream();
+                    }
                 }
-                finally
-                {
-                    dataWriter.DetachStream();
-                }
+            }
+            finally
+            {
+                SerialDeviceSemaphore.Release();
             }
         }
 
         /// <inheritdoc />
         public async Task<int> ReadAsync(byte[] buffer, CancellationToken token)
         {
-            uint result;
-            using (var dataReader = new DataReader(_serialDevice?.InputStream)
-                {InputStreamOptions = InputStreamOptions.Partial})
+            await SerialDeviceSemaphore.WaitAsync(token);
+
+            try
             {
-                try
-                {
-                    if (_serialDevice == null) return 0;
+                uint result;
 
-                    result = await dataReader.LoadAsync((uint) buffer.Length).AsTask(token);
-                    dataReader.ReadBytes(buffer);
-                }
-                finally
+                if (_serialDevice == null) return 0;
+
+                using (var dataReader = new DataReader(_serialDevice?.InputStream)
+                    {InputStreamOptions = InputStreamOptions.Partial})
                 {
-                    dataReader.DetachStream();
+                    try
+                    {
+
+
+                        result = await dataReader.LoadAsync((uint) buffer.Length).AsTask(token);
+                        dataReader.ReadBytes(buffer);
+                    }
+                    finally
+                    {
+                        dataReader.DetachStream();
+                    }
                 }
+
+                return (int) result;
             }
-
-            return (int) result;
+            finally
+            {
+                SerialDeviceSemaphore.Release();
+            }
         }
 
         /// <inheritdoc />
