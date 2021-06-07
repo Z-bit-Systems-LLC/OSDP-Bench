@@ -278,9 +278,9 @@ namespace OSDPBench.Core.ViewModels
             if (foundAvailableSerialPorts.Any())
             {
                 // Ensure all ports are listed
-                for (var index = 0; index < foundAvailableSerialPorts.Length; index++)
+                foreach (var found in foundAvailableSerialPorts)
                 {
-                    AvailableSerialPorts.Add(foundAvailableSerialPorts[index]);
+                    AvailableSerialPorts.Add(found);
                 }
 
                 SelectedSerialPort = AvailableSerialPorts.First();
@@ -372,17 +372,26 @@ namespace OSDPBench.Core.ViewModels
                 return;
             }
 
-            _yesNoInteraction.Raise(new YesNoQuestion(IdentityLookup.ResetInstructions, async result =>
+            _deviceManagementService.Shutdown();
+            IsDiscovered = false;
+            StatusText = string.Empty;
+
+            _yesNoInteraction.Raise(new YesNoQuestion("Do you want to reset device, if so power cycle then click yes when the device boots up.", async result =>
             {
-                if (!result) return;
+                if (!result)
+                {
+                    _alertInteraction.Raise(new Alert("Perform a discovery to reconnect to the device."));
+                    return;
+                }
+                
                 try
                 {
-                    await _deviceManagementService.ResetDevice();
-                    _alertInteraction.Raise(new Alert("Successfully sent reset command."));
+                    await _deviceManagementService.ResetDevice(_serialPort);
+                    _alertInteraction.Raise(new Alert("Successfully sent reset commands. Power cycle device again and then perform a discovery."));
                 }
                 catch (Exception exception)
                 {
-                    _alertInteraction.Raise(new Alert(exception.Message));
+                    _alertInteraction.Raise(new Alert(exception.Message + " Perform a discovery to reconnect to the device."));
                 }
             }));
         }

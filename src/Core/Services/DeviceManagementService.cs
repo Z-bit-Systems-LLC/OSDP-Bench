@@ -99,14 +99,39 @@ namespace OSDPBench.Core.Services
         }
 
         /// <inheritdoc />
-        public async Task ResetDevice()
+        public async Task ResetDevice(ISerialPortConnection connection)
         {
-            var result = await _panel.ManufacturerSpecificCommand(_connectionId, _address,
-                new ManufacturerSpecific(new byte[] { 0xCA, 0x44, 0x6C}, new byte[] {0x05}));
+            Shutdown();
 
-            if (!result.Ack)
+            _connectionId = _panel.StartConnection(connection, TimeSpan.Zero);
+
+            _panel.AddDevice(_connectionId, _address, false, false);
+
+            const int maximumAttempts = 15;
+            const int requiredNumberOfAcks = 10;
+            int totalAcks = 0;
+            int totalAttempts = 0;
+            while (totalAttempts++ < maximumAttempts && totalAcks < requiredNumberOfAcks)
             {
-                throw new Exception("Reset command failed.");
+                try
+                {
+                    var result = await _panel.ManufacturerSpecificCommand(_connectionId, _address,
+                        new ManufacturerSpecific(new byte[] { 0xCA, 0x44, 0x6C }, new byte[] { 0x05 }));
+
+                    if (result.Ack)
+                    {
+                        totalAcks++;
+                    }
+                }
+                catch
+                {
+                    await Task.Delay(TimeSpan.FromSeconds(1));
+                }
+            }
+
+            if (totalAcks < requiredNumberOfAcks)
+            {
+                throw new Exception("Reset commands were not accepted.");
             }
         }
 

@@ -36,7 +36,9 @@ namespace OSDPBench.Core.Services
         /// <summary>
         /// Resets the device.
         /// </summary>
-        Task ResetDevice();
+        /// <param name="connection">The connection.</param>
+        /// <returns>Task.</returns>
+        Task ResetDevice(ISerialPortConnection connection);
 
         /// <summary>
         /// Shuts down this communications.
