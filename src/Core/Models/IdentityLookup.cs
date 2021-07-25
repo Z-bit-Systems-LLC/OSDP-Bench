@@ -10,6 +10,16 @@ namespace OSDPBench.Core.Models
         private readonly dynamic _lookup = new[]
         {
             new {
+                VendorCode = "9C-F6-1A",
+                Name = "LenelS2",
+                Models = new[]
+                {
+                    new {Number = 1, Name = "BlueDiamond Reader"}
+                },
+                ResetInstructions = "Use supplied card to enable secure channel pairing.",
+                CanSendResetCommand = false
+            },
+            new {
                 VendorCode = "CA-44-6C",
                 Name = "Cypress Computer Systems, Inc.",
                 Models = new[]
@@ -34,7 +44,7 @@ namespace OSDPBench.Core.Models
                 Name = "HID Corporation", 
                 Models = new[]
                 {
-                    new {Number = 1, Name = "Signo"}
+                    new {Number = 1, Name = "Signo Reader"}
                 },
                 ResetInstructions = "Use HID Reader Manager mobile application to reset settings.",
                 CanSendResetCommand = false
@@ -88,6 +98,6 @@ namespace OSDPBench.Core.Models
 
         public string ResetInstructions { get; } = "No reset instructions are available for this device.";
 
-        public bool CanSendResetCommand { get; } = false;
+        public bool CanSendResetCommand { get; }
     }
 }
