@@ -33,7 +33,7 @@ namespace OSDPBench.Core.Tests.ViewModels
 
             var mainViewModel = Ioc.IoCConstruct<MainViewModel>();
 
-            Assert.AreEqual(6, mainViewModel.AvailableBaudRates.Count);
+            Assert.AreEqual(7, mainViewModel.AvailableBaudRates.Count);
         }
 
         [Test]
