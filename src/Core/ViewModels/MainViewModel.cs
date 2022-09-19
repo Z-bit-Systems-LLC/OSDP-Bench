@@ -15,6 +15,8 @@ namespace OSDPBench.Core.ViewModels
 {
     public class MainViewModel : MvxViewModel
     {
+        private readonly byte _configurationAdress = 127;
+
         private readonly IMvxNavigationService _navigationService;
         private readonly IDeviceManagementService _deviceManagementService;
         private readonly ISerialPortConnection _serialPort;
@@ -92,6 +94,14 @@ namespace OSDPBench.Core.ViewModels
         {
             get => _address;
             set => SetProperty(ref _address, value);
+        }
+
+        private bool _useConfigurationAddress;
+
+        public bool UseConfigurationAddress
+        {
+            get => _useConfigurationAddress;
+            set => SetProperty(ref _useConfigurationAddress, value);
         }
 
         private bool _requireSecureChannel;
@@ -211,7 +221,7 @@ namespace OSDPBench.Core.ViewModels
                 StatusText = $"Attempting to discover device at {baudRate}";
                 _serialPort.SetBaudRate((int) baudRate);
                 IsDiscovered =
-                    await _deviceManagementService.DiscoverDevice(_serialPort, (byte) Address, RequireSecureChannel);
+                    await _deviceManagementService.DiscoverDevice(_serialPort, (byte)(UseConfigurationAddress ? _configurationAdress : Address), RequireSecureChannel);
 
                 if (!IsDiscovered) continue;
 

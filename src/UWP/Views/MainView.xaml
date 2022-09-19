@@ -43,6 +43,15 @@
                     ItemsSource="{Binding AvailableBaudRates, Mode=OneWay}"
                     SelectedItem="{Binding SelectedBaudRate, Mode=TwoWay}" />
             <TextBlock FontSize="32" Margin="20 10 20 0" Text="Address" />
+            <CheckBox 
+                Margin="20 10 20 0"
+                IsChecked="{Binding UseConfigurationAddress, Mode=TwoWay}">
+                <TextBlock 
+                    FontSize="24" 
+                    Text="Use Configuration Address"
+                    TextWrapping="Wrap"
+                    Margin="0 -7 0 0" />
+            </CheckBox>
             <controls:NumberBox 
                 FontSize="24"
                 Value="{Binding Address, Mode=TwoWay}"
@@ -51,7 +60,7 @@
                 HorizontalAlignment="Left"
                 SmallChange="1"
                 Minimum="0"
-                Maximum="255"
+                Maximum="126"
                 SpinButtonPlacementMode="Inline"
                 AcceptsExpression="False"/>
             <CheckBox 
