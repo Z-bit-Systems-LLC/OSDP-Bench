@@ -11,15 +11,15 @@
     <AssemblyName>OSDP-Bench</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
-    <TargetPlatformVersion Condition=" '$(TargetPlatformVersion)' == '' ">10.0.18362.0</TargetPlatformVersion>
-    <TargetPlatformMinVersion>10.0.16299.0</TargetPlatformMinVersion>
+    <TargetPlatformVersion Condition=" '$(TargetPlatformVersion)' == '' ">10.0.19041.0</TargetPlatformVersion>
+    <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
     <MinimumVisualStudioVersion>14</MinimumVisualStudioVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WindowsXamlEnableOverview>true</WindowsXamlEnableOverview>
     <AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
-    <PackageCertificateThumbprint>8D7BBBBB15E7CD334EA3D8A71AC4DB2D4FFB4504</PackageCertificateThumbprint>
-    <PackageCertificateKeyFile />
+    <PackageCertificateThumbprint>AE7BC6763A3357421F0FBE2A9339DCF0AF8EBFF3</PackageCertificateThumbprint>
+    <PackageCertificateKeyFile>OSDP-Bench-UWP_TemporaryKey.pfx</PackageCertificateKeyFile>
     <GenerateAppInstallerFile>False</GenerateAppInstallerFile>
     <AppxPackageSigningTimestampDigestAlgorithm>SHA256</AppxPackageSigningTimestampDigestAlgorithm>
     <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
@@ -197,6 +197,7 @@
     <Content Include="Assets\Wide310x150Logo.scale-125.png" />
     <Content Include="Assets\Wide310x150Logo.scale-150.png" />
     <Content Include="Assets\Wide310x150Logo.scale-400.png" />
+    <None Include="OSDP-Bench-UWP_TemporaryKey.pfx" />
     <None Include="Package.StoreAssociation.xml" />
     <Content Include="Properties\Default.rd.xml" />
     <Content Include="Assets\SplashScreen.scale-200.png" />
@@ -221,19 +222,25 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform">
-      <Version>6.2.12</Version>
+      <Version>6.2.14</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.UI.Xaml">
-      <Version>2.5.0</Version>
+      <Version>2.8.1</Version>
     </PackageReference>
     <PackageReference Include="MvvmCross">
-      <Version>7.1.2</Version>
+      <Version>8.0.2</Version>
+    </PackageReference>
+    <PackageReference Include="Serilog">
+      <Version>2.12.0</Version>
+    </PackageReference>
+    <PackageReference Include="Serilog.Extensions.Logging">
+      <Version>3.1.0</Version>
     </PackageReference>
     <PackageReference Include="System.IO.Ports">
-      <Version>5.0.1</Version>
+      <Version>6.0.0</Version>
     </PackageReference>
     <PackageReference Include="ValueConverters">
-      <Version>2.0.20011.1</Version>
+      <Version>2.2.10</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup>

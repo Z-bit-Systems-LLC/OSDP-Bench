@@ -58,7 +58,7 @@ namespace OSDPBench.Core.Services
             _address = address;
             _requireSecureChannel = requireSecureChannel;
 
-            _panel.Shutdown();
+            await _panel.Shutdown();
 
             _connectionId = _panel.StartConnection(connection);
 
