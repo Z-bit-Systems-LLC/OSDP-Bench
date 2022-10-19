@@ -12,7 +12,7 @@ namespace OSDPBench.Core
                 .AsInterfaces()
                 .RegisterAsLazySingleton();
 
-            RegisterAppStart<ViewModels.MainViewModel>();
+            RegisterAppStart<ViewModels.RootViewModel>();
         }
     }
 }

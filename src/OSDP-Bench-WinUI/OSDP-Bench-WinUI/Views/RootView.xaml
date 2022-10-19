@@ -1,0 +1,236 @@
+﻿<views:RootViewPage
+    x:Class="OSDPBenchWinUI.Views.RootView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:views="using:OSDPBenchWinUI.Views"
+    xmlns:converters="using:OSDP_Bench_WinUI.Converters"
+    xmlns:converters1="using:CommunityToolkit.WinUI.UI.Converters"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Page.Resources>
+        <ResourceDictionary>
+            <converters1:BoolNegationConverter x:Name="BoolInverter" />
+            <converters1:BoolToVisibilityConverter TrueValue="Visible" FalseValue="Collapsed" x:Key="BoolToVisibilityConverter" />
+            <converters1:BoolToObjectConverter x:Name="BoolToIcon" TrueValue="&#xF13E;" FalseValue="&#xF13D;" />
+            <converters:StatusLevelConverter x:Name="StatusLevelConverter" />
+        </ResourceDictionary>
+    </Page.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="2"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <StackPanel Grid.Column="0">
+            <TextBlock FontSize="32" Margin="20 10 20 0" Text="Serial Port" />
+            <ComboBox 
+                FontSize="24"
+                Margin="20 10 20 10" MinWidth="300" MaxWidth="300" 
+                IsEnabled="{Binding IsDiscovering, Mode=OneWay, Converter={StaticResource BoolInverter}}"
+                ItemsSource="{Binding AvailableSerialPorts, Mode=OneWay}"
+                DisplayMemberPath="Description"
+                SelectedItem="{Binding SelectedSerialPort, Mode=TwoWay}"/>
+            <TextBlock FontSize="32" Margin="20 10 20 0" Text="Baud Rate" />
+            <ComboBox 
+                    FontSize="24"
+                    Margin="20 10 20 10" MinWidth="300" MaxWidth="300"
+                    IsEnabled="False"
+                    ItemsSource="{Binding AvailableBaudRates, Mode=OneWay}"
+                    SelectedItem="{Binding SelectedBaudRate, Mode=TwoWay}" />
+            <TextBlock FontSize="32" Margin="20 10 20 0" Text="Address" />
+            <CheckBox 
+                Margin="20 10 20 0"
+                IsChecked="{Binding UseConfigurationAddress, Mode=TwoWay}">
+                <TextBlock 
+                    FontSize="24" 
+                    Text="Use Configuration Address"
+                    TextWrapping="Wrap"
+                    Margin="0 -7 0 0" />
+            </CheckBox>
+            <NumberBox 
+                FontSize="24"
+                Value="{Binding Address, Mode=TwoWay}"
+                Margin="20 10 20 10" MaxWidth="150" 
+                IsEnabled="{Binding IsDiscovering, Mode=OneWay, Converter={StaticResource BoolInverter}}"
+                HorizontalAlignment="Left"
+                SmallChange="1"
+                Minimum="0"
+                Maximum="126"
+                SpinButtonPlacementMode="Inline"
+                AcceptsExpression="False"/>
+            <CheckBox 
+                    Margin="20 10 20 0"
+                    IsChecked="{Binding RequireSecureChannel, Mode=TwoWay}">
+                <TextBlock 
+                        FontSize="24" 
+                        Text="Require Secure Channel"
+                        TextWrapping="Wrap"
+                        Margin="0 -7 0 0" />
+            </CheckBox>
+            <StackPanel Margin="20 80 20 10">
+                <Button
+                    FontSize="24"
+                    HorizontalAlignment="Center"
+                    Visibility="{Binding IsReadyToDiscover, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
+                    Command="{Binding DiscoverDeviceCommand, Mode=OneWay}" 
+                    Content="Discover"/>
+                <Button
+                    Margin="0 10 0 0"
+                    FontSize="24"
+                    HorizontalAlignment="Center"
+                    IsEnabled="{Binding IsDiscovering, Mode=OneWay, Converter={StaticResource BoolInverter}}"
+                    Command="{Binding ScanSerialPortsCommand}" 
+                    Content="Rescan Serial Ports"/>
+                <Button
+                    Margin="0 10 0 0"
+                    FontSize="24"
+                    HorizontalAlignment="Center"
+                    Click="AboutButton_OnClick"
+                    Content="About"/>
+            </StackPanel>
+
+            <TextBlock 
+                FontSize="26"
+                Margin="20 10 20 10"
+                HorizontalAlignment="Center"
+                TextAlignment="Center"
+                MaxWidth="300"
+                TextWrapping="Wrap"
+                Foreground="{Binding StatusLevel, Mode=OneWay, Converter={StaticResource StatusLevelConverter}}"
+                Text="{Binding StatusText}"/>
+            <TextBlock 
+                FontSize="26"
+                Margin="20 10 20 10"
+                HorizontalAlignment="Center"
+                TextAlignment="Center"
+                MaxWidth="300"
+                TextWrapping="Wrap"
+                FontWeight="Bold"
+                Foreground="Red"
+                Text="{Binding NakText}"/>
+        </StackPanel>
+
+        <Rectangle 
+            Grid.Column="1"
+            VerticalAlignment="Stretch"
+            Width="2" Margin="0 20" 
+            Stroke="{ThemeResource DefaultTextForegroundThemeBrush}"/>
+        <StackPanel Grid.Column="2"
+                    Visibility="{Binding IsDiscovered, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
+            <TextBlock
+                FontSize="32"
+                Margin="20 10 20 0"
+                HorizontalAlignment="Center"
+                TextAlignment="Center"
+                TextWrapping="Wrap"
+                Text="Device Information"/>
+            <TextBlock
+                FontSize="24"
+                Margin="20 10 20 0"
+                HorizontalAlignment="Center"
+                TextAlignment="Center"
+                TextWrapping="Wrap"
+                Text="{Binding IdentityLookup.VendorName}"
+                d:Text="ABC Corporation"/>
+            <TextBlock
+                FontSize="20"
+                Margin="20 0 20 0"
+                HorizontalAlignment="Center"
+                TextAlignment="Center"
+                TextWrapping="Wrap"
+                Text="{Binding IdentityLookup.Model}"
+                d:Text="Reader"/>
+            <TextBlock
+                FontSize="20"
+                Margin="20 0 20 0"
+                HorizontalAlignment="Center"
+                TextAlignment="Center"
+                TextWrapping="Wrap"
+                Text="{Binding IdentityLookup.VersionNumber}"
+                d:Text="1.2.4"/>
+            <TextBlock
+                FontSize="32"
+                Margin="20 40 20 0"
+                HorizontalAlignment="Center"
+                TextAlignment="Center"
+                TextWrapping="Wrap"
+                Text="Device Capabilities"/>
+            <Grid Margin="60 20 60 0" HorizontalAlignment="Stretch">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="37*" />
+                    <RowDefinition Height="57*" />
+                    <RowDefinition Height="57*" />
+                    <RowDefinition Height="57*" />
+                    <RowDefinition Height="57*" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" MinWidth="50"/>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Row="0" Grid.Column="1"
+                           Margin="20 0 20 0"
+                           FontSize="28"
+                           FontWeight="Bold"
+                           TextWrapping="Wrap"
+                           Text="Description"/>
+                <TextBlock Grid.Row="0" Grid.Column="2" 
+                           Margin="20 0 20 0"
+                           FontSize="28"
+                           FontWeight="Bold"
+                           TextWrapping="Wrap"
+                           Text="Action"/>
+
+                <TextBlock Grid.Row="1" Grid.Column="1" 
+                           Margin="20 10 20 10"
+                           FontSize="28"
+                           TextWrapping="Wrap"
+                           VerticalAlignment="Center"
+                           Text="Communication" />
+                <Button Grid.Row="1" Grid.Column="2"
+                        Margin="20 10 20 10"
+                        FontSize="16"
+                        HorizontalAlignment="Center"
+                        Content="Update"
+                        Command="{Binding UpdateCommunicationCommand, Mode=OneWay}"/>
+
+                <FontIcon Grid.Row="2" Grid.Column="0" 
+                          FontFamily="Segoe MDL2 Assets" 
+                          FontSize="32"
+                          Glyph="{Binding CapabilitiesLookup.CRC, Mode=OneWay, Converter={StaticResource BoolToIcon}, FallbackValue='&#xF13D;'}" />
+                <TextBlock Grid.Row="2" Grid.Column="1" 
+                           Margin="20 10 20 10"
+                           FontSize="28"
+                           TextWrapping="Wrap"
+                           Text="CRC" />
+
+                <FontIcon Grid.Row="3" Grid.Column="0" 
+                          FontFamily="Segoe MDL2 Assets" 
+                          FontSize="32"
+                          Glyph="{Binding CapabilitiesLookup.SecureChannel, Mode=OneWay, Converter={StaticResource BoolToIcon}, FallbackValue='&#xF13D;'}" />
+                <TextBlock Grid.Row="3" Grid.Column="1" 
+                           Margin="20 10 20 10"
+                           FontSize="28"
+                           TextWrapping="Wrap"
+                           Text="Secure Channel" />
+
+                <TextBlock Grid.Row="4" Grid.Column="1" 
+                           Margin="20 10 20 10"
+                           FontSize="28"
+                           TextWrapping="Wrap"
+                           Text="Reset Device" />
+                <Button Grid.Row="4" Grid.Column="2"
+                        Margin="20 10 20 10"
+                        FontSize="16"
+                        HorizontalAlignment="Center"
+                        Content="Reset"
+                        Command="{Binding ResetDeviceCommand, Mode=OneWay}"/>
+            </Grid>
+        </StackPanel>
+    </Grid>
+</views:RootViewPage>

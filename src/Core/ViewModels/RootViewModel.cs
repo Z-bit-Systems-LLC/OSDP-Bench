@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using MvvmCross;
 using MvvmCross.Base;
 using MvvmCross.Commands;
@@ -13,25 +14,25 @@ using OSDPBench.Core.Services;
 
 namespace OSDPBench.Core.ViewModels
 {
-    public class MainViewModel : MvxViewModel
+    public class RootViewModel : MvxNavigationViewModel
     {
         private readonly byte _configurationAddress = 127;
 
         private readonly IMvxNavigationService _navigationService;
         private readonly IDeviceManagementService _deviceManagementService;
-        private readonly ISerialPortConnection _serialPort;
+        private ISerialPortConnection _serialPortConnection;
 
-        public MainViewModel(IMvxNavigationService navigationService, IDeviceManagementService deviceManagementService,
-            ISerialPortConnection serialPort)
+        public RootViewModel(ILoggerFactory logProvider, IMvxNavigationService navigationService, IDeviceManagementService deviceManagementService,
+            ISerialPortConnection serialPort) : base (logProvider, navigationService)
         {
-            _navigationService = navigationService ?? throw new ArgumentNullException(nameof(navigationService));
+            _navigationService = navigationService;
             _deviceManagementService = deviceManagementService ??
                                        throw new ArgumentNullException(nameof(deviceManagementService));
 
             _deviceManagementService.ConnectionStatusChange += DeviceManagementServiceOnConnectionStatusChange;
             _deviceManagementService.NakReplyReceived += DeviceManagementServiceOnNakReplyReceived;
 
-            _serialPort = serialPort ?? throw new ArgumentNullException(nameof(serialPort));
+            _serialPortConnection = serialPort ?? throw new ArgumentNullException(nameof(serialPort));
         }
 
         private void DeviceManagementServiceOnConnectionStatusChange(object sender, bool isConnected)
@@ -58,8 +59,7 @@ namespace OSDPBench.Core.ViewModels
             dispatcher.ExecuteOnMainThreadAsync(() => { NakText = errorMessage; });
         }
 
-        public MvxObservableCollection<AvailableSerialPort> AvailableSerialPorts { get; } =
-            new MvxObservableCollection<AvailableSerialPort>();
+        public MvxObservableCollection<AvailableSerialPort> AvailableSerialPorts { get; } = new();
 
         public MvxObservableCollection<uint> AvailableBaudRates { get; } = new MvxObservableCollection<uint>
             {9600, 14400, 19200, 38400, 57600, 115200, 230400};
@@ -208,8 +208,6 @@ namespace OSDPBench.Core.ViewModels
             IsDiscovering = true;
             IsDiscovered = false;
 
-            _serialPort.SelectedSerialPort = SelectedSerialPort;
-
             IdentityLookup = new IdentityLookup(null);
             CapabilitiesLookup = new CapabilitiesLookup(null);
 
@@ -219,11 +217,14 @@ namespace OSDPBench.Core.ViewModels
             foreach (var baudRate in AvailableBaudRates)
             {
                 StatusText = $"Attempting to discover device at {baudRate}";
-                _serialPort.SetBaudRate((int) baudRate);
+                _serialPortConnection = _serialPortConnection.CreateSerialPort(SelectedSerialPort.Name, (int)baudRate);
                 IsDiscovered =
-                    await _deviceManagementService.DiscoverDevice(_serialPort, (byte)(UseConfigurationAddress ? _configurationAddress : Address), RequireSecureChannel);
+                    await _deviceManagementService.DiscoverDevice(_serialPortConnection, (byte)(UseConfigurationAddress ? _configurationAddress : Address), RequireSecureChannel);
 
-                if (!IsDiscovered) continue;
+                if (!IsDiscovered)
+                {
+                    continue;
+                }
 
                 _selectedBaudRate = baudRate;
                 break;
@@ -236,7 +237,7 @@ namespace OSDPBench.Core.ViewModels
             }
             else
             {
-                _deviceManagementService.Shutdown();
+                await _deviceManagementService.Shutdown();
                 StatusText = "Failed to connect to device";
                 StatusLevel = StatusLevel.Error;
             }
@@ -273,7 +274,7 @@ namespace OSDPBench.Core.ViewModels
             IsDiscovered = false;
             IsDiscovering = true;
 
-            _deviceManagementService.Shutdown();
+            await _deviceManagementService.Shutdown();
 
             IdentityLookup = new IdentityLookup(null);
             CapabilitiesLookup = new CapabilitiesLookup(null);
@@ -283,7 +284,7 @@ namespace OSDPBench.Core.ViewModels
 
             AvailableSerialPorts.Clear();
 
-            var foundAvailableSerialPorts = (await _serialPort.FindAvailableSerialPorts()).ToArray();
+            var foundAvailableSerialPorts = (await _serialPortConnection.FindAvailableSerialPorts()).ToArray();
 
             if (foundAvailableSerialPorts.Any())
             {
@@ -332,16 +333,16 @@ namespace OSDPBench.Core.ViewModels
         {
             NakText = string.Empty;
 
-            var result = await _navigationService
-                .Navigate<UpdateCommunicationViewModel, CommunicationParameters, CommunicationParameters>(
+            bool success = await _navigationService
+                .Navigate<UpdateCommunicationViewModel, CommunicationParameters>(
                     new CommunicationParameters(SelectedBaudRate, Address));
 
-            if (result == null) return;
+            if (!success) return;
 
-            Address = result.Address;
-            SelectedBaudRate = result.BaudRate;
+            //Address = result.Address;
+            //SelectedBaudRate = result.BaudRate;
 
-            _deviceManagementService.Shutdown();
+            await _deviceManagementService.Shutdown();
             await DoDiscoverDeviceCommand();
         }
 
@@ -356,11 +357,11 @@ namespace OSDPBench.Core.ViewModels
             get
             {
                 return _goResetDeviceCommand = _goResetDeviceCommand ??
-                                               new MvxCommand(() =>
+                                               new MvxCommand(async () =>
                                                {
                                                    try
                                                    {
-                                                       DoDiscoverResetCommand();
+                                                       await DoDiscoverResetCommand();
                                                    }
                                                    catch
                                                    {
@@ -371,7 +372,7 @@ namespace OSDPBench.Core.ViewModels
             }
         }
 
-        private void DoDiscoverResetCommand()
+        private async Task DoDiscoverResetCommand()
         {
             NakText = string.Empty;
 
@@ -382,7 +383,7 @@ namespace OSDPBench.Core.ViewModels
                 return;
             }
 
-            _deviceManagementService.Shutdown();
+            await _deviceManagementService.Shutdown();
             IsDiscovered = false;
             StatusText = string.Empty;
 
@@ -396,7 +397,7 @@ namespace OSDPBench.Core.ViewModels
                 
                 try
                 {
-                    await _deviceManagementService.ResetDevice(_serialPort);
+                    await _deviceManagementService.ResetDevice(_serialPortConnection);
                     _alertInteraction.Raise(new Alert("Successfully sent reset commands. Power cycle device again and then perform a discovery."));
                 }
                 catch (Exception exception)
@@ -434,6 +435,7 @@ namespace OSDPBench.Core.ViewModels
             SelectedBaudRate = 9600;
         }
     }
+
     public enum StatusLevel
     {
         None,

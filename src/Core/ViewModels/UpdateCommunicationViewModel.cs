@@ -9,7 +9,7 @@ using OSDPBench.Core.Services;
 
 namespace OSDPBench.Core.ViewModels
 {
-    public class UpdateCommunicationViewModel : MvxViewModel<CommunicationParameters, CommunicationParameters>
+    public class UpdateCommunicationViewModel : MvxViewModel<CommunicationParameters>
     {
         private readonly IMvxNavigationService _navigationService;
         private readonly IDeviceManagementService _deviceManagementService;
@@ -81,7 +81,7 @@ namespace OSDPBench.Core.ViewModels
                 await _deviceManagementService.SetCommunicationCommand(
                     new CommunicationParameters(SelectedBaudRate, Address));
 
-            await _navigationService.Close(this, result);
+            await _navigationService.Close(this);
         }
 
         private readonly MvxInteraction<Alert> _alertInteraction =

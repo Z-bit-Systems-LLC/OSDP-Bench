@@ -43,7 +43,7 @@ namespace OSDPBench.Core.Services
         /// <summary>
         /// Shuts down this communications.
         /// </summary>
-        void Shutdown();
+        Task Shutdown();
 
         /// <summary>
         /// Occurs when connection status changes.

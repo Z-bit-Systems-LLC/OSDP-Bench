@@ -34,13 +34,13 @@ namespace OSDPBench.Core.Services
         {
             _panel = panel ?? throw new ArgumentNullException(nameof(panel));
 
-            _panel.ConnectionStatusChanged += (sender, args) =>
+            _panel.ConnectionStatusChanged += (_, args) =>
             {
                 _isConnected = args.IsConnected;
                 OnConnectionStatusChange(_isConnected);
             };
 
-            _panel.NakReplyReceived += (sender, args) =>
+            _panel.NakReplyReceived += (_, args) =>
             {
                 OnNakReplyReceived(ToFormattedText(args.Nak.ErrorCode));
             };
@@ -101,7 +101,7 @@ namespace OSDPBench.Core.Services
         /// <inheritdoc />
         public async Task ResetDevice(ISerialPortConnection connection)
         {
-            Shutdown();
+            await Shutdown();
 
             _connectionId = _panel.StartConnection(connection, TimeSpan.Zero);
 
@@ -153,9 +153,9 @@ namespace OSDPBench.Core.Services
         }
 
         /// <inheritdoc />
-        public void Shutdown()
+        public async Task Shutdown()
         {
-            _panel.Shutdown();
+            await _panel.Shutdown();
         }
 
         /// <inheritdoc />
@@ -175,7 +175,7 @@ namespace OSDPBench.Core.Services
         private async Task<bool> WaitForConnection()
         {
             int count = 0;
-            while (!_isConnected && count++ < 10)
+            while (!_isConnected && count++ < 30)
             {
                 await Task.Delay(TimeSpan.FromMilliseconds(100));
             }
