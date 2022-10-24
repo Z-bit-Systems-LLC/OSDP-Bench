@@ -61,8 +61,7 @@ namespace OSDPBench.Core.ViewModels
 
         public MvxObservableCollection<AvailableSerialPort> AvailableSerialPorts { get; } = new();
 
-        public MvxObservableCollection<uint> AvailableBaudRates { get; } = new MvxObservableCollection<uint>
-            {9600, 14400, 19200, 38400, 57600, 115200, 230400};
+        public MvxObservableCollection<uint> AvailableBaudRates { get; } = new() {9600, 14400, 19200, 38400, 57600, 115200, 230400};
 
         private AvailableSerialPort _selectedSerialPort;
 
@@ -180,25 +179,24 @@ namespace OSDPBench.Core.ViewModels
             set => SetProperty(ref _capabilitiesLookup, value);
         }
 
-        private MvxCommand _goDiscoverDeviceCommand;
+        private MvxAsyncCommand _goDiscoverDeviceCommand;
 
         public System.Windows.Input.ICommand DiscoverDeviceCommand
         {
             get
             {
-                return _goDiscoverDeviceCommand = _goDiscoverDeviceCommand ??
-                                                  new MvxCommand(async () =>
-                                                  {
-                                                      try
-                                                      {
-                                                          await DoDiscoverDeviceCommand();
-                                                      }
-                                                      catch
-                                                      {
-                                                          _alertInteraction.Raise(
-                                                              new Alert("Error while attempting to discover device."));
-                                                      }
-                                                  });
+                return _goDiscoverDeviceCommand ??= new MvxAsyncCommand(async () =>
+                {
+                    try
+                    {
+                        await DoDiscoverDeviceCommand();
+                    }
+                    catch
+                    {
+                        _alertInteraction.Raise(
+                            new Alert("Error while attempting to discover device."));
+                    }
+                });
             }
         }
 
@@ -246,26 +244,25 @@ namespace OSDPBench.Core.ViewModels
             IsDiscovering = false;
         }
 
-        private MvxCommand _scanSerialPortsCommand;
+        private MvxAsyncCommand _scanSerialPortsCommand;
 
         public System.Windows.Input.ICommand ScanSerialPortsCommand
         {
             get
             {
-                return _scanSerialPortsCommand = _scanSerialPortsCommand ??
-                                                 new MvxCommand(async () =>
-                                                 {
-                                                     try
-                                                     {
-                                                         await DoScanSerialPortsCommand();
-                                                     }
-                                                     catch
-                                                     {
-                                                         _alertInteraction.Raise(
-                                                             new Alert(
-                                                                 "Error while attempting to scan for serial ports."));
-                                                     }
-                                                 });
+                return _scanSerialPortsCommand ??= new MvxAsyncCommand(async () =>
+                {
+                    try
+                    {
+                        await DoScanSerialPortsCommand();
+                    }
+                    catch
+                    {
+                        _alertInteraction.Raise(
+                            new Alert(
+                                "Error while attempting to scan for serial ports."));
+                    }
+                });
             }
         }
 
@@ -306,26 +303,25 @@ namespace OSDPBench.Core.ViewModels
             IsDiscovering = false;
         }
 
-        private MvxCommand _updateCommunicationCommand;
+        private MvxAsyncCommand _updateCommunicationCommand;
 
         public System.Windows.Input.ICommand UpdateCommunicationCommand
         {
             get
             {
-                return _updateCommunicationCommand = _updateCommunicationCommand ??
-                                                     new MvxCommand(async () =>
-                                                     {
-                                                         try
-                                                         {
-                                                             await DoUpdateCommunicationCommand();
-                                                         }
-                                                         catch
-                                                         {
-                                                             _alertInteraction.Raise(
-                                                                 new Alert(
-                                                                     "Error while attempting to update communication settings."));
-                                                         }
-                                                     });
+                return _updateCommunicationCommand ??= new MvxAsyncCommand(async () =>
+                {
+                    try
+                    {
+                        await DoUpdateCommunicationCommand();
+                    }
+                    catch
+                    {
+                        _alertInteraction.Raise(
+                            new Alert(
+                                "Error while attempting to update communication settings."));
+                    }
+                });
             }
         }
 
@@ -346,7 +342,7 @@ namespace OSDPBench.Core.ViewModels
             await DoDiscoverDeviceCommand();
         }
 
-        private MvxCommand _goResetDeviceCommand;
+        private MvxAsyncCommand _goResetDeviceCommand;
 
         /// <summary>
         /// Gets the reset device command.
@@ -356,19 +352,18 @@ namespace OSDPBench.Core.ViewModels
         {
             get
             {
-                return _goResetDeviceCommand = _goResetDeviceCommand ??
-                                               new MvxCommand(async () =>
-                                               {
-                                                   try
-                                                   {
-                                                       await DoDiscoverResetCommand();
-                                                   }
-                                                   catch
-                                                   {
-                                                       _alertInteraction.Raise(
-                                                           new Alert("Error while attempting to reset device."));
-                                                   }
-                                               });
+                return _goResetDeviceCommand ??= new MvxAsyncCommand(async () =>
+                {
+                    try
+                    {
+                        await DoDiscoverResetCommand();
+                    }
+                    catch
+                    {
+                        _alertInteraction.Raise(
+                            new Alert("Error while attempting to reset device."));
+                    }
+                });
             }
         }
 
@@ -407,8 +402,7 @@ namespace OSDPBench.Core.ViewModels
             }));
         }
 
-        private readonly MvxInteraction<Alert> _alertInteraction =
-            new MvxInteraction<Alert>();
+        private readonly MvxInteraction<Alert> _alertInteraction = new();
 
         /// <summary>
         /// Gets the alert interaction.
@@ -417,8 +411,7 @@ namespace OSDPBench.Core.ViewModels
         public IMvxInteraction<Alert> AlertInteraction => _alertInteraction;
 
 
-        private readonly MvxInteraction<YesNoQuestion> _yesNoInteraction =
-            new MvxInteraction<YesNoQuestion>();
+        private readonly MvxInteraction<YesNoQuestion> _yesNoInteraction = new();
 
         /// <summary>
         /// Gets the yes no interaction.

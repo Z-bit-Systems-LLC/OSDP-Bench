@@ -11,6 +11,7 @@
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Views\RootView.xaml" />
+    <None Remove="Views\UpdateCommunicationView.xaml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -33,6 +34,12 @@
     <Reference Include="MvvmCross">
       <HintPath>..\..\..\..\..\.nuget\packages\mvvmcross\8.0.2\lib\uap10.0.16299\MvvmCross.dll</HintPath>
     </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Update="Views\UpdateCommunicationView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
 
   <ItemGroup>
