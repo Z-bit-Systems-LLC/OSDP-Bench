@@ -1,11 +1,10 @@
 ﻿using Microsoft.UI.Xaml;
 using MvvmCross.Core;
-using OSDP_Bench_WinUI;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
 
-namespace OSDPBenchWinUI;
+namespace OSDP_Bench_WinUI;
 
 /// <summary>
 /// Provides application-specific behavior to supplement the default Application class.
@@ -31,6 +30,6 @@ public partial class App
 
     protected override void RegisterSetup()
     {
-        this.RegisterSetupType<WinUIOSDPBenchSetup>();
+        this.RegisterSetupType<Setup>();
     }
 }

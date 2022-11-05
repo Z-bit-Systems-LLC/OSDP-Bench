@@ -1,0 +1,38 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:local="http://schemas.android.com/apk/res-auto"
+              android:id="@+id/main_frame"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical">
+    <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1">
+        <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+            <mvvmcross.platforms.android.binding.views.MvxSpinner
+                    android:id="@+id/spinner"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="10dp"
+                    local:MvxItemTemplate="@layout/serial_device_item_template"
+                    local:MvxDropDownItemTemplate="@layout/serial_device_item_template"
+                    local:MvxBind="ItemsSource AvailableSerialPorts; SelectedItem SelectedSerialPort"/>
+            <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="Discover"
+                    local:MvxBind="Click DiscoverDeviceCommand" />
+            
+            <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="40dp"
+                    local:MvxBind="Text StatusText"/>
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

@@ -11,7 +11,7 @@ using Serilog.Extensions.Logging;
 
 namespace OSDP_Bench_WinUI;
 
-internal class WinUIOSDPBenchSetup : MvxWindowsSetup<OSDPBench.Core.App>
+internal class Setup : MvxWindowsSetup<OSDPBench.Core.App>
 {
     protected override IMvxApplication CreateApp(IMvxIoCProvider iocProvider)
     {

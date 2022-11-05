@@ -57,7 +57,7 @@ namespace OSDP_Bench_WinUI.Views
         }
 
         protected override void OnViewModelSet()
-        {
+        { 
             base.OnViewModelSet();
 
             BindingContext.DataContext = ViewModel;
