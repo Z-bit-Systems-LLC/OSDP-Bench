@@ -16,7 +16,7 @@ using OSDPBench.Core.ViewModels;
 namespace OSDP_Bench_Android.Activities;
 
 [MvxActivityPresentation]
-[Activity(Theme = "@style/AppTheme",
+[Activity(Theme = "@style/Theme.AppCompat.Light",
     WindowSoftInputMode = SoftInput.AdjustPan)]
 public class RootView : MvxActivity<RootViewModel>
 {

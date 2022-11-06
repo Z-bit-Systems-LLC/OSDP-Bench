@@ -14,7 +14,7 @@ namespace OSDP_Bench_Android;
 [IntentFilter(new[] { UsbManager.ActionUsbDeviceAttached })]
 [MetaData(UsbManager.ActionUsbDeviceAttached, Resource = "@xml/device_filter")]
 
-[Activity(Label = "@string/app_name", Theme = "@style/AppTheme", MainLauncher = true)]
+[Activity(Label = "@string/app_name", Theme = "@style/Theme.AppCompat.Light", MainLauncher = true)]
 public class SplashScreen : MvxSplashScreenActivity
 {
     public SplashScreen()

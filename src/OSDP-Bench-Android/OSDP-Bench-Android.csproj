@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <TargetFramework>net6.0-android</TargetFramework>
-        <SupportedOSPlatformVersion>31</SupportedOSPlatformVersion>
+        <SupportedOSPlatformVersion>31.0</SupportedOSPlatformVersion>
         <RootNamespace>OSDP_Bench_Android</RootNamespace>
         <OutputType>Exe</OutputType>
         <Nullable>enable</Nullable>
@@ -11,6 +11,9 @@
         <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
         <TargetFrameworkVersion>v12.0</TargetFrameworkVersion>
     </PropertyGroup>
+    <ItemGroup>
+      <None Remove="Resources\drawable\ic_launcher_foreground.xml" />
+    </ItemGroup>
     <ItemGroup>
       <ProjectReference Include="..\Core\Core.csproj" />
       <ProjectReference Include="..\UsbSerialForAndroid\UsbSerialForAndroid\UsbSerialForAndroid.csproj" />

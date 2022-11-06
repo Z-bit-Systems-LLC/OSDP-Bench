@@ -32,3 +32,4 @@ _UpgradeReport_Files/
 .DS_Store
 /src/UWP/AppPackages
 /src/UWP/BundleArtifacts
+/src/.idea/.idea.OSDP-Bench/.idea
