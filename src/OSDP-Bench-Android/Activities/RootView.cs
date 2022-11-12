@@ -36,7 +36,7 @@ public class RootView : MvxActivity<RootViewModel>
         base.OnPause();
 
         var connection = Mvx.IoCProvider.Resolve<ISerialPortConnection>() as AndroidSerialPortConnection;
-        connection?.Close();
+        connection?. Close();
     }
 
     protected override void OnResume()

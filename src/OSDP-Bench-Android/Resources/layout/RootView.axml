@@ -1,0 +1,85 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:local="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main_frame"
+    android:layout_width="match_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical">
+		<LinearLayout
+        android:id="@+id/discovery_frame"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp">
+        <TextView
+            style="@android:style/TextAppearance.Large"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            local:MvxBind="Text SelectedSerialPort.Name" />
+        <Button
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:paddingLeft="50dp"
+	        android:paddingRight="50dp"
+	        android:layout_gravity="center_horizontal"
+	        android:text="Discover OSDP Device"
+	        local:MvxBind="Click DiscoverDeviceCommand; Visible IsReadyToDiscover" />
+        <Button
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:paddingLeft="50dp"
+	        android:paddingRight="50dp"
+	        android:layout_gravity="center_horizontal"
+	        android:text="Cancel Discovery"
+	        local:MvxBind="Click CancelDiscoverDeviceCommand; Visible IsDiscovering" />
+    </LinearLayout>
+
+	<ScrollView
+		android:layout_width="match_parent"
+		android:layout_height="fill_parent"
+		android:layout_weight="1">
+		<LinearLayout
+			android:id="@+id/identity_frame"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:orientation="vertical"
+			android:layout_marginTop="20dp"
+			android:layout_marginLeft="20dp"
+			android:layout_marginRight="20dp"
+			local:MvxBind="Visible IsDiscovered">
+			<TextView
+				style="@android:style/TextAppearance.Large"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:gravity="center"
+				local:MvxBind="Text Format('{0} | {1}', IdentityLookup.VendorName, IdentityLookup.Model)" />
+			<TextView
+				style="@android:style/TextAppearance.Large"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:gravity="center"
+				local:MvxBind="Text Format('Firmware: {0}', IdentityLookup.VersionNumber)" />
+		</LinearLayout>
+	</ScrollView>
+
+	<LinearLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:orientation="vertical">
+
+        <TextView
+            style="@android:style/TextAppearance.Large"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal|center"
+            android:padding="5dp"
+			android:textColor="#FFFFFF"
+			android:background="@android:color/darker_gray"
+            local:MvxBind="Text Format('Address {0} - {1}', Address, StatusText)" />
+	</LinearLayout>
+
+</LinearLayout>

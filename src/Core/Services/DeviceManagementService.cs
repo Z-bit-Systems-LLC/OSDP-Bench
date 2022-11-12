@@ -1,9 +1,13 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using OSDP.Net;
+using OSDP.Net.Connections;
 using OSDP.Net.Model.ReplyData;
+using OSDP.Net.PanelCommands.DeviceDiscover;
 using OSDPBench.Core.Models;
 using OSDPBench.Core.Platforms;
 using CommunicationConfiguration = OSDP.Net.Model.CommandData.CommunicationConfiguration;
@@ -23,7 +27,6 @@ namespace OSDPBench.Core.Services
         private Guid _connectionId;
         private bool _isConnected;
         private byte _address;
-        private bool _requireSecureChannel;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DeviceManagementService"/> class.
@@ -53,31 +56,26 @@ namespace OSDPBench.Core.Services
         public CapabilitiesLookup CapabilitiesLookup { get; private set; }
 
 
-        public async Task<bool> DiscoverDevice(ISerialPortConnection connection, byte address, bool requireSecureChannel)
+        public async Task<DiscoveryResult> DiscoverDevice(IEnumerable<IOsdpConnection> connections, DiscoveryProgress progress, CancellationToken cancellationToken)
         {
-            _address = address;
-            _requireSecureChannel = requireSecureChannel;
-
-            await _panel.Shutdown();
-
-            _connectionId = _panel.StartConnection(connection);
-
-            _panel.AddDevice(_connectionId, _address, false, false);
-
-            bool successfulConnection = await WaitForConnection();
-
-            if (!successfulConnection)
+            var options = new DiscoveryOptions
             {
-                return false;
+                ProgressCallback = progress,
+                CancellationToken = cancellationToken
+            };
+            var results = await _panel.DiscoverDevice(connections, options);
+
+            _address = results.Address;
+            IdentityLookup = new IdentityLookup(results.Id);
+            CapabilitiesLookup = new CapabilitiesLookup(results.Capabilities);
+
+            if (results.Status == DiscoveryStatus.Succeeded)
+            {
+                _connectionId = _panel.StartConnection(results.Connection);
+                _panel.AddDevice(_connectionId, _address, true, false);
             }
-            
-            await GetIdentity();
-            await GetCapabilities();
 
-            _panel.AddDevice(_connectionId, _address, CapabilitiesLookup.CRC,
-                _requireSecureChannel && CapabilitiesLookup.SecureChannel);
-
-            return await WaitForConnection();
+            return results;
         }
 
         /// <inheritdoc />
@@ -170,27 +168,6 @@ namespace OSDPBench.Core.Services
         protected virtual void OnNakReplyReceived(string errorMessage)
         {
             NakReplyReceived?.Invoke(this, errorMessage);
-        }
-
-        private async Task<bool> WaitForConnection()
-        {
-            int count = 0;
-            while (!_isConnected && count++ < 30)
-            {
-                await Task.Delay(TimeSpan.FromMilliseconds(100));
-            }
-
-            return _isConnected;
-        }
-
-        private async Task GetIdentity()
-        {
-            IdentityLookup = new IdentityLookup(await _panel.IdReport(_connectionId, _address));
-        }
-
-        private async Task GetCapabilities()
-        {
-            CapabilitiesLookup = new CapabilitiesLookup(await _panel.DeviceCapabilities(_connectionId, _address));
         }
 
         private static string FormatData(BitArray bitArray)

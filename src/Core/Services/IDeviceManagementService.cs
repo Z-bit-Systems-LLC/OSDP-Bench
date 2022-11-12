@@ -1,5 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
+using OSDP.Net.Connections;
+using OSDP.Net.PanelCommands.DeviceDiscover;
 using OSDPBench.Core.Models;
 using OSDPBench.Core.Platforms;
 
@@ -18,13 +22,14 @@ namespace OSDPBench.Core.Services
         CapabilitiesLookup CapabilitiesLookup { get; }
 
         /// <summary>
+        ///   <para>
         /// Discovers the device.
+        /// </para>
         /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <param name="address">The address.</param>
-        /// <param name="requireSecureChannel">if set to <c>true</c> [require secure channel].</param>
-        /// <returns>Task&lt;System.Boolean&gt;.</returns>
-        Task<bool> DiscoverDevice(ISerialPortConnection connection, byte address, bool requireSecureChannel);
+        /// <param name="connections"></param>
+        /// <param name="progress"></param>
+        /// <param name="cancellationToken"></param>
+        Task<DiscoveryResult> DiscoverDevice(IEnumerable<IOsdpConnection> connections, DiscoveryProgress progress, CancellationToken cancellationToken);
 
         /// <summary>
         /// Sets the communication command.

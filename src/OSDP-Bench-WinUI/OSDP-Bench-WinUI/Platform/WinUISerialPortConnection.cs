@@ -27,6 +27,11 @@ internal class WinUISerialPortConnection : SerialPortOsdpConnection, ISerialPort
             .Select(name => new AvailableSerialPort(string.Empty, name, name)).OrderBy(port => port.Name));
     }
 
+    public IEnumerable<ISerialPortConnection> EnumBaudRates(string portName, int[] rates = null)
+    {
+        throw new System.NotImplementedException();
+    }
+
     public ISerialPortConnection CreateSerialPort(string name, int baudRate)
     {
         return new WinUISerialPortConnection(name, baudRate);

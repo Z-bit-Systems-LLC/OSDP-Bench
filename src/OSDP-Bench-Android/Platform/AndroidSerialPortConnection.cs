@@ -15,41 +15,49 @@ internal class AndroidSerialPortConnection : ISerialPortConnection
     private SerialInputOutputManager? _serialIoManager;
     private readonly ConcurrentQueue<byte> _readData = new();
 
+    public AndroidSerialPortConnection()
+    {
+    }
+
+    private AndroidSerialPortConnection(UsbManager usbManager, UsbSerialPort usbSerialPort, int baudRate)
+    {
+        _usbManager = usbManager;
+        _usbSerialPort = usbSerialPort;
+        BaudRate = baudRate;
+    }
+    
     /// <inheritdoc />
     public async Task<IEnumerable<AvailableSerialPort>> FindAvailableSerialPorts()
     {
         return await Task.FromResult(_ports);
     }
 
-    public ISerialPortConnection CreateSerialPort(string name, int baudRate)
+    public IEnumerable<ISerialPortConnection> EnumBaudRates(string portName, int[]? rates = null)
     {
-        BaudRate = baudRate;      
-        
-        return this;
+        rates ??= new[] { 9600, 19200, 38400, 57600, 115200, 230400 };
+        return rates.AsEnumerable().Select((rate) => new AndroidSerialPortConnection(_usbManager, _usbSerialPort, rate));
     }
 
     public void Open()
     {
-        if (BaudRate == 0) return;
-        
+        _serialIoManager = new SerialInputOutputManager(_usbSerialPort)
+        {
+            BaudRate = BaudRate,
+            DataBits = 8,
+            StopBits = StopBits.One,
+            Parity = Parity.None
+        };
+
+        _serialIoManager.DataReceived += (_, eventArgs) =>
+        {
+            foreach (var data in eventArgs.Data)
+            {
+                _readData.Enqueue(data);
+            }
+        };
+
         try
         {
-            _serialIoManager = new SerialInputOutputManager(_usbSerialPort)
-            {
-                BaudRate = BaudRate,
-                DataBits = 8,
-                StopBits = StopBits.One,
-                Parity = Parity.None
-            };
-
-            _serialIoManager.DataReceived += (_, eventArgs) =>
-            {
-                foreach (var data in eventArgs.Data)
-                {
-                    _readData.Enqueue(data);
-                }
-            };
-            
             _serialIoManager?.Open(_usbManager);
         }
         catch (Exception)
@@ -61,11 +69,9 @@ internal class AndroidSerialPortConnection : ISerialPortConnection
 
     public void Close()
     {
-        if (_serialIoManager is not { IsOpen: true }) return;
-        
         try
         {
-            _serialIoManager?.Close();
+            if (_serialIoManager is { IsOpen: true })  _serialIoManager?.Close();
             _serialIoManager?.Dispose();
             _readData.Clear();
         }
@@ -101,10 +107,11 @@ internal class AndroidSerialPortConnection : ISerialPortConnection
         return 0;
     }
 
-    public int BaudRate { get; private set; } 
+    public int BaudRate { get; } 
 
     public bool IsOpen => _serialIoManager?.IsOpen ?? false;
-    public TimeSpan ReplyTimeout { get; set; } = TimeSpan.FromSeconds(8);
+
+    public TimeSpan ReplyTimeout { get; set; } = TimeSpan.FromMilliseconds(200);
 
     public void GetSerialPorts(IEnumerable<IUsbSerialDriver> drivers)
     {

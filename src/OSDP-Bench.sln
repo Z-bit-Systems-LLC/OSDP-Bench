@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UsbSerialForAndroid", "UsbS
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OSDP-Bench-Android", "OSDP-Bench-Android\OSDP-Bench-Android.csproj", "{CDACE137-C241-46B0-924D-F8C4357B9CD0}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OSDP.Net", "..\..\OSDP.Net\src\OSDP.Net\OSDP.Net.csproj", "{119094B6-D326-45AA-9F05-32F5EFE25C2F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -193,6 +195,26 @@ Global
 		{CDACE137-C241-46B0-924D-F8C4357B9CD0}.Release|x86.ActiveCfg = Release|Any CPU
 		{CDACE137-C241-46B0-924D-F8C4357B9CD0}.Release|x86.Build.0 = Release|Any CPU
 		{CDACE137-C241-46B0-924D-F8C4357B9CD0}.Release|x86.Deploy.0 = Release|Any CPU
+		{119094B6-D326-45AA-9F05-32F5EFE25C2F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{119094B6-D326-45AA-9F05-32F5EFE25C2F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{119094B6-D326-45AA-9F05-32F5EFE25C2F}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{119094B6-D326-45AA-9F05-32F5EFE25C2F}.Debug|ARM.Build.0 = Debug|Any CPU
+		{119094B6-D326-45AA-9F05-32F5EFE25C2F}.Debug|ARM64.ActiveCfg = Debug|Any CPU
+		{119094B6-D326-45AA-9F05-32F5EFE25C2F}.Debug|ARM64.Build.0 = Debug|Any CPU
+		{119094B6-D326-45AA-9F05-32F5EFE25C2F}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{119094B6-D326-45AA-9F05-32F5EFE25C2F}.Debug|x64.Build.0 = Debug|Any CPU
+		{119094B6-D326-45AA-9F05-32F5EFE25C2F}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{119094B6-D326-45AA-9F05-32F5EFE25C2F}.Debug|x86.Build.0 = Debug|Any CPU
+		{119094B6-D326-45AA-9F05-32F5EFE25C2F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{119094B6-D326-45AA-9F05-32F5EFE25C2F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{119094B6-D326-45AA-9F05-32F5EFE25C2F}.Release|ARM.ActiveCfg = Release|Any CPU
+		{119094B6-D326-45AA-9F05-32F5EFE25C2F}.Release|ARM.Build.0 = Release|Any CPU
+		{119094B6-D326-45AA-9F05-32F5EFE25C2F}.Release|ARM64.ActiveCfg = Release|Any CPU
+		{119094B6-D326-45AA-9F05-32F5EFE25C2F}.Release|ARM64.Build.0 = Release|Any CPU
+		{119094B6-D326-45AA-9F05-32F5EFE25C2F}.Release|x64.ActiveCfg = Release|Any CPU
+		{119094B6-D326-45AA-9F05-32F5EFE25C2F}.Release|x64.Build.0 = Release|Any CPU
+		{119094B6-D326-45AA-9F05-32F5EFE25C2F}.Release|x86.ActiveCfg = Release|Any CPU
+		{119094B6-D326-45AA-9F05-32F5EFE25C2F}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

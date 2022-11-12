@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using MvvmCross;
@@ -7,6 +8,7 @@ using MvvmCross.Base;
 using MvvmCross.Commands;
 using MvvmCross.Navigation;
 using MvvmCross.ViewModels;
+using OSDP.Net.PanelCommands.DeviceDiscover;
 using OSDPBench.Core.Interactions;
 using OSDPBench.Core.Models;
 using OSDPBench.Core.Platforms;
@@ -16,11 +18,10 @@ namespace OSDPBench.Core.ViewModels
 {
     public class RootViewModel : MvxNavigationViewModel
     {
-        private readonly byte _configurationAddress = 127;
-
         private readonly IMvxNavigationService _navigationService;
         private readonly IDeviceManagementService _deviceManagementService;
         private ISerialPortConnection _serialPortConnection;
+        private CancellationTokenSource _cancellationTokenSource;
 
         public RootViewModel(ILoggerFactory logProvider, IMvxNavigationService navigationService, IDeviceManagementService deviceManagementService,
             ISerialPortConnection serialPort) : base (logProvider, navigationService)
@@ -47,7 +48,7 @@ namespace OSDPBench.Core.ViewModels
                 }
                 else if (IsDiscovered)
                 {
-                    StatusText = "Lost Connection";
+                    StatusText = "Attempting to connect";
                     StatusLevel = StatusLevel.Error;
                 }
             });
@@ -209,40 +210,85 @@ namespace OSDPBench.Core.ViewModels
             IdentityLookup = new IdentityLookup(null);
             CapabilitiesLookup = new CapabilitiesLookup(null);
 
-            StatusText = "Attempting to discover device";
             NakText = string.Empty;
 
-            foreach (var baudRate in AvailableBaudRates)
+            var progress = new DiscoveryProgress(current =>
             {
-                StatusText = $"Attempting to discover device at {baudRate}";
-                _serialPortConnection = _serialPortConnection.CreateSerialPort(SelectedSerialPort.Name, (int)baudRate);
-                IsDiscovered =
-                    await _deviceManagementService.DiscoverDevice(_serialPortConnection, (byte)(UseConfigurationAddress ? _configurationAddress : Address), RequireSecureChannel);
-
-                if (!IsDiscovered)
+                switch (current.Status)
                 {
-                    continue;
+                    case DiscoveryStatus.Started:
+                        StatusText = "Attempting to discover device";
+                        break;
+                    case DiscoveryStatus.LookingForDeviceOnConnection:
+                        StatusText = $"Attempting to discover device at {current.Connection.BaudRate}";
+                        break;
+                    case DiscoveryStatus.ConnectionWithDeviceFound:
+                        StatusText = $"Found device at {current.Connection.BaudRate}";
+                        IdentityLookup = _deviceManagementService.IdentityLookup;
+                        break;
+                    case DiscoveryStatus.LookingForDeviceAtAddress:
+                        StatusText = $"Attempting to determine device at {current.Connection.BaudRate} with address {current.Address}";
+                        break;
+                    case DiscoveryStatus.DeviceIdentified:
+                        StatusText = $"Attempting to identify device at {current.Connection.BaudRate} with address {current.Address}";
+                        break;
+                    case DiscoveryStatus.CapabilitiesDiscovered:
+                        StatusText = $"Attempting to get capabilities of device at {current.Connection.BaudRate} with address {current.Address}";
+                        break;
+                    case DiscoveryStatus.Succeeded:
+                        IsDiscovered = true;
+                        CapabilitiesLookup = _deviceManagementService.CapabilitiesLookup;
+                        Address = current.Address;
+                        _serialPortConnection = current.Connection as ISerialPortConnection;
+                        _selectedBaudRate = (uint)current.Connection.BaudRate;
+                        break;
+                    case DiscoveryStatus.DeviceNotFound:
+                        StatusText = "Failed to connect to device";
+                        StatusLevel = StatusLevel.Error;
+                        break;
+                    case DiscoveryStatus.Error:
+                        StatusText = "Error while discovering device";
+                        StatusLevel = StatusLevel.Error;
+                        break;
+                    case DiscoveryStatus.Cancelled:
+                        StatusText = "Cancelled discovery";
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
                 }
+            });
 
-                _selectedBaudRate = baudRate;
-                break;
-            }
+            await _deviceManagementService.Shutdown();
 
-            if (IsDiscovered)
+            var connections = _serialPortConnection.EnumBaudRates(SelectedSerialPort.Name);
+            _cancellationTokenSource = new CancellationTokenSource();
+
+            try
             {
-                IdentityLookup = _deviceManagementService.IdentityLookup;
-                CapabilitiesLookup = _deviceManagementService.CapabilitiesLookup;
+                await _deviceManagementService.DiscoverDevice(connections, progress, _cancellationTokenSource.Token);
             }
-            else
+            catch
             {
-                await _deviceManagementService.Shutdown();
-                StatusText = "Failed to connect to device";
-                StatusLevel = StatusLevel.Error;
+                // ignored
             }
 
             IsReadyToDiscover = true;
             IsDiscovering = false;
         }
+
+        private MvxCommand _goCancelDiscoverDeviceCommand;
+
+        public System.Windows.Input.ICommand CancelDiscoverDeviceCommand
+        {
+            get
+            {
+                return _goCancelDiscoverDeviceCommand = new MvxCommand( () =>
+                {
+                    _cancellationTokenSource?.Cancel();
+                });
+            }
+        }
+
 
         private MvxAsyncCommand _scanSerialPortsCommand;
 
@@ -334,9 +380,6 @@ namespace OSDPBench.Core.ViewModels
                     new CommunicationParameters(SelectedBaudRate, Address));
 
             if (!success) return;
-
-            //Address = result.Address;
-            //SelectedBaudRate = result.BaudRate;
 
             await _deviceManagementService.Shutdown();
             await DoDiscoverDeviceCommand();
