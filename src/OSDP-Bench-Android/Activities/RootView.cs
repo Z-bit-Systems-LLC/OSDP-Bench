@@ -132,6 +132,7 @@ public class RootView : MvxActivity<RootViewModel>
                     ?.SetPositiveButton("OK", (_, _) => { });
                 var alert = dialog.Create();
                 alert?.Show();
+
             }
         }
     }

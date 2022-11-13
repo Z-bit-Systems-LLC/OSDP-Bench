@@ -13,6 +13,7 @@
     </PropertyGroup>
     <ItemGroup>
       <None Remove="Resources\drawable\ic_launcher_foreground.xml" />
+      <None Remove="Resources\layout\UpdateCommunicationsView.axml" />
     </ItemGroup>
     <ItemGroup>
       <ProjectReference Include="..\Core\Core.csproj" />
