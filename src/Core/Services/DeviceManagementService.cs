@@ -61,6 +61,7 @@ namespace OSDPBench.Core.Services
             var options = new DiscoveryOptions
             {
                 ProgressCallback = progress,
+                ResponseTimeout = TimeSpan.FromSeconds(1),
                 CancellationToken = cancellationToken
             };
             var results = await _panel.DiscoverDevice(connections, options);

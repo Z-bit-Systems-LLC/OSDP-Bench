@@ -224,7 +224,6 @@ namespace OSDPBench.Core.ViewModels
                         break;
                     case DiscoveryStatus.ConnectionWithDeviceFound:
                         StatusText = $"Found device at {current.Connection.BaudRate}";
-                        IdentityLookup = _deviceManagementService.IdentityLookup;
                         break;
                     case DiscoveryStatus.LookingForDeviceAtAddress:
                         StatusText = $"Attempting to determine device at {current.Connection.BaudRate} with address {current.Address}";
@@ -237,7 +236,6 @@ namespace OSDPBench.Core.ViewModels
                         break;
                     case DiscoveryStatus.Succeeded:
                         IsDiscovered = true;
-                        CapabilitiesLookup = _deviceManagementService.CapabilitiesLookup;
                         Address = current.Address;
                         _serialPortConnection = current.Connection as ISerialPortConnection;
                         _selectedBaudRate = (uint)current.Connection.BaudRate;
@@ -270,6 +268,12 @@ namespace OSDPBench.Core.ViewModels
             catch
             {
                 // ignored
+            }
+
+            if (IsDiscovered)
+            {
+                IdentityLookup = _deviceManagementService.IdentityLookup;
+                CapabilitiesLookup = _deviceManagementService.CapabilitiesLookup;
             }
 
             IsReadyToDiscover = true;

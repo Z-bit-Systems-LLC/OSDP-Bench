@@ -12,6 +12,7 @@ using OSDP_Bench_Android.Platform;
 using OSDPBench.Core.Interactions;
 using OSDPBench.Core.Platforms;
 using OSDPBench.Core.ViewModels;
+using static Android.App.AlertDialog;
 
 namespace OSDP_Bench_Android.Activities;
 
@@ -56,6 +57,7 @@ public class RootView : MvxActivity<RootViewModel>
         using var set = this.CreateBindingSet<RootView, RootViewModel>();
 
         set.Bind(this).For(view => view.AlertInteraction).To(viewModel => viewModel.AlertInteraction).OneWay();
+        set.Bind(this).For(view => view.YesNoInteraction).To(viewModel => viewModel.YesNoInteraction).OneWay();
         set.Apply();
     }
     
@@ -77,11 +79,34 @@ public class RootView : MvxActivity<RootViewModel>
 
     private void OnAlertInteractionRequested(object sender, MvxValueEventArgs<Alert> eventArgs)
     {
-        AlertDialog.Builder dialog = new AlertDialog.Builder(this);  
-        AlertDialog? alert = dialog.Create();  
-        alert?.SetTitle("OSDP Bench");  
-        alert?.SetMessage(eventArgs.Value.Message);  
-        alert?.SetButton("OK", (_, _) => {});  
+        var dialog = new Builder(this);
+        dialog.SetTitle("OSDP Bench")?.SetMessage(eventArgs.Value.Message)
+            ?.SetPositiveButton("OK", (_, _) => { });
+        var alert = dialog.Create();
+        alert?.Show();
+    }
+
+    private IMvxInteraction<YesNoQuestion> _yesNoInteraction = null!;
+    public IMvxInteraction<YesNoQuestion> YesNoInteraction
+    {
+        get => _yesNoInteraction;
+        set
+        {
+            // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
+            if (_yesNoInteraction != null) _yesNoInteraction.Requested -= OnYesNoInteractionRequested!;
+
+            _yesNoInteraction = value;
+            _yesNoInteraction.Requested += OnYesNoInteractionRequested!;
+        }
+    }
+
+    private void OnYesNoInteractionRequested(object sender, MvxValueEventArgs<YesNoQuestion> eventArgs)
+    {
+        var dialog = new Builder(this);
+        dialog.SetTitle("OSDP Bench")?.SetMessage(eventArgs.Value.Question)
+            ?.SetPositiveButton("Yes", (_, _) => { eventArgs.Value.YesNoCallback(true); })
+            ?.SetNegativeButton("No", (_, _) => { eventArgs.Value.YesNoCallback(false); });
+        var alert = dialog.Create();
         alert?.Show();
     }
 
@@ -102,14 +127,10 @@ public class RootView : MvxActivity<RootViewModel>
             }
             else
             {
-                AlertDialog.Builder dialog = new AlertDialog.Builder(this);  
-                AlertDialog? alert = dialog.Create();  
-                alert?.SetTitle("OSDP Bench");  
-                alert?.SetMessage("Unable to discover without permission to use USB port.");  
-                alert?.SetButton("OK", (_, _) =>  
-                {  
-                    Android.OS.Process.KillProcess(Android.OS.Process.MyPid());
-                });  
+                var dialog = new Builder(this);
+                dialog.SetTitle("OSDP Bench")?.SetMessage("Unable to discover without permission to use USB port.")
+                    ?.SetPositiveButton("OK", (_, _) => { });
+                var alert = dialog.Create();
                 alert?.Show();
             }
         }

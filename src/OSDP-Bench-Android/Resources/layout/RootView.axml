@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="fill_parent"
     android:orientation="vertical">
-		<LinearLayout
+	<LinearLayout
         android:id="@+id/discovery_frame"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -42,28 +42,86 @@
 		android:layout_width="match_parent"
 		android:layout_height="fill_parent"
 		android:layout_weight="1">
-		<LinearLayout
-			android:id="@+id/identity_frame"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:orientation="vertical"
-			android:layout_marginTop="20dp"
-			android:layout_marginLeft="20dp"
-			android:layout_marginRight="20dp"
-			local:MvxBind="Visible IsDiscovered">
-			<TextView
-				style="@android:style/TextAppearance.Large"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:gravity="center"
-				local:MvxBind="Text Format('{0} | {1}', IdentityLookup.VendorName, IdentityLookup.Model)" />
-			<TextView
-				style="@android:style/TextAppearance.Large"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:gravity="center"
-				local:MvxBind="Text Format('Firmware: {0}', IdentityLookup.VersionNumber)" />
-		</LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="20dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            local:MvxBind="Visible IsDiscovered">
+            <TextView
+                style="@android:style/TextAppearance.Large"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                local:MvxBind="Text Format('{0} | {1}', IdentityLookup.VendorName, IdentityLookup.Model)" />
+            <TextView
+                style="@android:style/TextAppearance.Large"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                local:MvxBind="Text Format('Firmware: {0}', IdentityLookup.VersionNumber)" />
+            <TextView
+                style="@android:style/TextAppearance.Large"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:layout_marginTop="10dp"
+                android:text="Capabilities"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:gravity="center">
+	            <ImageView
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:src="@drawable/ic_mtrl_chip_checked_black"
+                    android:tint="@android:color/holo_green_dark"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="left"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="40dp"
+                    android:text="CRC"/>
+                <ImageView
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:src="@drawable/ic_mtrl_chip_checked_black"
+                    android:tint="@android:color/holo_green_dark"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="left"
+                    android:layout_marginLeft="10dp"
+                    android:text="Secure Channel"/>
+            </LinearLayout>
+            <TextView
+                style="@android:style/TextAppearance.Large"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:layout_marginTop="10dp"
+                android:text="Actions"/>
+            <Button
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:paddingLeft="50dp"
+	            android:paddingRight="50dp"
+	            android:layout_gravity="center_horizontal"
+	            android:text="Set communication"
+	            local:MvxBind="Click UpdateCommunicationCommand" />
+            <Button
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:paddingLeft="50dp"
+	            android:paddingRight="50dp"
+	            android:layout_gravity="center_horizontal"
+	            android:text="Reset"
+	            local:MvxBind="Click ResetDeviceCommand" />
+        </LinearLayout>
 	</ScrollView>
 
 	<LinearLayout
