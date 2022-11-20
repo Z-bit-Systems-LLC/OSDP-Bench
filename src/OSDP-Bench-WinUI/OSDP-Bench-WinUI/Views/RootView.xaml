@@ -34,6 +34,7 @@
                 ItemsSource="{Binding AvailableSerialPorts, Mode=OneWay}"
                 DisplayMemberPath="Description"
                 SelectedItem="{Binding SelectedSerialPort, Mode=TwoWay}"/>
+
             <TextBlock FontSize="32" Margin="20 10 20 0" Text="Baud Rate" />
             <ComboBox 
                     FontSize="24"
@@ -41,36 +42,20 @@
                     IsEnabled="False"
                     ItemsSource="{Binding AvailableBaudRates, Mode=OneWay}"
                     SelectedItem="{Binding SelectedBaudRate, Mode=TwoWay}" />
+
             <TextBlock FontSize="32" Margin="20 10 20 0" Text="Address" />
-            <CheckBox 
-                Margin="20 10 20 0"
-                IsChecked="{Binding UseConfigurationAddress, Mode=TwoWay}">
-                <TextBlock 
-                    FontSize="24" 
-                    Text="Use Configuration Address"
-                    TextWrapping="Wrap"
-                    Margin="0 -7 0 0" />
-            </CheckBox>
             <NumberBox 
                 FontSize="24"
-                Value="{Binding Address, Mode=TwoWay}"
+                Value="{Binding Address, Mode=OneWay}"
                 Margin="20 10 20 10" MaxWidth="150" 
-                IsEnabled="{Binding IsDiscovering, Mode=OneWay, Converter={StaticResource BoolInverter}}"
+                IsEnabled="False"
                 HorizontalAlignment="Left"
                 SmallChange="1"
                 Minimum="0"
                 Maximum="126"
                 SpinButtonPlacementMode="Inline"
                 AcceptsExpression="False"/>
-            <CheckBox 
-                    Margin="20 10 20 0"
-                    IsChecked="{Binding RequireSecureChannel, Mode=TwoWay}">
-                <TextBlock 
-                        FontSize="24" 
-                        Text="Require Secure Channel"
-                        TextWrapping="Wrap"
-                        Margin="0 -7 0 0" />
-            </CheckBox>
+
             <StackPanel Margin="20 80 20 10">
                 <Button
                     FontSize="24"

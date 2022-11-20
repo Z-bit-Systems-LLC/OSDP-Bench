@@ -32,7 +32,7 @@ internal class AndroidSerialPortConnection : ISerialPortConnection
         return await Task.FromResult(_ports);
     }
 
-    public IEnumerable<ISerialPortConnection> EnumBaudRates(string portName, int[]? rates = null)
+    public IEnumerable<ISerialPortConnection> GetConnectionsForDiscovery(string portName, int[]? rates = null)
     {
         rates ??= new[] { 9600, 19200, 38400, 57600, 115200, 230400 };
         return rates.AsEnumerable().Select((rate) => new AndroidSerialPortConnection(_usbManager, _usbSerialPort, rate));

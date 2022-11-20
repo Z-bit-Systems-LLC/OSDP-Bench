@@ -27,13 +27,11 @@ internal class WinUISerialPortConnection : SerialPortOsdpConnection, ISerialPort
             .Select(name => new AvailableSerialPort(string.Empty, name, name)).OrderBy(port => port.Name));
     }
 
-    public IEnumerable<ISerialPortConnection> EnumBaudRates(string portName, int[] rates = null)
+    public IEnumerable<ISerialPortConnection> GetConnectionsForDiscovery(string portName, int[] rates = null)
     {
-        throw new System.NotImplementedException();
-    }
-
-    public ISerialPortConnection CreateSerialPort(string name, int baudRate)
-    {
-        return new WinUISerialPortConnection(name, baudRate);
+        foreach (var serialPortOsdpConnection in SerialPortOsdpConnection.EnumBaudRates(portName, rates))
+        {
+            yield return new WinUISerialPortConnection(portName, serialPortOsdpConnection.BaudRate);
+        }
     }
 }

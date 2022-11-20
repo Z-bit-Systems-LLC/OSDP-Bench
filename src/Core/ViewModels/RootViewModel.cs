@@ -79,14 +79,7 @@ namespace OSDPBench.Core.ViewModels
             get => _selectedBaudRate;
             set => SetProperty(ref _selectedBaudRate, value);
         }
-
-        private bool _autoDetectBaudRate;
-
-        public bool AutoDetectBaudRate
-        {
-            get => _autoDetectBaudRate;
-            set => SetProperty(ref _autoDetectBaudRate, value);
-        }
+ 
 
         private int _address;
 
@@ -249,7 +242,7 @@ namespace OSDPBench.Core.ViewModels
                         StatusLevel = StatusLevel.Error;
                         break;
                     case DiscoveryStatus.Cancelled:
-                        StatusText = "Cancelled discovery";
+                        StatusText = "Cancelled discovery"; 
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();
@@ -258,7 +251,7 @@ namespace OSDPBench.Core.ViewModels
 
             await _deviceManagementService.Shutdown();
 
-            var connections = _serialPortConnection.EnumBaudRates(SelectedSerialPort.Name);
+            var connections = _serialPortConnection.GetConnectionsForDiscovery(SelectedSerialPort.Name);
             _cancellationTokenSource = new CancellationTokenSource();
 
             try
@@ -286,7 +279,7 @@ namespace OSDPBench.Core.ViewModels
         {
             get
             {
-                return _goCancelDiscoverDeviceCommand = new MvxCommand( () =>
+                return _goCancelDiscoverDeviceCommand ??= new MvxCommand( () =>
                 {
                     _cancellationTokenSource?.Cancel();
                 });
