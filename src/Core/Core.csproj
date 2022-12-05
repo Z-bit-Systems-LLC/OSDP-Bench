@@ -9,10 +9,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageReference Include="MvvmCross" Version="9.0.2" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\OSDP.Net\src\OSDP.Net\OSDP.Net.csproj" />
+    <PackageReference Include="OSDP.Net" Version="4.0.1" />
   </ItemGroup>
 
 </Project>
