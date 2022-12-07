@@ -64,6 +64,12 @@
                     Command="{Binding DiscoverDeviceCommand, Mode=OneWay}" 
                     Content="Discover"/>
                 <Button
+                    FontSize="24"
+                    HorizontalAlignment="Center"
+                    Visibility="{Binding IsDiscovering, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
+                    Command="{Binding CancelDiscoverDeviceCommand, Mode=OneWay}" 
+                    Content="Cancel Discovery"/>
+                <Button
                     Margin="0 10 0 0"
                     FontSize="24"
                     HorizontalAlignment="Center"
