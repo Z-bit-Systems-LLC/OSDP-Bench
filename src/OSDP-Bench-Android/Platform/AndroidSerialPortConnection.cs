@@ -38,6 +38,11 @@ internal class AndroidSerialPortConnection : ISerialPortConnection
         return rates.AsEnumerable().Select((rate) => new AndroidSerialPortConnection(_usbManager, _usbSerialPort, rate));
     }
 
+    public ISerialPortConnection GetConnection(string portName, int baudRate)
+    {
+        throw new NotImplementedException();
+    }
+
     public void Open()
     {
         _serialIoManager = new SerialInputOutputManager(_usbSerialPort)

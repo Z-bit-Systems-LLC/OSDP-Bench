@@ -22,25 +22,20 @@ namespace OSDPBench.Core.Services
     /// <seealso cref="OSDPBench.Core.Services.IDeviceManagementService" />
     public class DeviceManagementService : IDeviceManagementService
     {
-        private readonly ControlPanel _panel;
+        private readonly ControlPanel _panel = new ();
 
         private Guid _connectionId;
-        private bool _isConnected;
-        private byte _address;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DeviceManagementService"/> class.
         /// </summary>
-        /// <param name="panel">The panel.</param>
         /// <exception cref="ArgumentNullException">panel</exception>
-        public DeviceManagementService(ControlPanel panel)
+        public DeviceManagementService()
         {
-            _panel = panel ?? throw new ArgumentNullException(nameof(panel));
-
             _panel.ConnectionStatusChanged += (_, args) =>
             {
-                _isConnected = args.IsConnected;
-                OnConnectionStatusChange(_isConnected);
+                var isConnected = args.IsConnected;
+                OnConnectionStatusChange(isConnected);
             };
 
             _panel.NakReplyReceived += (_, args) =>
@@ -48,13 +43,24 @@ namespace OSDPBench.Core.Services
                 OnNakReplyReceived(ToFormattedText(args.Nak.ErrorCode));
             };
         }
-
+        
         /// <inheritdoc />
         public IdentityLookup IdentityLookup { get; private set; }
 
         /// <inheritdoc />
         public CapabilitiesLookup CapabilitiesLookup { get; private set; }
 
+        /// <inheritdoc />
+        public byte Address { get; private set; }
+
+        /// <inheritdoc />
+        public uint BaudRate { get; private set; }
+
+        public void Connect(IOsdpConnection connection, byte address)
+        {
+            _connectionId = _panel.StartConnection(connection);
+            _panel.AddDevice(_connectionId, address, true, false);
+        }
 
         public async Task<DiscoveryResult> DiscoverDevice(IEnumerable<IOsdpConnection> connections, DiscoveryProgress progress, CancellationToken cancellationToken)
         {
@@ -66,30 +72,32 @@ namespace OSDPBench.Core.Services
             };
             var results = await _panel.DiscoverDevice(connections, options);
 
-            _address = results.Address;
+            Address = results.Address;
             IdentityLookup = new IdentityLookup(results.Id);
             CapabilitiesLookup = new CapabilitiesLookup(results.Capabilities);
 
             if (results.Status == DiscoveryStatus.Succeeded)
             {
-                _connectionId = _panel.StartConnection(results.Connection);
-                _panel.AddDevice(_connectionId, _address, true, false);
+                Connect(results.Connection, Address);
             }
 
             return results;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc /> 
         public async Task<CommunicationParameters> SetCommunicationCommand(
             CommunicationParameters communicationParameters)
         {
             try
             {
-                var result = await _panel.CommunicationConfiguration(_connectionId, _address,
+                var result = await _panel.CommunicationConfiguration(_connectionId, Address,
                     new CommunicationConfiguration((byte)communicationParameters.Address,
                         (int)communicationParameters.BaudRate));
 
-                return new CommunicationParameters((uint)result.BaudRate, result.Address);
+                Address = result.Address;
+                BaudRate = (uint)result.BaudRate;
+
+                return new CommunicationParameters(communicationParameters.PortName, BaudRate, Address);
             }
             catch (TimeoutException)
             {
@@ -104,7 +112,7 @@ namespace OSDPBench.Core.Services
 
             _connectionId = _panel.StartConnection(connection, TimeSpan.Zero);
 
-            _panel.AddDevice(_connectionId, _address, false, false);
+            _panel.AddDevice(_connectionId, Address, false, false);
 
             const int maximumAttempts = 15;
             const int requiredNumberOfAcks = 10;
@@ -114,7 +122,7 @@ namespace OSDPBench.Core.Services
             {
                 try
                 {
-                    var result = await _panel.ManufacturerSpecificCommand(_connectionId, _address,
+                    var result = await _panel.ManufacturerSpecificCommand(_connectionId, Address,
                         new ManufacturerSpecific(new byte[] { 0xCA, 0x44, 0x6C }, new byte[] { 0x05 }));
 
                     if (result.Ack)
@@ -166,6 +174,7 @@ namespace OSDPBench.Core.Services
 
         /// <inheritdoc />
         public event EventHandler<string> NakReplyReceived;
+
         protected virtual void OnNakReplyReceived(string errorMessage)
         {
             NakReplyReceived?.Invoke(this, errorMessage);

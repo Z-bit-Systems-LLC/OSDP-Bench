@@ -49,6 +49,12 @@
                     IsEnabled="{Binding IsBusy, Mode=OneWay, Converter={StaticResource BoolInverter}}"
                     Command="{Binding SetCommunicationsCommand, Mode=OneWay}" 
                     Content="Set"/>
+                <Button 
+                    FontSize="24"
+                    HorizontalAlignment="Center"
+                    Margin="10 0 0 0"
+                    Content="Cancel"
+                    Command="{Binding CancelCommand, Mode=OneWay}" />
             </StackPanel>
         </StackPanel>
     </Grid>

@@ -19,5 +19,7 @@ namespace OSDPBench.Core.Platforms
         Task<IEnumerable<AvailableSerialPort>> FindAvailableSerialPorts();
 
         IEnumerable<ISerialPortConnection> GetConnectionsForDiscovery(string portName, int[] rates = null);
+
+        ISerialPortConnection GetConnection(string portName, int baudRate);
     }
 }

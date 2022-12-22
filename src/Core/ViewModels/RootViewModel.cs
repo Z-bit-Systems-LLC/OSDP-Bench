@@ -26,9 +26,15 @@ namespace OSDPBench.Core.ViewModels
         public RootViewModel(ILoggerFactory logProvider, IMvxNavigationService navigationService, IDeviceManagementService deviceManagementService,
             ISerialPortConnection serialPort) : base (logProvider, navigationService)
         {
-            _navigationService = navigationService;
             _deviceManagementService = deviceManagementService ??
                                        throw new ArgumentNullException(nameof(deviceManagementService));
+
+            _navigationService = navigationService;
+            _navigationService.DidClose += (_, _) =>
+            {
+                Address = _deviceManagementService.Address;
+                SelectedBaudRate = _deviceManagementService.BaudRate;
+            };
 
             _deviceManagementService.ConnectionStatusChange += DeviceManagementServiceOnConnectionStatusChange;
             _deviceManagementService.NakReplyReceived += DeviceManagementServiceOnNakReplyReceived;
@@ -372,14 +378,9 @@ namespace OSDPBench.Core.ViewModels
         {
             NakText = string.Empty;
 
-            bool success = await _navigationService
+            await _navigationService
                 .Navigate<UpdateCommunicationViewModel, CommunicationParameters>(
-                    new CommunicationParameters(SelectedBaudRate, Address));
-
-            if (!success) return;
-
-            await _deviceManagementService.Shutdown();
-            await DoDiscoverDeviceCommand();
+                    new CommunicationParameters(SelectedSerialPort.Name, SelectedBaudRate, Address));
         }
 
         private MvxAsyncCommand _goResetDeviceCommand;

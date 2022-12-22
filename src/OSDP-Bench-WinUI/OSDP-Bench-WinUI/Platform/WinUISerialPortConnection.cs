@@ -29,9 +29,14 @@ internal class WinUISerialPortConnection : SerialPortOsdpConnection, ISerialPort
 
     public IEnumerable<ISerialPortConnection> GetConnectionsForDiscovery(string portName, int[] rates = null)
     {
-        foreach (var serialPortOsdpConnection in SerialPortOsdpConnection.EnumBaudRates(portName, rates))
+        foreach (var serialPortOsdpConnection in EnumBaudRates(portName, rates))
         {
             yield return new WinUISerialPortConnection(portName, serialPortOsdpConnection.BaudRate);
         }
+    }
+
+    public ISerialPortConnection GetConnection(string portName, int baudRate)
+    {
+        return new WinUISerialPortConnection(portName, baudRate);
     }
 }

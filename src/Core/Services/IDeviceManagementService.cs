@@ -21,6 +21,12 @@ namespace OSDPBench.Core.Services
         /// </summary>
         CapabilitiesLookup CapabilitiesLookup { get; }
 
+        byte Address { get; }
+
+        uint BaudRate { get; }
+
+        void Connect(IOsdpConnection connection, byte address);
+
         /// <summary>
         ///   <para>
         /// Discovers the device.
