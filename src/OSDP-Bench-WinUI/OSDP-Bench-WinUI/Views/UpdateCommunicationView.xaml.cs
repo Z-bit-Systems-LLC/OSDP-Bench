@@ -24,6 +24,7 @@ namespace OSDP_Bench_WinUI.Views
         {
             InitializeComponent();
         }
+
         private IMvxInteraction<Alert> _alertInteraction;
         public IMvxInteraction<Alert> AlertInteraction
         {

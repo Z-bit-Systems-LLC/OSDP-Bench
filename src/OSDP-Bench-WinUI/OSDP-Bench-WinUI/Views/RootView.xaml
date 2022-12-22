@@ -1,4 +1,5 @@
-﻿<views:MvxWindowsPage
+﻿<!-- ReSharper disable Xaml.ConstructorWarning -->
+<views:MvxWindowsPage
     x:Class="OSDP_Bench_WinUI.Views.RootView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -7,7 +8,9 @@
     xmlns:converters="using:OSDP_Bench_WinUI.Converters"
     xmlns:converters1="using:CommunityToolkit.WinUI.UI.Converters"
     xmlns:views="using:MvvmCross.Platforms.WinUi.Views"
+    xmlns:viewModels="using:OSDPBench.Core.ViewModels"
     mc:Ignorable="d"
+    d:DataContext="{d:DesignInstance Type=viewModels:RootViewModel, IsDesignTimeCreatable=False}"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <Page.Resources>
