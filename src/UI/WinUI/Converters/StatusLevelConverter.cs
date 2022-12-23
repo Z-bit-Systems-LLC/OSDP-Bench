@@ -4,7 +4,7 @@ using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Media;
 using OSDPBench.Core.ViewModels;
 
-namespace OSDP_Bench_WinUI.Converters;
+namespace WinUI.Converters;
 
 public class StatusLevelConverter : IValueConverter
 {

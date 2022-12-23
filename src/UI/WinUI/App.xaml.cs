@@ -4,7 +4,7 @@ using MvvmCross.Core;
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
 
-namespace OSDP_Bench_WinUI;
+namespace WinUI;
 
 /// <summary>
 /// Provides application-specific behavior to supplement the default Application class.
@@ -22,7 +22,7 @@ public partial class App
 
     protected override Window CreateWindow()
     {
-        return new Window()
+        return new MainWindow
         {
             Title = "OSDP Bench"
         };

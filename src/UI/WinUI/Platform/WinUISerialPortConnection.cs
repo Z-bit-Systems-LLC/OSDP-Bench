@@ -6,7 +6,7 @@ using OSDP.Net.Connections;
 using OSDPBench.Core.Models;
 using OSDPBench.Core.Platforms;
 
-namespace OSDP_Bench_WinUI.Platform;
+namespace WinUI.Platform;
 
 internal class WinUISerialPortConnection : SerialPortOsdpConnection, ISerialPortConnection
 {

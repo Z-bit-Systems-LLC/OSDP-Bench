@@ -2,12 +2,12 @@
 using MvvmCross.IoC;
 using MvvmCross.Platforms.WinUi.Core;
 using MvvmCross.ViewModels;
-using OSDP_Bench_WinUI.Platform;
 using OSDPBench.Core.Platforms;
 using Serilog;
 using Serilog.Extensions.Logging;
+using WinUI.Platform;
 
-namespace OSDP_Bench_WinUI;
+namespace WinUI;
 
 internal class Setup : MvxWindowsSetup<OSDPBench.Core.App>
 {

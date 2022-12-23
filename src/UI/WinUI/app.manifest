@@ -3,7 +3,7 @@
   <assemblyIdentity version="1.0.0.0" name="OSDP-Bench-WinUI.app"/>
 
   <application xmlns="urn:schemas-microsoft-com:asm.v3">
-    <windowsSettings>
+	  <windowsSettings>
       <!-- The combination of below two tags have the following effect:
            1) Per-Monitor for >= Windows 10 Anniversary Update
            2) System < Windows 10 Anniversary Update
