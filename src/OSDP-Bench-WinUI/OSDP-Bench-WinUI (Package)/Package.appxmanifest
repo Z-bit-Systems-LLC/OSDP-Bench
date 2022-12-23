@@ -7,13 +7,13 @@
   IgnorableNamespaces="uap rescap">
 
   <Identity
-    Name="4dc21f80-5b0d-49e2-bf5f-30ecd7867985"
-    Publisher="CN=work-tower"
-    Version="1.0.0.0" />
+    Name="Z-bitco.OSDPBench"
+    Publisher="CN=5F9ECF22-A4DC-44B4-A020-C94E84581231"
+    Version="2.0.1.0" />
 
   <Properties>
-    <DisplayName>OSDP-Bench-WinUI (Package)</DisplayName>
-    <PublisherDisplayName>work-tower</PublisherDisplayName>
+    <DisplayName>OSDP Bench</DisplayName>
+    <PublisherDisplayName>Z-bitco</PublisherDisplayName>
     <Logo>Images\StoreLogo.png</Logo>
   </Properties>
 
@@ -31,13 +31,14 @@
       Executable="$targetnametoken$.exe"
       EntryPoint="$targetentrypoint$">
       <uap:VisualElements
-        DisplayName="OSDP-Bench-WinUI (Package)"
-        Description="OSDP-Bench-WinUI (Package)"
-        BackgroundColor="transparent"
+        DisplayName="OSDP Bench"
+        Description="Tools for configuring and troubleshooting OSDP devices."
+        BackgroundColor="#FFFFFF"
         Square150x150Logo="Images\Square150x150Logo.png"
         Square44x44Logo="Images\Square44x44Logo.png">
-        <uap:DefaultTile Wide310x150Logo="Images\Wide310x150Logo.png" />
+        <uap:DefaultTile Wide310x150Logo="Images\Wide310x150Logo.png"  Square71x71Logo="Images\SmallTile.png" Square310x310Logo="Images\LargeTile.png"/>
         <uap:SplashScreen Image="Images\SplashScreen.png" />
+        <uap:LockScreen Notification="badge" BadgeLogo="Images\BadgeLogo.png"/>
       </uap:VisualElements>
     </Application>
   </Applications>
