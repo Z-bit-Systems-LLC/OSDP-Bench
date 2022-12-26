@@ -70,16 +70,16 @@ namespace OSDPBench.Core.Services
                 ResponseTimeout = TimeSpan.FromSeconds(1),
                 CancellationToken = cancellationToken
             };
+            
             var results = await _panel.DiscoverDevice(connections, options);
 
+            if (results.Status != DiscoveryStatus.Succeeded) return results;
+            
             Address = results.Address;
+            BaudRate = (uint)results.Connection.BaudRate;
             IdentityLookup = new IdentityLookup(results.Id);
             CapabilitiesLookup = new CapabilitiesLookup(results.Capabilities);
-
-            if (results.Status == DiscoveryStatus.Succeeded)
-            {
-                Connect(results.Connection, Address);
-            }
+            Connect(results.Connection, Address);
 
             return results;
         }
@@ -93,7 +93,7 @@ namespace OSDPBench.Core.Services
                 var result = await _panel.CommunicationConfiguration(_connectionId, Address,
                     new CommunicationConfiguration((byte)communicationParameters.Address,
                         (int)communicationParameters.BaudRate));
-
+                
                 Address = result.Address;
                 BaudRate = (uint)result.BaudRate;
 

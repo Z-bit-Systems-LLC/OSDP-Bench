@@ -32,8 +32,12 @@ namespace OSDPBench.Core.ViewModels
             _navigationService = navigationService;
             _navigationService.DidClose += (_, _) =>
             {
-                Address = _deviceManagementService.Address;
-                SelectedBaudRate = _deviceManagementService.BaudRate;
+                var dispatcher = Mvx.IoCProvider.Resolve<IMvxMainThreadAsyncDispatcher>();
+                dispatcher.ExecuteOnMainThreadAsync(() =>
+                {
+                    Address = _deviceManagementService.Address;
+                    SelectedBaudRate = _deviceManagementService.BaudRate;
+                });
             };
 
             _deviceManagementService.ConnectionStatusChange += DeviceManagementServiceOnConnectionStatusChange;
@@ -47,6 +51,7 @@ namespace OSDPBench.Core.ViewModels
             var dispatcher = Mvx.IoCProvider.Resolve<IMvxMainThreadAsyncDispatcher>();
             dispatcher.ExecuteOnMainThreadAsync(() =>
             {
+                IsConnected = isConnected;
                 if (isConnected)
                 {
                     StatusText = "Connected";
@@ -87,9 +92,9 @@ namespace OSDPBench.Core.ViewModels
         }
  
 
-        private int _address;
+        private byte _address;
 
-        public int Address
+        public byte Address
         {
             get => _address;
             set => SetProperty(ref _address, value);
@@ -153,6 +158,14 @@ namespace OSDPBench.Core.ViewModels
         {
             get => _isDiscovered;
             set => SetProperty(ref _isDiscovered, value);
+        }
+        
+        private bool _isConnected;
+
+        public bool IsConnected
+        {
+            get => _isConnected;
+            set => SetProperty(ref _isConnected, value);
         }
         
         private StatusLevel _statusLevel;
@@ -234,10 +247,11 @@ namespace OSDPBench.Core.ViewModels
                         StatusText = $"Attempting to get capabilities of device at {current.Connection.BaudRate} with address {current.Address}";
                         break;
                     case DiscoveryStatus.Succeeded:
+                        IsConnected = false;
                         IsDiscovered = true;
+                        SelectedBaudRate = (uint)current.Connection.BaudRate;
                         Address = current.Address;
                         _serialPortConnection = current.Connection as ISerialPortConnection;
-                        _selectedBaudRate = (uint)current.Connection.BaudRate;
                         break;
                     case DiscoveryStatus.DeviceNotFound:
                         StatusText = "Failed to connect to device";
@@ -408,7 +422,7 @@ namespace OSDPBench.Core.ViewModels
             }
         }
 
-        private async Task DoDiscoverResetCommand()
+        private Task DoDiscoverResetCommand()
         {
             NakText = string.Empty;
 
@@ -416,10 +430,9 @@ namespace OSDPBench.Core.ViewModels
             {
                 _alertInteraction.Raise(
                     new Alert(IdentityLookup.ResetInstructions));
-                return;
+                return Task.CompletedTask;
             }
 
-            await _deviceManagementService.Shutdown();
             IsDiscovered = false;
             StatusText = string.Empty;
 
@@ -427,7 +440,6 @@ namespace OSDPBench.Core.ViewModels
             {
                 if (!result)
                 {
-                    _alertInteraction.Raise(new Alert("Perform a discovery to reconnect to the device."));
                     return;
                 }
                 
@@ -441,6 +453,7 @@ namespace OSDPBench.Core.ViewModels
                     _alertInteraction.Raise(new Alert(exception.Message + " Perform a discovery to reconnect to the device."));
                 }
             }));
+            return Task.CompletedTask;
         }
 
         private readonly MvxInteraction<Alert> _alertInteraction = new();

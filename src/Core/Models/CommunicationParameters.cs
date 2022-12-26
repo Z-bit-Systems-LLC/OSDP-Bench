@@ -2,7 +2,7 @@
 {
     public class CommunicationParameters
     {
-        public CommunicationParameters(string portName, uint baudRate, int address)
+        public CommunicationParameters(string portName, uint baudRate, byte address)
         {
             PortName = portName;
             BaudRate = baudRate;
@@ -13,6 +13,6 @@
 
         public uint BaudRate { get; }
 
-        public int Address { get; }
+        public byte Address { get; }
     }
 }

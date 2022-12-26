@@ -32,20 +32,24 @@ public class RootView : MvxActivity<RootViewModel>
         SetContentView(Resource.Layout.RootView);
     }
     
+    // ReSharper disable once RedundantOverriddenMember
     protected override void OnPause()
     {
         base.OnPause();
 
-        var connection = Mvx.IoCProvider.Resolve<ISerialPortConnection>() as AndroidSerialPortConnection;
-        connection?. Close();
+        // Need a top level activity
+        //var connection = Mvx.IoCProvider.Resolve<ISerialPortConnection>() as AndroidSerialPortConnection;
+        //connection?. Close();
     }
 
+    // ReSharper disable once RedundantOverriddenMember
     protected override void OnResume()
     {
         base.OnResume();
 
-        var connection = Mvx.IoCProvider.Resolve<ISerialPortConnection>() as AndroidSerialPortConnection;
-        connection?.Open();
+        // Need a top level activity
+        //var connection = Mvx.IoCProvider.Resolve<ISerialPortConnection>() as AndroidSerialPortConnection;
+        //connection?.Open();
     }
     
     protected override void OnViewModelSet()
@@ -122,7 +126,7 @@ public class RootView : MvxActivity<RootViewModel>
             var permissionGranted = await _usbManager.RequestPermissionAsync(port.Driver.Device, this);
             if (permissionGranted)
             {
-                var connection = Mvx.IoCProvider.Resolve<ISerialPortConnection>() as AndroidSerialPortConnection;
+                var connection = Mvx.IoCProvider.GetSingleton<ISerialPortConnection>() as AndroidSerialPortConnection;
                 connection?.LoadPort(_usbManager, port);
             }
             else

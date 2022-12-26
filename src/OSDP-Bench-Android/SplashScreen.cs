@@ -21,9 +21,7 @@ public class SplashScreen : MvxSplashScreenActivity
         : base(Resource.Layout.SplashScreen)
     {
     }
-    
-    private UsbManager? _usbManager; 
-    
+
     protected override async void OnCreate(Bundle bundle)
     {
         base.OnCreate(bundle);
@@ -33,10 +31,10 @@ public class SplashScreen : MvxSplashScreenActivity
     
     private async Task InitializeUsbService()
     {
-        _usbManager = GetSystemService(Context.UsbService) as UsbManager;
-        var drivers = await FindAllDriversAsync(_usbManager);
+        var usbManager = GetSystemService(Context.UsbService) as UsbManager;
+        var drivers = await FindAllDriversAsync(usbManager);
 
-        var connection = Mvx.IoCProvider.Resolve<ISerialPortConnection>() as AndroidSerialPortConnection;
+        var connection = Mvx.IoCProvider.GetSingleton<ISerialPortConnection>() as AndroidSerialPortConnection;
         connection?.GetSerialPorts(drivers);
     }
 

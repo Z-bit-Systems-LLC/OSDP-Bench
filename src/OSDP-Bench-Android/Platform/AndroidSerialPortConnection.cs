@@ -40,7 +40,7 @@ internal class AndroidSerialPortConnection : ISerialPortConnection
 
     public ISerialPortConnection GetConnection(string portName, int baudRate)
     {
-        throw new NotImplementedException();
+        return new AndroidSerialPortConnection(_usbManager, _usbSerialPort, baudRate);
     }
 
     public void Open()
