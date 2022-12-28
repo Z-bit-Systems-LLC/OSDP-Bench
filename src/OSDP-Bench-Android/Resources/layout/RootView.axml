@@ -77,8 +77,7 @@
 	            <ImageView
                     android:layout_width="18dp"
                     android:layout_height="18dp"
-                    android:src="@drawable/ic_mtrl_chip_checked_black"
-                    android:tint="@android:color/holo_green_dark"/>
+                    local:MvxBind="DrawableName If(CapabilitiesLookup.CRC, 'ic_m3_chip_check' , 'ic_m3_chip_close'); TintColor If(CapabilitiesLookup.CRC, '#026c45', 'Red')"/>
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
@@ -89,8 +88,7 @@
                 <ImageView
                     android:layout_width="18dp"
                     android:layout_height="18dp"
-                    android:src="@drawable/ic_mtrl_chip_checked_black"
-                    android:tint="@android:color/holo_green_dark"/>
+                    local:MvxBind="DrawableName If(CapabilitiesLookup.SecureChannel, 'ic_m3_chip_check' , 'ic_m3_chip_close'); TintColor If(CapabilitiesLookup.SecureChannel, '#026c45', 'Red')"/>
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"

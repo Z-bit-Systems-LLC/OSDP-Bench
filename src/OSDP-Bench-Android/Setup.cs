@@ -1,14 +1,16 @@
 ﻿using Microsoft.Extensions.Logging;
+using MvvmCross.Binding.Bindings.Target.Construction;
 using MvvmCross.IoC;
 using MvvmCross.Platforms.Android.Core;
 using MvvmCross.ViewModels;
-using OSDP_Bench_Android.Platform;
 using OSDPBench.Core;
 using OSDPBench.Core.Platforms;
+using OSDPBench.UI.Android.Bindings;
+using OSDPBench.UI.Android.Platform;
 using Serilog;
 using Serilog.Extensions.Logging;
 
-namespace OSDP_Bench_Android;
+namespace OSDPBench.UI.Android;
 
 public class Setup : MvxAndroidSetup<App>
 {
@@ -32,5 +34,11 @@ public class Setup : MvxAndroidSetup<App>
             .CreateLogger();
 
         return new SerilogLoggerFactory();
+    }
+    
+    protected override void FillTargetFactories(IMvxTargetBindingFactoryRegistry registry)
+    {
+        base.FillTargetFactories(registry);
+        registry.RegisterCustomBindingFactory<ImageView>("TintColor", view => new TintColorMvxTargetBinding(view));
     }
 }

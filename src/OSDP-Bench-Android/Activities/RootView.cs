@@ -1,20 +1,20 @@
 ﻿using Android.Content;
 using Android.Hardware.Usb;
 using Android.Views;
-using Hoho.Android.UsbSerial.Util;
+using Hoho.Android.UsbSerial.Extensions;
 using MvvmCross;
 using MvvmCross.Base;
 using MvvmCross.Binding.BindingContext;
 using MvvmCross.Platforms.Android.Presenters.Attributes;
 using MvvmCross.Platforms.Android.Views;
 using MvvmCross.ViewModels;
-using OSDP_Bench_Android.Platform;
 using OSDPBench.Core.Interactions;
 using OSDPBench.Core.Platforms;
 using OSDPBench.Core.ViewModels;
+using OSDPBench.UI.Android.Platform;
 using static Android.App.AlertDialog;
 
-namespace OSDP_Bench_Android.Activities;
+namespace OSDPBench.UI.Android.Activities;
 
 [MvxActivityPresentation]
 [Activity(Theme = "@style/Theme.AppCompat.Light",
@@ -117,7 +117,7 @@ public class RootView : MvxActivity<RootViewModel>
     private async Task InitializeUsbService()
     {
         _usbManager = GetSystemService(Context.UsbService) as UsbManager;
-        var drivers = await OSDP_Bench_Android.SplashScreen.FindAllDriversAsync(_usbManager);
+        var drivers = await Android.SplashScreen.FindAllDriversAsync(_usbManager);
         
         var port = drivers.FirstOrDefault()?.Ports.FirstOrDefault();
 

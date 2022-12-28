@@ -2,7 +2,7 @@
 using MvvmCross.Platforms.Android.Views;
 using OSDPBench.Core;
 
-namespace OSDP_Bench_Android;
+namespace OSDPBench.UI.Android;
 
 [Application]
 public class MainApplication : MvxAndroidApplication<Setup, App>

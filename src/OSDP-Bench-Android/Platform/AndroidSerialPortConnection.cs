@@ -1,11 +1,11 @@
 ﻿using System.Collections.Concurrent;
 using Android.Hardware.Usb;
-using Hoho.Android.UsbSerial.Driver;
+using Hoho.Android.UsbSerial.driver;
 using Hoho.Android.UsbSerial.Extensions;
 using OSDPBench.Core.Models;
 using OSDPBench.Core.Platforms;
 
-namespace OSDP_Bench_Android.Platform;
+namespace OSDPBench.UI.Android.Platform;
 
 internal class AndroidSerialPortConnection : ISerialPortConnection
 {

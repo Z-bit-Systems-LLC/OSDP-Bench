@@ -1,15 +1,15 @@
 ﻿using Android.Content;
 using Android.Hardware.Usb;
-using Hoho.Android.UsbSerial.Driver;
+using Hoho.Android.UsbSerial.driver;
 using Hoho.Android.UsbSerial.Extensions;
 using MvvmCross;
 using MvvmCross.Platforms.Android.Views;
-using OSDP_Bench_Android.Platform;
 using OSDPBench.Core.Platforms;
+using OSDPBench.UI.Android.Platform;
 
 [assembly: UsesFeature("android.hardware.usb.host")]
 
-namespace OSDP_Bench_Android;
+namespace OSDPBench.UI.Android;
 
 [IntentFilter(new[] { UsbManager.ActionUsbDeviceAttached })]
 [MetaData(UsbManager.ActionUsbDeviceAttached, Resource = "@xml/device_filter")]
