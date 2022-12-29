@@ -23,7 +23,7 @@
       <None Remove="Resources\layout\UpdateCommunicationsView.axml" />
     </ItemGroup>
     <ItemGroup>
-      <ProjectReference Include="..\Core\Core.csproj" />
+      <ProjectReference Include="..\..\Core\Core.csproj" />
       <ProjectReference Include="..\UsbSerialForAndroid\UsbSerialForAndroid\UsbSerialForAndroid.csproj" />
     </ItemGroup>
     <ItemGroup>
