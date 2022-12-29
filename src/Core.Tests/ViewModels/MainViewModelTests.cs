@@ -31,7 +31,7 @@ namespace OSDPBench.Core.Tests.ViewModels
             Ioc.RegisterSingleton(new Mock<IDeviceManagementService>().Object);
             Ioc.RegisterSingleton(new Mock<ISerialPortConnection>().Object);
 
-            var mainViewModel = Ioc.IoCConstruct<MainViewModel>();
+            var mainViewModel = Ioc.IoCConstruct<RootViewModel>();
 
             Assert.AreEqual(7, mainViewModel.AvailableBaudRates.Count);
         }
@@ -51,7 +51,7 @@ namespace OSDPBench.Core.Tests.ViewModels
                 });
             Ioc.RegisterSingleton(serialPortConnection.Object);
 
-            var mainViewModel = Ioc.IoCConstruct<MainViewModel>();
+            var mainViewModel = Ioc.IoCConstruct<RootViewModel>();
             mainViewModel.Prepare();
 
             Assert.AreEqual(2, mainViewModel.AvailableSerialPorts.Count);

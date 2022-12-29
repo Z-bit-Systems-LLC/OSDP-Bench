@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">OSDP Bench</string>
+    <string name="app_loading">Loading...</string>
+</resources>

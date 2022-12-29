@@ -7,9 +7,9 @@ namespace OSDPBench.Core.Platforms
 {
     public interface ISerialPortConnection : ISerialPort, IOsdpConnection
     {
-
     }
-    
+
+    /// <summary>Platform specific serial port implementation</summary>
     public interface ISerialPort
     {
         /// <summary>
@@ -18,15 +18,8 @@ namespace OSDPBench.Core.Platforms
         /// <returns></returns>
         Task<IEnumerable<AvailableSerialPort>> FindAvailableSerialPorts();
 
-        /// <summary>
-        /// Gets or sets the selected serial port.
-        /// </summary>
-        AvailableSerialPort SelectedSerialPort { get; set; }
+        IEnumerable<ISerialPortConnection> GetConnectionsForDiscovery(string portName, int[] rates = null);
 
-        /// <summary>
-        /// Sets the baud rate.
-        /// </summary>
-        /// <param name="baudRate">The baud rate.</param>
-        void SetBaudRate(int baudRate);
+        ISerialPortConnection GetConnection(string portName, int baudRate);
     }
 }

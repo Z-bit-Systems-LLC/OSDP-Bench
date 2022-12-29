@@ -1,21 +1,35 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using MvvmCross;
+using MvvmCross.Base;
 using MvvmCross.Commands;
 using MvvmCross.Navigation;
 using MvvmCross.ViewModels;
 using OSDPBench.Core.Interactions;
 using OSDPBench.Core.Models;
+using OSDPBench.Core.Platforms;
 using OSDPBench.Core.Services;
 
 namespace OSDPBench.Core.ViewModels
 {
-    public class UpdateCommunicationViewModel : MvxViewModel<CommunicationParameters, CommunicationParameters>
+    public class UpdateCommunicationViewModel : MvxNavigationViewModel<CommunicationParameters>
     {
         private readonly IMvxNavigationService _navigationService;
         private readonly IDeviceManagementService _deviceManagementService;
+        private readonly ISerialPortConnection _serialPortConnection;
 
-        public MvxObservableCollection<uint> AvailableBaudRates { get; } = new MvxObservableCollection<uint>
-            {9600, 14400, 19200, 38400, 57600, 115200, 230400};
+        private string _portName;
+
+        public UpdateCommunicationViewModel(ILoggerFactory logProvider, IMvxNavigationService navigationService, IDeviceManagementService deviceManagementService,
+            ISerialPortConnection serialPortConnection) : base(logProvider, navigationService)
+        {
+            _navigationService = navigationService;
+            _deviceManagementService = deviceManagementService ?? throw new ArgumentNullException(nameof(deviceManagementService));
+            _serialPortConnection = serialPortConnection ?? throw new ArgumentNullException(nameof(serialPortConnection));
+        }
+
+        public MvxObservableCollection<uint> AvailableBaudRates { get; } = new() {9600, 14400, 19200, 38400, 57600, 115200, 230400};
 
         private uint _selectedBaudRate;
         public uint SelectedBaudRate
@@ -24,8 +38,8 @@ namespace OSDPBench.Core.ViewModels
             set => SetProperty(ref _selectedBaudRate, value);
         }
 
-        private int _address;
-        public int Address
+        private byte _address;
+        public byte Address
         {
             get => _address;
             set => SetProperty(ref _address, value);
@@ -38,54 +52,64 @@ namespace OSDPBench.Core.ViewModels
             set => SetProperty(ref _isBusy, value);
         }
 
-        public UpdateCommunicationViewModel(IMvxNavigationService navigationService, IDeviceManagementService deviceManagementService)
-        {
-            _navigationService = navigationService ?? throw new ArgumentNullException(nameof(navigationService));
-            _deviceManagementService = deviceManagementService ?? throw new ArgumentNullException(nameof(deviceManagementService));
-        }
-
         public override void Prepare(CommunicationParameters communicationParameters)
         {
+            _portName = communicationParameters.PortName;
             SelectedBaudRate = communicationParameters.BaudRate;
             Address = communicationParameters.Address;
         }
 
-        private MvxCommand _setCommunicationsCommand;
+        private MvxAsyncCommand _setCommunicationsCommand;
 
         public System.Windows.Input.ICommand SetCommunicationsCommand
         {
             get
             {
-                return _setCommunicationsCommand = _setCommunicationsCommand ??
-                                                     new MvxCommand(async () =>
-                                                     {
-                                                         IsBusy = true;
-                                                         try
-                                                         {
-                                                             await DoSetCommunicationsCommand();
-                                                         }
-                                                         catch
-                                                         {
-                                                             _alertInteraction.Raise(
-                                                                 new Alert(
-                                                                     "Error while attempting to update communication settings."));
-                                                         }
-                                                         IsBusy = false;
-                                                     });
+                return _setCommunicationsCommand ??= new MvxAsyncCommand(async () =>
+                {
+                    IsBusy = true;
+                    try
+                    {
+                        await DoSetCommunicationsCommand();
+                    }
+                    catch (Exception exception)
+                    {
+                        _alertInteraction.Raise(
+                            new Alert(
+                                $"Error while attempting to update communication settings. {exception.Message}"));
+                    }
+                    IsBusy = false;
+
+                    await _navigationService.Close(this);
+                });
             }
         }
 
         private async Task DoSetCommunicationsCommand()
         {
-            var result =
-                await _deviceManagementService.SetCommunicationCommand(
-                    new CommunicationParameters(SelectedBaudRate, Address));
+            var results = await _deviceManagementService.SetCommunicationCommand(
+                    new CommunicationParameters(_portName, SelectedBaudRate, Address));
+            
+            await _deviceManagementService.Shutdown();
 
-            await _navigationService.Close(this, result);
+            _deviceManagementService.Connect(_serialPortConnection.GetConnection(_portName, (int)results.BaudRate),
+                results.Address);
         }
 
-        private readonly MvxInteraction<Alert> _alertInteraction =
-            new MvxInteraction<Alert>();
+        private MvxAsyncCommand _cancelCommand;
+
+        public System.Windows.Input.ICommand CancelCommand
+        {
+            get
+            {
+                return _cancelCommand ??= new MvxAsyncCommand(async () =>
+                {
+                    await _navigationService.Close(this);
+                });
+            }
+        }
+
+        private readonly MvxInteraction<Alert> _alertInteraction = new();
 
         public IMvxInteraction<Alert> AlertInteraction => _alertInteraction;
     }
