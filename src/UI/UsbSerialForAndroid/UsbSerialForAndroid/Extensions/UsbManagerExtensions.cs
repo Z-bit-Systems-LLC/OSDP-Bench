@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Android.App;
 using Android.Content;
 using Android.Hardware.Usb;
+using Android.OS;
 
 namespace Hoho.Android.UsbSerial.Extensions
 {
@@ -26,7 +27,10 @@ namespace Hoho.Android.UsbSerial.Extensions
             var usbPermissionReceiver = new UsbPermissionReceiver(completionSource);
             context.RegisterReceiver(usbPermissionReceiver, new IntentFilter(ACTION_USB_PERMISSION));
 
-            var intent = PendingIntent.GetBroadcast(context, 0, new Intent(ACTION_USB_PERMISSION), 0);
+            var pendingIntentFlags = Build.VERSION.SdkInt >= BuildVersionCodes.S
+                ? PendingIntentFlags.UpdateCurrent | PendingIntentFlags.Mutable
+                : PendingIntentFlags.UpdateCurrent;
+            var intent = PendingIntent.GetBroadcast(context, 0, new Intent(ACTION_USB_PERMISSION), pendingIntentFlags);
             manager.RequestPermission(device, intent);
 
             return completionSource.Task;
