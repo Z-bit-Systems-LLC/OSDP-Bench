@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
+﻿  using Microsoft.Extensions.Logging;
 using MvvmCross.Binding.Bindings.Target.Construction;
 using MvvmCross.IoC;
 using MvvmCross.Platforms.Android.Core;

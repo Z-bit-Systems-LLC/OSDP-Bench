@@ -5,20 +5,13 @@
         <OutputType>Exe</OutputType>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
-        <ApplicationId>com.companyname.OSDP_Bench_Android</ApplicationId>
+        <ApplicationId>com.z-bitco.OSDPBench</ApplicationId>
         <ApplicationVersion>1</ApplicationVersion>
         <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
         <TargetFrameworkVersion>v12.0</TargetFrameworkVersion>
     </PropertyGroup>
-    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-      <AndroidKeyStore>False</AndroidKeyStore>
-      <AndroidLinkTool>r8</AndroidLinkTool>
-    </PropertyGroup>
-    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-      <AndroidKeyStore>False</AndroidKeyStore>
-      <AndroidLinkTool>r8</AndroidLinkTool>
-    </PropertyGroup>
-    <ItemGroup>
+
+	<ItemGroup>
       <None Remove="Resources\drawable\ic_launcher_foreground.xml" />
       <None Remove="Resources\layout\UpdateCommunicationsView.axml" />
     </ItemGroup>
