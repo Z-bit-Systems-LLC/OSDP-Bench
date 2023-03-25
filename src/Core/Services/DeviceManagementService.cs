@@ -91,9 +91,9 @@ namespace OSDPBench.Core.Services
             try
             {
                 var result = await _panel.CommunicationConfiguration(_connectionId, Address,
-                    new CommunicationConfiguration((byte)communicationParameters.Address,
+                    new CommunicationConfiguration(communicationParameters.Address,
                         (int)communicationParameters.BaudRate));
-                
+
                 Address = result.Address;
                 BaudRate = (uint)result.BaudRate;
 

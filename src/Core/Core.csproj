@@ -8,8 +8,8 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
-    <PackageReference Include="MvvmCross" Version="9.0.2" />
-    <PackageReference Include="OSDP.Net" Version="4.0.1" />
+    <PackageReference Include="MvvmCross" Version="9.0.9" />
+    <PackageReference Include="OSDP.Net" Version="4.0.3" />
   </ItemGroup>
 
 </Project>

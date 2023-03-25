@@ -1,6 +1,5 @@
 ﻿using Microsoft.UI;
 using Microsoft.UI.Xaml;
-using System;
 using Microsoft.UI.Windowing;
 
 // To learn more about WinUI, the WinUI project structure,
@@ -17,10 +16,9 @@ namespace WinUI
         {
             InitializeComponent();
 
-            // Get the AppWindow from the XAML Window ("this" is your XAML window)
-            IntPtr hWnd = WinRT.Interop.WindowNative.GetWindowHandle(this);
-            WindowId myWndId = Win32Interop.GetWindowIdFromWindow(hWnd);
-            AppWindow.GetFromWindowId(myWndId).SetIcon("Logo.ico");
+            AppWindow.GetFromWindowId(
+                    Win32Interop.GetWindowIdFromWindow(WinRT.Interop.WindowNative.GetWindowHandle(this)))
+                .SetIcon("Logo.ico");
         }
     }
 }

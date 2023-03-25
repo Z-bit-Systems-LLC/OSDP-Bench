@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using MvvmCross;
-using MvvmCross.Base;
 using MvvmCross.Commands;
 using MvvmCross.Navigation;
 using MvvmCross.ViewModels;
@@ -38,8 +36,8 @@ namespace OSDPBench.Core.ViewModels
             set => SetProperty(ref _selectedBaudRate, value);
         }
 
-        private byte _address;
-        public byte Address
+        private int _address;
+        public int Address
         {
             get => _address;
             set => SetProperty(ref _address, value);
@@ -88,7 +86,7 @@ namespace OSDPBench.Core.ViewModels
         private async Task DoSetCommunicationsCommand()
         {
             var results = await _deviceManagementService.SetCommunicationCommand(
-                    new CommunicationParameters(_portName, SelectedBaudRate, Address));
+                    new CommunicationParameters(_portName, SelectedBaudRate, (byte)Address));
             
             await _deviceManagementService.Shutdown();
 

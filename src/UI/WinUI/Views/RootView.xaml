@@ -146,6 +146,7 @@
                 TextWrapping="Wrap"
                 Text="{Binding IdentityLookup.VersionNumber}"
                 d:Text="1.2.4"/>
+
             <TextBlock
                 FontSize="32"
                 Margin="20 40 20 0"
@@ -153,72 +154,83 @@
                 TextAlignment="Center"
                 TextWrapping="Wrap"
                 Text="Device Capabilities"/>
+
+            <StackPanel Margin="60 20 60 0" Orientation="Vertical">
+
+                <StackPanel Orientation="Horizontal">
+                    <FontIcon
+                        FontFamily="Segoe MDL2 Assets" 
+                        FontSize="32"
+                        Glyph="{Binding CapabilitiesLookup.CRC, Mode=OneWay, Converter={StaticResource BoolToIcon}, FallbackValue='&#xF13D;'}" />
+                    <TextBlock
+                        Margin="20 10 20 10"
+                        FontSize="28"
+                        TextWrapping="Wrap"
+                        Text="CRC" />
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal">
+                    <FontIcon
+                        FontFamily="Segoe MDL2 Assets" 
+                              FontSize="32"
+                              Glyph="{Binding CapabilitiesLookup.SecureChannel, Mode=OneWay, Converter={StaticResource BoolToIcon}, FallbackValue='&#xF13D;'}" />
+                    <TextBlock
+                        Margin="20 10 20 10"
+                               FontSize="28"
+                               TextWrapping="Wrap"
+                               Text="Secure Channel" />
+                </StackPanel>
+            </StackPanel>
+
+            <TextBlock
+                FontSize="32"
+                Margin="20 40 20 0"
+                HorizontalAlignment="Center"
+                TextAlignment="Center"
+                TextWrapping="Wrap"
+                Text="Actions"/>
             <Grid Margin="60 20 60 0" HorizontalAlignment="Stretch">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="37*" />
                     <RowDefinition Height="57*" />
                     <RowDefinition Height="57*" />
-                    <RowDefinition Height="57*" />
-                    <RowDefinition Height="57*" />
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" MinWidth="50"/>
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
-                <TextBlock Grid.Row="0" Grid.Column="1"
+                <TextBlock Grid.Row="0" Grid.Column="0"
                            Margin="20 0 20 0"
                            FontSize="28"
                            FontWeight="Bold"
                            TextWrapping="Wrap"
                            Text="Description"/>
-                <TextBlock Grid.Row="0" Grid.Column="2" 
+                <TextBlock Grid.Row="0" Grid.Column="1" 
                            Margin="20 0 20 0"
                            FontSize="28"
                            FontWeight="Bold"
                            TextWrapping="Wrap"
                            Text="Action"/>
 
-                <TextBlock Grid.Row="1" Grid.Column="1" 
+                <TextBlock Grid.Row="1" Grid.Column="0" 
                            Margin="20 10 20 10"
                            FontSize="28"
                            TextWrapping="Wrap"
                            VerticalAlignment="Center"
                            Text="Communication" />
-                <Button Grid.Row="1" Grid.Column="2"
+                <Button Grid.Row="1" Grid.Column="1"
                         Margin="20 10 20 10"
                         FontSize="16"
                         HorizontalAlignment="Center"
                         Content="Update"
                         Command="{Binding UpdateCommunicationCommand, Mode=OneWay}"/>
-
-                <FontIcon Grid.Row="2" Grid.Column="0" 
-                          FontFamily="Segoe MDL2 Assets" 
-                          FontSize="32"
-                          Glyph="{Binding CapabilitiesLookup.CRC, Mode=OneWay, Converter={StaticResource BoolToIcon}, FallbackValue='&#xF13D;'}" />
-                <TextBlock Grid.Row="2" Grid.Column="1" 
-                           Margin="20 10 20 10"
-                           FontSize="28"
-                           TextWrapping="Wrap"
-                           Text="CRC" />
-
-                <FontIcon Grid.Row="3" Grid.Column="0" 
-                          FontFamily="Segoe MDL2 Assets" 
-                          FontSize="32"
-                          Glyph="{Binding CapabilitiesLookup.SecureChannel, Mode=OneWay, Converter={StaticResource BoolToIcon}, FallbackValue='&#xF13D;'}" />
-                <TextBlock Grid.Row="3" Grid.Column="1" 
-                           Margin="20 10 20 10"
-                           FontSize="28"
-                           TextWrapping="Wrap"
-                           Text="Secure Channel" />
-
-                <TextBlock Grid.Row="4" Grid.Column="1" 
+                <TextBlock Grid.Row="2" Grid.Column="0" 
                            Margin="20 10 20 10"
                            FontSize="28"
                            TextWrapping="Wrap"
                            Text="Reset Device" />
-                <Button Grid.Row="4" Grid.Column="2"
+                <Button Grid.Row="2" Grid.Column="1"
                         Margin="20 10 20 10"
                         FontSize="16"
                         HorizontalAlignment="Center"
