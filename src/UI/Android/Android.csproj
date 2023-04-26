@@ -7,8 +7,10 @@
         <ImplicitUsings>enable</ImplicitUsings>
 	    <ApplicationId>com.z-bitco.OSDPBench</ApplicationId>
         <ApplicationVersion>1</ApplicationVersion>
-        <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
+        <ApplicationDisplayVersion>2.0.2</ApplicationDisplayVersion>
         <TargetFrameworkVersion>v12.0</TargetFrameworkVersion>
+        <AssemblyVersion></AssemblyVersion>
+        <FileVersion></FileVersion>
     </PropertyGroup>
 
 	<ItemGroup>
