@@ -25,6 +25,8 @@ namespace OSDPBench.Core.Services
 
         uint BaudRate { get; }
 
+        bool UsesDefaultSecurityKey { get; }
+
         void Connect(IOsdpConnection connection, byte address);
 
         /// <summary>

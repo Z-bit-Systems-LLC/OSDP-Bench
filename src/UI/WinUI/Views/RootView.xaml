@@ -179,6 +179,12 @@
                                FontSize="28"
                                TextWrapping="Wrap"
                                Text="Secure Channel" />
+                    <TextBlock
+                        Margin="20 10 20 10"
+                        VerticalAlignment="Center"
+                        FontSize="18"
+                        TextWrapping="Wrap"
+                        Text="{Binding SecureChannelStatusText}" />
                 </StackPanel>
             </StackPanel>
 

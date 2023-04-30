@@ -136,6 +136,13 @@ namespace OSDPBench.Core.ViewModels
             set => SetProperty(ref _nakText, value);
         }
 
+        private string _secureChannelStatusText;
+        public string SecureChannelStatusText
+        {
+            get => _secureChannelStatusText;
+            set => SetProperty(ref _secureChannelStatusText, value);
+        }
+
         private bool _isReadyToDiscover;
 
         public bool IsReadyToDiscover
@@ -287,6 +294,17 @@ namespace OSDPBench.Core.ViewModels
             {
                 IdentityLookup = _deviceManagementService.IdentityLookup;
                 CapabilitiesLookup = _deviceManagementService.CapabilitiesLookup;
+
+                if (CapabilitiesLookup?.SecureChannel ?? false)
+                {
+                    SecureChannelStatusText = string.Empty;
+                }
+                else
+                {
+                    SecureChannelStatusText = _deviceManagementService.UsesDefaultSecurityKey
+                        ? "Default key is set"
+                        : "*** A non-default key is set, a reset is required to perform actions. ***";
+                }
             }
 
             IsReadyToDiscover = true;

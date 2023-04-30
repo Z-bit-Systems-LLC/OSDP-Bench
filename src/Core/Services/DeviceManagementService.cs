@@ -56,6 +56,9 @@ namespace OSDPBench.Core.Services
         /// <inheritdoc />
         public uint BaudRate { get; private set; }
 
+        /// <inheritdoc />
+        public bool UsesDefaultSecurityKey { get; private set; }
+
         public void Connect(IOsdpConnection connection, byte address)
         {
             _connectionId = _panel.StartConnection(connection);
@@ -79,6 +82,7 @@ namespace OSDPBench.Core.Services
             BaudRate = (uint)results.Connection.BaudRate;
             IdentityLookup = new IdentityLookup(results.Id);
             CapabilitiesLookup = new CapabilitiesLookup(results.Capabilities);
+            UsesDefaultSecurityKey = results.UsesDefaultSecurityKey;
             Connect(results.Connection, Address);
 
             return results;
@@ -180,6 +184,7 @@ namespace OSDPBench.Core.Services
             NakReplyReceived?.Invoke(this, errorMessage);
         }
 
+        // ReSharper disable once UnusedMember.Local
         private static string FormatData(BitArray bitArray)
         {
             var builder = new StringBuilder();
