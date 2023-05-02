@@ -297,13 +297,13 @@ namespace OSDPBench.Core.ViewModels
 
                 if (CapabilitiesLookup?.SecureChannel ?? false)
                 {
-                    SecureChannelStatusText = string.Empty;
-                }
-                else
-                {
                     SecureChannelStatusText = _deviceManagementService.UsesDefaultSecurityKey
                         ? "Default key is set"
                         : "*** A non-default key is set, a reset is required to perform actions. ***";
+                }
+                else
+                {
+                    SecureChannelStatusText = string.Empty;
                 }
             }
 
