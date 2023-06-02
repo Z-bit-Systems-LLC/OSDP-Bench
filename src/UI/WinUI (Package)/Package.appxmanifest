@@ -9,7 +9,7 @@
   <Identity
     Name="Z-bitco.OSDPBench"
     Publisher="CN=5F9ECF22-A4DC-44B4-A020-C94E84581231"
-    Version="2.0.5.0" />
+    Version="2.0.6.0" />
 
   <Properties>
     <DisplayName>OSDP Bench</DisplayName>

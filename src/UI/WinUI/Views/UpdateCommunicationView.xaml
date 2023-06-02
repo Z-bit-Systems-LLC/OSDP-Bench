@@ -41,8 +41,8 @@
                 HorizontalAlignment="Left"
                 SmallChange="1"
                 Minimum="0"
-                Maximum="255"
-                SpinButtonPlacementMode="Inline"
+                Maximum="126"
+                SpinButtonPlacementMode="Compact"
                 AcceptsExpression="False"/>
             <StackPanel Orientation="Horizontal"
                         Margin="20 10 20 10">

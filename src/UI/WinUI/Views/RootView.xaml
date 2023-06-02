@@ -56,7 +56,7 @@
                 SmallChange="1"
                 Minimum="0"
                 Maximum="126"
-                SpinButtonPlacementMode="Inline"
+                SpinButtonPlacementMode="Compact"
                 AcceptsExpression="False"/>
 
             <StackPanel Margin="20 80 20 10">
