@@ -440,7 +440,7 @@ namespace OSDPBench.Core.ViewModels
             }
         }
 
-        private Task DoDiscoverResetCommand()
+        private async Task DoDiscoverResetCommand()
         {
             NakText = string.Empty;
 
@@ -448,16 +448,18 @@ namespace OSDPBench.Core.ViewModels
             {
                 _alertInteraction.Raise(
                     new Alert(IdentityLookup.ResetInstructions));
-                return Task.CompletedTask;
+                return;
             }
 
             IsDiscovered = false;
             StatusText = string.Empty;
 
+            await _deviceManagementService.Shutdown();
             _yesNoInteraction.Raise(new YesNoQuestion("Do you want to reset device, if so power cycle then click yes when the device boots up.", async result =>
             {
                 if (!result)
                 {
+                    _alertInteraction.Raise(new Alert("Perform a discovery to reconnect to the device."));
                     return;
                 }
                 
@@ -471,7 +473,6 @@ namespace OSDPBench.Core.ViewModels
                     _alertInteraction.Raise(new Alert(exception.Message + " Perform a discovery to reconnect to the device."));
                 }
             }));
-            return Task.CompletedTask;
         }
 
         private readonly MvxInteraction<Alert> _alertInteraction = new();
@@ -490,6 +491,8 @@ namespace OSDPBench.Core.ViewModels
         /// </summary>
         /// <value>The yes no interaction.</value>
         public IMvxInteraction<YesNoQuestion> YesNoInteraction => _yesNoInteraction;
+
+
 
         public override async void Prepare()
         {
