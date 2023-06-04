@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -42,6 +44,7 @@ namespace OSDPBench.Core.ViewModels
 
             _deviceManagementService.ConnectionStatusChange += DeviceManagementServiceOnConnectionStatusChange;
             _deviceManagementService.NakReplyReceived += DeviceManagementServiceOnNakReplyReceived;
+            _deviceManagementService.CardReadReceived += DeviceManagementServiceOnCardReadReceived;
 
             _serialPortConnection = serialPort ?? throw new ArgumentNullException(nameof(serialPort));
         }
@@ -69,6 +72,15 @@ namespace OSDPBench.Core.ViewModels
         {
             var dispatcher = Mvx.IoCProvider.Resolve<IMvxMainThreadAsyncDispatcher>();
             dispatcher.ExecuteOnMainThreadAsync(() => { NakText = errorMessage; });
+        }
+
+        private void DeviceManagementServiceOnCardReadReceived(object sender, string data)
+        {
+            var dispatcher = Mvx.IoCProvider.Resolve<IMvxMainThreadAsyncDispatcher>();
+            dispatcher.ExecuteOnMainThreadAsync(() => { 
+                CardReadTime = DateTime.Now;
+                CardReadData = data;
+            });
         }
 
         public MvxObservableCollection<AvailableSerialPort> AvailableSerialPorts { get; } = new();
@@ -197,6 +209,20 @@ namespace OSDPBench.Core.ViewModels
         {
             get => _capabilitiesLookup;
             set => SetProperty(ref _capabilitiesLookup, value);
+        }
+
+        private DateTime _cardReadTime;
+        public DateTime CardReadTime
+        {
+            get => _cardReadTime;
+            set => SetProperty(ref _cardReadTime, value);
+        }
+
+        private string _cardReadData;
+        public string CardReadData
+        {
+            get => _cardReadData;
+            set => SetProperty(ref _cardReadData, value);
         }
 
         private MvxAsyncCommand _goDiscoverDeviceCommand;

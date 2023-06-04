@@ -42,6 +42,17 @@ namespace OSDPBench.Core.Services
             {
                 OnNakReplyReceived(ToFormattedText(args.Nak.ErrorCode));
             };
+
+            _panel.RawCardDataReplyReceived += (sender, args) =>
+            {
+                var builder = new StringBuilder();
+                foreach (bool bit in args.RawCardData.Data)
+                {
+                    builder.Append(bit ? "1" : "0");
+                }
+
+                OnCardReadReceived(builder.ToString());
+            };
         }
         
         /// <inheritdoc />
@@ -182,6 +193,13 @@ namespace OSDPBench.Core.Services
         protected virtual void OnNakReplyReceived(string errorMessage)
         {
             NakReplyReceived?.Invoke(this, errorMessage);
+        }
+
+        /// <inheritdoc />
+        public event EventHandler<string> CardReadReceived;
+        protected virtual void OnCardReadReceived(string data)
+        {
+            CardReadReceived?.Invoke(this, data);
         }
 
         // ReSharper disable once UnusedMember.Local

@@ -3,7 +3,6 @@ using Android.Hardware.Usb;
 using Hoho.Android.UsbSerial.driver;
 using Hoho.Android.UsbSerial.Extensions;
 using MvvmCross;
-using MvvmCross.Platforms.Android.Views;
 using OSDPBench.Core.Platforms;
 using OSDPBench.UI.Android.Platform;
 
@@ -15,7 +14,7 @@ namespace OSDPBench.UI.Android;
 [MetaData(UsbManager.ActionUsbDeviceAttached, Resource = "@xml/device_filter")]
 
 [Activity(Label = "@string/app_name", Theme = "@style/Theme.AppCompat.Light", MainLauncher = true)]
-public class SplashScreen : MvxSplashScreenActivity
+public class SplashScreen : MvvmCross.Platforms.Android.Views.MvxStartActivity
 {
     public SplashScreen()
         : base(Resource.Layout.SplashScreen)

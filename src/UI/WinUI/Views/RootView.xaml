@@ -19,6 +19,8 @@
             <converters:BoolToVisibilityConverter TrueValue="Visible" FalseValue="Collapsed" x:Key="BoolToVisibilityConverter" />
             <converters:BoolToObjectConverter x:Name="BoolToIcon" TrueValue="&#xF13E;" FalseValue="&#xF13D;" />
             <localConverters:StatusLevelConverter x:Name="StatusLevelConverter" />
+            <localConverters:TimeConverter x:Name="TimeConverter" />
+            <localConverters:CardDataSizeConverter x:Name="CardDataSizeConverter" />
         </ResourceDictionary>
     </Page.Resources>
 
@@ -242,6 +244,63 @@
                         HorizontalAlignment="Center"
                         Content="Reset"
                         Command="{Binding ResetDeviceCommand, Mode=OneWay}"/>
+            </Grid>
+
+            <TextBlock
+                FontSize="32"
+                Margin="20 40 20 0"
+                HorizontalAlignment="Center"
+                TextAlignment="Center"
+                TextWrapping="Wrap"
+                Text="Card Read Data"/>
+            <Grid Margin="60 20 60 0" HorizontalAlignment="Stretch">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="37*" />
+                    <RowDefinition Height="57*" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Row="0" Grid.Column="0"
+                           Margin="20 0 20 0"
+                           FontSize="28"
+                           FontWeight="Bold"
+                           TextWrapping="Wrap"
+                           Text="Time"/>
+                <TextBlock Grid.Row="0" Grid.Column="1"
+                           Margin="20 0 20 0"
+                           FontSize="28"
+                           FontWeight="Bold"
+                           TextWrapping="Wrap"
+                           Text="Size"/>
+                <TextBlock Grid.Row="0" Grid.Column="2" 
+                           Margin="20 0 20 0"
+                           FontSize="28"
+                           FontWeight="Bold"
+                           TextWrapping="Wrap"
+                           HorizontalTextAlignment="Right"
+                           Text="Data"/>
+
+                <TextBlock Grid.Row="1" Grid.Column="0"
+                           Margin="20 0 20 0"
+                           FontSize="16"
+                           TextWrapping="Wrap"
+                           Text="{Binding CardReadTime, Mode=OneWay, Converter={StaticResource TimeConverter}}"/>
+                <TextBlock Grid.Row="1" Grid.Column="1"
+                           Margin="20 0 20 0"
+                           FontSize="16"
+                           TextWrapping="Wrap"
+                           Text="{Binding CardReadData, Mode=OneWay, Converter={StaticResource CardDataSizeConverter}}"/>
+                <TextBlock Grid.Row="1" Grid.Column="2" 
+                           Margin="20 0 20 0"
+                           FontSize="16"
+                           TextWrapping="Wrap"
+                           IsTextSelectionEnabled="True"
+                           HorizontalTextAlignment="Right"
+                           Text="{Binding CardReadData, Mode=OneWay}"/>
             </Grid>
         </StackPanel>
     </Grid>

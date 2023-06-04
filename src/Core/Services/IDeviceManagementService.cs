@@ -67,5 +67,10 @@ namespace OSDPBench.Core.Services
         /// Occurs when NAK reply received.
         /// </summary>
         event EventHandler<string> NakReplyReceived;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        event EventHandler<string> CardReadReceived;
     }
 }
