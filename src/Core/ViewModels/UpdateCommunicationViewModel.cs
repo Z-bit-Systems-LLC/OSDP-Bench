@@ -27,7 +27,7 @@ namespace OSDPBench.Core.ViewModels
             _serialPortConnection = serialPortConnection ?? throw new ArgumentNullException(nameof(serialPortConnection));
         }
 
-        public MvxObservableCollection<uint> AvailableBaudRates { get; } = new() {9600, 14400, 19200, 38400, 57600, 115200, 230400};
+        public MvxObservableCollection<uint> AvailableBaudRates { get; } = new() {9600, 19200, 38400, 57600, 115200, 230400};
 
         private uint _selectedBaudRate;
         public uint SelectedBaudRate

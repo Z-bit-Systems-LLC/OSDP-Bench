@@ -125,6 +125,31 @@
 	            android:layout_gravity="center_horizontal"
 	            android:text="Reset"
 	            local:MvxBind="Click ResetDeviceCommand; Enabled IsConnected" />
+            <TextView
+              style="@android:style/TextAppearance.Large"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:gravity="center"
+              android:layout_marginTop="10dp"
+              android:text="Card Read Data"/>
+            <TextView
+              style="@android:style/TextAppearance.Small"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:gravity="left"
+              local:MvxBind="Text Time(CardReadTime)" />
+            <TextView
+              style="@android:style/TextAppearance.Small"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:gravity="left"
+              local:MvxBind="Text CardDataSize(CardReadData)" />
+            <TextView
+              style="@android:style/TextAppearance.Small"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:gravity="left"
+              local:MvxBind="Text CardReadData" />
         </LinearLayout>
 	</ScrollView>
 
@@ -139,7 +164,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal|center"
             android:padding="5dp"
-			android:textColor="#FFFFFF"
+			android:textColor="@android:color/white"
 			android:background="@android:color/darker_gray"
             local:MvxBind="Text Format('Baud Rate {0} Address {1} - {2}', SelectedBaudRate, Address, StatusText)" />
 	</LinearLayout>

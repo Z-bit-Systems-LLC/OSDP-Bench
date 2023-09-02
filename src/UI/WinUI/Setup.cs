@@ -1,8 +1,10 @@
 ﻿using Microsoft.Extensions.Logging;
+using MvvmCross.Converters;
 using MvvmCross.IoC;
 using MvvmCross.Platforms.WinUi.Core;
 using MvvmCross.ViewModels;
 using OSDPBench.Core.Platforms;
+using OSDPBench.Core.ValueConverters;
 using Serilog;
 using Serilog.Extensions.Logging;
 using WinUI.Platform;
@@ -30,5 +32,11 @@ internal class Setup : MvxWindowsSetup<OSDPBench.Core.App>
             .CreateLogger();
 
         return new SerilogLoggerFactory();
+    }
+    
+    protected override void FillValueConverters(IMvxValueConverterRegistry registry)
+    {
+        registry.AddOrOverwrite("Time", new TimeValueConverter());
+        registry.AddOrOverwrite("CardDataSize", new CardDataSizeValueConverter());
     }
 }

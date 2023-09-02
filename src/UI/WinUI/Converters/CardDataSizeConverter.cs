@@ -1,19 +1,10 @@
 using System;
 using Microsoft.UI.Xaml.Data;
+using MvvmCross.Platforms.WinUi.Converters;
+using OSDPBench.Core.ValueConverters;
 
 namespace WinUI.Converters;
 
-public class CardDataSizeConverter : IValueConverter
+public class CardDataSizeConverter : MvxNativeValueConverter<CardDataSizeValueConverter>
 {
-    public object Convert(object value, Type targetType, object parameter, string language)
-    {
-        var cardData = (string)(value ?? string.Empty);
-
-        return cardData.Length > 0 ? $"{cardData.Length}-bits" : string.Empty;
-    }
-
-    public object ConvertBack(object value, Type targetType, object parameter, string language)
-    {
-        throw new NotImplementedException();
-    }
 }

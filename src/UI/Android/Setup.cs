@@ -1,10 +1,16 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Android.Hardware.Usb;
+using Hoho.Android.UsbSerial.driver;
+using Hoho.Android.UsbSerial.Extensions;
+using Microsoft.Extensions.Logging;
+using MvvmCross;
 using MvvmCross.Binding.Bindings.Target.Construction;
+using MvvmCross.Converters;
 using MvvmCross.IoC;
 using MvvmCross.Platforms.Android.Core;
 using MvvmCross.ViewModels;
 using OSDPBench.Core;
 using OSDPBench.Core.Platforms;
+using OSDPBench.Core.ValueConverters;
 using OSDPBench.UI.Android.Bindings;
 using OSDPBench.UI.Android.Platform;
 using Serilog;
@@ -40,5 +46,11 @@ public class Setup : MvxAndroidSetup<App>
     {
         base.FillTargetFactories(registry);
         registry.RegisterCustomBindingFactory<ImageView>("TintColor", view => new TintColorMvxTargetBinding(view));
+    }
+
+    protected override void FillValueConverters(IMvxValueConverterRegistry registry)
+    {
+        registry.AddOrOverwrite("Time", new TimeValueConverter());
+        registry.AddOrOverwrite("CardDataSize", new CardDataSizeValueConverter());
     }
 }

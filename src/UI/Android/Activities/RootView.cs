@@ -1,6 +1,7 @@
 ﻿using Android.Content;
 using Android.Hardware.Usb;
 using Android.Views;
+using Hoho.Android.UsbSerial.driver;
 using Hoho.Android.UsbSerial.Extensions;
 using MvvmCross;
 using MvvmCross.Base;
@@ -117,7 +118,7 @@ public class RootView : MvxActivity<RootViewModel>
     private async Task InitializeUsbService()
     {
         _usbManager = GetSystemService(Context.UsbService) as UsbManager;
-        var drivers = await Android.SplashScreen.FindAllDriversAsync(_usbManager);
+        var drivers = await FindAllDriversAsync(_usbManager);
         
         var port = drivers.FirstOrDefault()?.Ports.FirstOrDefault();
 
@@ -127,7 +128,9 @@ public class RootView : MvxActivity<RootViewModel>
             if (permissionGranted)
             {
                 var connection = Mvx.IoCProvider.GetSingleton<ISerialPortConnection>() as AndroidSerialPortConnection;
+                connection?.GetSerialPorts(drivers);
                 connection?.LoadPort(_usbManager, port);
+                ViewModel.ScanSerialPortsCommand.Execute(null);
             }
             else
             {
@@ -139,5 +142,17 @@ public class RootView : MvxActivity<RootViewModel>
 
             }
         }
+    }
+
+    public static async Task<IList<IUsbSerialDriver>> FindAllDriversAsync(UsbManager? usbManager)
+    {
+        // adding a custom driver to the default probe table
+        var table = UsbSerialProber.DefaultProbeTable;
+        table.AddProduct(0x1b4f, 0x0008, typeof(CdcAcmSerialDriver)); // IOIO OTG
+
+        table.AddProduct(0x09D8, 0x0420, typeof(CdcAcmSerialDriver)); // Elatec TWN4
+
+        var prober = new UsbSerialProber(table);
+        return await prober.FindAllDriversAsync(usbManager);
     }
 }
