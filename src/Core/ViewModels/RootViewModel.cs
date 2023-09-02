@@ -83,7 +83,7 @@ namespace OSDPBench.Core.ViewModels
 
         public MvxObservableCollection<AvailableSerialPort> AvailableSerialPorts { get; } = new();
 
-        public MvxObservableCollection<uint> AvailableBaudRates { get; } = new() {9600, 14400, 19200, 38400, 57600, 115200, 230400};
+        public MvxObservableCollection<uint> AvailableBaudRates { get; } = new() {9600, 19200, 38400, 57600, 115200, 230400};
 
         private AvailableSerialPort _selectedSerialPort;
 
