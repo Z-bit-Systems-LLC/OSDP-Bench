@@ -25,6 +25,13 @@ steps:
     version: '8.x'
 
 - task: DotNetCoreCLI@2
+  inputs:
+    command: 'custom'
+    projects: 'src/OSDP-Bench.sln'
+    custom: 'workload'
+    arguments: 'restore'
+
+- task: DotNetCoreCLI@2
   displayName: 'dotnet build'
   inputs:
     command: 'build'
