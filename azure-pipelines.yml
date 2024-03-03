@@ -24,6 +24,12 @@ steps:
   inputs:
     restoreSolution: '$(solution)'
 
+- task: JavaToolInstaller@0
+  inputs:
+    versionSpec: '11'
+    jdkArchitectureOption: 'x64'
+    jdkSourceOption: 'PreInstalled'
+
 - task: XamarinAndroid@1
   inputs:
     projectFile: '**/*droid*.csproj'
