@@ -10,7 +10,7 @@ trigger:
 pr: none
 
 pool:
-  vmImage: 'macos-latest'
+  vmImage: 'windows-latest'
 
 variables:
   solution: '**/*.sln'
