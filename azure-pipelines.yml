@@ -4,7 +4,10 @@
 # https://docs.microsoft.com/azure/devops/pipelines/apps/aspnet/build-aspnet-4
 
 trigger:
-- main
+  - main
+  - develop
+
+pr: none
 
 pool:
   vmImage: 'windows-latest'
@@ -15,13 +18,25 @@ variables:
   buildConfiguration: 'Release'
 
 steps:
-- task: NuGetToolInstaller@1
-
-- task: NuGetCommand@2
+- task: UseDotNet@2
+  displayName: 'Install .NET 8 SDK'
   inputs:
-    restoreSolution: '$(solution)'
+    packageType: 'sdk'
+    version: '8.x'
 
-- task: VSTest@2
+- task: DotNetCoreCLI@2
+  displayName: 'dotnet build'
   inputs:
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
+    command: 'build'
+    projects: '**/*.csproj'
+    arguments: '--configuration $(buildConfiguration)'
+    versioningScheme: 'byEnvVar'
+    versionEnvVar: 'AssemblyVersion'
+    
+- task: DotNetCoreCLI@2
+  displayName: 'dotnet test'
+  inputs:
+    command: 'test'
+    nobuild: true
+    projects: '**/*Tests/*.csproj'
+    arguments: '--configuration $(buildConfiguration)'

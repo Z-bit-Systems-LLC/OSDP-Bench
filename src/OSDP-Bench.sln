@@ -17,6 +17,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Android", "UI\Android\Andro
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UsbSerialForAndroid", "UI\UsbSerialForAndroid\UsbSerialForAndroid\UsbSerialForAndroid.csproj", "{A64567BC-548A-4CB7-9F2C-ECE75EE1A868}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Settings", "Settings", "{8FB5794C-299E-4B9E-8D0D-6BFC695DA91B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ci", "ci", "{5D426D86-43BB-4D6D-A6BF-0ACC65A19C92}"
+	ProjectSection(SolutionItems) = preProject
+		..\azure-pipelines.yml = ..\azure-pipelines.yml
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -180,6 +187,7 @@ Global
 		{D564B0AF-32EB-4D4A-A3FD-3DCBBDEA0A57} = {6AF5FFEF-AFBA-4BB8-A14F-FDE4AEEC19AB}
 		{13A6A3D6-9B9E-4AF2-AB26-153B9BC17370} = {6AF5FFEF-AFBA-4BB8-A14F-FDE4AEEC19AB}
 		{A64567BC-548A-4CB7-9F2C-ECE75EE1A868} = {6AF5FFEF-AFBA-4BB8-A14F-FDE4AEEC19AB}
+		{5D426D86-43BB-4D6D-A6BF-0ACC65A19C92} = {8FB5794C-299E-4B9E-8D0D-6BFC695DA91B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {09928BD4-7D4E-4C9A-86DA-49BC36820716}
