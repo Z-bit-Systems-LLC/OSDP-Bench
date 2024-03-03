@@ -10,20 +10,14 @@ trigger:
 pr: none
 
 pool:
-  vmImage: 'windows-latest'
+  vmImage: 'macos-latest'
 
 variables:
   solution: '**/*.sln'
-  buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
+  outputDirectory: '$(build.binariesDirectory)/$(buildConfiguration)'
 
 steps:
-- task: UseDotNet@2
-  displayName: 'Install .NET 8 SDK'
-  inputs:
-    packageType: 'sdk'
-    version: '8.x'
-
 - task: NuGetToolInstaller@1
 
 - task: NuGetCommand@2
@@ -33,5 +27,5 @@ steps:
 - task: XamarinAndroid@1
   inputs:
     projectFile: '**/*droid*.csproj'
+    outputDirectory: '$(outputDirectory)'
     configuration: '$(buildConfiguration)'
-    msbuildVersionOption: latest
