@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <TargetFramework>net6.0-android33.0</TargetFramework>
+        <TargetFramework>net8.0-android</TargetFramework>
         <RootNamespace>OSDPBench.UI.Android</RootNamespace>
         <OutputType>Exe</OutputType>
         <Nullable>enable</Nullable>
@@ -11,6 +11,7 @@
         <TargetFrameworkVersion>v12.0</TargetFrameworkVersion>
         <AssemblyVersion></AssemblyVersion>
         <FileVersion></FileVersion>
+        <LangVersion>default</LangVersion>
     </PropertyGroup>
 
 	<ItemGroup>
