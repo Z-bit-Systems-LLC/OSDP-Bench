@@ -24,25 +24,14 @@ steps:
     packageType: 'sdk'
     version: '8.x'
 
-- task: DotNetCoreCLI@2
-  inputs:
-    command: 'custom'
-    custom: 'workload'
-    arguments: 'restore src/OSDP-Bench.sln'
+- task: NuGetToolInstaller@1
 
-- task: DotNetCoreCLI@2
-  displayName: 'dotnet build'
+- task: NuGetCommand@2
   inputs:
-    command: 'build'
-    projects: '**/*.csproj'
-    arguments: '--configuration $(buildConfiguration)'
-    versioningScheme: 'byEnvVar'
-    versionEnvVar: 'AssemblyVersion'
-    
-- task: DotNetCoreCLI@2
-  displayName: 'dotnet test'
+    restoreSolution: '$(solution)'
+
+- task: XamarinAndroid@1
   inputs:
-    command: 'test'
-    nobuild: true
-    projects: '**/*Tests/*.csproj'
-    arguments: '--configuration $(buildConfiguration)'
+    projectFile: '**/*droid*.csproj'
+    configuration: '$(buildConfiguration)'
+    msbuildVersionOption: latest
