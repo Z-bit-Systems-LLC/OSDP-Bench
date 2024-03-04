@@ -1,8 +1,4 @@
-﻿variables:
-  buildPlatform: 'x64|ARM64'
-  appxPackageDir: '$(build.artifactStagingDirectory)\AppxPackages\\'
-
-steps:
+﻿steps:
   - task: NuGetToolInstaller@1
 
   - task: NuGetCommand@2

@@ -13,6 +13,8 @@ variables:
   solution: '**/*.sln'
   buildConfiguration: 'Release'
   outputDirectory: '$(build.binariesDirectory)/$(buildConfiguration)'
+  buildPlatform: 'x64|ARM64'
+  appxPackageDir: '$(build.artifactStagingDirectory)\AppxPackages\\'
 
 jobs:
 - job: android_build
