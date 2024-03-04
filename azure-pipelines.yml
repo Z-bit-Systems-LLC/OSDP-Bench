@@ -9,9 +9,6 @@ trigger:
 
 pr: none
 
-pool:
-  vmImage: 'windows-latest'
-
 variables:
   solution: '**/*.sln'
   buildConfiguration: 'Release'
