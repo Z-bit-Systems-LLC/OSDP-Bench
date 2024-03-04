@@ -7,6 +7,6 @@
 
   - task: VSBuild@1
     inputs:
-      solution: '/src/UI/WinUI (Package)/WinUI (Package).wapproj'
+      solution: 'src/UI/WinUI (Package)/WinUI (Package).wapproj'
       configuration: '$(buildConfiguration)'
       msbuildArgs: '/p:AppxBundlePlatforms="$(buildPlatform)" /p:AppxPackageDir="$(appxPackageDir)" /p:AppxBundle=Always /p:UapAppxPackageBuildMode=StoreUpload /p:AppxPackageSigningEnabled=false'
