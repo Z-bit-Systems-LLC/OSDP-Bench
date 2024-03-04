@@ -24,6 +24,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ci", "ci", "{5D426D86-43BB-
 		azure-pipelines.yml = azure-pipelines.yml
 		ci\android-build.yml = ci\android-build.yml
 		ci\testing.yml = ci\testing.yml
+		ci\winui-build.yml = ci\winui-build.yml
 	EndProjectSection
 EndProject
 Global

@@ -1,0 +1,17 @@
+﻿variables:
+  buildPlatform: 'x64|ARM64'
+  appxPackageDir: '$(build.artifactStagingDirectory)\AppxPackages\\'
+
+steps:
+  - task: NuGetToolInstaller@1
+
+  - task: NuGetCommand@2
+    inputs:
+      restoreSolution: '$(solution)'
+
+  - task: VSBuild@1
+    inputs:
+      platform: 'x64'
+      solution: '$(solution)'
+      configuration: '$(buildConfiguration)'
+      msbuildArgs: '/p:AppxBundlePlatforms="$(buildPlatform)" /p:AppxPackageDir="$(appxPackageDir)" /p:AppxBundle=Always /p:UapAppxPackageBuildMode=StoreUpload /p:AppxPackageSigningEnabled=false'
