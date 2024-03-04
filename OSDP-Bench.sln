@@ -22,7 +22,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ci", "ci", "{5D426D86-43BB-4D6D-A6BF-0ACC65A19C92}"
 	ProjectSection(SolutionItems) = preProject
 		azure-pipelines.yml = azure-pipelines.yml
-		ci\build.yml = ci\build.yml
+		ci\android-build.yml = ci\android-build.yml
+		ci\testing.yml = ci\testing.yml
 	EndProjectSection
 EndProject
 Global

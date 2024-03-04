@@ -16,8 +16,14 @@ variables:
 
 jobs:
 
-- job: build
+- job: android-build
   pool:
     vmImage: 'windows-latest'
   steps:
-    - template: ci/build.yml
+    - template: ci/android-build.yml
+      
+- job: testing
+  pool:
+    vmImage: 'windows-latest'
+  steps:
+    - template: ci/testing.yml

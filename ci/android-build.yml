@@ -1,17 +1,4 @@
 ﻿steps:
-  
-#- task: UseDotNet@2
-#  displayName: 'Install .NET Core SDK'
-#  inputs:
-#    packageType: 'sdk'
-#    version: '8.x'
-#    
-#- task: DotNetCoreCLI@2
-#  displayName: 'Unit Test Core'
-#  inputs:
-#    command: 'test'
-#    projects: 'test/*Tests/*.csproj'
-#    arguments: '--configuration $(buildConfiguration)'
     
 - task: NuGetToolInstaller@1
 
