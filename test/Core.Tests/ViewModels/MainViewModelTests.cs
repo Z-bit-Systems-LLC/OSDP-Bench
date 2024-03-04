@@ -36,7 +36,7 @@ public class MainViewModelTests : MvxIoCSupportingTest
 
         var mainViewModel = Ioc.IoCConstruct<RootViewModel>();
 
-        Assert.AreEqual(6, mainViewModel.AvailableBaudRates.Count);
+        Assert.That(6, Is.EqualTo(mainViewModel?.AvailableBaudRates.Count));
     }
 
     [Test]
@@ -55,8 +55,8 @@ public class MainViewModelTests : MvxIoCSupportingTest
         Ioc.RegisterSingleton(serialPortConnection.Object);
 
         var mainViewModel = Ioc.IoCConstruct<RootViewModel>();
-        mainViewModel.Prepare();
+        mainViewModel?.Prepare();
 
-        Assert.AreEqual(2, mainViewModel.AvailableSerialPorts.Count);
+        Assert.That(2, Is.EqualTo(mainViewModel?.AvailableSerialPorts.Count));
     }
 }

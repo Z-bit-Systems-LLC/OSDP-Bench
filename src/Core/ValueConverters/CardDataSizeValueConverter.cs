@@ -8,7 +8,7 @@ namespace OSDPBench.Core.ValueConverters
     {
         protected override string Convert(string value, Type targetType, object parameter, CultureInfo cultureInfo)
         {
-            return value.Length > 0 ? $"{value.Length}-bits" : string.Empty;
+            return value?.Length > 0 ? $"{value.Length}-bits" : string.Empty;
         }
     }
 }
