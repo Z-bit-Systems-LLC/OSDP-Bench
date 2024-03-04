@@ -3,25 +3,26 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.3.32922.545
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Core", "Core\Core.csproj", "{6D7C251B-5AFB-40FF-AD5F-A19B2AF68198}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Core", "src\Core\Core.csproj", "{6D7C251B-5AFB-40FF-AD5F-A19B2AF68198}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Core.Tests", "Core.Tests\Core.Tests.csproj", "{0F31AAB4-B6FB-4DF1-B6BA-2AF58FADB005}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Core.Tests", "test\Core.Tests\Core.Tests.csproj", "{0F31AAB4-B6FB-4DF1-B6BA-2AF58FADB005}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UI", "UI", "{6AF5FFEF-AFBA-4BB8-A14F-FDE4AEEC19AB}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WinUI", "UI\WinUI\WinUI.csproj", "{DA9782CC-BCC1-44C8-929B-5B668ED5A1E6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WinUI", "src\UI\WinUI\WinUI.csproj", "{DA9782CC-BCC1-44C8-929B-5B668ED5A1E6}"
 EndProject
-Project("{C7167F0D-BC9F-4E6E-AFE1-012C56B48DB5}") = "WinUI (Package)", "UI\WinUI (Package)\WinUI (Package).wapproj", "{D564B0AF-32EB-4D4A-A3FD-3DCBBDEA0A57}"
+Project("{C7167F0D-BC9F-4E6E-AFE1-012C56B48DB5}") = "WinUI (Package)", "src\UI\WinUI (Package)\WinUI (Package).wapproj", "{D564B0AF-32EB-4D4A-A3FD-3DCBBDEA0A57}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Android", "UI\Android\Android.csproj", "{13A6A3D6-9B9E-4AF2-AB26-153B9BC17370}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Android", "src\UI\Android\Android.csproj", "{13A6A3D6-9B9E-4AF2-AB26-153B9BC17370}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UsbSerialForAndroid", "UI\UsbSerialForAndroid\UsbSerialForAndroid\UsbSerialForAndroid.csproj", "{A64567BC-548A-4CB7-9F2C-ECE75EE1A868}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UsbSerialForAndroid", "src\UI\UsbSerialForAndroid\UsbSerialForAndroid\UsbSerialForAndroid.csproj", "{A64567BC-548A-4CB7-9F2C-ECE75EE1A868}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Settings", "Settings", "{8FB5794C-299E-4B9E-8D0D-6BFC695DA91B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ci", "ci", "{5D426D86-43BB-4D6D-A6BF-0ACC65A19C92}"
 	ProjectSection(SolutionItems) = preProject
-		..\azure-pipelines.yml = ..\azure-pipelines.yml
+		azure-pipelines.yml = azure-pipelines.yml
+		ci\build.yml = ci\build.yml
 	EndProjectSection
 EndProject
 Global
