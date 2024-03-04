@@ -11,7 +11,6 @@
     <ApplicationIcon>Logo.ico</ApplicationIcon>
     <AssemblyName>OSDP-Bench</AssemblyName>
     <LangVersion>default</LangVersion>
-    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="MainWindow.xaml" />

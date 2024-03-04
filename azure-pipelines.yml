@@ -17,20 +17,20 @@ variables:
   appxPackageDir: '$(build.artifactStagingDirectory)\AppxPackages\\'
 
 jobs:
-#- job: android_build
-#  pool:
-#    vmImage: 'windows-latest'
-#  steps:
-#    - template: ci/android-build.yml
-#      
+- job: android_build
+  pool:
+    vmImage: 'windows-latest'
+  steps:
+    - template: ci/android-build.yml
+
 - job: winui_build
   pool:
     vmImage: 'windows-latest'
   steps:
     - template: ci/winui-build.yml
       
-#- job: testing
-#  pool:
-#    vmImage: 'windows-latest'
-#  steps:
-#    - template: ci/testing.yml
+- job: testing
+  pool:
+    vmImage: 'windows-latest'
+  steps:
+    - template: ci/testing.yml
