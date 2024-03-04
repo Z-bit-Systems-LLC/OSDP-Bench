@@ -10,7 +10,7 @@ trigger:
 pr: none
 
 variables:
-  solution: '**/*.sln'
+  solution: 'OSDP-Bench.sln'
   buildConfiguration: 'Release'
   outputDirectory: '$(build.binariesDirectory)/$(buildConfiguration)'
   buildPlatform: 'x64|ARM64'
