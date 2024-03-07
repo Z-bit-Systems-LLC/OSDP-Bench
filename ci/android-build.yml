@@ -19,3 +19,6 @@
     projectFile: '**/*droid*.csproj'
     outputDirectory: '$(outputDirectory)'
     configuration: '$(buildConfiguration)'
+    msbuildVersion: latest
+    msbuildArchitectureOption: x64
+    
