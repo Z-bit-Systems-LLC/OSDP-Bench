@@ -5,8 +5,10 @@ using System.Windows.Threading;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using MvvmCore.ViewModels.Pages;
 using MvvmCore.ViewModels.Windows;
 using OSDPBench.Windows.Services;
+using OSDPBench.Windows.Views.Pages;
 using OSDPBench.Windows.Views.Windows;
 using Wpf.Ui;
 
@@ -44,6 +46,9 @@ public partial class App
             // Main window with navigation
             services.AddSingleton<INavigationWindow, MainWindow>();
             services.AddSingleton<MainWindowViewModel>();
+
+            services.AddSingleton<HomePage>();
+            services.AddSingleton<HomeViewModel>();
         }).Build();
 
     /// <summary>

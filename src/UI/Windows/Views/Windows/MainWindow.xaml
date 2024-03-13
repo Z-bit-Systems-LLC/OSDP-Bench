@@ -5,16 +5,48 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:OSDPBench.Windows.Views.Windows"
         xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+        xmlns:pages="clr-namespace:OSDPBench.Windows.Views.Pages"
         ExtendsContentIntoTitleBar="True"
+        WindowCornerPreference="Round"
+        WindowStartupLocation="CenterScreen"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance local:MainWindow, IsDesignTimeCreatable=True}"
         d:DesignHeight="450"
         d:DesignWidth="800"
         Height="450" Width="800">
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <ui:NavigationView x:Name="RootNavigation" Grid.Row="1" 
+                           Padding="42,0,42,0"
+                           IsBackButtonVisible="Collapsed"
+                           PaneDisplayMode="LeftFluent">
+            <ui:NavigationView.MenuItems>
+                <ui:NavigationViewItem Content="Home" TargetPageType="{x:Type pages:HomePage}">
+                    <ui:NavigationViewItem.Icon>
+                        <ui:SymbolIcon Symbol="Home24" />
+                    </ui:NavigationViewItem.Icon>
+                </ui:NavigationViewItem>
+                <ui:NavigationViewItem Content="Connect To PD" >
+                    <ui:NavigationViewItem.Icon>
+                        <ui:SymbolIcon Symbol="Connector24" />
+                    </ui:NavigationViewItem.Icon>
+                </ui:NavigationViewItem>
+            </ui:NavigationView.MenuItems>
+            <ui:NavigationView.FooterMenuItems>
+                <ui:NavigationViewItem Content="Settings" >
+                    <ui:NavigationViewItem.Icon>
+                        <ui:SymbolIcon Symbol="Settings24" />
+                    </ui:NavigationViewItem.Icon>
+                </ui:NavigationViewItem>
+            </ui:NavigationView.FooterMenuItems>
+        </ui:NavigationView>
+
         <ui:TitleBar
             x:Name="TitleBar"
-            Title="{Binding ViewModel.ApplicationTitle}"
+            Title="OSDP Bench"
             Grid.Row="0"
             CloseWindowByDoubleClickOnIcon="True">
             <ui:TitleBar.Icon>

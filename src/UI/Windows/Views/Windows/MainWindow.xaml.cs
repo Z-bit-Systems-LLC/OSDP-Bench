@@ -1,4 +1,5 @@
 ﻿using MvvmCore.ViewModels.Windows;
+using OSDPBench.Windows.Views.Pages;
 using Wpf.Ui;
 using Wpf.Ui.Appearance;
 using Wpf.Ui.Controls;
@@ -25,27 +26,25 @@ namespace OSDPBench.Windows.Views.Windows
 
             SetPageService(pageService);
 
-            //navigationService.SetNavigationControl(RootNavigation);
+            navigationService.SetNavigationControl(RootNavigation);
         }
+        
+        /// <inheritdoc />
+        public INavigationView GetNavigation() => RootNavigation;
 
-        public INavigationView GetNavigation()
-        {
-            throw new NotImplementedException();
-        }
 
-        public bool Navigate(Type pageType)
-        {
-            throw new NotImplementedException();
-        }
+        /// <inheritdoc />
+        public bool Navigate(Type pageType) => RootNavigation.Navigate(pageType);
 
+
+        /// <inheritdoc />
+        public void SetPageService(IPageService pageService) => RootNavigation.SetPageService(pageService);
+
+
+        /// <inheritdoc />
         public void SetServiceProvider(IServiceProvider serviceProvider)
         {
             throw new NotImplementedException();
-        }
-
-        public void SetPageService(IPageService pageService)
-        {
-
         }
         
         public void ShowWindow() => Show();
