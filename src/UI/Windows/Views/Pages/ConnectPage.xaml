@@ -1,0 +1,57 @@
+﻿<Page x:Class="OSDPBench.Windows.Views.Pages.ConnectPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:pages="clr-namespace:OSDPBench.Windows.Views.Pages"
+      xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+      mc:Ignorable="d" 
+      d:DataContext="{d:DesignInstance pages:ConnectPage,
+                                     IsDesignTimeCreatable=False}"
+      d:DesignHeight="450" d:DesignWidth="800"
+      Title="ConnectPage">
+
+    <StackPanel 
+        Orientation="Vertical"
+        Margin="0 5">
+        <ui:CardExpander IsExpanded="true"
+            Margin="25 5"
+            Header="Serial Port Selection">
+            <Grid Margin="10 5">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition MinWidth="200" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                    
+                    <StackPanel Grid.Column="0" 
+                        Orientation="Vertical">
+                        <Label Content="Serial Port"
+                               Target="{Binding ElementName=SerialPortComboBox}" />
+                        <ComboBox x:Name="SerialPortComboBox"
+                                  ItemsSource="{Binding ViewModel.AvailableSerialPorts }"
+                                  DisplayMemberPath="Name"
+                                  SelectedItem="{Binding ViewModel.SelectedSerialPort}"/>
+                    </StackPanel>
+                <ui:Button Grid.Column="1"  Content="Rescan Ports"
+                           Margin="5 0"
+                           VerticalAlignment="Bottom"
+                           Command="{Binding ViewModel.ScanSerialPortsCommand}"/>
+            </Grid>
+        </ui:CardExpander>
+        <ui:CardExpander Margin=" 25 5"
+                         Header="Connect to PD">
+            <StackPanel Orientation="Vertical"
+                        Margin="10 5">
+                <Label Content="Baud Rate"
+                       Target="{Binding ElementName=BaudRateComboBox}" />
+                <ComboBox x:Name="BaudRateComboBox"
+                          ItemsSource="{Binding ViewModel.AvailableBaudRates }"
+                          SelectedItem="{Binding ViewModel.SelectedBaudRate}"/>
+                <ui:Button  Content="Discover"
+                           Margin="5 0"
+                           VerticalAlignment="Bottom"
+                           Command="{Binding ViewModel.DiscoverDeviceCommand}"/>
+            </StackPanel>
+        </ui:CardExpander>
+    </StackPanel>
+</Page>

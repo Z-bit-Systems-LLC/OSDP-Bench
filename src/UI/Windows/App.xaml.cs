@@ -5,8 +5,11 @@ using System.Windows.Threading;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using MvvmCore.Platform;
+using MvvmCore.Services;
 using MvvmCore.ViewModels.Pages;
 using MvvmCore.ViewModels.Windows;
+using OSDPBench.Windows.Platform;
 using OSDPBench.Windows.Services;
 using OSDPBench.Windows.Views.Pages;
 using OSDPBench.Windows.Views.Windows;
@@ -49,6 +52,12 @@ public partial class App
 
             services.AddSingleton<HomePage>();
             services.AddSingleton<HomeViewModel>();
+            services.AddSingleton<ConnectPage>();
+            services.AddSingleton<ConnectViewModel>();
+
+            services.AddSingleton<IDeviceManagementService, DeviceManagementService>();
+            services.AddSingleton<ISerialPortConnection, WindowsSerialPortConnection>();
+            services.AddSingleton<IDialogService, WindowsDialogService>();
         }).Build();
 
     /// <summary>

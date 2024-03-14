@@ -1,9 +1,4 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-
-namespace MvvmCore.ViewModels.Windows
+﻿namespace MvvmCore.ViewModels.Windows
 {
-    public partial class MainWindowViewModel : ObservableObject
-    {
-        
-    }
+    public class MainWindowViewModel;
 }

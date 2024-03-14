@@ -1,7 +1,7 @@
 ﻿using MvvmCore.Models;
 using OSDP.Net.Connections;
 
-namespace MvvmCore.Platforms;
+namespace MvvmCore.Platform;
 
 public interface ISerialPortConnection : ISerialPort, IOsdpConnection;
 

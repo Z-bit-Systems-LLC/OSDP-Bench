@@ -29,7 +29,7 @@
                         <ui:SymbolIcon Symbol="Home24" />
                     </ui:NavigationViewItem.Icon>
                 </ui:NavigationViewItem>
-                <ui:NavigationViewItem Content="Connect To PD" >
+                <ui:NavigationViewItem Content="Connect To PD" TargetPageType="{x:Type pages:ConnectPage}">
                     <ui:NavigationViewItem.Icon>
                         <ui:SymbolIcon Symbol="Connector24" />
                     </ui:NavigationViewItem.Icon>

@@ -34,4 +34,10 @@
   <ItemGroup>
     <ProjectReference Include="..\..\MvvmCore\MvvmCore.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="CommunityToolkit.WinUI.UI">
+      <HintPath>..\..\..\..\..\..\.nuget\packages\communitytoolkit.winui.ui\7.1.2\lib\net5.0-windows10.0.18362\CommunityToolkit.WinUI.UI.dll</HintPath>
+    </Reference>
+  </ItemGroup>
 </Project>
