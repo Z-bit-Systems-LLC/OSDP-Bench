@@ -5,11 +5,9 @@ using System.Windows.Threading;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using MvvmCore.Platform;
 using MvvmCore.Services;
 using MvvmCore.ViewModels.Pages;
 using MvvmCore.ViewModels.Windows;
-using OSDPBench.Windows.Platform;
 using OSDPBench.Windows.Services;
 using OSDPBench.Windows.Views.Pages;
 using OSDPBench.Windows.Views.Windows;
@@ -30,7 +28,7 @@ public partial class App
     private static readonly IHost Host = Microsoft.Extensions.Hosting.Host
         .CreateDefaultBuilder()
         .ConfigureAppConfiguration(c => { c.SetBasePath(Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location)!); })
-        .ConfigureServices((context, services) =>
+        .ConfigureServices((Action<HostBuilderContext, IServiceCollection>)((context, services) =>
         {
             services.AddHostedService<ApplicationHostService>();
 
@@ -56,9 +54,9 @@ public partial class App
             services.AddSingleton<ConnectViewModel>();
 
             services.AddSingleton<IDeviceManagementService, DeviceManagementService>();
-            services.AddSingleton<ISerialPortConnection, WindowsSerialPortConnection>();
+            ServiceCollectionServiceExtensions.AddSingleton<ISerialPortConnectionService, WindowsSerialPortConnectionService>(services);
             services.AddSingleton<IDialogService, WindowsDialogService>();
-        }).Build();
+        })).Build();
 
     /// <summary>
     /// Gets registered service.

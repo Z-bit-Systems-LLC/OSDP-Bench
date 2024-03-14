@@ -11,8 +11,4 @@
     <PackageReference Include="OSDP.Net" Version="4.1.7" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Platforms\" />
-  </ItemGroup>
-
 </Project>

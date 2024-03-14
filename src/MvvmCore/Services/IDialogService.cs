@@ -1,4 +1,4 @@
-﻿namespace MvvmCore.Platform;
+﻿namespace MvvmCore.Services;
 
 /// <summary>
 /// The default <see langword="interface"/> for a service that shows dialogs

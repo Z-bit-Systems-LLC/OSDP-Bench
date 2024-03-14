@@ -1,7 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MvvmCore.Models;
-using MvvmCore.Platform;
 using MvvmCore.Services;
 using OSDP.Net.PanelCommands.DeviceDiscover;
 using System.Collections.ObjectModel;
@@ -12,18 +11,18 @@ namespace MvvmCore.ViewModels.Pages
     {
         private readonly IDialogService _dialogService;
         private readonly IDeviceManagementService _deviceManagementService;
-        private ISerialPortConnection _serialPortConnection;
+        private ISerialPortConnectionService _serialPortConnectionService;
         private CancellationTokenSource? _cancellationTokenSource;
 
         public ConnectViewModel(IDialogService dialogService, IDeviceManagementService deviceManagementService,
-            ISerialPortConnection serialPortConnection)
+            ISerialPortConnectionService serialPortConnectionService)
         {
             _dialogService = dialogService ??
                              throw new ArgumentNullException(nameof(dialogService));
             _deviceManagementService = deviceManagementService ??
                                        throw new ArgumentNullException(nameof(deviceManagementService));
-            _serialPortConnection = serialPortConnection ??
-                                    throw new ArgumentNullException(nameof(serialPortConnection));
+            _serialPortConnectionService = serialPortConnectionService ??
+                                    throw new ArgumentNullException(nameof(serialPortConnectionService));
 
             _deviceManagementService.ConnectionStatusChange += DeviceManagementServiceOnConnectionStatusChange;
         }
@@ -83,7 +82,7 @@ namespace MvvmCore.ViewModels.Pages
 
             AvailableSerialPorts.Clear();
 
-            var foundAvailableSerialPorts = await _serialPortConnection.FindAvailableSerialPorts();
+            var foundAvailableSerialPorts = await _serialPortConnectionService.FindAvailableSerialPorts();
 
             bool anyFound = false;
             foreach (var found in foundAvailableSerialPorts)
@@ -148,7 +147,7 @@ namespace MvvmCore.ViewModels.Pages
                         IsDiscovered = true;
                         SelectedBaudRate = (uint)current.Connection.BaudRate;
                         Address = current.Address;
-                        _serialPortConnection = current.Connection as ISerialPortConnection;
+                        _serialPortConnectionService = current.Connection as ISerialPortConnectionService;
                         break;
                     case DiscoveryStatus.DeviceNotFound:
                         StatusText = "Failed to connect to device";
@@ -168,7 +167,7 @@ namespace MvvmCore.ViewModels.Pages
 
             await _deviceManagementService.Shutdown();
 
-            var connections = _serialPortConnection.GetConnectionsForDiscovery(SelectedSerialPort.Name);
+            var connections = _serialPortConnectionService.GetConnectionsForDiscovery(SelectedSerialPort.Name);
             _cancellationTokenSource = new CancellationTokenSource();
 
             try

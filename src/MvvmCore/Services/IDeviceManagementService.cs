@@ -1,5 +1,4 @@
 ﻿using MvvmCore.Models;
-using MvvmCore.Platform;
 using OSDP.Net.Connections;
 using OSDP.Net.PanelCommands.DeviceDiscover;
 
@@ -45,9 +44,9 @@ namespace MvvmCore.Services
         /// <summary>
         /// Resets the device.
         /// </summary>
-        /// <param name="connection">The connection.</param>
+        /// <param name="connectionService">The connectionService.</param>
         /// <returns>Task.</returns>
-        Task ResetDevice(ISerialPortConnection connection);
+        Task ResetDevice(ISerialPortConnectionService connectionService);
 
         /// <summary>
         /// Shuts down this communications.
@@ -55,7 +54,7 @@ namespace MvvmCore.Services
         Task Shutdown();
 
         /// <summary>
-        /// Occurs when connection status changes.
+        /// Occurs when connectionService status changes.
         /// </summary>
         event EventHandler<bool> ConnectionStatusChange;
 

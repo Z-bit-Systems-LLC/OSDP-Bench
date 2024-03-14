@@ -1,7 +1,7 @@
-﻿using MvvmCore.Platform;
+﻿using MvvmCore.Services;
 using Wpf.Ui.Controls;
 
-namespace OSDPBench.Windows.Platform
+namespace OSDPBench.Windows.Services
 {
     internal class WindowsDialogService : IDialogService
     {

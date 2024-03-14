@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Text;
 using MvvmCore.Models;
-using MvvmCore.Platform;
 using OSDP.Net;
 using OSDP.Net.Connections;
 using OSDP.Net.Model.ReplyData;
@@ -108,11 +107,11 @@ public class DeviceManagementService : IDeviceManagementService
     }
 
     /// <inheritdoc />
-    public async Task ResetDevice(ISerialPortConnection connection)
+    public async Task ResetDevice(ISerialPortConnectionService connectionService)
     {
         await Shutdown();
 
-        _connectionId = _panel.StartConnection(connection, TimeSpan.Zero);
+        _connectionId = _panel.StartConnection(connectionService, TimeSpan.Zero);
 
         _panel.AddDevice(_connectionId, Address, false, false);
 
