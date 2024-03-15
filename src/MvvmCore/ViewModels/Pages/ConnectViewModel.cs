@@ -11,8 +11,7 @@ namespace MvvmCore.ViewModels.Pages
     {
         private readonly IDialogService _dialogService;
         private readonly IDeviceManagementService _deviceManagementService;
-        private ISerialPortConnectionService _serialPortConnectionService;
-        private CancellationTokenSource? _cancellationTokenSource;
+        private ISerialPortConnectionService? _serialPortConnectionService;
 
         public ConnectViewModel(IDialogService dialogService, IDeviceManagementService deviceManagementService,
             ISerialPortConnectionService serialPortConnectionService)
@@ -22,39 +21,32 @@ namespace MvvmCore.ViewModels.Pages
             _deviceManagementService = deviceManagementService ??
                                        throw new ArgumentNullException(nameof(deviceManagementService));
             _serialPortConnectionService = serialPortConnectionService ??
-                                    throw new ArgumentNullException(nameof(serialPortConnectionService));
+                                           throw new ArgumentNullException(nameof(serialPortConnectionService));
 
             _deviceManagementService.ConnectionStatusChange += DeviceManagementServiceOnConnectionStatusChange;
         }
 
         private void DeviceManagementServiceOnConnectionStatusChange(object? sender, bool isConnected)
         {
-            IsConnected = isConnected;
             if (isConnected)
             {
                 StatusText = "Connected";
                 NakText = string.Empty;
+                StatusLevel = StatusLevel.Connected;
             }
-            else if (IsDiscovered)
+            else if (StatusLevel == StatusLevel.Discovered)
             {
                 StatusText = "Attempting to connect";
-                StatusLevel = StatusLevel.Error;
+                StatusLevel = StatusLevel.Connecting;
             }
         }
-
-        [ObservableProperty] private bool _isConnected;
-
-        [ObservableProperty] private bool _isDiscovered;
-
-        [ObservableProperty] private bool _isDiscovering;
-
-        [ObservableProperty] private bool _isReadyToDiscover;
 
         [ObservableProperty] private string _statusText = string.Empty;
 
         [ObservableProperty] private string _nakText = string.Empty;
 
-        [ObservableProperty] private StatusLevel _statusLevel = StatusLevel.None;
+        [ObservableProperty]
+        private StatusLevel _statusLevel = StatusLevel.Ready;
 
         [ObservableProperty] private ObservableCollection<AvailableSerialPort> _availableSerialPorts = [];
 
@@ -64,13 +56,14 @@ namespace MvvmCore.ViewModels.Pages
 
         [ObservableProperty] private uint _selectedBaudRate = 9600;
 
-        [ObservableProperty] private byte _address;
+        [ObservableProperty] private byte _connectedAddress;
+        
+        [ObservableProperty] private int _connectedBaudRate;
 
         [RelayCommand]
         private async Task ScanSerialPorts()
         {
-            IsDiscovered = false;
-            IsDiscovering = true;
+            StatusLevel = StatusLevel.NotReady;
 
             await _deviceManagementService.Shutdown();
 
@@ -82,7 +75,10 @@ namespace MvvmCore.ViewModels.Pages
 
             AvailableSerialPorts.Clear();
 
-            var foundAvailableSerialPorts = await _serialPortConnectionService.FindAvailableSerialPorts();
+            var serialPortConnectionService = _serialPortConnectionService;
+            if (serialPortConnectionService == null) return;
+
+            var foundAvailableSerialPorts = await serialPortConnectionService.FindAvailableSerialPorts();
 
             bool anyFound = false;
             foreach (var found in foundAvailableSerialPorts)
@@ -94,23 +90,26 @@ namespace MvvmCore.ViewModels.Pages
             if (anyFound)
             {
                 SelectedSerialPort = AvailableSerialPorts.First();
-                IsReadyToDiscover = true;
+                StatusLevel = StatusLevel.Ready;
             }
             else
             {
-                await _dialogService.ShowMessageDialogAsync("Error", "No serial ports are available.  Make sure that required drivers are installed.");
-                IsReadyToDiscover = false;
+                await _dialogService.ShowMessageDialogAsync("Error",
+                    "No serial ports are available.  Make sure that required drivers are installed.");
+                StatusLevel = StatusLevel.NotReady;
             }
-
-            IsDiscovering = false;
         }
 
-        [RelayCommand]
-        private async Task DiscoverDevice()
+        [RelayCommand(IncludeCancelCommand = true)]
+        private async Task DiscoverDevice(CancellationToken token)
         {
-            IsReadyToDiscover = false;
-            IsDiscovering = true;
-            IsDiscovered = false;
+            var serialPortConnectionService = _serialPortConnectionService;
+            if (serialPortConnectionService == null) return;
+
+            string serialPortName = SelectedSerialPort?.Name ?? string.Empty;
+            if (string.IsNullOrWhiteSpace(serialPortName)) return;
+
+            StatusLevel = StatusLevel.Discovering;
 
             //IdentityLookup = new IdentityLookup(null);
             //CapabilitiesLookup = new CapabilitiesLookup(null);
@@ -143,11 +142,10 @@ namespace MvvmCore.ViewModels.Pages
                             $"Attempting to get capabilities of device at {current.Connection.BaudRate} with address {current.Address}";
                         break;
                     case DiscoveryStatus.Succeeded:
-                        IsConnected = false;
-                        IsDiscovered = true;
-                        SelectedBaudRate = (uint)current.Connection.BaudRate;
-                        Address = current.Address;
+                        StatusLevel = StatusLevel.Discovered;
                         _serialPortConnectionService = current.Connection as ISerialPortConnectionService;
+                        ConnectedAddress = current.Address;
+                        ConnectedBaudRate = current.Connection.BaudRate;
                         break;
                     case DiscoveryStatus.DeviceNotFound:
                         StatusText = "Failed to connect to device";
@@ -158,6 +156,7 @@ namespace MvvmCore.ViewModels.Pages
                         StatusLevel = StatusLevel.Error;
                         break;
                     case DiscoveryStatus.Cancelled:
+                        StatusLevel = StatusLevel.Error;
                         StatusText = "Cancelled discovery";
                         break;
                     default:
@@ -167,19 +166,18 @@ namespace MvvmCore.ViewModels.Pages
 
             await _deviceManagementService.Shutdown();
 
-            var connections = _serialPortConnectionService.GetConnectionsForDiscovery(SelectedSerialPort.Name);
-            _cancellationTokenSource = new CancellationTokenSource();
+            var connections = serialPortConnectionService.GetConnectionsForDiscovery(serialPortName);
 
             try
             {
-                await _deviceManagementService.DiscoverDevice(connections, progress, _cancellationTokenSource.Token);
+                await _deviceManagementService.DiscoverDevice(connections, progress, token);
             }
             catch
             {
                 // ignored
             }
 
-            if (IsDiscovered)
+            if (StatusLevel == StatusLevel.Discovered)
             {
                 //IdentityLookup = _deviceManagementService.IdentityLookup;
                 //CapabilitiesLookup = _deviceManagementService.CapabilitiesLookup;
@@ -195,16 +193,18 @@ namespace MvvmCore.ViewModels.Pages
                      SecureChannelStatusText = string.Empty;
                  }*/
             }
-
-            IsReadyToDiscover = true;
-            IsDiscovering = false;
         }
     }
 
     public enum StatusLevel
     {
         None,
-        Processing,
+        Connected,
+        Connecting,
+        NotReady,
+        Ready,
+        Discovering,
+        Discovered,
         Error
     }
 }

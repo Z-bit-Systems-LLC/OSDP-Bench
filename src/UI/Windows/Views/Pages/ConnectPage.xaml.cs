@@ -22,5 +22,7 @@ namespace OSDPBench.Windows.Views.Pages
         }
 
         public ConnectViewModel ViewModel { get; }
+        
+        public IEnumerable<string> ConnectionTypes => ["Discover", "Manual"];
     }
 }

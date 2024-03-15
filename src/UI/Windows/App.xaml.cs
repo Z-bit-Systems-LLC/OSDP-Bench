@@ -28,7 +28,7 @@ public partial class App
     private static readonly IHost Host = Microsoft.Extensions.Hosting.Host
         .CreateDefaultBuilder()
         .ConfigureAppConfiguration(c => { c.SetBasePath(Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location)!); })
-        .ConfigureServices((Action<HostBuilderContext, IServiceCollection>)((context, services) =>
+        .ConfigureServices((_, services) =>
         {
             services.AddHostedService<ApplicationHostService>();
 
@@ -54,9 +54,10 @@ public partial class App
             services.AddSingleton<ConnectViewModel>();
 
             services.AddSingleton<IDeviceManagementService, DeviceManagementService>();
-            ServiceCollectionServiceExtensions.AddSingleton<ISerialPortConnectionService, WindowsSerialPortConnectionService>(services);
             services.AddSingleton<IDialogService, WindowsDialogService>();
-        })).Build();
+            services.AddSingleton<ISerialPortConnectionService, WindowsSerialPortConnectionService>();
+            services.AddSingleton<IDialogService, WindowsDialogService>();
+        }).Build();
 
     /// <summary>
     /// Gets registered service.
