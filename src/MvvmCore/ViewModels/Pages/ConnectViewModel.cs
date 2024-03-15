@@ -52,9 +52,11 @@ namespace MvvmCore.ViewModels.Pages
 
         [ObservableProperty] private AvailableSerialPort? _selectedSerialPort;
 
-        [ObservableProperty] private IReadOnlyList<uint> _availableBaudRates = [9600, 19200, 38400, 57600, 115200, 230400];
+        [ObservableProperty] private IReadOnlyList<int> _availableBaudRates = [9600, 19200, 38400, 57600, 115200, 230400];
 
-        [ObservableProperty] private uint _selectedBaudRate = 9600;
+        [ObservableProperty] private int _selectedBaudRate = 9600;
+
+        [ObservableProperty] private byte _selectedAddress;
 
         [ObservableProperty] private byte _connectedAddress;
         
@@ -193,6 +195,23 @@ namespace MvvmCore.ViewModels.Pages
                      SecureChannelStatusText = string.Empty;
                  }*/
             }
+        }
+
+        [RelayCommand]
+        private async Task ConnectDevice()
+        {
+            var serialPortConnectionService = _serialPortConnectionService;
+            if (serialPortConnectionService == null) return;
+
+            string serialPortName = SelectedSerialPort?.Name ?? string.Empty;
+            if (string.IsNullOrWhiteSpace(serialPortName)) return;
+
+            StatusLevel = StatusLevel.Connecting;
+            StatusText = "Attempting to connect manually";
+            await _deviceManagementService.Shutdown();
+            _deviceManagementService.Connect(serialPortConnectionService.GetConnection(serialPortName, SelectedBaudRate), SelectedAddress);
+            ConnectedAddress = SelectedAddress;
+            ConnectedBaudRate = SelectedBaudRate;
         }
     }
 

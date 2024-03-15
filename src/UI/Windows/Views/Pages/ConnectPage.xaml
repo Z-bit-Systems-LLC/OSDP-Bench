@@ -1,16 +1,16 @@
 ﻿<Page x:Class="OSDPBench.Windows.Views.Pages.ConnectPage"
-      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-      xmlns:pages="clr-namespace:OSDPBench.Windows.Views.Pages"
-      xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
-      xmlns:converters="clr-namespace:OSDPBench.Windows.Converters"
-      mc:Ignorable="d" 
-      d:DataContext="{d:DesignInstance pages:ConnectPage,
-                                     IsDesignTimeCreatable=False}"
-      d:DesignHeight="450" d:DesignWidth="800"
-      Title="ConnectPage">
+	  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+	  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	  xmlns:pages="clr-namespace:OSDPBench.Windows.Views.Pages"
+	  xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+	  xmlns:converters="clr-namespace:OSDPBench.Windows.Converters"
+	  mc:Ignorable="d" 
+	  d:DataContext="{d:DesignInstance pages:ConnectPage,
+									 IsDesignTimeCreatable=False}"
+	  d:DesignHeight="450" d:DesignWidth="800"
+	  Title="ConnectPage">
 
     <Page.Resources>
         <converters:StatusLevelConverter x:Key="StatusLevelConverter" />
@@ -18,11 +18,11 @@
     </Page.Resources>
 
     <StackPanel 
-        Orientation="Vertical"
-        Margin="0 5">
+		Orientation="Vertical"
+		Margin="0 5">
         <ui:CardExpander IsExpanded="True"
-            Margin="20 5"
-            ContentPadding="10 5">
+			Margin="10 5"
+			ContentPadding="10 5">
             <ui:CardExpander.Header>
                 <Grid>
                     <Grid.RowDefinitions>
@@ -30,15 +30,16 @@
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="Auto" MinWidth="200" />
+                        <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
                     <ui:TextBlock
-                        Grid.Row="0"
-                        Grid.Column="0"
-                        VerticalAlignment="Center"
-                        FontSize="16"
-                        FontTypography="Body"
-                        Text="Serial Port Selection" />
+						Grid.Row="0"
+						Grid.Column="0"
+						VerticalAlignment="Center"
+						FontSize="16"
+						FontTypography="Body"
+						Text="Serial Port Selection" 
+						TextWrapping="Wrap"/>
                 </Grid>
             </ui:CardExpander.Header>
             <Grid>
@@ -46,24 +47,24 @@
                     <ColumnDefinition MinWidth="200" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
-                    <StackPanel Grid.Column="0" 
-                        Orientation="Vertical">
-                        <Label Content="Serial Port"
-                               Target="{Binding ElementName=SerialPortComboBox}" />
-                        <ComboBox x:Name="SerialPortComboBox"
-                                  ItemsSource="{Binding ViewModel.AvailableSerialPorts }"
-                                  DisplayMemberPath="Name"
-                                  SelectedItem="{Binding ViewModel.SelectedSerialPort}"/>
-                    </StackPanel>
+                <StackPanel Grid.Column="0" 
+						Orientation="Vertical">
+                    <Label Content="Serial Port"
+							   Target="{Binding ElementName=SerialPortComboBox}" />
+                    <ComboBox x:Name="SerialPortComboBox"
+                              ItemsSource="{Binding ViewModel.AvailableSerialPorts }"
+                              DisplayMemberPath="Name"
+                              SelectedItem="{Binding ViewModel.SelectedSerialPort}"/>
+                </StackPanel>
                 <ui:Button Grid.Column="1"  Content="Rescan Ports"
-                           Margin="5 0"
-                           VerticalAlignment="Bottom"
-                           Command="{Binding ViewModel.ScanSerialPortsCommand}"/>
+						   Margin="5 0"
+						   VerticalAlignment="Bottom"
+						   Command="{Binding ViewModel.ScanSerialPortsCommand}"/>
             </Grid>
         </ui:CardExpander>
         <ui:CardExpander IsExpanded="True"
-                         Margin=" 20 5"
-                         ContentPadding="10 5">
+						 Margin=" 10 5"
+						 ContentPadding="10 5">
             <ui:CardExpander.Header>
                 <Grid>
                     <Grid.RowDefinitions>
@@ -72,21 +73,23 @@
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="Auto" MinWidth="200" />
+                        <ColumnDefinition Width="Auto" MinWidth="100" />
                     </Grid.ColumnDefinitions>
                     <ui:TextBlock
-                        Grid.Row="0"
-                        Grid.Column="0"
-                        VerticalAlignment="Center"
-                        FontSize="16"
-                        FontTypography="Body"
-                        Text="Connect to PD" />
+						Grid.Row="0"
+						Grid.Column="0"
+						VerticalAlignment="Center"
+						FontSize="16"
+						FontTypography="Body"
+						Text="Connect to PD" 
+						TextWrapping="Wrap"/>
                     <ui:TextBlock
-                        Grid.Row="1"
-                        Grid.Column="0"
-                        Visibility="{Binding Path=ViewModel.StatusLevel, Converter={StaticResource StringToVisibilityConverter}, ConverterParameter=Connected, Mode=OneWay}"
-                        FontSize="12"
-                        Foreground="{ui:ThemeResource TextFillColorSecondaryBrush}">
+						Grid.Row="1"
+						Grid.Column="0"
+						Visibility="{Binding Path=ViewModel.StatusLevel, Converter={StaticResource StringToVisibilityConverter}, ConverterParameter=Connected, Mode=OneWay}"
+						FontSize="12"
+						Foreground="{ui:ThemeResource TextFillColorSecondaryBrush}"
+						TextWrapping="Wrap">
                         <ui:TextBlock.Text>
                             <MultiBinding StringFormat="Found device at address {0} running at a baud rate of {1}">
                                 <Binding Path="ViewModel.ConnectedAddress" />
@@ -96,65 +99,93 @@
                     </ui:TextBlock>
 
                     <ComboBox Name="ConnectionTypeComboBox"
-                        Grid.Row="0"
-                        Grid.RowSpan="2"
-                        Grid.Column="1"
-                        Margin="0,0,16,0"
-                        ItemsSource="{Binding ConnectionTypes }"
-                        SelectedValue="Discover"/>
+						Grid.Row="0"
+						Grid.RowSpan="2"
+						Grid.Column="1"
+						Margin="0,0,16,0"
+						ItemsSource="{Binding ConnectionTypes }"
+						SelectedValue="Discover"/>
                 </Grid>
             </ui:CardExpander.Header>
             <StackPanel Orientation="Vertical">
                 <Grid 
-                    Visibility="{Binding ElementName=ConnectionTypeComboBox, Path=SelectedValue, Converter={StaticResource StringToVisibilityConverter}, ConverterParameter=Discover, Mode=OneWay}">
+					Visibility="{Binding ElementName=ConnectionTypeComboBox, Path=SelectedValue, Converter={StaticResource StringToVisibilityConverter}, ConverterParameter=Discover, Mode=OneWay}">
                     <StackPanel Orientation="Vertical">
                         <ui:TextBlock
-                            Margin="10 5"
-                            HorizontalAlignment="Center"
-                            FontSize="16"
-                            FontTypography="Body"
-                            Text="Discovery will work properly with a single devices connected" />
+							Margin="10 5"
+							HorizontalAlignment="Center"
+							FontSize="16"
+							FontTypography="Body"
+							Text="Discovery will work properly with a single devices connected" 
+							TextWrapping="Wrap"/>
                         <StackPanel Orientation="Horizontal"
-                                    HorizontalAlignment="Center">
+									HorizontalAlignment="Left">
                             <ui:Button  Content="Start Discovery"
-                                        Margin="10 5"
-                                        HorizontalAlignment="Center"
-                                        Command="{Binding ViewModel.DiscoverDeviceCommand}"/>
+										Margin="10 5"
+										HorizontalAlignment="Center"
+										Command="{Binding ViewModel.DiscoverDeviceCommand}"/>
                             <ui:Button  Content="Cancel Discovery"
-                                        Margin="10 5"
-                                        HorizontalAlignment="Center"
-                                        Command="{Binding ViewModel.DiscoverDeviceCancelCommand}"/>
+										Margin="10 5"
+										HorizontalAlignment="Center"
+										Command="{Binding ViewModel.DiscoverDeviceCancelCommand}"/>
                         </StackPanel>
-                        
                     </StackPanel>
                 </Grid>
-               
+
                 <Grid
-                    Visibility="{Binding ElementName=ConnectionTypeComboBox, Path=SelectedValue, Converter={StaticResource StringToVisibilityConverter}, ConverterParameter=Manual, Mode=OneWay}">
-                    <Label Content="Baud Rate"
-                           Target="{Binding ElementName=BaudRateComboBox}" />
-                    <ComboBox Name="BaudRateComboBox"
-                              ItemsSource="{Binding ViewModel.AvailableBaudRates }"
-                              SelectedItem="{Binding ViewModel.SelectedBaudRate}"/>
+					Visibility="{Binding ElementName=ConnectionTypeComboBox, Path=SelectedValue, Converter={StaticResource StringToVisibilityConverter}, ConverterParameter=Manual, Mode=OneWay}">
+                    <StackPanel Orientation="Vertical">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition />
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="0" Orientation="Vertical">
+                                <Label Content="Baud Rate"
+										   Target="{Binding ElementName=BaudRateComboBox}" />
+                                <ComboBox Name="BaudRateComboBox"
+										  Margin="0 0 20 0"
+                                          ItemsSource="{Binding ViewModel.AvailableBaudRates}"
+                                          SelectedItem="{Binding ViewModel.SelectedBaudRate}"/>
+                            </StackPanel>
+                            <StackPanel Grid.Column="1" Orientation="Vertical">
+                                <Label Content="Address"
+										   Target="{Binding ElementName=BaudRateComboBox}" />
+                                <ui:NumberBox Name="AddressNumberBox"
+											  Value="{Binding ViewModel.SelectedAddress}"
+											  Margin="0 0 20 0"
+                                              Minimum="0"
+											  Maximum="127"
+											  MaxDecimalPlaces="0"/>
+                            </StackPanel>
+                        </Grid>
+                        <StackPanel Orientation="Horizontal"
+									HorizontalAlignment="Left">
+                            <ui:Button  Content="Connect"
+										Margin="10 5"
+										HorizontalAlignment="Center"
+										Command="{Binding ViewModel.ConnectDeviceCommand}"/>
+                        </StackPanel>
+                    </StackPanel>
                 </Grid>
 
                 <TextBlock 
-                    FontSize="24"
-                    Margin="10 5"
-                    HorizontalAlignment="Center"
-                    TextAlignment="Center"
-                    TextWrapping="Wrap"
-                    Foreground="{Binding ViewModel.StatusLevel, Converter={StaticResource StatusLevelConverter}}"
-                    Text="{Binding ViewModel.StatusText}"/>
+					FontSize="24"
+					Margin="10 5"
+					HorizontalAlignment="Center"
+					TextAlignment="Center"
+					TextWrapping="Wrap"
+					Foreground="{Binding ViewModel.StatusLevel, Converter={StaticResource StatusLevelConverter}}"
+					Text="{Binding ViewModel.StatusText}"/>
                 <TextBlock 
-                    FontSize="24"
-                    Margin="10 5"
-                    HorizontalAlignment="Center"
-                    TextAlignment="Center"
-                    TextWrapping="Wrap"
-                    FontWeight="Bold"
-                    Foreground="Red"
-                    Text="{Binding ViewModel.NakText}"/>
+					FontSize="24"
+					Margin="10 5"
+					HorizontalAlignment="Center"
+					TextAlignment="Center"
+					TextWrapping="Wrap"
+					FontWeight="Bold"
+					Foreground="Red"
+					Text="{Binding ViewModel.NakText}"/>
             </StackPanel>
         </ui:CardExpander>
     </StackPanel>
