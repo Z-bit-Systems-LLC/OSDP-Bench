@@ -7,12 +7,12 @@ namespace MvvmCore.Services
     public interface IDeviceManagementService
     {
         /// <summary>
-        /// Gets the identity data.
+        /// Gets the IdentityLookup object that provides information about the device's identity.
         /// </summary>
         IdentityLookup IdentityLookup { get; }
 
         /// <summary>
-        /// Gets the capabilities data.
+        /// Gets the capabilities of the device.
         /// </summary>
         CapabilitiesLookup CapabilitiesLookup { get; }
 
@@ -22,16 +22,17 @@ namespace MvvmCore.Services
 
         bool UsesDefaultSecurityKey { get; }
 
-        void Connect(IOsdpConnection connection, byte address);
+        public bool IsConnected { get; }
 
+        Task Connect(IOsdpConnection connection, byte address);
+        
         /// <summary>
-        ///   <para>
-        /// Discovers the device.
-        /// </para>
+        /// Discovers a device asynchronously over the provided connections.
         /// </summary>
-        /// <param name="connections"></param>
-        /// <param name="progress"></param>
-        /// <param name="cancellationToken"></param>
+        /// <param name="connections">The connections to use for device discovery.</param>
+        /// <param name="progress">The progress of the discovery process.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used to cancel the discovery process.</param>
+        /// <returns>Information regarding the result of the discovery process.</returns>
         Task<DiscoveryResult> DiscoverDevice(IEnumerable<IOsdpConnection> connections, DiscoveryProgress progress, CancellationToken cancellationToken);
 
         /// <summary>
@@ -49,8 +50,11 @@ namespace MvvmCore.Services
         Task ResetDevice(ISerialPortConnectionService connectionService);
 
         /// <summary>
-        /// Shuts down this communications.
+        /// Asynchronously shuts down the device management service.
         /// </summary>
+        /// <remarks>
+        /// This method is responsible for shutting down the device management service. It sets the IdentityLookup and CapabilitiesLookup to null and calls the Shutdown method on the underlying panel.
+        /// </remarks>
         Task Shutdown();
 
         /// <summary>

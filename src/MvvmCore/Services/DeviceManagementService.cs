@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Reflection.Metadata;
 using System.Text;
 using MvvmCore.Models;
 using OSDP.Net;
@@ -20,6 +21,7 @@ public class DeviceManagementService : IDeviceManagementService
     private readonly ControlPanel _panel = new ();
 
     private Guid _connectionId;
+    private bool _isDiscovering;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DeviceManagementService"/> class.
@@ -29,8 +31,10 @@ public class DeviceManagementService : IDeviceManagementService
     {
         _panel.ConnectionStatusChanged += (_, args) =>
         {
-            var isConnected = args.IsConnected;
-            OnConnectionStatusChange(isConnected);
+            if (_isDiscovering) return;
+
+            IsConnected = args.IsConnected;
+            OnConnectionStatusChange(args.IsConnected);
         };
 
         _panel.NakReplyReceived += (_, args) =>
@@ -42,10 +46,10 @@ public class DeviceManagementService : IDeviceManagementService
     }
         
     /// <inheritdoc />
-    public IdentityLookup IdentityLookup { get; private set; } = null!;
+    public IdentityLookup? IdentityLookup { get; private set; }
 
     /// <inheritdoc />
-    public CapabilitiesLookup CapabilitiesLookup { get; private set; } = null!;
+    public CapabilitiesLookup? CapabilitiesLookup { get; private set; }
 
     /// <inheritdoc />
     public byte Address { get; private set; }
@@ -55,32 +59,59 @@ public class DeviceManagementService : IDeviceManagementService
 
     /// <inheritdoc />
     public bool UsesDefaultSecurityKey { get; private set; }
+    
+    public bool IsConnected { get; private set; }
 
-    public void Connect(IOsdpConnection connection, byte address)
+    public async Task Connect(IOsdpConnection connection, byte address)
     {
+        await Shutdown();
+            
         _connectionId = _panel.StartConnection(connection);
         _panel.AddDevice(_connectionId, address, true, false);
     }
 
     public async Task<DiscoveryResult> DiscoverDevice(IEnumerable<IOsdpConnection> connections, DiscoveryProgress progress, CancellationToken cancellationToken)
     {
+        await Shutdown();
+
+        _isDiscovering = true;
+        DiscoveryResult results;
+        try
+        {
+            results = await DiscoveryRoutines(connections, progress, cancellationToken);
+        }
+        finally
+        {
+            _isDiscovering = false;
+        }
+
+        if (results.Status != DiscoveryStatus.Succeeded) return results;
+
+        Address = results.Address;
+        BaudRate = (uint)results.Connection.BaudRate;
+        IdentityLookup = new IdentityLookup(results.Id);
+        CapabilitiesLookup = new CapabilitiesLookup(results.Capabilities);
+        UsesDefaultSecurityKey = results.UsesDefaultSecurityKey;
+
+        _connectionId = _panel.StartConnection(results.Connection);
+        _panel.AddDevice(_connectionId, Address, CapabilitiesLookup.CRC, false);
+
+        return results;
+    }
+
+    private async Task<DiscoveryResult> DiscoveryRoutines (IEnumerable<IOsdpConnection> connections, DiscoveryProgress progress, CancellationToken cancellationToken)
+    {
+        IdentityLookup = null;
+        CapabilitiesLookup = null;
+
         var options = new DiscoveryOptions
         {
             ProgressCallback = progress,
             ResponseTimeout = TimeSpan.FromSeconds(1),
             CancellationToken = cancellationToken
         };
-            
-        var results = await _panel.DiscoverDevice(connections, options);
 
-        if (results.Status != DiscoveryStatus.Succeeded) return results;
-            
-        Address = results.Address;
-        BaudRate = (uint)results.Connection.BaudRate;
-        IdentityLookup = new IdentityLookup(results.Id);
-        CapabilitiesLookup = new CapabilitiesLookup(results.Capabilities);
-        UsesDefaultSecurityKey = results.UsesDefaultSecurityKey;
-        Connect(results.Connection, Address);
+        var results = await _panel.DiscoverDevice(connections, options);
 
         return results;
     }
@@ -163,6 +194,9 @@ public class DeviceManagementService : IDeviceManagementService
     /// <inheritdoc />
     public async Task Shutdown()
     {
+        IdentityLookup = null;
+        CapabilitiesLookup = null;
+        
         await _panel.Shutdown();
     }
 

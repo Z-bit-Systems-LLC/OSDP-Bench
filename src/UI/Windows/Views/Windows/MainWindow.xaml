@@ -22,16 +22,21 @@
         <ui:NavigationView x:Name="RootNavigation" Grid.Row="1" 
                            Padding="42,0,42,0"
                            IsBackButtonVisible="Collapsed"
-                           PaneDisplayMode="LeftFluent">
+                           PaneDisplayMode="LeftFluent" >
             <ui:NavigationView.MenuItems>
                 <ui:NavigationViewItem Content="Home" TargetPageType="{x:Type pages:HomePage}">
                     <ui:NavigationViewItem.Icon>
                         <ui:SymbolIcon Symbol="Home24" />
                     </ui:NavigationViewItem.Icon>
                 </ui:NavigationViewItem>
-                <ui:NavigationViewItem Content="Connect To PD" TargetPageType="{x:Type pages:ConnectPage}">
+                <ui:NavigationViewItem Content="Connect To PD" TargetPageType="{x:Type pages:ConnectPage}" NavigationCacheMode="Required">
                     <ui:NavigationViewItem.Icon>
                         <ui:SymbolIcon Symbol="Connector24" />
+                    </ui:NavigationViewItem.Icon>
+                </ui:NavigationViewItem>
+                <ui:NavigationViewItem Content="Manage PD" TargetPageType="{x:Type pages:ConnectPage}" NavigationCacheMode="Required">
+                    <ui:NavigationViewItem.Icon>
+                        <ui:SymbolIcon Symbol="Toolbox24" />
                     </ui:NavigationViewItem.Icon>
                 </ui:NavigationViewItem>
             </ui:NavigationView.MenuItems>

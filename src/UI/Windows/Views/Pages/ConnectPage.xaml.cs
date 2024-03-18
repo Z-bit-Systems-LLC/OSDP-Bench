@@ -17,7 +17,10 @@ namespace OSDPBench.Windows.Views.Pages
 
             Loaded += async (_, _) =>
             {
-                await ViewModel.ScanSerialPortsCommand.ExecuteAsync(null);
+                if (!ViewModel.AvailableSerialPorts.Any())
+                {
+                    await ViewModel.ScanSerialPortsCommand.ExecuteAsync(null);
+                }
             };
         }
 
