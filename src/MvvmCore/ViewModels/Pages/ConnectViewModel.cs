@@ -96,8 +96,8 @@ namespace MvvmCore.ViewModels.Pages
             }
             else
             {
-                await _dialogService.ShowMessageDialogAsync("Error",
-                    "No serial ports are available.  Make sure that required drivers are installed.");
+                await _dialogService.ShowMessageDialog("Error",
+                    "No serial ports are available.  Make sure that required drivers are installed.", MessageIcon.Error);
                 StatusLevel = StatusLevel.NotReady;
             }
         }
