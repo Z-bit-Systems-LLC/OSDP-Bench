@@ -9,12 +9,12 @@ namespace MvvmCore.Services
         /// <summary>
         /// Gets the IdentityLookup object that provides information about the device's identity.
         /// </summary>
-        IdentityLookup IdentityLookup { get; }
+        IdentityLookup? IdentityLookup { get; }
 
         /// <summary>
         /// Gets the capabilities of the device.
         /// </summary>
-        CapabilitiesLookup CapabilitiesLookup { get; }
+        CapabilitiesLookup? CapabilitiesLookup { get; }
 
         byte Address { get; }
 
@@ -61,6 +61,8 @@ namespace MvvmCore.Services
         /// Occurs when connectionService status changes.
         /// </summary>
         event EventHandler<bool> ConnectionStatusChange;
+
+        event EventHandler DeviceLookupsChanged;
 
         /// <summary>
         /// Occurs when NAK reply received.

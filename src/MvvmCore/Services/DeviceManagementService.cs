@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Reflection.Metadata;
 using System.Text;
 using MvvmCore.Models;
 using OSDP.Net;
@@ -34,6 +33,24 @@ public class DeviceManagementService : IDeviceManagementService
             if (_isDiscovering) return;
 
             IsConnected = args.IsConnected;
+            if (IsConnected)
+            {
+                Task.Run(async () =>
+                {
+                    IdentityLookup = new IdentityLookup(await _panel.IdReport(_connectionId, Address));
+                    CapabilitiesLookup = new CapabilitiesLookup(await _panel.DeviceCapabilities(_connectionId, Address));
+
+                    OnDeviceLookupsChanged();
+                });
+            }
+            else
+            {
+                IdentityLookup = null;
+                CapabilitiesLookup = null;
+
+                OnDeviceLookupsChanged();
+            }
+            
             OnConnectionStatusChange(args.IsConnected);
         };
 
@@ -65,7 +82,10 @@ public class DeviceManagementService : IDeviceManagementService
     public async Task Connect(IOsdpConnection connection, byte address)
     {
         await Shutdown();
-            
+
+        Address = address;
+        BaudRate = (uint)connection.BaudRate;
+
         _connectionId = _panel.StartConnection(connection);
         _panel.AddDevice(_connectionId, address, true, false);
     }
@@ -92,6 +112,8 @@ public class DeviceManagementService : IDeviceManagementService
         IdentityLookup = new IdentityLookup(results.Id);
         CapabilitiesLookup = new CapabilitiesLookup(results.Capabilities);
         UsesDefaultSecurityKey = results.UsesDefaultSecurityKey;
+
+        OnDeviceLookupsChanged();
 
         _connectionId = _panel.StartConnection(results.Connection);
         _panel.AddDevice(_connectionId, Address, CapabilitiesLookup.CRC, false);
@@ -201,25 +223,31 @@ public class DeviceManagementService : IDeviceManagementService
     }
 
     /// <inheritdoc />
-    public event EventHandler<bool> ConnectionStatusChange = null!;
+    public event EventHandler<bool>? ConnectionStatusChange;
     protected virtual void OnConnectionStatusChange(bool isConnected)
     {
-        ConnectionStatusChange.Invoke(this, isConnected);
+        ConnectionStatusChange?.Invoke(this, isConnected);
+    }
+
+    public event EventHandler? DeviceLookupsChanged;
+    protected virtual void OnDeviceLookupsChanged()
+    {
+        DeviceLookupsChanged?.Invoke(this, EventArgs.Empty);
     }
 
     /// <inheritdoc />
-    public event EventHandler<string> NakReplyReceived = null!;
+    public event EventHandler<string>? NakReplyReceived;
 
     protected virtual void OnNakReplyReceived(string errorMessage)
     {
-        NakReplyReceived.Invoke(this, errorMessage);
+        NakReplyReceived?.Invoke(this, errorMessage);
     }
 
     /// <inheritdoc />
-    public event EventHandler<string> CardReadReceived = null!;
+    public event EventHandler<string>? CardReadReceived;
     protected virtual void OnCardReadReceived(string data)
     {
-        CardReadReceived.Invoke(this, data);
+        CardReadReceived?.Invoke(this, data);
     }
 
     // ReSharper disable once UnusedMember.Local

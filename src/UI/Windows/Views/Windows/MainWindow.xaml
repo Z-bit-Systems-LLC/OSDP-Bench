@@ -34,7 +34,7 @@
                         <ui:SymbolIcon Symbol="Connector24" />
                     </ui:NavigationViewItem.Icon>
                 </ui:NavigationViewItem>
-                <ui:NavigationViewItem Content="Manage PD" TargetPageType="{x:Type pages:ConnectPage}" NavigationCacheMode="Required">
+                <ui:NavigationViewItem Content="Manage PD" TargetPageType="{x:Type pages:ManagePage}" NavigationCacheMode="Required">
                     <ui:NavigationViewItem.Icon>
                         <ui:SymbolIcon Symbol="Toolbox24" />
                     </ui:NavigationViewItem.Icon>

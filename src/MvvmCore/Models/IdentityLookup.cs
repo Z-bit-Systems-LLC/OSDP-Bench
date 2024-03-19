@@ -1,9 +1,10 @@
 ﻿using System.Collections;
+using CommunityToolkit.Mvvm.ComponentModel;
 using OSDP.Net.Model.ReplyData;
 
 namespace MvvmCore.Models;
 
-public class IdentityLookup
+public partial class IdentityLookup : ObservableObject
 {
     private readonly dynamic _lookup = new[]
     {
@@ -48,6 +49,16 @@ public class IdentityLookup
             CanSendResetCommand = false
         },
         new {
+            VendorCode = "00-75-32",
+            Name = "INID BV",
+            Models = new[]
+            {
+                new {Number = 2, Name = "MultiSmart XS"}
+            },
+            ResetInstructions = "Use INID RF-DISTIFLEX mobile application to reset settings.",
+            CanSendResetCommand = false
+        },
+        new {
             VendorCode = "5C-26-23",
             Name = "WaveLynx Technologies Corporation",
             Models = new[]
@@ -88,11 +99,11 @@ public class IdentityLookup
             $"{deviceIdentification.FirmwareMajor}.{deviceIdentification.FirmwareMinor}.{deviceIdentification.FirmwareBuild}";
     }
 
-    public string VendorName { get; } = string.Empty;
+    [ObservableProperty] private string _vendorName = string.Empty;
 
-    public string Model { get; } = string.Empty;
+    [ObservableProperty] private string _model = string.Empty;
 
-    public string VersionNumber { get; } = string.Empty;
+    [ObservableProperty] private string _versionNumber = string.Empty;
 
     public string ResetInstructions { get; } = "No reset instructions are available for this device.";
 
