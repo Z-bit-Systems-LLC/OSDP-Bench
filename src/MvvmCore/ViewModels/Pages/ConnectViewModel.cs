@@ -47,6 +47,9 @@ public partial class ConnectViewModel : ObservableObject
         NakText = nakMessage;
     }
 
+    /// <summary>
+    /// Represents the status text of the connection.
+    /// </summary>
     [ObservableProperty] private string _statusText = string.Empty;
 
     [ObservableProperty] private string _nakText = string.Empty;
