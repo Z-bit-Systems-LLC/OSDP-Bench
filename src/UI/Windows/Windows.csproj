@@ -32,7 +32,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\MvvmCore\MvvmCore.csproj" />
+    <ProjectReference Include="..\..\Core\Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>

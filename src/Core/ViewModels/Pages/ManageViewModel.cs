@@ -1,8 +1,8 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using MvvmCore.Models;
-using MvvmCore.Services;
+using OSDPBench.Core.Models;
+using OSDPBench.Core.Services;
 
-namespace MvvmCore.ViewModels.Pages
+namespace OSDPBench.Core.ViewModels.Pages
 {
     public partial class ManageViewModel : ObservableObject
     {

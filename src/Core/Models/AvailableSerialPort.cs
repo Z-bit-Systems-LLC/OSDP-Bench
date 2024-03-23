@@ -1,4 +1,4 @@
-﻿namespace MvvmCore.Models;
+﻿namespace OSDPBench.Core.Models;
 
 /// <summary>
 /// Represents a serial port available in the system.

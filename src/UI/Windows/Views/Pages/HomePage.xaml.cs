@@ -1,4 +1,4 @@
-﻿using MvvmCore.ViewModels.Pages;
+﻿using OSDPBench.Core.ViewModels.Pages;
 using Wpf.Ui.Controls;
 
 namespace OSDPBench.Windows.Views.Pages

@@ -1,6 +1,6 @@
 ﻿using OSDP.Net.Model.ReplyData;
 
-namespace MvvmCore.Models;
+namespace OSDPBench.Core.Models;
 
 public class CapabilitiesLookup
 {

@@ -1,6 +1,6 @@
 ﻿using System.IO.Ports;
-using MvvmCore.Models;
-using MvvmCore.Services;
+using OSDPBench.Core.Models;
+using OSDPBench.Core.Services;
 using OSDP.Net.Connections;
 
 namespace OSDPBench.Windows.Services;

@@ -1,11 +1,11 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using MvvmCore.Models;
-using MvvmCore.Services;
 using OSDP.Net.PanelCommands.DeviceDiscover;
 using System.Collections.ObjectModel;
+using OSDPBench.Core.Models;
+using OSDPBench.Core.Services;
 
-namespace MvvmCore.ViewModels.Pages;
+namespace OSDPBench.Core.ViewModels.Pages;
 
 public partial class ConnectViewModel : ObservableObject
 {
@@ -33,12 +33,12 @@ public partial class ConnectViewModel : ObservableObject
         {
             StatusText = "Connected";
             NakText = string.Empty;
-            StatusLevel = StatusLevel.Connected;
+            StatusLevel = Pages.StatusLevel.Connected;
         }
-        else if (StatusLevel == StatusLevel.Discovered)
+        else if (StatusLevel == Pages.StatusLevel.Discovered)
         {
             StatusText = "Attempting to connect";
-            StatusLevel = StatusLevel.Connecting;
+            StatusLevel = Pages.StatusLevel.Connecting;
         }
     }
 
@@ -54,7 +54,7 @@ public partial class ConnectViewModel : ObservableObject
 
     [ObservableProperty] private string _nakText = string.Empty;
 
-    [ObservableProperty] private StatusLevel _statusLevel = StatusLevel.Ready;
+    [ObservableProperty] private StatusLevel _statusLevel = Pages.StatusLevel.Ready;
 
     [ObservableProperty] private ObservableCollection<AvailableSerialPort> _availableSerialPorts = [];
 
@@ -73,11 +73,11 @@ public partial class ConnectViewModel : ObservableObject
     [RelayCommand]
     private async Task ScanSerialPorts()
     {
-        if (StatusLevel != StatusLevel.Ready && !await _dialogService.ShowConfirmationDialog("Rescan Serial Ports",
+        if (StatusLevel != Pages.StatusLevel.Ready && !await _dialogService.ShowConfirmationDialog("Rescan Serial Ports",
                 "This will shutdown existing connection to the PD. Are you sure you want to continue?",
                 MessageIcon.Warning)) return;
 
-        StatusLevel = StatusLevel.NotReady;
+        StatusLevel = Pages.StatusLevel.NotReady;
 
         await _deviceManagementService.Shutdown();
 
@@ -101,13 +101,13 @@ public partial class ConnectViewModel : ObservableObject
         if (anyFound)
         {
             SelectedSerialPort = AvailableSerialPorts.First();
-            StatusLevel = StatusLevel.Ready;
+            StatusLevel = Pages.StatusLevel.Ready;
         }
         else
         {
             await _dialogService.ShowMessageDialog("Error",
                 "No serial ports are available. Make sure that required drivers are installed.", MessageIcon.Error);
-            StatusLevel = StatusLevel.NotReady;
+            StatusLevel = Pages.StatusLevel.NotReady;
         }
     }
 
@@ -120,7 +120,7 @@ public partial class ConnectViewModel : ObservableObject
         string serialPortName = SelectedSerialPort?.Name ?? string.Empty;
         if (string.IsNullOrWhiteSpace(serialPortName)) return;
 
-        StatusLevel = StatusLevel.Discovering;
+        StatusLevel = Pages.StatusLevel.Discovering;
         NakText = string.Empty;
 
         var progress = new DiscoveryProgress(current =>
@@ -151,21 +151,21 @@ public partial class ConnectViewModel : ObservableObject
                 case DiscoveryStatus.Succeeded:
                     StatusText =
                         $"Successfully discovered device {current.Connection.BaudRate} with address {current.Address}";
-                    StatusLevel = StatusLevel.Discovered;
+                    StatusLevel = Pages.StatusLevel.Discovered;
                     _serialPortConnectionService = current.Connection as ISerialPortConnectionService;
                     ConnectedAddress = current.Address;
                     ConnectedBaudRate = current.Connection.BaudRate;
                     break;
                 case DiscoveryStatus.DeviceNotFound:
                     StatusText = "Failed to connect to device";
-                    StatusLevel = StatusLevel.Error;
+                    StatusLevel = Pages.StatusLevel.Error;
                     break;
                 case DiscoveryStatus.Error:
                     StatusText = "Error while discovering device";
-                    StatusLevel = StatusLevel.Error;
+                    StatusLevel = Pages.StatusLevel.Error;
                     break;
                 case DiscoveryStatus.Cancelled:
-                    StatusLevel = StatusLevel.Error;
+                    StatusLevel = Pages.StatusLevel.Error;
                     StatusText = "Cancelled discovery";
                     break;
                 default:
@@ -184,7 +184,7 @@ public partial class ConnectViewModel : ObservableObject
             // ignored
         }
 
-        if (StatusLevel == StatusLevel.Discovered)
+        if (StatusLevel == Pages.StatusLevel.Discovered)
         {
 
             /* if (CapabilitiesLookup?.SecureChannel ?? false)
@@ -209,7 +209,7 @@ public partial class ConnectViewModel : ObservableObject
         string serialPortName = SelectedSerialPort?.Name ?? string.Empty;
         if (string.IsNullOrWhiteSpace(serialPortName)) return;
 
-        StatusLevel = StatusLevel.Connecting;
+        StatusLevel = Pages.StatusLevel.Connecting;
         StatusText = "Attempting to connect manually";
         await _deviceManagementService.Shutdown();
         await _deviceManagementService.Connect(

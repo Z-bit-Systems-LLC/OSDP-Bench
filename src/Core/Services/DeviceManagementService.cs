@@ -1,14 +1,14 @@
 ﻿using System.Collections;
 using System.Text;
-using MvvmCore.Models;
 using OSDP.Net;
 using OSDP.Net.Connections;
 using OSDP.Net.Model.ReplyData;
 using OSDP.Net.PanelCommands.DeviceDiscover;
+using OSDPBench.Core.Models;
 using CommunicationConfiguration = OSDP.Net.Model.CommandData.CommunicationConfiguration;
 using ManufacturerSpecific = OSDP.Net.Model.CommandData.ManufacturerSpecific;
 
-namespace MvvmCore.Services;
+namespace OSDPBench.Core.Services;
 
 /// <summary>
 /// Class DeviceManagementService.

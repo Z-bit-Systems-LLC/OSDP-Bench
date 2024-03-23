@@ -1,4 +1,4 @@
-﻿using MvvmCore.ViewModels.Windows;
+﻿using OSDPBench.Core.ViewModels.Windows;
 using OSDPBench.Windows.Views.Pages;
 using Wpf.Ui;
 using Wpf.Ui.Appearance;

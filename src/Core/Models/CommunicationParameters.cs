@@ -1,4 +1,4 @@
-﻿namespace MvvmCore.Models;
+﻿namespace OSDPBench.Core.Models;
 
 public class CommunicationParameters(string portName, uint baudRate, byte address)
 {

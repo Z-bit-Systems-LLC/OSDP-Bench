@@ -2,7 +2,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using OSDP.Net.Model.ReplyData;
 
-namespace MvvmCore.Models;
+namespace OSDPBench.Core.Models;
 
 public partial class IdentityLookup : ObservableObject
 {

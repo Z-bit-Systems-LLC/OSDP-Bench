@@ -1,7 +1,7 @@
-﻿using MvvmCore.Models;
-using OSDP.Net.Connections;
+﻿using OSDP.Net.Connections;
+using OSDPBench.Core.Models;
 
-namespace MvvmCore.Services;
+namespace OSDPBench.Core.Services;
 
 public interface ISerialPortConnectionService : IOsdpConnection
 {

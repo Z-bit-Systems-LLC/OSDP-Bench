@@ -1,7 +1,7 @@
 using System.Globalization;
 using System.Windows.Data;
 using System.Windows.Media;
-using MvvmCore.ViewModels.Pages;
+using OSDPBench.Core.ViewModels.Pages;
 
 namespace OSDPBench.Windows.Converters;
 

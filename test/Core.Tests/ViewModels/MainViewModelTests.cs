@@ -1,8 +1,8 @@
 using System.Threading.Tasks;
 using Moq;
-using MvvmCore.Models;
-using MvvmCore.Services;
-using MvvmCore.ViewModels.Pages;
+using OSDPBench.Core.Models;
+using OSDPBench.Core.Services;
+using OSDPBench.Core.ViewModels.Pages;
 using NUnit.Framework;
 
 namespace OSDPBench.Core.Tests.ViewModels;

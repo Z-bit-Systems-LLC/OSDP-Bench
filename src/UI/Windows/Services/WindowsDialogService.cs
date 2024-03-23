@@ -1,10 +1,10 @@
 ﻿using System.Windows;
-using MvvmCore.Services;
+using OSDPBench.Core.Services;
 
 namespace OSDPBench.Windows.Services
 {
     /// <summary>
-    /// Provides an implementation of the <see cref="MvvmCore.Services.IDialogService"/> interface for Windows.
+    /// Provides an implementation of the <see cref="Core.Services.IDialogService"/> interface for Windows.
     /// This service is used to display message and confirmation dialogs in a Windows environment.
     /// </summary>
     /// <remarks>

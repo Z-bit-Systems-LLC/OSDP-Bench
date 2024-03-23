@@ -1,4 +1,4 @@
-﻿namespace MvvmCore.ViewModels.Pages;
+﻿namespace OSDPBench.Core.ViewModels.Pages;
 
 /// <summary>
 /// Represents the ViewModel for the Home page in the MVVM architecture.

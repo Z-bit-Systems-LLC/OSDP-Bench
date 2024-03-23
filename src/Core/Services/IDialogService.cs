@@ -1,4 +1,4 @@
-﻿namespace MvvmCore.Services;
+﻿namespace OSDPBench.Core.Services;
 
 /// <summary>
 /// The default <see langword="interface"/> for a service that shows dialogs
