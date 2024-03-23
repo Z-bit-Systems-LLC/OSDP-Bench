@@ -1,62 +1,48 @@
-using Microsoft.Extensions.Logging;
+using System.Threading.Tasks;
 using Moq;
-using MvvmCross.Base;
-using MvvmCross.Navigation;
-using MvvmCross.Tests;
-using MvvmCross.Views;
+using MvvmCore.Models;
+using MvvmCore.Services;
+using MvvmCore.ViewModels.Pages;
 using NUnit.Framework;
-using OSDPBench.Core.Models;
-using OSDPBench.Core.Platforms;
-using OSDPBench.Core.Services;
-using OSDPBench.Core.ViewModels;
 
 namespace OSDPBench.Core.Tests.ViewModels;
 
-public class MainViewModelTests : MvxIoCSupportingTest
+public class ConnectViewModelTests
 {
-    protected MockDispatcher MockDispatcher { get; private set; }
-
-    protected override void AdditionalSetup()
+    [Test]
+    public void ConnectViewModel_InitializedAvailableBaudRates()
     {
-        MockDispatcher = new MockDispatcher();
-        Ioc.RegisterSingleton<IMvxViewDispatcher>(MockDispatcher);
-        Ioc.RegisterSingleton<IMvxMainThreadAsyncDispatcher>(MockDispatcher);
+        // Arrange
+        var dialogService = new Mock<IDialogService>();
+        var deviceManagementService = new Mock<IDeviceManagementService>();
+        var serialPortConnectionService = new Mock<ISerialPortConnectionService>();
         
-        Ioc.RegisterSingleton(new Mock<ILoggerFactory>().Object);
+        // Act
+        var connectViewModel = new ConnectViewModel(dialogService.Object, deviceManagementService.Object, serialPortConnectionService.Object);
+
+        // Assert
+        Assert.That(6, Is.EqualTo(connectViewModel.AvailableBaudRates.Count));
     }
 
     [Test]
-    public void MainViewModel_InitializedAvailableBaudRates()
+    public async Task ConnectViewModel_ExecuteScanSerialPortsCommand()
     {
-        Setup();
-
-        Ioc.RegisterSingleton(new Mock<IMvxNavigationService>().Object);
-        Ioc.RegisterSingleton(new Mock<IDeviceManagementService>().Object);
-        Ioc.RegisterSingleton(new Mock<ISerialPortConnection>().Object);
-
-        var mainViewModel = Ioc.IoCConstruct<RootViewModel>();
-
-        Assert.That(6, Is.EqualTo(mainViewModel?.AvailableBaudRates.Count));
-    }
-
-    [Test]
-    public void MainViewModel_InitializedAvailableSerialPorts()
-    {
-        Setup();
-
-        Ioc.RegisterSingleton(new Mock<IMvxNavigationService>().Object);
-        Ioc.RegisterSingleton(new Mock<IDeviceManagementService>().Object);
-        var serialPortConnection = new Mock<ISerialPortConnection>();
-        serialPortConnection.Setup(expression => expression.FindAvailableSerialPorts())
+        // Arrange
+        var dialogService = new Mock<IDialogService>();
+        var deviceManagementService = new Mock<IDeviceManagementService>();
+        var serialPortConnectionService = new Mock<ISerialPortConnectionService>();
+        serialPortConnectionService.Setup(expression => expression.FindAvailableSerialPorts())
             .ReturnsAsync(new[]
             {
                 new AvailableSerialPort("id1", "test1", "desc1"), new AvailableSerialPort("id2", "test2", "desc2")
             });
-        Ioc.RegisterSingleton(serialPortConnection.Object);
 
-        var mainViewModel = Ioc.IoCConstruct<RootViewModel>();
-        mainViewModel?.Prepare();
+        var connectViewModel = new ConnectViewModel(dialogService.Object, deviceManagementService.Object, serialPortConnectionService.Object);
 
-        Assert.That(2, Is.EqualTo(mainViewModel?.AvailableSerialPorts.Count));
+        // Act
+        await connectViewModel.ScanSerialPortsCommand.ExecuteAsync(null);
+
+        // Assert
+        Assert.That(2, Is.EqualTo(connectViewModel.AvailableSerialPorts.Count));
     }
 }
