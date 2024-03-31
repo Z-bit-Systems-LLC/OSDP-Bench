@@ -1,5 +1,6 @@
 ﻿using OSDP.Net.Connections;
 using OSDP.Net.PanelCommands.DeviceDiscover;
+using OSDPBench.Core.Actions;
 using OSDPBench.Core.Models;
 
 namespace OSDPBench.Core.Services
@@ -24,6 +25,11 @@ namespace OSDPBench.Core.Services
 
         public bool IsConnected { get; }
 
+        /// <summary>
+        /// List of device action available.
+        /// </summary>
+        List<IDeviceAction> AvailableActions { get; }
+
         Task Connect(IOsdpConnection connection, byte address);
         
         /// <summary>
@@ -35,6 +41,8 @@ namespace OSDPBench.Core.Services
         /// <returns>Information regarding the result of the discovery process.</returns>
         Task<DiscoveryResult> DiscoverDevice(IEnumerable<IOsdpConnection> connections, DiscoveryProgress progress, CancellationToken cancellationToken);
 
+        
+        
         /// <summary>
         /// Sets the communication command.
         /// </summary>

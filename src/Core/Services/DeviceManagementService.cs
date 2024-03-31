@@ -4,6 +4,7 @@ using OSDP.Net;
 using OSDP.Net.Connections;
 using OSDP.Net.Model.ReplyData;
 using OSDP.Net.PanelCommands.DeviceDiscover;
+using OSDPBench.Core.Actions;
 using OSDPBench.Core.Models;
 using CommunicationConfiguration = OSDP.Net.Model.CommandData.CommunicationConfiguration;
 using ManufacturerSpecific = OSDP.Net.Model.CommandData.ManufacturerSpecific;
@@ -77,8 +78,13 @@ public class DeviceManagementService : IDeviceManagementService
     /// <inheritdoc />
     public bool UsesDefaultSecurityKey { get; private set; }
     
+    /// <inheritdoc />
     public bool IsConnected { get; private set; }
 
+    /// <inheritdoc />
+    public List<IDeviceAction> AvailableActions { get; } = [];
+
+    /// <inheritdoc />
     public async Task Connect(IOsdpConnection connection, byte address)
     {
         await Shutdown();
@@ -90,6 +96,7 @@ public class DeviceManagementService : IDeviceManagementService
         _panel.AddDevice(_connectionId, address, true, false);
     }
 
+    /// <inheritdoc />
     public async Task<DiscoveryResult> DiscoverDevice(IEnumerable<IOsdpConnection> connections, DiscoveryProgress progress, CancellationToken cancellationToken)
     {
         await Shutdown();
