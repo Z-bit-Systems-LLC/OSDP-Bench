@@ -91,7 +91,7 @@
 						Foreground="{ui:ThemeResource TextFillColorSecondaryBrush}"
 						TextWrapping="Wrap">
                         <ui:TextBlock.Text>
-                            <MultiBinding StringFormat="Found device at address {0} running at a baud rate of {1}">
+                            <MultiBinding StringFormat="Device connected at address {0} running at a baud rate of {1}">
                                 <Binding Path="ViewModel.ConnectedAddress" />
                                 <Binding Path="ViewModel.ConnectedBaudRate" />
                             </MultiBinding>
