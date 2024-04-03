@@ -43,6 +43,11 @@ public partial class ConnectViewModel : ObservableObject
             StatusText = "Attempting to connect";
             StatusLevel = StatusLevel.Connecting;
         }
+        else
+        {
+            StatusText = "Disconnected";
+            StatusLevel = StatusLevel.Disconnected;
+        }
     }
 
     private void DeviceManagementServiceOnNakReplyReceived(object? sender, string nakMessage)
@@ -212,7 +217,7 @@ public partial class ConnectViewModel : ObservableObject
         string serialPortName = SelectedSerialPort?.Name ?? string.Empty;
         if (string.IsNullOrWhiteSpace(serialPortName)) return;
 
-        StatusLevel = StatusLevel.Connecting;
+        StatusLevel = StatusLevel.ConnectingManually;
         StatusText = "Attempting to connect manually";
         await _deviceManagementService.Shutdown();
         await _deviceManagementService.Connect(
@@ -235,6 +240,9 @@ public enum StatusLevel
     Ready,
     Discovering,
     Discovered,
-    Error
+    Error,
+    Disconnected,
+    ConnectingManually
 #pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
+
 }

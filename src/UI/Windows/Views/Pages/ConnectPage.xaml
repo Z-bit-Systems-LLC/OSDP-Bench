@@ -137,8 +137,9 @@
                     <StackPanel Orientation="Vertical">
                         <Grid>
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition />
-                                <ColumnDefinition/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
                             <StackPanel Grid.Column="0" Orientation="Vertical">
                                 <Label Content="Baud Rate"
@@ -158,14 +159,12 @@
 											  Maximum="127"
 											  MaxDecimalPlaces="0"/>
                             </StackPanel>
+	                        <ui:Button Grid.Column="2"  Content="Connect"
+	                                   Margin="10 0"
+	                                   HorizontalAlignment="Right"
+	                                   VerticalAlignment="Bottom"
+	                                   Command="{Binding ViewModel.ConnectDeviceCommand}"/>
                         </Grid>
-                        <StackPanel Orientation="Horizontal"
-									HorizontalAlignment="Left">
-                            <ui:Button  Content="Connect"
-										Margin="10 5"
-										HorizontalAlignment="Center"
-										Command="{Binding ViewModel.ConnectDeviceCommand}"/>
-                        </StackPanel>
                     </StackPanel>
                 </Grid>
 

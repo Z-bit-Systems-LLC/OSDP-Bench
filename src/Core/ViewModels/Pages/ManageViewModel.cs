@@ -20,6 +20,10 @@ namespace OSDPBench.Core.ViewModels.Pages
                              throw new ArgumentNullException(nameof(dialogService));
             _deviceManagementService = deviceManagementService ??
                                        throw new ArgumentNullException(nameof(deviceManagementService));
+            
+            IdentityLookup = _deviceManagementService.IdentityLookup;
+            ConnectedAddress = _deviceManagementService.Address;
+            ConnectedBaudRate = (int)_deviceManagementService.BaudRate;
 
             _deviceManagementService.ConnectionStatusChange += DeviceManagementServiceOnConnectionStatusChange;
             _deviceManagementService.DeviceLookupsChanged += DeviceManagementServiceOnDeviceLookupsChanged;
@@ -27,18 +31,12 @@ namespace OSDPBench.Core.ViewModels.Pages
 
         private void DeviceManagementServiceOnDeviceLookupsChanged(object? sender, EventArgs e)
         {
-            IdentityLookup = _deviceManagementService.IdentityLookup;
             StatusText = "Device Ready";
         }
 
         private void DeviceManagementServiceOnConnectionStatusChange(object? sender, bool isOnline)
         {
             StatusText = isOnline ? "Connected" : "Disconnected";
-            if (isOnline)
-            {
-                ConnectedAddress = _deviceManagementService.Address;
-                ConnectedBaudRate = (int)_deviceManagementService.BaudRate;
-            }
         }
         
         [ObservableProperty] private string _statusText = string.Empty;

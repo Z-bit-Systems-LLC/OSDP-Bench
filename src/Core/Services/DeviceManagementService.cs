@@ -4,7 +4,6 @@ using OSDP.Net;
 using OSDP.Net.Connections;
 using OSDP.Net.Model.ReplyData;
 using OSDP.Net.PanelCommands.DeviceDiscover;
-using OSDPBench.Core.Actions;
 using OSDPBench.Core.Models;
 
 namespace OSDPBench.Core.Services;

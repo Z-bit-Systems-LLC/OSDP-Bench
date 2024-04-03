@@ -16,6 +16,7 @@ internal class StatusLevelConverter : IValueConverter
             case StatusLevel.Discovering:
             case StatusLevel.NotReady:
             case StatusLevel.Connecting:
+            case StatusLevel.Disconnected:
                 return new SolidColorBrush(Colors.Orange);
             case StatusLevel.Error:
                 return new SolidColorBrush(Colors.Red);
