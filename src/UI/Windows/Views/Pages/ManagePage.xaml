@@ -4,46 +4,110 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:OSDPBench.Windows.Views.Pages"
+      xmlns:converters="clr-namespace:OSDPBench.Windows.Converters"
+      xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
       mc:Ignorable="d" 
       d:DataContext="{d:DesignInstance local:ManagePage,
 									 IsDesignTimeCreatable=False}"
       d:DesignHeight="450" d:DesignWidth="800"
-      Title="ManagePage">
+      Title="Manage">
+    
+    <Page.Resources>
+        <converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
+    </Page.Resources>
 
     <StackPanel 
         Orientation="Vertical"
         Margin="0 5">
-        <TextBlock
-            FontSize="32"
-            Margin="20 10 20 0"
-            HorizontalAlignment="Center"
-            TextAlignment="Center"
-            TextWrapping="Wrap"
-            Text="Device Information"/>
-        <TextBlock
-            FontSize="24"
-            Margin="20 10 20 0"
-            HorizontalAlignment="Center"
-            TextAlignment="Center"
-            TextWrapping="Wrap"
-            Text="{Binding ViewModel.IdentityLookup.VendorName}"
-            d:Text="ABC Corporation"/>
-        <TextBlock
-            FontSize="20"
-            Margin="20 0 20 0"
-            HorizontalAlignment="Center"
-            TextAlignment="Center"
-            TextWrapping="Wrap"
-            Text="{Binding ViewModel.IdentityLookup.Model}"
-            d:Text="Reader"/>
-        <TextBlock
-            FontSize="20"
-            Margin="20 0 20 0"
-            HorizontalAlignment="Center"
-            TextAlignment="Center"
-            TextWrapping="Wrap"
-            Text="{Binding ViewModel.IdentityLookup.VersionNumber}"
-            d:Text="1.2.4"/>
+        <StackPanel  Orientation="Vertical"
+                     Visibility="{Binding Path=ViewModel.IdentityLookup, Converter={StaticResource NullToVisibilityConverter}, ConverterParameter=True, Mode=OneWay}">
+            <TextBlock
+                FontSize="32"
+                Margin="20 10 20 0"
+                HorizontalAlignment="Center"
+                TextAlignment="Center"
+                TextWrapping="Wrap"
+                Foreground="Orange"
+                Text="Device has not been Identified. Goto the Connect to PD page."/>
+        </StackPanel>
+        <StackPanel  Orientation="Vertical"
+                     Visibility="{Binding Path=ViewModel.IdentityLookup, Converter={StaticResource NullToVisibilityConverter}, ConverterParameter=False, Mode=OneWay}">
+            <TextBlock
+                FontSize="32"
+                Margin="20 10 20 0"
+                HorizontalAlignment="Center"
+                TextAlignment="Center"
+                TextWrapping="Wrap"
+                Text="Device Information"/>
+            <TextBlock
+                FontSize="24"
+                Margin="20 10 20 0"
+                HorizontalAlignment="Center"
+                TextAlignment="Center"
+                TextWrapping="Wrap"
+                Text="{Binding ViewModel.IdentityLookup.VendorName}"
+                d:Text="ABC Corporation"/>
+            <TextBlock
+                FontSize="20"
+                Margin="20 0 20 0"
+                HorizontalAlignment="Center"
+                TextAlignment="Center"
+                TextWrapping="Wrap"
+                Text="{Binding ViewModel.IdentityLookup.Model}"
+                d:Text="Reader"/>
+            <TextBlock
+                FontSize="20"
+                Margin="20 0 20 0"
+                HorizontalAlignment="Center"
+                TextAlignment="Center"
+                TextWrapping="Wrap"
+                Text="{Binding ViewModel.IdentityLookup.VersionNumber}"
+                d:Text="1.2.4"/>
+            
+            <ui:CardExpander IsExpanded="True"
+                         Margin=" 10 5"
+                         ContentPadding="10 5">
+                <ui:CardExpander.Header>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" MinWidth="100" />
+                        </Grid.ColumnDefinitions>
+                        <ui:TextBlock
+                            Grid.Row="0"
+                            Grid.Column="0"
+                            VerticalAlignment="Center"
+                            FontSize="16"
+                            FontTypography="Body"
+                            Text="Device Action" 
+                            TextWrapping="Wrap"/>
+                        <ui:TextBlock
+                            Grid.Row="1"
+                            Grid.Column="0"
+                            FontSize="12"
+                            Foreground="{ui:ThemeResource TextFillColorSecondaryBrush}"
+                            TextWrapping="Wrap">
+                            <ui:TextBlock.Text>
+                                <MultiBinding StringFormat="Device connected at address {0} running at a baud rate of {1}">
+                                    <Binding Path="ViewModel.ConnectedAddress" />
+                                    <Binding Path="ViewModel.ConnectedBaudRate" />
+                                </MultiBinding>
+                            </ui:TextBlock.Text>
+                        </ui:TextBlock>
 
+                        <ComboBox Name="ConnectionTypeComboBox"
+                                  Grid.Row="0"
+                                  Grid.RowSpan="2"
+                                  Grid.Column="1"
+                                  Margin="0,0,16,0"
+                                  ItemsSource="{Binding ViewModel.AvailableActions }"/>
+                    </Grid>
+                </ui:CardExpander.Header>
+            </ui:CardExpander>
+        </StackPanel>
     </StackPanel>
 </Page>

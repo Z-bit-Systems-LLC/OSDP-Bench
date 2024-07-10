@@ -13,6 +13,9 @@ public partial class ConnectViewModel : ObservableObject
     private readonly IDeviceManagementService _deviceManagementService;
     private ISerialPortConnectionService? _serialPortConnectionService;
 
+    /// <summary>
+    /// ViewModel for the Connect page.
+    /// </summary>
     public ConnectViewModel(IDialogService dialogService, IDeviceManagementService deviceManagementService,
         ISerialPortConnectionService serialPortConnectionService)
     {
@@ -33,12 +36,17 @@ public partial class ConnectViewModel : ObservableObject
         {
             StatusText = "Connected";
             NakText = string.Empty;
-            StatusLevel = Pages.StatusLevel.Connected;
+            StatusLevel = StatusLevel.Connected;
         }
-        else if (StatusLevel == Pages.StatusLevel.Discovered)
+        else if (StatusLevel == StatusLevel.Discovered)
         {
             StatusText = "Attempting to connect";
-            StatusLevel = Pages.StatusLevel.Connecting;
+            StatusLevel = StatusLevel.Connecting;
+        }
+        else
+        {
+            StatusText = "Disconnected";
+            StatusLevel = StatusLevel.Disconnected;
         }
     }
 
@@ -54,7 +62,7 @@ public partial class ConnectViewModel : ObservableObject
 
     [ObservableProperty] private string _nakText = string.Empty;
 
-    [ObservableProperty] private StatusLevel _statusLevel = Pages.StatusLevel.Ready;
+    [ObservableProperty] private StatusLevel _statusLevel = StatusLevel.Ready;
 
     [ObservableProperty] private ObservableCollection<AvailableSerialPort> _availableSerialPorts = [];
 
@@ -73,11 +81,11 @@ public partial class ConnectViewModel : ObservableObject
     [RelayCommand]
     private async Task ScanSerialPorts()
     {
-        if (StatusLevel != Pages.StatusLevel.Ready && !await _dialogService.ShowConfirmationDialog("Rescan Serial Ports",
+        if (StatusLevel != StatusLevel.Ready && !await _dialogService.ShowConfirmationDialog("Rescan Serial Ports",
                 "This will shutdown existing connection to the PD. Are you sure you want to continue?",
                 MessageIcon.Warning)) return;
 
-        StatusLevel = Pages.StatusLevel.NotReady;
+        StatusLevel = StatusLevel.NotReady;
 
         await _deviceManagementService.Shutdown();
 
@@ -101,13 +109,13 @@ public partial class ConnectViewModel : ObservableObject
         if (anyFound)
         {
             SelectedSerialPort = AvailableSerialPorts.First();
-            StatusLevel = Pages.StatusLevel.Ready;
+            StatusLevel = StatusLevel.Ready;
         }
         else
         {
             await _dialogService.ShowMessageDialog("Error",
                 "No serial ports are available. Make sure that required drivers are installed.", MessageIcon.Error);
-            StatusLevel = Pages.StatusLevel.NotReady;
+            StatusLevel = StatusLevel.NotReady;
         }
     }
 
@@ -120,7 +128,7 @@ public partial class ConnectViewModel : ObservableObject
         string serialPortName = SelectedSerialPort?.Name ?? string.Empty;
         if (string.IsNullOrWhiteSpace(serialPortName)) return;
 
-        StatusLevel = Pages.StatusLevel.Discovering;
+        StatusLevel = StatusLevel.Discovering;
         NakText = string.Empty;
 
         var progress = new DiscoveryProgress(current =>
@@ -151,21 +159,21 @@ public partial class ConnectViewModel : ObservableObject
                 case DiscoveryStatus.Succeeded:
                     StatusText =
                         $"Successfully discovered device {current.Connection.BaudRate} with address {current.Address}";
-                    StatusLevel = Pages.StatusLevel.Discovered;
+                    StatusLevel = StatusLevel.Discovered;
                     _serialPortConnectionService = current.Connection as ISerialPortConnectionService;
                     ConnectedAddress = current.Address;
                     ConnectedBaudRate = current.Connection.BaudRate;
                     break;
                 case DiscoveryStatus.DeviceNotFound:
                     StatusText = "Failed to connect to device";
-                    StatusLevel = Pages.StatusLevel.Error;
+                    StatusLevel = StatusLevel.Error;
                     break;
                 case DiscoveryStatus.Error:
                     StatusText = "Error while discovering device";
-                    StatusLevel = Pages.StatusLevel.Error;
+                    StatusLevel = StatusLevel.Error;
                     break;
                 case DiscoveryStatus.Cancelled:
-                    StatusLevel = Pages.StatusLevel.Error;
+                    StatusLevel = StatusLevel.Error;
                     StatusText = "Cancelled discovery";
                     break;
                 default:
@@ -184,7 +192,7 @@ public partial class ConnectViewModel : ObservableObject
             // ignored
         }
 
-        if (StatusLevel == Pages.StatusLevel.Discovered)
+        if (StatusLevel == StatusLevel.Discovered)
         {
 
             /* if (CapabilitiesLookup?.SecureChannel ?? false)
@@ -209,7 +217,7 @@ public partial class ConnectViewModel : ObservableObject
         string serialPortName = SelectedSerialPort?.Name ?? string.Empty;
         if (string.IsNullOrWhiteSpace(serialPortName)) return;
 
-        StatusLevel = Pages.StatusLevel.Connecting;
+        StatusLevel = StatusLevel.ConnectingManually;
         StatusText = "Attempting to connect manually";
         await _deviceManagementService.Shutdown();
         await _deviceManagementService.Connect(
@@ -219,8 +227,12 @@ public partial class ConnectViewModel : ObservableObject
     }
 }
 
+/// <summary>
+/// Specifies the status level of a connection.
+/// </summary>
 public enum StatusLevel
 {
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
     None,
     Connected,
     Connecting,
@@ -228,5 +240,9 @@ public enum StatusLevel
     Ready,
     Discovering,
     Discovered,
-    Error
+    Error,
+    Disconnected,
+    ConnectingManually
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
+
 }

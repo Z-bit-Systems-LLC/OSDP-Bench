@@ -5,8 +5,6 @@ using OSDP.Net.Connections;
 using OSDP.Net.Model.ReplyData;
 using OSDP.Net.PanelCommands.DeviceDiscover;
 using OSDPBench.Core.Models;
-using CommunicationConfiguration = OSDP.Net.Model.CommandData.CommunicationConfiguration;
-using ManufacturerSpecific = OSDP.Net.Model.CommandData.ManufacturerSpecific;
 
 namespace OSDPBench.Core.Services;
 
@@ -77,8 +75,10 @@ public class DeviceManagementService : IDeviceManagementService
     /// <inheritdoc />
     public bool UsesDefaultSecurityKey { get; private set; }
     
+    /// <inheritdoc />
     public bool IsConnected { get; private set; }
 
+    /// <inheritdoc />
     public async Task Connect(IOsdpConnection connection, byte address)
     {
         await Shutdown();
@@ -90,6 +90,7 @@ public class DeviceManagementService : IDeviceManagementService
         _panel.AddDevice(_connectionId, address, true, false);
     }
 
+    /// <inheritdoc />
     public async Task<DiscoveryResult> DiscoverDevice(IEnumerable<IOsdpConnection> connections, DiscoveryProgress progress, CancellationToken cancellationToken)
     {
         await Shutdown();
@@ -136,64 +137,6 @@ public class DeviceManagementService : IDeviceManagementService
         var results = await _panel.DiscoverDevice(connections, options);
 
         return results;
-    }
-
-    /// <inheritdoc /> 
-    public async Task<CommunicationParameters> SetCommunicationCommand(
-        CommunicationParameters communicationParameters)
-    {
-        try
-        {
-            var result = await _panel.CommunicationConfiguration(_connectionId, Address,
-                new CommunicationConfiguration(communicationParameters.Address,
-                    (int)communicationParameters.BaudRate));
-
-            Address = result.Address;
-            BaudRate = (uint)result.BaudRate;
-
-            return new CommunicationParameters(communicationParameters.PortName, BaudRate, Address);
-        }
-        catch (TimeoutException)
-        {
-            return communicationParameters;
-        }
-    }
-
-    /// <inheritdoc />
-    public async Task ResetDevice(ISerialPortConnectionService connectionService)
-    {
-        await Shutdown();
-
-        _connectionId = _panel.StartConnection(connectionService, TimeSpan.Zero);
-
-        _panel.AddDevice(_connectionId, Address, false, false);
-
-        const int maximumAttempts = 15;
-        const int requiredNumberOfAcks = 10;
-        int totalAcks = 0;
-        int totalAttempts = 0;
-        while (totalAttempts++ < maximumAttempts && totalAcks < requiredNumberOfAcks)
-        {
-            try
-            {
-                var result = await _panel.ManufacturerSpecificCommand(_connectionId, Address,
-                    new ManufacturerSpecific(new byte[] { 0xCA, 0x44, 0x6C }, new byte[] { 0x05 }));
-
-                if (result.Ack)
-                {
-                    totalAcks++;
-                }
-            }
-            catch
-            {
-                await Task.Delay(TimeSpan.FromSeconds(1));
-            }
-        }
-
-        if (totalAcks < requiredNumberOfAcks)
-        {
-            throw new Exception("Reset commands were not accepted.");
-        }
     }
 
     private static string ToFormattedText(ErrorCode value)

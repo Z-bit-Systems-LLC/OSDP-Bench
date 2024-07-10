@@ -1,5 +1,6 @@
 ﻿using OSDP.Net.Connections;
 using OSDP.Net.PanelCommands.DeviceDiscover;
+using OSDPBench.Core.Actions;
 using OSDPBench.Core.Models;
 
 namespace OSDPBench.Core.Services
@@ -24,8 +25,13 @@ namespace OSDPBench.Core.Services
 
         public bool IsConnected { get; }
 
+        /// <summary>
+        /// Establishes a connection with a device.
+        /// </summary>
+        /// <param name="connection">The connection to use for communication.</param>
+        /// <param name="address">The address of the device.</param>
         Task Connect(IOsdpConnection connection, byte address);
-        
+
         /// <summary>
         /// Discovers a device asynchronously over the provided connections.
         /// </summary>
@@ -36,20 +42,6 @@ namespace OSDPBench.Core.Services
         Task<DiscoveryResult> DiscoverDevice(IEnumerable<IOsdpConnection> connections, DiscoveryProgress progress, CancellationToken cancellationToken);
 
         /// <summary>
-        /// Sets the communication command.
-        /// </summary>
-        /// <param name="communicationParameters">The communication parameters.</param>
-        /// <returns>Task&lt;CommunicationParameters&gt;.</returns>
-        Task<CommunicationParameters> SetCommunicationCommand(CommunicationParameters communicationParameters);
-
-        /// <summary>
-        /// Resets the device.
-        /// </summary>
-        /// <param name="connectionService">The connectionService.</param>
-        /// <returns>Task.</returns>
-        Task ResetDevice(ISerialPortConnectionService connectionService);
-
-        /// <summary>
         /// Asynchronously shuts down the device management service.
         /// </summary>
         /// <remarks>
@@ -58,19 +50,19 @@ namespace OSDPBench.Core.Services
         Task Shutdown();
 
         /// <summary>
-        /// Occurs when connectionService status changes.
+        /// Represents a variable that tracks the connection status change event.
         /// </summary>
         event EventHandler<bool> ConnectionStatusChange;
 
         event EventHandler DeviceLookupsChanged;
 
         /// <summary>
-        /// Occurs when NAK reply received.
+        /// Event triggered when a NAK reply is received from the device.
         /// </summary>
         event EventHandler<string> NakReplyReceived;
 
         /// <summary>
-        /// 
+        /// Event that is fired when a card read is received by the device.
         /// </summary>
         event EventHandler<string> CardReadReceived;
     }
