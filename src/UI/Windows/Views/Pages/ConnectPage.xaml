@@ -17,7 +17,7 @@
         <converters:StringToVisibilityConverter x:Key="StringToVisibilityConverter" />
     </Page.Resources>
 
-        <StackPanel 
+    <StackPanel 
 		Orientation="Vertical"
 		Margin="0 5">
         <ui:CardExpander IsExpanded="True"
@@ -107,7 +107,7 @@
 						SelectedValue="Discover"/>
                 </Grid>
             </ui:CardExpander.Header>
-                <StackPanel Orientation="Vertical">
+            <StackPanel Orientation="Vertical">
                 <Grid 
 					Visibility="{Binding ElementName=ConnectionTypeComboBox, Path=SelectedValue, Converter={StaticResource StringToVisibilityConverter}, ConverterParameter=Discover, Mode=OneWay}">
                     <StackPanel Orientation="Vertical">
@@ -116,7 +116,7 @@
 							HorizontalAlignment="Center"
 							FontSize="16"
 							FontTypography="Body"
-							Text="Discovery will only work properly with a single devices connected" 
+							Text="Discovery will work properly with a single devices connected" 
 							TextWrapping="Wrap"/>
                         <StackPanel Orientation="Horizontal"
 									HorizontalAlignment="Left">
