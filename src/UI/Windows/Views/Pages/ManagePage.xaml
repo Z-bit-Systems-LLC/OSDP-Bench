@@ -4,46 +4,74 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:OSDPBench.Windows.Views.Pages"
+      xmlns:converters="clr-namespace:OSDPBench.Windows.Converters"
+      xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
       mc:Ignorable="d" 
       d:DataContext="{d:DesignInstance local:ManagePage,
 									 IsDesignTimeCreatable=False}"
       d:DesignHeight="450" d:DesignWidth="800"
       Title="ManagePage">
 
-    <StackPanel 
-        Orientation="Vertical"
-        Margin="0 5">
-        <TextBlock
-            FontSize="32"
-            Margin="20 10 20 0"
-            HorizontalAlignment="Center"
-            TextAlignment="Center"
-            TextWrapping="Wrap"
-            Text="Device Information"/>
-        <TextBlock
-            FontSize="24"
-            Margin="20 10 20 0"
-            HorizontalAlignment="Center"
-            TextAlignment="Center"
-            TextWrapping="Wrap"
-            Text="{Binding ViewModel.IdentityLookup.VendorName}"
-            d:Text="ABC Corporation"/>
-        <TextBlock
-            FontSize="20"
-            Margin="20 0 20 0"
-            HorizontalAlignment="Center"
-            TextAlignment="Center"
-            TextWrapping="Wrap"
-            Text="{Binding ViewModel.IdentityLookup.Model}"
-            d:Text="Reader"/>
-        <TextBlock
-            FontSize="20"
-            Margin="20 0 20 0"
-            HorizontalAlignment="Center"
-            TextAlignment="Center"
-            TextWrapping="Wrap"
-            Text="{Binding ViewModel.IdentityLookup.VersionNumber}"
-            d:Text="1.2.4"/>
+    <Page.Resources>
+        <converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
+    </Page.Resources>
 
-    </StackPanel>
+    <Grid>
+        <StackPanel Visibility="{Binding Path=ViewModel.IdentityLookup, Converter={StaticResource NullToVisibilityConverter}, ConverterParameter=True, Mode=OneWay}"
+                    Orientation="Vertical"
+                    Margin="0 5"
+                    d:IsHidden="True">
+            <TextBlock 
+                FontSize="32"
+                Margin="20 10 20 0"
+                HorizontalAlignment="Center"
+                TextAlignment="Center"
+                TextWrapping="Wrap"
+                Text="Waiting for Device to Come Online"/>
+            <TextBlock 
+                FontSize="24"
+                Margin="20 10 20 20"
+                HorizontalAlignment="Center"
+                TextAlignment="Center"
+                TextWrapping="Wrap"
+                Text="Check the status on the connection page"/>
+            <ui:ProgressRing IsIndeterminate="True"/>
+        </StackPanel>
+
+        <StackPanel Visibility="{Binding Path=ViewModel.IdentityLookup, Converter={StaticResource NullToVisibilityConverter}, ConverterParameter=False, Mode=OneWay}"
+                    Orientation="Vertical"
+                    Margin="0 5">
+            <TextBlock 
+                FontSize="32"
+                Margin="20 10 20 0"
+                HorizontalAlignment="Center"
+                TextAlignment="Center"
+                TextWrapping="Wrap"
+                Text="Device Information"/>
+            <TextBlock
+                FontSize="24"
+                Margin="20 10 20 0"
+                HorizontalAlignment="Center"
+                TextAlignment="Center"
+                TextWrapping="Wrap"
+                Text="{Binding Path=ViewModel.IdentityLookup.VendorName}"
+                d:Text="ABC Corporation"/>
+            <TextBlock
+                FontSize="20"
+                Margin="20 0 20 0"
+                HorizontalAlignment="Center"
+                TextAlignment="Center"
+                TextWrapping="Wrap"
+                Text="{Binding ViewModel.IdentityLookup.Model}"
+                d:Text="Reader"/>
+            <TextBlock
+                FontSize="20"
+                Margin="20 0 20 0"
+                HorizontalAlignment="Center"
+                TextAlignment="Center"
+                TextWrapping="Wrap"
+                Text="{Binding ViewModel.IdentityLookup.VersionNumber}"
+                d:Text="1.2.4"/>
+        </StackPanel>
+    </Grid>
 </Page>
