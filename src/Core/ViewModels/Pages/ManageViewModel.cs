@@ -20,10 +20,8 @@ namespace OSDPBench.Core.ViewModels.Pages
                              throw new ArgumentNullException(nameof(dialogService));
             _deviceManagementService = deviceManagementService ??
                                        throw new ArgumentNullException(nameof(deviceManagementService));
-            
-            IdentityLookup = _deviceManagementService.IdentityLookup;
-            ConnectedAddress = _deviceManagementService.Address;
-            ConnectedBaudRate = (int)_deviceManagementService.BaudRate;
+
+            UpdateFields();
 
             _deviceManagementService.ConnectionStatusChange += DeviceManagementServiceOnConnectionStatusChange;
             _deviceManagementService.DeviceLookupsChanged += DeviceManagementServiceOnDeviceLookupsChanged;
@@ -31,21 +29,28 @@ namespace OSDPBench.Core.ViewModels.Pages
 
         private void DeviceManagementServiceOnDeviceLookupsChanged(object? sender, EventArgs e)
         {
-            StatusText = "Device Ready";
+            UpdateFields();
+        }
+
+        private void UpdateFields()
+        {
+            IdentityLookup = _deviceManagementService.IdentityLookup;
+            ConnectedAddress = _deviceManagementService.Address;
+            ConnectedBaudRate = _deviceManagementService.BaudRate;
         }
 
         private void DeviceManagementServiceOnConnectionStatusChange(object? sender, bool isOnline)
         {
-            StatusText = isOnline ? "Connected" : "Disconnected";
+            StatusLevel = isOnline ? StatusLevel.Connected : StatusLevel.Disconnected;
         }
-        
-        [ObservableProperty] private string _statusText = string.Empty;
         
         [ObservableProperty] private byte _connectedAddress;
 
-        [ObservableProperty] private int _connectedBaudRate;
+        [ObservableProperty] private uint _connectedBaudRate;
 
         [ObservableProperty] private IdentityLookup? _identityLookup;
+
+        [ObservableProperty] private StatusLevel _statusLevel = StatusLevel.Disconnected;
 
         [ObservableProperty] private ObservableCollection<IDeviceAction> _availableActions = [];
     }

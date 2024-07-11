@@ -13,14 +13,14 @@
       Title="Manage">
     
     <Page.Resources>
-        <converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
+        <converters:StringToVisibilityConverter x:Key="StringToVisibilityConverter" />
     </Page.Resources>
 
     <StackPanel 
         Orientation="Vertical"
         Margin="0 5">
         <StackPanel  Orientation="Vertical"
-                     Visibility="{Binding Path=ViewModel.IdentityLookup, Converter={StaticResource NullToVisibilityConverter}, ConverterParameter=True, Mode=OneWay}">
+                     Visibility="{Binding Path=ViewModel.StatusLevel, Converter={StaticResource StringToVisibilityConverter}, ConverterParameter=Disconnected, Mode=OneWay}">
             <TextBlock
                 FontSize="32"
                 Margin="20 10 20 0"
@@ -28,10 +28,17 @@
                 TextAlignment="Center"
                 TextWrapping="Wrap"
                 Foreground="Orange"
-                Text="Device has not been Identified. Goto the Connect to PD page."/>
+                Text="Device has not been Identified"/>
+            <TextBlock
+                FontSize="24"
+                Margin="20 10 20 0"
+                HorizontalAlignment="Center"
+                TextAlignment="Center"
+                TextWrapping="Wrap"
+                Text="The Connection page will provide more details"/>
         </StackPanel>
         <StackPanel  Orientation="Vertical"
-                     Visibility="{Binding Path=ViewModel.IdentityLookup, Converter={StaticResource NullToVisibilityConverter}, ConverterParameter=False, Mode=OneWay}">
+                     Visibility="{Binding Path=ViewModel.StatusLevel, Converter={StaticResource StringToVisibilityConverter}, ConverterParameter=Connected, Mode=OneWay}">
             <TextBlock
                 FontSize="32"
                 Margin="20 10 20 0"

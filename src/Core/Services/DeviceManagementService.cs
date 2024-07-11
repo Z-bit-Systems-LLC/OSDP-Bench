@@ -93,6 +93,10 @@ public class DeviceManagementService : IDeviceManagementService
     /// <inheritdoc />
     public async Task<DiscoveryResult> DiscoverDevice(IEnumerable<IOsdpConnection> connections, DiscoveryProgress progress, CancellationToken cancellationToken)
     {
+        IdentityLookup = null;
+        CapabilitiesLookup = null;
+        OnDeviceLookupsChanged();
+
         await Shutdown();
 
         _isDiscovering = true;
@@ -104,6 +108,11 @@ public class DeviceManagementService : IDeviceManagementService
         finally
         {
             _isDiscovering = false;
+        }
+
+        if (results == null)
+        {
+            throw new Exception("Unable to discover device");
         }
 
         if (results.Status != DiscoveryStatus.Succeeded) return results;
@@ -122,11 +131,8 @@ public class DeviceManagementService : IDeviceManagementService
         return results;
     }
 
-    private async Task<DiscoveryResult> DiscoveryRoutines (IEnumerable<IOsdpConnection> connections, DiscoveryProgress progress, CancellationToken cancellationToken)
+    private async Task<DiscoveryResult> DiscoveryRoutines(IEnumerable<IOsdpConnection> connections, DiscoveryProgress progress, CancellationToken cancellationToken)
     {
-        IdentityLookup = null;
-        CapabilitiesLookup = null;
-
         var options = new DiscoveryOptions
         {
             ProgressCallback = progress,
