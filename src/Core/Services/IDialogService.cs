@@ -24,9 +24,14 @@ public interface IDialogService
     Task<bool> ShowConfirmationDialog(string title, string message, MessageIcon messageIcon);
 }
 
+/// <summary>
+/// Icon used in dialog
+/// </summary>
 public enum MessageIcon
 {
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
     Information,
     Error,
     Warning
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
 }

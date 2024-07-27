@@ -1,5 +1,4 @@
 ﻿using OSDPBench.Core.ViewModels.Windows;
-using OSDPBench.Windows.Views.Pages;
 using Wpf.Ui;
 using Wpf.Ui.Appearance;
 using Wpf.Ui.Controls;
@@ -11,6 +10,7 @@ namespace OSDPBench.Windows.Views.Windows
     /// </summary>
     public partial class MainWindow : INavigationWindow
     {
+        // ReSharper disable once UnusedAutoPropertyAccessor.Global
         public MainWindowViewModel ViewModel { get; }
         
         public MainWindow(MainWindowViewModel viewModel,
@@ -44,7 +44,6 @@ namespace OSDPBench.Windows.Views.Windows
         /// <inheritdoc />
         public void SetServiceProvider(IServiceProvider serviceProvider)
         {
-            throw new NotImplementedException();
         }
         
         public void ShowWindow() => Show();

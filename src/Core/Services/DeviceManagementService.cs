@@ -4,6 +4,7 @@ using OSDP.Net;
 using OSDP.Net.Connections;
 using OSDP.Net.Model.ReplyData;
 using OSDP.Net.PanelCommands.DeviceDiscover;
+using OSDPBench.Core.Actions;
 using OSDPBench.Core.Models;
 
 namespace OSDPBench.Core.Services;
@@ -65,6 +66,9 @@ public class DeviceManagementService : IDeviceManagementService
 
     /// <inheritdoc />
     public CapabilitiesLookup? CapabilitiesLookup { get; private set; }
+
+    /// <inheritdoc />
+    public string? PortName { get; set; }
 
     /// <inheritdoc />
     public byte Address { get; private set; }
@@ -163,6 +167,12 @@ public class DeviceManagementService : IDeviceManagementService
     }
 
     /// <inheritdoc />
+    public Task<object> ExecuteDeviceAction(IDeviceAction deviceAction, object? parameter)
+    {
+        return deviceAction.PerformAction(_panel, _connectionId, Address, parameter);
+    }
+
+    /// <inheritdoc />
     public async Task Shutdown()
     {
         IdentityLookup = null;
@@ -173,12 +183,22 @@ public class DeviceManagementService : IDeviceManagementService
 
     /// <inheritdoc />
     public event EventHandler<bool>? ConnectionStatusChange;
+
+    /// <summary>
+    /// Event handler for the connection status change.
+    /// </summary>
+    /// <param name="isConnected">A boolean value indicating if the connection status is connected or not.</param>
     protected virtual void OnConnectionStatusChange(bool isConnected)
     {
         ConnectionStatusChange?.Invoke(this, isConnected);
     }
 
+    /// <inheritdoc />
     public event EventHandler? DeviceLookupsChanged;
+
+    /// <summary>
+    /// Raises the <see cref="DeviceLookupsChanged"/> event.
+    /// </summary>
     protected virtual void OnDeviceLookupsChanged()
     {
         DeviceLookupsChanged?.Invoke(this, EventArgs.Empty);
@@ -186,7 +206,10 @@ public class DeviceManagementService : IDeviceManagementService
 
     /// <inheritdoc />
     public event EventHandler<string>? NakReplyReceived;
-
+    /// <summary>
+    /// Event handler for Nak reply received.
+    /// </summary>
+    /// <param name="errorMessage">The error message.</param>
     protected virtual void OnNakReplyReceived(string errorMessage)
     {
         NakReplyReceived?.Invoke(this, errorMessage);
@@ -194,12 +217,16 @@ public class DeviceManagementService : IDeviceManagementService
 
     /// <inheritdoc />
     public event EventHandler<string>? CardReadReceived;
+
+    /// <summary>
+    /// Raises the CardReadReceived event when card data is received.
+    /// </summary>
+    /// <param name="data">The card data received.</param>
     protected virtual void OnCardReadReceived(string data)
     {
         CardReadReceived?.Invoke(this, data);
     }
 
-    // ReSharper disable once UnusedMember.Local
     private static string FormatData(BitArray bitArray)
     {
         var builder = new StringBuilder();

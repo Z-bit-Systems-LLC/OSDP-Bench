@@ -1,5 +1,4 @@
 ﻿using OSDP.Net;
-using OSDPBench.Core.Models;
 
 namespace OSDPBench.Core.Actions;
 
@@ -21,5 +20,5 @@ public interface IDeviceAction
     /// <param name="address"></param>
     /// <param name="parameter">Extra parameter needed to perform action</param>
     /// <returns>A task that represents the asynchronous operation and contains the result of the action.</returns>
-    Task<object> PerformAction(ControlPanel panel, Guid connectionId, byte address, object parameter);
+    Task<object> PerformAction(ControlPanel panel, Guid connectionId, byte address, object? parameter);
 }

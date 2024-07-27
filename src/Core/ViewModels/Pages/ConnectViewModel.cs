@@ -81,7 +81,8 @@ public partial class ConnectViewModel : ObservableObject
     [RelayCommand]
     private async Task ScanSerialPorts()
     {
-        if (StatusLevel != StatusLevel.Ready && StatusLevel != StatusLevel.NotReady && !await _dialogService.ShowConfirmationDialog("Rescan Serial Ports",
+        if (StatusLevel != StatusLevel.Ready && StatusLevel != StatusLevel.NotReady &&
+            !await _dialogService.ShowConfirmationDialog("Rescan Serial Ports",
                 "This will shutdown existing connection to the PD. Are you sure you want to continue?",
                 MessageIcon.Warning)) return;
 
@@ -127,6 +128,7 @@ public partial class ConnectViewModel : ObservableObject
 
         string serialPortName = SelectedSerialPort?.Name ?? string.Empty;
         if (string.IsNullOrWhiteSpace(serialPortName)) return;
+        _deviceManagementService.PortName = serialPortName;
 
         StatusLevel = StatusLevel.Discovering;
         NakText = string.Empty;
@@ -216,6 +218,7 @@ public partial class ConnectViewModel : ObservableObject
 
         string serialPortName = SelectedSerialPort?.Name ?? string.Empty;
         if (string.IsNullOrWhiteSpace(serialPortName)) return;
+        _deviceManagementService.PortName = serialPortName;
 
         StatusLevel = StatusLevel.ConnectingManually;
         StatusText = "Attempting to connect manually";

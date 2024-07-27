@@ -72,6 +72,9 @@ public partial class IdentityLookup : ObservableObject
         }
     };
 
+    /// <summary>
+    /// Represents an identity lookup for a device.
+    /// </summary>
     public IdentityLookup(DeviceIdentification deviceIdentification)
     {
         if (deviceIdentification == null) throw new ArgumentNullException(nameof(deviceIdentification));
@@ -105,7 +108,20 @@ public partial class IdentityLookup : ObservableObject
 
     [ObservableProperty] private string _versionNumber = string.Empty;
 
+    /// <summary>
+    /// Provides information and instructions for resetting a device.
+    /// </summary>
+    // ReSharper disable once UnusedAutoPropertyAccessor.Global
     public string ResetInstructions { get; } = "No reset instructions are available for this device.";
 
+    /// <summary>
+    /// Gets a value indicating whether the device can send a reset command.
+    /// </summary>
+    /// <remarks>
+    /// This property is set based on the device information obtained from the identity lookup.
+    /// If the device information is found and the "CanSendResetCommand" property is present,
+    /// the value of this property will indicate whether the device can send a reset command.
+    /// </remarks>
+    // ReSharper disable once UnusedAutoPropertyAccessor.Global
     public bool CanSendResetCommand { get; }
 }

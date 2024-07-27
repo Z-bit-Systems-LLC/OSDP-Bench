@@ -13,7 +13,7 @@ public class ResetCypressDeviceAction : IDeviceAction
     public string Name => "Reset Device";
 
     /// <inheritdoc />
-    public async Task<object> PerformAction(ControlPanel panel, Guid connectionId, byte address, object parameter)
+    public async Task<object> PerformAction(ControlPanel panel, Guid connectionId, byte address, object? parameter)
     {
         await panel.Shutdown();
         

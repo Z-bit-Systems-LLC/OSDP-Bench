@@ -2,8 +2,14 @@
 
 namespace OSDPBench.Core.Models;
 
+/// <summary>
+/// Represents a lookup of device capabilities.
+/// </summary>
 public class CapabilitiesLookup
 {
+    /// <summary>
+    /// Represents a lookup of device capabilities.
+    /// </summary>
     public CapabilitiesLookup(DeviceCapabilities deviceCapabilities)
     {
         if (deviceCapabilities == null) throw new ArgumentNullException(nameof(deviceCapabilities));
@@ -17,7 +23,14 @@ public class CapabilitiesLookup
             ?.Compliance == 1;
     }
 
+    /// <summary>
+    /// Is CRC capable
+    /// </summary>
     public bool CRC { get; }
 
+    /// <summary>
+    /// Is secure channel capable
+    /// </summary>
+    // ReSharper disable once UnusedAutoPropertyAccessor.Global
     public bool SecureChannel { get; }
 }

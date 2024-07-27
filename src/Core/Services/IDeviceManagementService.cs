@@ -5,6 +5,9 @@ using OSDPBench.Core.Models;
 
 namespace OSDPBench.Core.Services
 {
+    /// <summary>
+    /// Represents a service for managing devices.
+    /// </summary>
     public interface IDeviceManagementService
     {
         /// <summary>
@@ -17,12 +20,38 @@ namespace OSDPBench.Core.Services
         /// </summary>
         CapabilitiesLookup? CapabilitiesLookup { get; }
 
+        /// <summary>
+        /// Gets or sets the name of the port.
+        /// </summary>
+        /// <remarks>
+        /// The PortName property represents the name of the port to which the device is connected.
+        /// </remarks>
+        string? PortName { get; set; }
+
+        /// <summary>
+        /// Gets the address of a device.
+        /// </summary>
         byte Address { get; }
 
+        /// <summary>
+        /// Gets the baud rate used for communication with the device.
+        /// </summary>
         uint BaudRate { get; }
 
+        /// <summary>
+        /// Gets a value indicating whether the device uses the default security key.
+        /// </summary>
+        /// <value>
+        /// <c>true</c> if the device uses the default security key; otherwise, <c>false</c>.
+        /// </value>
         bool UsesDefaultSecurityKey { get; }
 
+        /// <summary>
+        /// Gets the connection status of the device.
+        /// </summary>
+        /// <remarks>
+        /// This property indicates whether a connection with the device is established.
+        /// </remarks>
         public bool IsConnected { get; }
 
         /// <summary>
@@ -42,6 +71,14 @@ namespace OSDPBench.Core.Services
         Task<DiscoveryResult> DiscoverDevice(IEnumerable<IOsdpConnection> connections, DiscoveryProgress progress, CancellationToken cancellationToken);
 
         /// <summary>
+        /// Executes a device action with the provided parameter.
+        /// </summary>
+        /// <param name="deviceAction">The device action to execute.</param>
+        /// <param name="parameter">The parameter to pass to the device action.</param>
+        /// <returns>A task that represents the asynchronous execution of the device action.</returns>
+        Task<object> ExecuteDeviceAction(IDeviceAction deviceAction, object? parameter);
+
+        /// <summary>
         /// Asynchronously shuts down the device management service.
         /// </summary>
         /// <remarks>
@@ -54,6 +91,9 @@ namespace OSDPBench.Core.Services
         /// </summary>
         event EventHandler<bool> ConnectionStatusChange;
 
+        /// <summary>
+        /// Occurs when the device lookups (IdentityLookup or CapabilitiesLookup) change.
+        /// </summary>
         event EventHandler DeviceLookupsChanged;
 
         /// <summary>

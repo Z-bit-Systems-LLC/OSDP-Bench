@@ -14,7 +14,7 @@ public class SetCommunicationAction : IDeviceAction
 
     /// <inheritdoc />
     public async Task<object> PerformAction(ControlPanel panel, Guid connectionId, byte address,
-        object parameter)
+        object? parameter)
     {
         var communicationParameters = parameter as CommunicationParameters ??
                                       throw new ArgumentException("Invalid type", nameof(parameter));
