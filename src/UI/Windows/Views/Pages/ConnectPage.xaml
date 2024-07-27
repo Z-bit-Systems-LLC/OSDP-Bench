@@ -138,7 +138,7 @@
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
                             <StackPanel Grid.Column="0" Orientation="Vertical">
@@ -157,6 +157,7 @@
 											  Margin="0 0 20 0"
                                               Minimum="0"
 											  Maximum="127"
+                                              ClearButtonEnabled="False"
 											  MaxDecimalPlaces="0"/>
                             </StackPanel>
 	                        <ui:Button Grid.Column="2"  Content="Connect"

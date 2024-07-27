@@ -30,7 +30,8 @@
                           Margin="0 0 20 0"
                           Minimum="0"
                           Maximum="127"
-                          MaxDecimalPlaces="0"/>
+                          MaxDecimalPlaces="0"
+                          ClearButtonEnabled="False"/>
         </StackPanel>
     </Grid>
 
