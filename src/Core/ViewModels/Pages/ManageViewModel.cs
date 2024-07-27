@@ -25,6 +25,7 @@ namespace OSDPBench.Core.ViewModels.Pages
                                        throw new ArgumentNullException(nameof(deviceManagementService));
 
             UpdateFields();
+            StatusLevel = _deviceManagementService.IsConnected ? StatusLevel.Connected : StatusLevel.Disconnected;
 
             _deviceManagementService.ConnectionStatusChange += DeviceManagementServiceOnConnectionStatusChange;
             _deviceManagementService.DeviceLookupsChanged += DeviceManagementServiceOnDeviceLookupsChanged;

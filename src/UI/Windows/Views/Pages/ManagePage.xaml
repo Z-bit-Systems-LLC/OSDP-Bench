@@ -19,8 +19,10 @@
     <StackPanel 
         Orientation="Vertical"
         Margin="0 5">
-        <StackPanel  Orientation="Vertical"
-                     Visibility="{Binding Path=ViewModel.StatusLevel, Converter={StaticResource StringToVisibilityConverter}, ConverterParameter=Disconnected, Mode=OneWay}">
+        <StackPanel  Name="DeviceInformationStackPanel"
+                        Orientation="Vertical"
+                     Visibility="{Binding Path=ViewModel.StatusLevel, Converter={StaticResource StringToVisibilityConverter}, ConverterParameter=Disconnected, Mode=OneWay}"
+                     IsVisibleChanged="DeviceInformationStackPanel_OnIsVisibleChanged">
             <TextBlock
                 FontSize="32"
                 Margin="20 10 20 0"
@@ -79,8 +81,6 @@
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
@@ -118,22 +118,20 @@
                                   DisplayMemberPath="Name"
                                   SelectionChanged="DeviceActionsComboBox_OnSelectionChanged"/>
 
+                       
+                    </Grid>
+                </ui:CardExpander.Header>
+                <ui:CardExpander.Content>
+                    <StackPanel Orientation="Vertical">
                         <Grid Name="DeviceActionControl"
-                              Grid.Row="2"
-                              Grid.Column="0"
-                              Grid.ColumnSpan="2"
-                              Margin="5, 10">
-
-                        </Grid>
+                              Margin="5, 10" />
 
                         <ui:Button  Content="Perform Action"
-                                    Grid.Row="3"
-                                    Grid.Column="0"
                                     Margin="10 5"
                                     HorizontalAlignment="Left"
                                     Command="{Binding ViewModel.ExecuteDeviceActionCommand}"/>
-                    </Grid>
-                </ui:CardExpander.Header>
+                    </StackPanel>
+                </ui:CardExpander.Content>
             </ui:CardExpander>
         </StackPanel>
     </StackPanel>

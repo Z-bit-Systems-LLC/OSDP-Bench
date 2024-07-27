@@ -1,4 +1,5 @@
-﻿using System.Windows.Controls;
+﻿using System.Windows;
+using System.Windows.Controls;
 using OSDPBench.Core.Actions;
 using OSDPBench.Core.Models;
 using OSDPBench.Core.ViewModels.Pages;
@@ -18,6 +19,11 @@ namespace OSDPBench.Windows.Views.Pages
             DataContext = this;
 
             InitializeComponent();
+
+            if (ViewModel.AvailableDeviceActions.Count > 0)
+            {
+                DeviceActionsComboBox.SelectedValue = ViewModel.AvailableDeviceActions[0];
+            }
         }
 
         public ManageViewModel ViewModel { get; }
@@ -47,6 +53,16 @@ namespace OSDPBench.Windows.Views.Pages
                         break;
                     }
                 }
+            }
+        }
+
+        private void DeviceInformationStackPanel_OnIsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            if (DeviceInformationStackPanel.Visibility != Visibility.Visible) return;
+            
+            if (ViewModel.AvailableDeviceActions.Count > 0)
+            {
+                DeviceActionsComboBox.SelectedValue = ViewModel.AvailableDeviceActions[0];
             }
         }
     }

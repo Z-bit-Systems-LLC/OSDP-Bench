@@ -175,7 +175,17 @@
 					TextAlignment="Center"
 					TextWrapping="Wrap"
 					Foreground="{Binding ViewModel.StatusLevel, Converter={StaticResource StatusLevelConverter}}"
-					Text="{Binding ViewModel.StatusText}"/>
+					Text="{Binding ViewModel.StatusText}">
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Text, RelativeSource={RelativeSource Self}}" Value="">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
                 <TextBlock 
 					FontSize="24"
 					Margin="10 5"
@@ -184,7 +194,17 @@
 					TextWrapping="Wrap"
 					FontWeight="Bold"
 					Foreground="Red"
-					Text="{Binding ViewModel.NakText}"/>
+					Text="{Binding ViewModel.NakText}">
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Text, RelativeSource={RelativeSource Self}}" Value="">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
             </StackPanel>
         </ui:CardExpander>
     </StackPanel>
