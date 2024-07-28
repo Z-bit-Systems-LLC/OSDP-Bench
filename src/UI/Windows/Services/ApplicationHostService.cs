@@ -42,7 +42,7 @@ namespace OSDPBench.Windows.Services
                 )!;
                 _navigationWindow.ShowWindow();
 
-                _navigationWindow.Navigate(typeof(Views.Pages.HomePage));
+                _navigationWindow.Navigate(typeof(Views.Pages.ConnectPage));
             }
 
             await Task.CompletedTask;

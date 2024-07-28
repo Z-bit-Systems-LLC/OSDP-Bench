@@ -19,11 +19,19 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Assets\Apache.txt" />
+    <None Remove="Assets\EPL.txt" />
+    <None Remove="Assets\logo.png" />
+    <None Remove="Assets\MIT.txt" />
     <None Remove="Assets\osdpbench-icon.png" />
     <None Remove="Logo.ico" />
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="Assets\Apache.txt" />
+    <Resource Include="Assets\EPL.txt" />
+    <Resource Include="Assets\logo.png" />
+    <Resource Include="Assets\MIT.txt" />
     <Resource Include="Assets\osdpbench-icon.png" />
   </ItemGroup>
 

@@ -90,8 +90,7 @@
                             Grid.Row="0"
                             Grid.Column="0"
                             VerticalAlignment="Center"
-                            FontSize="16"
-                            FontTypography="Body"
+                            FontTypography="Subtitle"
                             Text="Device Action" 
                             TextWrapping="Wrap"/>
                         <ui:TextBlock

@@ -36,8 +36,7 @@
 						Grid.Row="0"
 						Grid.Column="0"
 						VerticalAlignment="Center"
-						FontSize="16"
-						FontTypography="Body"
+                        FontTypography="Subtitle"
 						Text="Serial Port Selection" 
 						TextWrapping="Wrap"/>
                 </Grid>
@@ -79,8 +78,7 @@
 						Grid.Row="0"
 						Grid.Column="0"
 						VerticalAlignment="Center"
-						FontSize="16"
-						FontTypography="Body"
+                        FontTypography="Subtitle"
 						Text="Connect to PD" 
 						TextWrapping="Wrap"/>
                     <ui:TextBlock
@@ -116,7 +114,7 @@
 							HorizontalAlignment="Center"
 							FontSize="16"
 							FontTypography="Body"
-							Text="Discovery will work properly with a single devices connected" 
+							Text="Discovery will only work properly with a single device connected" 
 							TextWrapping="Wrap"/>
                         <StackPanel Orientation="Horizontal"
 									HorizontalAlignment="Left">

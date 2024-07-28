@@ -24,11 +24,6 @@
                            IsBackButtonVisible="Collapsed"
                            PaneDisplayMode="LeftFluent" >
             <ui:NavigationView.MenuItems>
-                <ui:NavigationViewItem Content="Home" TargetPageType="{x:Type pages:HomePage}">
-                    <ui:NavigationViewItem.Icon>
-                        <ui:SymbolIcon Symbol="Home24" />
-                    </ui:NavigationViewItem.Icon>
-                </ui:NavigationViewItem>
                 <ui:NavigationViewItem Content="Connect To PD" TargetPageType="{x:Type pages:ConnectPage}" NavigationCacheMode="Required">
                     <ui:NavigationViewItem.Icon>
                         <ui:SymbolIcon Symbol="Connector24" />
@@ -41,9 +36,9 @@
                 </ui:NavigationViewItem>
             </ui:NavigationView.MenuItems>
             <ui:NavigationView.FooterMenuItems>
-                <ui:NavigationViewItem Content="Settings" >
+                <ui:NavigationViewItem Content="Info" TargetPageType="{x:Type pages:InfoPage}">
                     <ui:NavigationViewItem.Icon>
-                        <ui:SymbolIcon Symbol="Settings24" />
+                        <ui:SymbolIcon Symbol="Info24" />
                     </ui:NavigationViewItem.Icon>
                 </ui:NavigationViewItem>
             </ui:NavigationView.FooterMenuItems>

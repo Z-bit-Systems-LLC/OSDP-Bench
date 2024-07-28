@@ -48,12 +48,11 @@ public partial class App
             services.AddSingleton<INavigationWindow, MainWindow>();
             services.AddSingleton<MainWindowViewModel>();
 
-            services.AddSingleton<HomePage>();
-            services.AddSingleton<HomeViewModel>();
             services.AddSingleton<ConnectPage>();
             services.AddSingleton<ConnectViewModel>();
             services.AddSingleton<ManagePage>();
             services.AddSingleton<ManageViewModel>();
+            services.AddSingleton<InfoPage>();
 
             services.AddSingleton<IDeviceManagementService, DeviceManagementService>();
             services.AddSingleton<IDialogService, WindowsDialogService>();
