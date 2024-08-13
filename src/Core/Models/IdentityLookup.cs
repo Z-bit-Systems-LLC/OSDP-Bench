@@ -98,6 +98,8 @@ public partial class IdentityLookup : ObservableObject
             CanSendResetCommand = foundDevice.CanSendResetCommand;
         }
 
+        SerialNumber = deviceIdentification.SerialNumber;
+
         VersionNumber =
             $"{deviceIdentification.FirmwareMajor}.{deviceIdentification.FirmwareMinor}.{deviceIdentification.FirmwareBuild}";
     }
@@ -107,6 +109,8 @@ public partial class IdentityLookup : ObservableObject
     [ObservableProperty] private string _model = string.Empty;
 
     [ObservableProperty] private string _versionNumber = string.Empty;
+    
+    [ObservableProperty] private int _serialNumber;
 
     /// <summary>
     /// Provides information and instructions for resetting a device.

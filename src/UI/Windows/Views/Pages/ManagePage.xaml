@@ -64,6 +64,23 @@
                 TextWrapping="Wrap"
                 Text="{Binding ViewModel.IdentityLookup.Model}"
                 d:Text="Reader"/>
+            
+            <StackPanel Orientation="Horizontal"
+                        Margin="20 0 20 0"
+                        HorizontalAlignment="Center">
+                <TextBlock
+                    FontSize="20"
+                    TextAlignment="Left"
+                    TextWrapping="Wrap"
+                    Text="S/N - "/>
+                <TextBlock
+                    FontSize="20"
+                    TextAlignment="Left"
+                    TextWrapping="Wrap"
+                    Text="{Binding ViewModel.IdentityLookup.SerialNumber}"
+                    d:Text="0000"/> 
+            </StackPanel>
+
             <TextBlock
                 FontSize="20"
                 Margin="20 0 20 0"
