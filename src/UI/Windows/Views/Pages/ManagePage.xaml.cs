@@ -52,6 +52,13 @@ namespace OSDPBench.Windows.Views.Pages
                         DeviceActionControl.Children.Add(actionControl);
                         break;
                     }
+                    case MonitorCardReads when ViewModel.ConnectedPortName != null:
+                    {
+                        var actionControl = new MonitorCardReadsControl();
+
+                        DeviceActionControl.Children.Add(actionControl);
+                        break;
+                    }
                 }
             }
         }

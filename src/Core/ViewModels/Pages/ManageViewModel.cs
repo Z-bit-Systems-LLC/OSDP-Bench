@@ -28,6 +28,7 @@ namespace OSDPBench.Core.ViewModels.Pages
             StatusLevel = _deviceManagementService.IsConnected ? StatusLevel.Connected : StatusLevel.Disconnected;
 
             _deviceManagementService.ConnectionStatusChange += DeviceManagementServiceOnConnectionStatusChange;
+            _deviceManagementService.CardReadReceived += DeviceManagementServiceOnCardReadReceived;
             _deviceManagementService.DeviceLookupsChanged += DeviceManagementServiceOnDeviceLookupsChanged;
         }
 
@@ -60,6 +61,11 @@ namespace OSDPBench.Core.ViewModels.Pages
             UpdateFields();
         }
 
+        private void DeviceManagementServiceOnCardReadReceived(object? sender, string e)
+        {
+            _dialogService.ShowMessageDialog("Card Read", $"Card {e} has been read.", MessageIcon.Information);
+        }
+
         private void UpdateFields()
         {
             IdentityLookup = _deviceManagementService.IdentityLookup;
@@ -83,7 +89,7 @@ namespace OSDPBench.Core.ViewModels.Pages
 
         [ObservableProperty] private StatusLevel _statusLevel = StatusLevel.Disconnected;
 
-        [ObservableProperty] private ObservableCollection<IDeviceAction> _availableDeviceActions = [new SetCommunicationAction()];
+        [ObservableProperty] private ObservableCollection<IDeviceAction> _availableDeviceActions = [new SetCommunicationAction(), new MonitorCardReads()];
 
         [ObservableProperty] private IDeviceAction? _selectedDeviceAction;
 
