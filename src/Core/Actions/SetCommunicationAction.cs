@@ -18,18 +18,11 @@ public class SetCommunicationAction : IDeviceAction
     {
         var communicationParameters = parameter as CommunicationParameters ??
                                       throw new ArgumentException("Invalid type", nameof(parameter));
+        
+        var result = await panel.CommunicationConfiguration(connectionId, address,
+            new CommunicationConfiguration(communicationParameters.Address,
+                (int)communicationParameters.BaudRate));
 
-        try
-        {
-            var result = await panel.CommunicationConfiguration(connectionId, address,
-                new CommunicationConfiguration(communicationParameters.Address,
-                    (int)communicationParameters.BaudRate));
-
-            return new CommunicationParameters(communicationParameters.PortName, (uint)result.BaudRate, result.Address);
-        }
-        catch (TimeoutException)
-        {
-            return communicationParameters;
-        }
+        return new CommunicationParameters(communicationParameters.PortName, (uint)result.BaudRate, result.Address);
     }
 }

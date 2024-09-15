@@ -15,9 +15,8 @@ public partial class SetCommunicationControl : INotifyPropertyChanged
 
         InitializeComponent();
     }
-
-
-    public int[] AvailableBaudRates { get; set; }
+    
+    public int[] AvailableBaudRates { get; }
 
     private int _selectedBaudRate;
     public int SelectedBaudRate
@@ -40,11 +39,10 @@ public partial class SetCommunicationControl : INotifyPropertyChanged
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 
-    protected bool SetField<T>(ref T field, T value, [CallerMemberName] string? propertyName = null)
+    private void SetField<T>(ref T field, T value, [CallerMemberName] string? propertyName = null)
     {
-        if (EqualityComparer<T>.Default.Equals(field, value)) return false;
+        if (EqualityComparer<T>.Default.Equals(field, value)) return;
         field = value;
         OnPropertyChanged(propertyName);
-        return true;
     }
 }

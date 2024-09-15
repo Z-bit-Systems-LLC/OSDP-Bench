@@ -38,14 +38,33 @@ namespace OSDPBench.Core.ViewModels.Pages
             object? result = null;
             if (SelectedDeviceAction != null)
             {
-                result = await _deviceManagementService.ExecuteDeviceAction(SelectedDeviceAction, DeviceActionParameter);
+                try
+                {
+                    result = await _deviceManagementService.ExecuteDeviceAction(SelectedDeviceAction, DeviceActionParameter);
+                }
+                catch (Exception exception)
+                {
+                    await _dialogService.ShowMessageDialog("Performing Action", $"Issue with performing action. {exception.Message}", MessageIcon.Warning);
+                    return;
+                }
             }
 
             if (SelectedDeviceAction is SetCommunicationAction)
             {
                 if (result is CommunicationParameters connectionParameters)
                 {
+                    if (_deviceManagementService.BaudRate == connectionParameters.BaudRate &&
+                        _deviceManagementService.Address == connectionParameters.Address)
+                    {
+                        await _dialogService.ShowMessageDialog("Update Communications", $"Communication parameters didn't change.", MessageIcon.Warning);
+                        return;
+                    }
+                    
+                    await _dialogService.ShowMessageDialog("Update Communications", "Successfully update communications, reconnecting with new settings.", MessageIcon.Information);
+                    
                     await _deviceManagementService.Shutdown();
+
+                    await Task.Delay(TimeSpan.FromSeconds(1));
 
                     await _deviceManagementService.Connect(
                         new SerialPortOsdpConnection(_deviceManagementService.PortName,
@@ -61,9 +80,9 @@ namespace OSDPBench.Core.ViewModels.Pages
             UpdateFields();
         }
 
-        private void DeviceManagementServiceOnCardReadReceived(object? sender, string e)
+        private async void DeviceManagementServiceOnCardReadReceived(object? sender, string e)
         {
-            _dialogService.ShowMessageDialog("Card Read", $"Card {e} has been read.", MessageIcon.Information);
+            await _dialogService.ShowMessageDialog("Card Read", $"Card {e} has been read.", MessageIcon.Information);
         }
 
         private void UpdateFields()
