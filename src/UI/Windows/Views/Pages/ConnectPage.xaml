@@ -149,7 +149,7 @@
                             </StackPanel>
                             <StackPanel Grid.Column="1" Orientation="Vertical">
                                 <Label Content="Address"
-										   Target="{Binding ElementName=BaudRateComboBox}" />
+										   Target="{Binding ElementName=AddressNumberBox}" />
                                 <ui:NumberBox Name="AddressNumberBox"
 											  Value="{Binding ViewModel.SelectedAddress}"
 											  Margin="0 0 20 0"
