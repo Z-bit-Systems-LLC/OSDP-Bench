@@ -75,14 +75,16 @@ namespace OSDPBench.Core.ViewModels.Pages
 
         [ObservableProperty] private IReadOnlyList<int> _availableBaudRates = [9600, 19200, 38400, 57600, 115200, 230400];
 
+        [ObservableProperty] private string _lastCardNumberRead;
+
         private void DeviceManagementServiceOnDeviceLookupsChanged(object? sender, EventArgs eventArgs)
         {
             UpdateFields();
         }
 
-        private async void DeviceManagementServiceOnCardReadReceived(object? sender, string e)
+        private void DeviceManagementServiceOnCardReadReceived(object? sender, string cardNumber)
         {
-            await _dialogService.ShowMessageDialog("Card Read", $"Card {e} has been read.", MessageIcon.Information);
+            LastCardNumberRead = cardNumber;
         }
 
         private void UpdateFields()

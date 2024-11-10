@@ -142,7 +142,8 @@
                         <Grid Name="DeviceActionControl"
                               Margin="5, 10" />
 
-                        <ui:Button  Content="Perform Action"
+                        <ui:Button Name="PerformActionButton"
+                            Content="Perform Action"
                                     Margin="10 5"
                                     HorizontalAlignment="Left"
                                     Command="{Binding ViewModel.ExecuteDeviceActionCommand}"/>

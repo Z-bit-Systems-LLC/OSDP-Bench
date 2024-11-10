@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using OSDPBench.Core.Actions;
 using OSDPBench.Core.Models;
 using OSDPBench.Core.ViewModels.Pages;
@@ -19,11 +20,6 @@ namespace OSDPBench.Windows.Views.Pages
             DataContext = this;
 
             InitializeComponent();
-
-            if (ViewModel.AvailableDeviceActions.Count > 0)
-            {
-                DeviceActionsComboBox.SelectedValue = ViewModel.AvailableDeviceActions[0];
-            }
         }
 
         public ManageViewModel ViewModel { get; }
@@ -31,46 +27,59 @@ namespace OSDPBench.Windows.Views.Pages
         private void DeviceActionsComboBox_OnSelectionChanged(object sender, SelectionChangedEventArgs eventArgs)
         {
             DeviceActionControl.Children.Clear();
-
-            if (eventArgs.AddedItems.Count > 0)
+            
+            switch (DeviceActionsComboBox.SelectedValue)
             {
-                var selectedItem = eventArgs.AddedItems[0];
-                switch (selectedItem)
+                case SetCommunicationAction when ViewModel.ConnectedPortName != null:
                 {
-                    case SetCommunicationAction when ViewModel.ConnectedPortName != null:
-                    {
-                        ViewModel.DeviceActionParameter = new CommunicationParameters(ViewModel.ConnectedPortName,
-                            ViewModel.ConnectedBaudRate, ViewModel.ConnectedAddress);
-                        var actionControl = new SetCommunicationControl(ViewModel.AvailableBaudRates.ToArray(),
-                            ViewModel.ConnectedBaudRate, ViewModel.ConnectedAddress);
-                        actionControl.PropertyChanged += (_, _) =>
-                        {
-                            ViewModel.DeviceActionParameter = new CommunicationParameters(
-                                ViewModel.ConnectedPortName, (uint)actionControl.SelectedBaudRate,
-                                actionControl.SelectedAddress);
-                        };
-                        DeviceActionControl.Children.Add(actionControl);
-                        break;
-                    }
-                    case MonitorCardReads when ViewModel.ConnectedPortName != null:
-                    {
-                        var actionControl = new MonitorCardReadsControl();
-
-                        DeviceActionControl.Children.Add(actionControl);
-                        break;
-                    }
+                    SetCommunicationActionControl();
+                    break;
+                }
+                case MonitorCardReads when ViewModel.ConnectedPortName != null:
+                {
+                    MonitorCardReadsControl();
+                    break;
                 }
             }
         }
 
+        private void SetCommunicationActionControl()
+        {
+            if (ViewModel.ConnectedPortName == null) return;
+            
+            PerformActionButton.Visibility = Visibility.Visible;
+
+            ViewModel.DeviceActionParameter = new CommunicationParameters(ViewModel.ConnectedPortName,
+                ViewModel.ConnectedBaudRate, ViewModel.ConnectedAddress);
+            var actionControl = new SetCommunicationControl(ViewModel.AvailableBaudRates.ToArray(),
+                ViewModel.ConnectedBaudRate, ViewModel.ConnectedAddress);
+            actionControl.PropertyChanged += (_, _) =>
+            {
+                ViewModel.DeviceActionParameter = new CommunicationParameters(
+                    ViewModel.ConnectedPortName, (uint)actionControl.SelectedBaudRate,
+                    actionControl.SelectedAddress);
+            };
+            DeviceActionControl.Children.Add(actionControl);
+        }
+
+        private void MonitorCardReadsControl()
+        {
+            PerformActionButton.Visibility = Visibility.Collapsed;
+
+            var actionControl = new MonitorCardReadsControl();
+            actionControl.CardNumberTextBox.SetBinding(System.Windows.Controls.TextBox.TextProperty, new Binding("LastCardNumberRead")
+            {
+                Source = ViewModel
+            });
+
+            DeviceActionControl.Children.Add(actionControl);
+        }
+
         private void DeviceInformationStackPanel_OnIsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
-            if (DeviceInformationStackPanel.Visibility != Visibility.Visible) return;
-            
-            if (ViewModel.AvailableDeviceActions.Count > 0)
-            {
-                DeviceActionsComboBox.SelectedValue = ViewModel.AvailableDeviceActions[0];
-            }
+            if (DeviceInformationStackPanel.Visibility != Visibility.Visible || ViewModel.StatusLevel== StatusLevel.Connected) return;
+
+            DeviceActionsComboBox.SelectedIndex = 0;
         }
     }
 }
