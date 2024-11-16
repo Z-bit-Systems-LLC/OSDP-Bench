@@ -1,8 +1,6 @@
-﻿using System.Windows.Controls;
+﻿namespace OSDPBench.Windows.Views.Controls;
 
-namespace OSDPBench.Windows.Views.Controls;
-
-public partial class MonitorCardReadsControl : UserControl
+public partial class MonitorCardReadsControl
 {
     public MonitorCardReadsControl()
     {

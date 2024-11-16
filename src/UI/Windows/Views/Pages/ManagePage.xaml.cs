@@ -77,7 +77,7 @@ namespace OSDPBench.Windows.Views.Pages
 
         private void DeviceInformationStackPanel_OnIsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
-            if (DeviceInformationStackPanel.Visibility != Visibility.Visible || ViewModel.StatusLevel== StatusLevel.Connected) return;
+            if (DeviceInformationStackPanel.Visibility != Visibility.Visible || ViewModel.StatusLevel != StatusLevel.Connected) return;
 
             DeviceActionsComboBox.SelectedIndex = 0;
         }
