@@ -24,6 +24,8 @@ namespace OSDPBench.Core.ViewModels.Pages
             _deviceManagementService = deviceManagementService ??
                                        throw new ArgumentNullException(nameof(deviceManagementService));
 
+            LastCardNumberRead = string.Empty;
+
             UpdateFields();
             StatusLevel = _deviceManagementService.IsConnected ? StatusLevel.Connected : StatusLevel.Disconnected;
 
@@ -38,13 +40,52 @@ namespace OSDPBench.Core.ViewModels.Pages
             object? result = null;
             if (SelectedDeviceAction != null)
             {
+                if (SelectedDeviceAction is ResetCypressDeviceAction && IdentityLookup != null)
+                {
+                    if (!IdentityLookup.CanSendResetCommand)
+                    {
+                        await _dialogService.ShowMessageDialog("Reset Device", IdentityLookup.ResetInstructions,
+                            MessageIcon.Information);
+                        return;
+                    }
+
+                    await _deviceManagementService.Shutdown();
+                    if (!await _dialogService.ShowConfirmationDialog("Reset Device",
+                            "Do you want to reset device, if so power cycle then click yes when the device boots up.",
+                            MessageIcon.Warning))
+                    {
+                        await _deviceManagementService.Connect(new SerialPortOsdpConnection(_deviceManagementService.PortName,
+                            (int)_deviceManagementService.BaudRate), _deviceManagementService.Address);
+                        return;
+                    }
+                    
+                    try
+                    {
+                        await _deviceManagementService.ExecuteDeviceAction(SelectedDeviceAction,
+                            new SerialPortOsdpConnection(_deviceManagementService.PortName, (int)_deviceManagementService.BaudRate));
+                        await _dialogService.ShowMessageDialog("Reset Device",
+                            "Successfully sent reset commands. Power cycle device again and then perform a discovery.",
+                            MessageIcon.Information);
+                    }
+                    catch (Exception exception)
+                    {
+                        await _dialogService.ShowMessageDialog("Reset Device",
+                            exception.Message + " Perform a discovery to reconnect to the device.",
+                            MessageIcon.Error);
+                    }
+
+                    return;
+                }
+
                 try
                 {
-                    result = await _deviceManagementService.ExecuteDeviceAction(SelectedDeviceAction, DeviceActionParameter);
+                    result = await _deviceManagementService.ExecuteDeviceAction(SelectedDeviceAction,
+                        DeviceActionParameter);
                 }
                 catch (Exception exception)
                 {
-                    await _dialogService.ShowMessageDialog("Performing Action", $"Issue with performing action. {exception.Message}", MessageIcon.Warning);
+                    await _dialogService.ShowMessageDialog("Performing Action",
+                        $"Issue with performing action. {exception.Message}", MessageIcon.Warning);
                     return;
                 }
             }
@@ -56,12 +97,14 @@ namespace OSDPBench.Core.ViewModels.Pages
                     if (_deviceManagementService.BaudRate == connectionParameters.BaudRate &&
                         _deviceManagementService.Address == connectionParameters.Address)
                     {
-                        await _dialogService.ShowMessageDialog("Update Communications", $"Communication parameters didn't change.", MessageIcon.Warning);
+                        await _dialogService.ShowMessageDialog("Update Communications",
+                            $"Communication parameters didn't change.", MessageIcon.Warning);
                         return;
                     }
-                    
-                    await _dialogService.ShowMessageDialog("Update Communications", "Successfully update communications, reconnecting with new settings.", MessageIcon.Information);
-                    
+
+                    await _dialogService.ShowMessageDialog("Update Communications",
+                        "Successfully update communications, reconnecting with new settings.", MessageIcon.Information);
+
                     await _deviceManagementService.Shutdown();
 
                     await Task.Delay(TimeSpan.FromSeconds(1));
@@ -73,7 +116,8 @@ namespace OSDPBench.Core.ViewModels.Pages
             }
         }
 
-        [ObservableProperty] private IReadOnlyList<int> _availableBaudRates = [9600, 19200, 38400, 57600, 115200, 230400];
+        [ObservableProperty] private IReadOnlyList<int> _availableBaudRates =
+            [9600, 19200, 38400, 57600, 115200, 230400];
 
         [ObservableProperty] private string _lastCardNumberRead;
 
@@ -110,7 +154,8 @@ namespace OSDPBench.Core.ViewModels.Pages
 
         [ObservableProperty] private StatusLevel _statusLevel = StatusLevel.Disconnected;
 
-        [ObservableProperty] private ObservableCollection<IDeviceAction> _availableDeviceActions = [new SetCommunicationAction(), new MonitorCardReads()];
+        [ObservableProperty] private ObservableCollection<IDeviceAction> _availableDeviceActions =
+            [new SetCommunicationAction(), new MonitorCardReads(), new ResetCypressDeviceAction()];
 
         [ObservableProperty] private IDeviceAction? _selectedDeviceAction;
 

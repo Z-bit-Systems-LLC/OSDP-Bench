@@ -40,6 +40,11 @@ namespace OSDPBench.Windows.Views.Pages
                     MonitorCardReadsControl();
                     break;
                 }
+                case ResetCypressDeviceAction when ViewModel.ConnectedPortName != null:
+                {
+                    ResetControl();
+                    break;
+                }
             }
         }
 
@@ -65,7 +70,7 @@ namespace OSDPBench.Windows.Views.Pages
         private void MonitorCardReadsControl()
         {
             PerformActionButton.Visibility = Visibility.Collapsed;
-
+            
             var actionControl = new MonitorCardReadsControl();
             actionControl.CardNumberTextBox.SetBinding(System.Windows.Controls.TextBox.TextProperty, new Binding("LastCardNumberRead")
             {
@@ -75,9 +80,25 @@ namespace OSDPBench.Windows.Views.Pages
             DeviceActionControl.Children.Add(actionControl);
         }
 
+        private void ResetControl()
+        {
+            PerformActionButton.Visibility = Visibility.Visible;
+            
+            var actionControl = new ResetControl();
+
+            DeviceActionControl.Children.Add(actionControl);
+        }
+
         private void DeviceInformationStackPanel_OnIsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
             if (DeviceInformationStackPanel.Visibility != Visibility.Visible || ViewModel.StatusLevel != StatusLevel.Connected) return;
+
+            DeviceActionsComboBox.SelectedIndex = 0;
+        }
+
+        private void ManagePage_OnIsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            if (ViewModel.StatusLevel != StatusLevel.Connected) return;
 
             DeviceActionsComboBox.SelectedIndex = 0;
         }

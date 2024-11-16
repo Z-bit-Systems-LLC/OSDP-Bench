@@ -10,7 +10,8 @@
       d:DataContext="{d:DesignInstance local:ManagePage,
 									 IsDesignTimeCreatable=False}"
       d:DesignHeight="450" d:DesignWidth="800"
-      Title="Manage">
+      Title="Manage"
+      IsVisibleChanged="ManagePage_OnIsVisibleChanged">
     
     <Page.Resources>
         <converters:StringToVisibilityConverter x:Key="StringToVisibilityConverter" />
@@ -143,7 +144,7 @@
                               Margin="5, 10" />
 
                         <ui:Button Name="PerformActionButton"
-                            Content="Perform Action"
+                            Content="{Binding ViewModel.SelectedDeviceAction.PerformActionName}"
                                     Margin="10 5"
                                     HorizontalAlignment="Left"
                                     Command="{Binding ViewModel.ExecuteDeviceActionCommand}"/>

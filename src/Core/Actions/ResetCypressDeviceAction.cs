@@ -1,6 +1,6 @@
 ﻿using OSDP.Net;
+using OSDP.Net.Connections;
 using OSDP.Net.Model.CommandData;
-using OSDPBench.Core.Services;
 
 namespace OSDPBench.Core.Actions;
 
@@ -13,34 +13,37 @@ public class ResetCypressDeviceAction : IDeviceAction
     public string Name => "Reset Device";
 
     /// <inheritdoc />
+    public string PerformActionName => "Reset";
+
+    /// <inheritdoc />
     public async Task<object> PerformAction(ControlPanel panel, Guid connectionId, byte address, object? parameter)
     {
         await panel.Shutdown();
         
-        var connectionService = parameter as ISerialPortConnectionService ??
+        var connectionService = parameter as IOsdpConnection ??
                                 throw new ArgumentException("Invalid type", nameof(parameter));
         
         connectionId = panel.StartConnection(connectionService, TimeSpan.Zero);
 
         panel.AddDevice(connectionId, address, false, false);
 
-        const int maximumAttempts = 15;
+        const int maximumFailedAttempts = 3;
         const int requiredNumberOfAcks = 10;
         int totalAcks = 0;
         int totalAttempts = 0;
-        while (totalAttempts++ < maximumAttempts && totalAcks < requiredNumberOfAcks)
+        while (totalAttempts++ < maximumFailedAttempts + totalAcks && totalAcks < requiredNumberOfAcks)
         {
             try
             {
                 var result = await panel.ManufacturerSpecificCommand(connectionId, address,
-                    new ManufacturerSpecific(new byte[] { 0xCA, 0x44, 0x6C }, new byte[] { 0x05 }));
+                    new ManufacturerSpecific([0xCA, 0x44, 0x6C], [0x05]));
 
                 if (result.Ack)
                 {
                     totalAcks++;
                 }
             }
-            catch
+            catch 
             {
                 await Task.Delay(TimeSpan.FromSeconds(1));
             }

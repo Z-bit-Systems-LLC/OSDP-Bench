@@ -13,6 +13,9 @@ public class SetCommunicationAction : IDeviceAction
     public string Name => "Set Communications";
 
     /// <inheritdoc />
+    public string PerformActionName => "Update";
+
+    /// <inheritdoc />
     public async Task<object> PerformAction(ControlPanel panel, Guid connectionId, byte address,
         object? parameter)
     {

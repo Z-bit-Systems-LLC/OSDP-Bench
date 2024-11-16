@@ -12,6 +12,8 @@ public interface IDeviceAction
     /// </summary>
     string Name { get; }
 
+    string PerformActionName { get; }
+
     /// <summary>
     /// Performs an action on a device.
     /// </summary>
