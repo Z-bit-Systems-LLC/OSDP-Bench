@@ -134,12 +134,16 @@
 					Visibility="{Binding ElementName=ConnectionTypeComboBox, Path=SelectedValue, Converter={StaticResource StringToVisibilityConverter}, ConverterParameter=Manual, Mode=OneWay}">
                     <StackPanel Orientation="Vertical">
                         <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition />
+                                <RowDefinition />
+                            </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="Auto"/>
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
-                            <StackPanel Grid.Column="0" Orientation="Vertical">
+                            <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Vertical">
                                 <Label Content="Baud Rate"
 										   Target="{Binding ElementName=BaudRateComboBox}" />
                                 <ComboBox Name="BaudRateComboBox"
@@ -147,7 +151,7 @@
                                           ItemsSource="{Binding ViewModel.AvailableBaudRates}"
                                           SelectedItem="{Binding ViewModel.SelectedBaudRate}"/>
                             </StackPanel>
-                            <StackPanel Grid.Column="1" Orientation="Vertical">
+                            <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Vertical">
                                 <Label Content="Address"
 										   Target="{Binding ElementName=AddressNumberBox}" />
                                 <ui:NumberBox Name="AddressNumberBox"
@@ -158,11 +162,20 @@
                                               ClearButtonEnabled="False"
 											  MaxDecimalPlaces="0"/>
                             </StackPanel>
-	                        <ui:Button Grid.Column="2"  Content="Connect"
-	                                   Margin="10 0"
-	                                   HorizontalAlignment="Right"
-	                                   VerticalAlignment="Bottom"
-	                                   Command="{Binding ViewModel.ConnectDeviceCommand}"/>
+                            <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Vertical">
+                                <CheckBox Name="UseSecureChannelCheckBox"
+                                    Content="Use Secure Channel" 
+                                          IsChecked="{Binding ViewModel.UseSecureChannel}"/>
+                                <CheckBox Content="Use Default Key" 
+                                          IsEnabled="{Binding ElementName=UseSecureChannelCheckBox, Path=IsChecked}"
+                                          IsChecked="{Binding ViewModel.UseDefaultKey}"/>
+                            </StackPanel>
+                            
+                            <ui:Button Grid.Row="1" Grid.Column="2"  Content="Connect"
+                                       Margin="10 0"
+                                       HorizontalAlignment="Right"
+                                       VerticalAlignment="Bottom"
+                                       Command="{Binding ViewModel.ConnectDeviceCommand}"/>
                         </Grid>
                     </StackPanel>
                 </Grid>

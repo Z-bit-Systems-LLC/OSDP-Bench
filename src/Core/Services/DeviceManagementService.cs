@@ -83,7 +83,7 @@ public class DeviceManagementService : IDeviceManagementService
     public bool IsConnected { get; private set; }
 
     /// <inheritdoc />
-    public async Task Connect(IOsdpConnection connection, byte address)
+    public async Task Connect(IOsdpConnection connection, byte address, bool useSecureChannel)
     {
         await Shutdown();
 
@@ -91,7 +91,7 @@ public class DeviceManagementService : IDeviceManagementService
         BaudRate = (uint)connection.BaudRate;
 
         _connectionId = _panel.StartConnection(connection);
-        _panel.AddDevice(_connectionId, address, true, false);
+        _panel.AddDevice(_connectionId, address, true, useSecureChannel);
     }
 
     /// <inheritdoc />

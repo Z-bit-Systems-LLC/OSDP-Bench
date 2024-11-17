@@ -12,6 +12,9 @@ public interface IDeviceAction
     /// </summary>
     string Name { get; }
 
+    /// <summary>
+    /// Gets the name of the action to be shown on the button.
+    /// </summary>
     string PerformActionName { get; }
 
     /// <summary>

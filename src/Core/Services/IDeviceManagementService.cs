@@ -59,7 +59,8 @@ namespace OSDPBench.Core.Services
         /// </summary>
         /// <param name="connection">The connection to use for communication.</param>
         /// <param name="address">The address of the device.</param>
-        Task Connect(IOsdpConnection connection, byte address);
+        /// <param name="useSecureChannel"></param>
+        Task Connect(IOsdpConnection connection, byte address, bool useSecureChannel = false);
 
         /// <summary>
         /// Discovers a device asynchronously over the provided connections.

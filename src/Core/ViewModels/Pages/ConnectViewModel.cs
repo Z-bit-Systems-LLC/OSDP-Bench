@@ -25,7 +25,7 @@ public partial class ConnectViewModel : ObservableObject
                                    throw new ArgumentNullException(nameof(deviceManagementService));
         _serialPortConnectionService = serialPortConnectionService ??
                                        throw new ArgumentNullException(nameof(serialPortConnectionService));
-
+        
         _deviceManagementService.ConnectionStatusChange += DeviceManagementServiceOnConnectionStatusChange;
         _deviceManagementService.NakReplyReceived += DeviceManagementServiceOnNakReplyReceived;
     }
@@ -77,6 +77,12 @@ public partial class ConnectViewModel : ObservableObject
     [ObservableProperty] private byte _connectedAddress;
 
     [ObservableProperty] private int _connectedBaudRate;
+
+    [ObservableProperty] private bool _useSecureChannel = false;
+
+    [ObservableProperty] private bool _useDefaultKey = true;
+
+    [ObservableProperty] private string _securityKey = string.Empty;
 
     [RelayCommand]
     private async Task ScanSerialPorts()
@@ -224,7 +230,8 @@ public partial class ConnectViewModel : ObservableObject
         StatusText = "Attempting to connect manually";
         await _deviceManagementService.Shutdown();
         await _deviceManagementService.Connect(
-            serialPortConnectionService.GetConnection(serialPortName, SelectedBaudRate), SelectedAddress);
+            serialPortConnectionService.GetConnection(serialPortName, SelectedBaudRate), SelectedAddress,
+            UseSecureChannel);
         ConnectedAddress = SelectedAddress;
         ConnectedBaudRate = SelectedBaudRate;
     }
