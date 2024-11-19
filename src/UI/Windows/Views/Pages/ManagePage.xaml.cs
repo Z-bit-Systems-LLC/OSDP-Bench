@@ -30,6 +30,11 @@ namespace OSDPBench.Windows.Views.Pages
             
             switch (DeviceActionsComboBox.SelectedValue)
             {
+                case ControlBuzzerAction when ViewModel.ConnectedPortName != null:
+                {
+                    ControlBuzzerControl();
+                    break;
+                }
                 case MonitorCardReads when ViewModel.ConnectedPortName != null:
                 {
                     MonitorCardReadsControl();
@@ -58,6 +63,15 @@ namespace OSDPBench.Windows.Views.Pages
             }
         }
 
+        private void ControlBuzzerControl()
+        {
+            PerformActionButton.Visibility = Visibility.Visible;
+            
+            var actionControl = new ControlBuzzerControl();
+
+            DeviceActionControl.Children.Add(actionControl);
+        }
+        
         private void SetCommunicationActionControl()
         {
             if (ViewModel.ConnectedPortName == null) return;

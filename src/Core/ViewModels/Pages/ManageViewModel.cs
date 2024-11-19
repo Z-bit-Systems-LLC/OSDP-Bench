@@ -25,6 +25,7 @@ namespace OSDPBench.Core.ViewModels.Pages
                                        throw new ArgumentNullException(nameof(deviceManagementService));
 
             LastCardNumberRead = string.Empty;
+            KeypadReadData = string.Empty;
 
             UpdateFields();
             StatusLevel = _deviceManagementService.IsConnected ? StatusLevel.Connected : StatusLevel.Disconnected;
@@ -166,6 +167,7 @@ namespace OSDPBench.Core.ViewModels.Pages
 
         [ObservableProperty] private ObservableCollection<IDeviceAction> _availableDeviceActions =
         [
+            new ControlBuzzerAction(),
             new MonitorCardReads(), 
             new MonitorKeypadReads(),
             new ResetCypressDeviceAction(), 
