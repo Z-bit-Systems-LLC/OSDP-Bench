@@ -3,12 +3,12 @@
 namespace OSDPBench.Core.Actions;
 
 /// <summary>
-/// Represents a device action that monitors card reads.
+/// Represents the action of monitoring keypad reads on a device.
 /// </summary>
-public class MonitorCardReads : IDeviceAction
+public class MonitorKeypadReads : IDeviceAction
 {
     /// <inheritdoc />
-    public string Name => "Monitor Card Reads";
+    public string Name => "Monitor Keypad Reads";
 
     /// <inheritdoc />
     public string PerformActionName => string.Empty;

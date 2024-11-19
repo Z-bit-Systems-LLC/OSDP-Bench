@@ -110,5 +110,10 @@ namespace OSDPBench.Core.Services
         /// Event that is fired when a card read is received by the device.
         /// </summary>
         event EventHandler<string> CardReadReceived;
+
+        /// <summary>
+        /// Event triggered when a read from the keypad is received.
+        /// </summary>
+        event EventHandler<string> KeypadReadReceived;
     }
 }

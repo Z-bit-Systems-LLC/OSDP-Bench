@@ -48,4 +48,12 @@
       <HintPath>..\..\..\..\..\..\.nuget\packages\communitytoolkit.winui.ui\7.1.2\lib\net5.0-windows10.0.18362\CommunityToolkit.WinUI.UI.dll</HintPath>
     </Reference>
   </ItemGroup>
+
+  <ItemGroup>
+    <Page Update="Views\Controls\MonitorKeypadReadsControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <XamlRuntime>Wpf</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
 </Project>

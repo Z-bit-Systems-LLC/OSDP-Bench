@@ -35,6 +35,11 @@ namespace OSDPBench.Windows.Views.Pages
                     MonitorCardReadsControl();
                     break;
                 }
+                case MonitorKeypadReads when ViewModel.ConnectedPortName != null:
+                {
+                    MonitorKeypadReadsControl();
+                    break;
+                }
                 case ResetCypressDeviceAction when ViewModel.ConnectedPortName != null:
                 {
                     ResetControl();
@@ -80,6 +85,20 @@ namespace OSDPBench.Windows.Views.Pages
             actionControl.CardNumberTextBox.SetBinding(System.Windows.Controls.TextBox.TextProperty, new Binding("LastCardNumberRead")
             {
                 Source = ViewModel
+            });
+
+            DeviceActionControl.Children.Add(actionControl);
+        }
+        
+        private void MonitorKeypadReadsControl()
+        {
+            PerformActionButton.Visibility = Visibility.Collapsed;
+            
+            var actionControl = new MonitorKeypadReadsControl();
+            actionControl.KeypadTextBox.SetBinding(System.Windows.Controls.TextBox.TextProperty, new Binding("KeypadReadData")
+            {
+                Source = ViewModel,
+                Mode = BindingMode.TwoWay
             });
 
             DeviceActionControl.Children.Add(actionControl);

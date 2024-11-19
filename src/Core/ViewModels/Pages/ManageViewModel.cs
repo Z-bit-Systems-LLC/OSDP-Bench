@@ -31,6 +31,7 @@ namespace OSDPBench.Core.ViewModels.Pages
 
             _deviceManagementService.ConnectionStatusChange += DeviceManagementServiceOnConnectionStatusChange;
             _deviceManagementService.CardReadReceived += DeviceManagementServiceOnCardReadReceived;
+            _deviceManagementService.KeypadReadReceived += DeviceManagementServiceOnKeypadReadReceived;
             _deviceManagementService.DeviceLookupsChanged += DeviceManagementServiceOnDeviceLookupsChanged;
         }
 
@@ -122,6 +123,8 @@ namespace OSDPBench.Core.ViewModels.Pages
             [9600, 19200, 38400, 57600, 115200, 230400];
 
         [ObservableProperty] private string _lastCardNumberRead;
+        
+        [ObservableProperty] private string _keypadReadData;
 
         private void DeviceManagementServiceOnDeviceLookupsChanged(object? sender, EventArgs eventArgs)
         {
@@ -131,6 +134,11 @@ namespace OSDPBench.Core.ViewModels.Pages
         private void DeviceManagementServiceOnCardReadReceived(object? sender, string cardNumber)
         {
             LastCardNumberRead = cardNumber;
+        }
+        
+        private void DeviceManagementServiceOnKeypadReadReceived(object? sender, string keypadReadData)
+        {
+            KeypadReadData += keypadReadData;
         }
 
         private void UpdateFields()
@@ -159,6 +167,7 @@ namespace OSDPBench.Core.ViewModels.Pages
         [ObservableProperty] private ObservableCollection<IDeviceAction> _availableDeviceActions =
         [
             new MonitorCardReads(), 
+            new MonitorKeypadReads(),
             new ResetCypressDeviceAction(), 
             new SetCommunicationAction(),
             new SetReaderLedAction()

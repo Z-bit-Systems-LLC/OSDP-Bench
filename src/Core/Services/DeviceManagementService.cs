@@ -57,6 +57,7 @@ public class DeviceManagementService : IDeviceManagementService
         _panel.NakReplyReceived += (_, args) => { OnNakReplyReceived(ToFormattedText(args.Nak.ErrorCode)); };
 
         _panel.RawCardDataReplyReceived += (_, args) => OnCardReadReceived(FormatData(args.RawCardData.Data));
+        _panel.KeypadReplyReceived += (_, args) => OnKeypadReadReceived(args.KeypadData.Data);
     }
 
     /// <inheritdoc />
@@ -228,6 +229,20 @@ public class DeviceManagementService : IDeviceManagementService
     protected virtual void OnCardReadReceived(string data)
     {
         CardReadReceived?.Invoke(this, data);
+    }
+    
+    /// <inheritdoc />
+    public event EventHandler<string>? KeypadReadReceived;
+    
+    protected virtual void OnKeypadReadReceived(byte[] data)
+    {
+        string keypadData = string.Empty;
+        foreach (var keypadByte in data)
+        {
+            keypadData = keypadData += char.ConvertFromUtf32(keypadByte);
+        }
+        
+        KeypadReadReceived?.Invoke(this, keypadData);
     }
 
     private static string FormatData(BitArray bitArray)
