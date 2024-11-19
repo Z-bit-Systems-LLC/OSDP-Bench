@@ -54,15 +54,17 @@ namespace OSDPBench.Core.ViewModels.Pages
                             "Do you want to reset device, if so power cycle then click yes when the device boots up.",
                             MessageIcon.Warning))
                     {
-                        await _deviceManagementService.Connect(new SerialPortOsdpConnection(_deviceManagementService.PortName,
+                        await _deviceManagementService.Connect(new SerialPortOsdpConnection(
+                            _deviceManagementService.PortName,
                             (int)_deviceManagementService.BaudRate), _deviceManagementService.Address);
                         return;
                     }
-                    
+
                     try
                     {
                         await _deviceManagementService.ExecuteDeviceAction(SelectedDeviceAction,
-                            new SerialPortOsdpConnection(_deviceManagementService.PortName, (int)_deviceManagementService.BaudRate));
+                            new SerialPortOsdpConnection(_deviceManagementService.PortName,
+                                (int)_deviceManagementService.BaudRate));
                         await _dialogService.ShowMessageDialog("Reset Device",
                             "Successfully sent reset commands. Power cycle device again and then perform a discovery.",
                             MessageIcon.Information);
@@ -155,7 +157,12 @@ namespace OSDPBench.Core.ViewModels.Pages
         [ObservableProperty] private StatusLevel _statusLevel = StatusLevel.Disconnected;
 
         [ObservableProperty] private ObservableCollection<IDeviceAction> _availableDeviceActions =
-            [new SetCommunicationAction(), new MonitorCardReads(), new ResetCypressDeviceAction()];
+        [
+            new MonitorCardReads(), 
+            new ResetCypressDeviceAction(), 
+            new SetCommunicationAction(),
+            new SetReaderLedAction()
+        ];
 
         [ObservableProperty] private IDeviceAction? _selectedDeviceAction;
 

@@ -30,11 +30,6 @@ namespace OSDPBench.Windows.Views.Pages
             
             switch (DeviceActionsComboBox.SelectedValue)
             {
-                case SetCommunicationAction when ViewModel.ConnectedPortName != null:
-                {
-                    SetCommunicationActionControl();
-                    break;
-                }
                 case MonitorCardReads when ViewModel.ConnectedPortName != null:
                 {
                     MonitorCardReadsControl();
@@ -43,6 +38,16 @@ namespace OSDPBench.Windows.Views.Pages
                 case ResetCypressDeviceAction when ViewModel.ConnectedPortName != null:
                 {
                     ResetControl();
+                    break;
+                }
+                case SetCommunicationAction when ViewModel.ConnectedPortName != null:
+                {
+                    SetCommunicationActionControl();
+                    break;
+                }
+                case SetReaderLedAction when ViewModel.ConnectedPortName != null:
+                {
+                    SetReaderLedActionControl();
                     break;
                 }
             }
@@ -85,6 +90,15 @@ namespace OSDPBench.Windows.Views.Pages
             PerformActionButton.Visibility = Visibility.Visible;
             
             var actionControl = new ResetControl();
+
+            DeviceActionControl.Children.Add(actionControl);
+        }
+        
+        private void SetReaderLedActionControl()
+        {
+            PerformActionButton.Visibility = Visibility.Visible;
+            
+            var actionControl = new SetReaderLedControl();
 
             DeviceActionControl.Children.Add(actionControl);
         }
