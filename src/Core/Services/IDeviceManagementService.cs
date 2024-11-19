@@ -59,8 +59,11 @@ namespace OSDPBench.Core.Services
         /// </summary>
         /// <param name="connection">The connection to use for communication.</param>
         /// <param name="address">The address of the device.</param>
-        /// <param name="useSecureChannel"></param>
-        Task Connect(IOsdpConnection connection, byte address, bool useSecureChannel = false);
+        /// <param name="useSecureChannel">Connect device using secure channel</param>
+        /// <param name="useDefaultSecurityKey">Use the default key to connect with secure channel</param>
+        /// <param name="securityKey">Security key if default is not used</param>
+        Task Connect(IOsdpConnection connection, byte address, bool useSecureChannel = false,
+            bool useDefaultSecurityKey = true, byte[]? securityKey = null);
 
         /// <summary>
         /// Discovers a device asynchronously over the provided connections.
@@ -69,7 +72,8 @@ namespace OSDPBench.Core.Services
         /// <param name="progress">The progress of the discovery process.</param>
         /// <param name="cancellationToken">A cancellation token that can be used to cancel the discovery process.</param>
         /// <returns>Information regarding the result of the discovery process.</returns>
-        Task<DiscoveryResult> DiscoverDevice(IEnumerable<IOsdpConnection> connections, DiscoveryProgress progress, CancellationToken cancellationToken);
+        Task<DiscoveryResult> DiscoverDevice(IEnumerable<IOsdpConnection> connections, DiscoveryProgress progress,
+            CancellationToken cancellationToken);
 
         /// <summary>
         /// Executes a device action with the provided parameter.

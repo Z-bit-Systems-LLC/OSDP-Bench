@@ -78,7 +78,7 @@ public partial class ConnectViewModel : ObservableObject
 
     [ObservableProperty] private int _connectedBaudRate;
 
-    [ObservableProperty] private bool _useSecureChannel = false;
+    [ObservableProperty] private bool _useSecureChannel;
 
     [ObservableProperty] private bool _useDefaultKey = true;
 
@@ -228,10 +228,27 @@ public partial class ConnectViewModel : ObservableObject
 
         StatusLevel = StatusLevel.ConnectingManually;
         StatusText = "Attempting to connect manually";
+
+        byte[]? securityKey = null;
+
+        try
+        {
+            if (!UseDefaultKey)
+            {
+                securityKey = HexConverter.FromHexString(SecurityKey, 32);
+            }
+        }
+        catch (Exception exception)
+        {
+            await _dialogService.ShowMessageDialog("Connect", $"Invalid security key entered. {exception.Message}",
+                MessageIcon.Error);
+            return;
+        }
+
         await _deviceManagementService.Shutdown();
         await _deviceManagementService.Connect(
             serialPortConnectionService.GetConnection(serialPortName, SelectedBaudRate), SelectedAddress,
-            UseSecureChannel);
+            UseSecureChannel, UseDefaultKey, securityKey);
         ConnectedAddress = SelectedAddress;
         ConnectedBaudRate = SelectedBaudRate;
     }

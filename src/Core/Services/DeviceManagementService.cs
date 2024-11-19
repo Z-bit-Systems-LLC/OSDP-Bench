@@ -16,7 +16,7 @@ namespace OSDPBench.Core.Services;
 /// <seealso cref="IDeviceManagementService" />
 public class DeviceManagementService : IDeviceManagementService
 {
-    private readonly ControlPanel _panel = new ();
+    private readonly ControlPanel _panel = new();
 
     private Guid _connectionId;
     private bool _isDiscovering;
@@ -37,7 +37,8 @@ public class DeviceManagementService : IDeviceManagementService
                 Task.Run(async () =>
                 {
                     IdentityLookup = new IdentityLookup(await _panel.IdReport(_connectionId, Address));
-                    CapabilitiesLookup = new CapabilitiesLookup(await _panel.DeviceCapabilities(_connectionId, Address));
+                    CapabilitiesLookup =
+                        new CapabilitiesLookup(await _panel.DeviceCapabilities(_connectionId, Address));
 
                     OnDeviceLookupsChanged();
                 });
@@ -49,18 +50,15 @@ public class DeviceManagementService : IDeviceManagementService
 
                 OnDeviceLookupsChanged();
             }
-            
+
             OnConnectionStatusChange(args.IsConnected);
         };
 
-        _panel.NakReplyReceived += (_, args) =>
-        {
-            OnNakReplyReceived(ToFormattedText(args.Nak.ErrorCode));
-        };
+        _panel.NakReplyReceived += (_, args) => { OnNakReplyReceived(ToFormattedText(args.Nak.ErrorCode)); };
 
         _panel.RawCardDataReplyReceived += (_, args) => OnCardReadReceived(FormatData(args.RawCardData.Data));
     }
-        
+
     /// <inheritdoc />
     public IdentityLookup? IdentityLookup { get; private set; }
 
@@ -78,12 +76,13 @@ public class DeviceManagementService : IDeviceManagementService
 
     /// <inheritdoc />
     public bool UsesDefaultSecurityKey { get; private set; }
-    
+
     /// <inheritdoc />
     public bool IsConnected { get; private set; }
 
     /// <inheritdoc />
-    public async Task Connect(IOsdpConnection connection, byte address, bool useSecureChannel)
+    public async Task Connect(IOsdpConnection connection, byte address, bool useSecureChannel,
+        bool useDefaultSecurityKey, byte[]? securityKey)
     {
         await Shutdown();
 
@@ -91,11 +90,13 @@ public class DeviceManagementService : IDeviceManagementService
         BaudRate = (uint)connection.BaudRate;
 
         _connectionId = _panel.StartConnection(connection);
-        _panel.AddDevice(_connectionId, address, true, useSecureChannel);
+        _panel.AddDevice(_connectionId, address, true, useSecureChannel, 
+            useDefaultSecurityKey ? null : securityKey);
     }
 
     /// <inheritdoc />
-    public async Task<DiscoveryResult> DiscoverDevice(IEnumerable<IOsdpConnection> connections, DiscoveryProgress progress, CancellationToken cancellationToken)
+    public async Task<DiscoveryResult> DiscoverDevice(IEnumerable<IOsdpConnection> connections,
+        DiscoveryProgress progress, CancellationToken cancellationToken)
     {
         IdentityLookup = null;
         CapabilitiesLookup = null;
@@ -135,7 +136,8 @@ public class DeviceManagementService : IDeviceManagementService
         return results;
     }
 
-    private async Task<DiscoveryResult> DiscoveryRoutines(IEnumerable<IOsdpConnection> connections, DiscoveryProgress progress, CancellationToken cancellationToken)
+    private async Task<DiscoveryResult> DiscoveryRoutines(IEnumerable<IOsdpConnection> connections,
+        DiscoveryProgress progress, CancellationToken cancellationToken)
     {
         var options = new DiscoveryOptions
         {
@@ -177,7 +179,7 @@ public class DeviceManagementService : IDeviceManagementService
     {
         IdentityLookup = null;
         CapabilitiesLookup = null;
-        
+
         await _panel.Shutdown();
     }
 
@@ -206,6 +208,7 @@ public class DeviceManagementService : IDeviceManagementService
 
     /// <inheritdoc />
     public event EventHandler<string>? NakReplyReceived;
+
     /// <summary>
     /// Event handler for Nak reply received.
     /// </summary>
