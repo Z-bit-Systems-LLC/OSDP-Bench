@@ -130,8 +130,15 @@ namespace OSDPBench.Windows.Views.Pages
         private void SetReaderLedActionControl()
         {
             PerformActionButton.Visibility = Visibility.Visible;
-            
+    
             var actionControl = new SetReaderLedControl();
+            actionControl.PropertyChanged += (_, args) =>
+            {
+                if (args.PropertyName == nameof(SetReaderLedControl.SelectedColor))
+                {
+                    ViewModel.DeviceActionParameter = actionControl.SelectedColor;
+                }
+            };
 
             DeviceActionControl.Children.Add(actionControl);
         }
