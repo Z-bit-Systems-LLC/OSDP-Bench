@@ -131,10 +131,20 @@ namespace OSDPBench.Core.ViewModels.Pages
         {
             UpdateFields();
         }
-
+        
         private void DeviceManagementServiceOnCardReadReceived(object? sender, string cardNumber)
         {
             LastCardNumberRead = cardNumber;
+            CardReadEntries.Insert(0, new CardReadEntry 
+            { 
+                Timestamp = DateTime.Now,
+                CardNumber = cardNumber 
+            });
+            
+            while (CardReadEntries.Count > 5)
+            {
+                CardReadEntries.RemoveAt(CardReadEntries.Count - 1);
+            }
         }
         
         private void DeviceManagementServiceOnKeypadReadReceived(object? sender, string keypadReadData)
@@ -174,6 +184,8 @@ namespace OSDPBench.Core.ViewModels.Pages
             new SetCommunicationAction(),
             new SetReaderLedAction()
         ];
+        
+        [ObservableProperty] private ObservableCollection<CardReadEntry> _cardReadEntries = [];
 
         [ObservableProperty] private IDeviceAction? _selectedDeviceAction;
 

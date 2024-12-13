@@ -96,10 +96,7 @@ namespace OSDPBench.Windows.Views.Pages
             PerformActionButton.Visibility = Visibility.Collapsed;
             
             var actionControl = new MonitorCardReadsControl();
-            actionControl.CardNumberTextBox.SetBinding(System.Windows.Controls.TextBox.TextProperty, new Binding("LastCardNumberRead")
-            {
-                Source = ViewModel
-            });
+            actionControl.Initialize(ViewModel);
 
             DeviceActionControl.Children.Add(actionControl);
         }

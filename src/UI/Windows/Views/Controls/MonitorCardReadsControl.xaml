@@ -3,17 +3,81 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+             xmlns:controls="clr-namespace:OSDPBench.Windows.Views.Controls"
+             xmlns:models="clr-namespace:OSDPBench.Core.Models;assembly=OSDPBench.Core"
+             d:DataContext="{d:DesignInstance controls:MonitorCardReadsControl,
+                                            IsDesignTimeCreatable=False}"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid>
-        <Grid>
-            <StackPanel Orientation="Vertical">
-                <Label Content="Card Number"
-                       Target="{Binding ElementName=CardNumberTextBox}" />
-                <TextBox Name="CardNumberTextBox"
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+            
+        <StackPanel Grid.Row="0" 
+                    Orientation="Vertical" 
+                    Margin="0,0,0,10">
+            <Label Content="Last Card Read"
+                   Target="{Binding ElementName=CardNumberTextBox}" />
+            <TextBox Name="CardNumberTextBox"
+                     IsReadOnly="True"
+                     Margin="0,0,20,0"/>
+        </StackPanel>
+
+        <Grid Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            
+            <DockPanel Grid.Row="0" 
+                       Margin="0,0,0,5">
+                <Label Content="Read History" 
+                       DockPanel.Dock="Left"/>
+                <Button Content="Clear History"
+                        DockPanel.Dock="Right"
+                        HorizontalAlignment="Right"
+                        Click="ClearHistory_Click"/>
+            </DockPanel>
+
+            <ui:DataGrid Grid.Row="1" 
+                         Name="HistoryDataGrid"
+                         Margin="0,0,20,0"
+                         AutoGenerateColumns="False"
                          IsReadOnly="True"
-                         Margin="0 0 20 0"/>
-            </StackPanel>
+                         GridLinesVisibility="Horizontal"
+                         BorderThickness="1"
+                         HeadersVisibility="Column"
+                         VerticalScrollBarVisibility="Auto"
+                         MaxHeight="300" d:DataContext="{d:DesignInstance models:CardReadEntry}">
+                <ui:DataGrid.Columns>
+                    <DataGridTextColumn Header="Date/Time" 
+                                           Binding="{Binding Timestamp, StringFormat='MM/dd/yyyy HH:mm:ss'}"
+                                           Width="150">
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="VerticalAlignment" Value="Center"/>
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+                    <DataGridTemplateColumn Header="Card Number" 
+                                               Width="*">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBox Text="{Binding CardNumber, Mode=OneWay}"
+                                         IsReadOnly="True"
+                                         BorderThickness="0"
+                                         VerticalAlignment="Center"
+                                         VerticalContentAlignment="Center"
+                                         Padding="0"
+                                         Background="Transparent"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </ui:DataGrid.Columns>
+            </ui:DataGrid>
         </Grid>
     </Grid>
 </UserControl>

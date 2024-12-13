@@ -14,10 +14,11 @@ namespace OSDPBench.Core.Services;
 /// Implements the <see cref="IDeviceManagementService" />
 /// </summary>
 /// <seealso cref="IDeviceManagementService" />
-public class DeviceManagementService : IDeviceManagementService
+public sealed class DeviceManagementService : IDeviceManagementService
 {
     private readonly ControlPanel _panel = new();
-
+    private readonly SynchronizationContext? _synchronizationContext;
+    
     private Guid _connectionId;
     private bool _isDiscovering;
 
@@ -27,6 +28,8 @@ public class DeviceManagementService : IDeviceManagementService
     /// <exception cref="ArgumentNullException">panel</exception>
     public DeviceManagementService()
     {
+        _synchronizationContext = SynchronizationContext.Current;
+        
         _panel.ConnectionStatusChanged += (_, args) =>
         {
             if (_isDiscovering) return;
@@ -56,7 +59,10 @@ public class DeviceManagementService : IDeviceManagementService
 
         _panel.NakReplyReceived += (_, args) => { OnNakReplyReceived(ToFormattedText(args.Nak.ErrorCode)); };
 
-        _panel.RawCardDataReplyReceived += (_, args) => OnCardReadReceived(FormatData(args.RawCardData.Data));
+        _panel.RawCardDataReplyReceived += (_, args) =>
+        {
+            OnCardReadReceived(FormatData(args.RawCardData.Data));
+        };
         _panel.KeypadReplyReceived += (_, args) => OnKeypadReadReceived(args.KeypadData.Data);
     }
 
@@ -191,9 +197,16 @@ public class DeviceManagementService : IDeviceManagementService
     /// Event handler for the connection status change.
     /// </summary>
     /// <param name="isConnected">A boolean value indicating if the connection status is connected or not.</param>
-    protected virtual void OnConnectionStatusChange(bool isConnected)
+    private void OnConnectionStatusChange(bool isConnected)
     {
-        ConnectionStatusChange?.Invoke(this, isConnected);
+        if (_synchronizationContext != null)
+        {
+            _synchronizationContext.Post(_ => ConnectionStatusChange?.Invoke(this, isConnected), null);
+        }
+        else
+        {
+            ConnectionStatusChange?.Invoke(this, isConnected);
+        }
     }
 
     /// <inheritdoc />
@@ -202,9 +215,16 @@ public class DeviceManagementService : IDeviceManagementService
     /// <summary>
     /// Raises the <see cref="DeviceLookupsChanged"/> event.
     /// </summary>
-    protected virtual void OnDeviceLookupsChanged()
+    private void OnDeviceLookupsChanged()
     {
-        DeviceLookupsChanged?.Invoke(this, EventArgs.Empty);
+        if (_synchronizationContext != null)
+        {
+            _synchronizationContext.Post(_ => DeviceLookupsChanged?.Invoke(this, EventArgs.Empty), null);
+        }
+        else
+        {
+            DeviceLookupsChanged?.Invoke(this, EventArgs.Empty);
+        }
     }
 
     /// <inheritdoc />
@@ -214,9 +234,16 @@ public class DeviceManagementService : IDeviceManagementService
     /// Event handler for Nak reply received.
     /// </summary>
     /// <param name="errorMessage">The error message.</param>
-    protected virtual void OnNakReplyReceived(string errorMessage)
+    private void OnNakReplyReceived(string errorMessage)
     {
-        NakReplyReceived?.Invoke(this, errorMessage);
+        if (_synchronizationContext != null)
+        {
+            _synchronizationContext.Post(_ => NakReplyReceived?.Invoke(this, errorMessage), null);
+        }
+        else
+        {
+            NakReplyReceived?.Invoke(this, errorMessage);
+        }
     }
 
     /// <inheritdoc />
@@ -226,15 +253,22 @@ public class DeviceManagementService : IDeviceManagementService
     /// Raises the CardReadReceived event when card data is received.
     /// </summary>
     /// <param name="data">The card data received.</param>
-    protected virtual void OnCardReadReceived(string data)
+    private void OnCardReadReceived(string data)
     {
-        CardReadReceived?.Invoke(this, data);
+        if (_synchronizationContext != null)
+        {
+            _synchronizationContext.Post(_ => CardReadReceived?.Invoke(this, data), null);
+        }
+        else
+        {
+            CardReadReceived?.Invoke(this, data);
+        }
     }
     
     /// <inheritdoc />
     public event EventHandler<string>? KeypadReadReceived;
-    
-    protected virtual void OnKeypadReadReceived(byte[] data)
+
+    private void OnKeypadReadReceived(byte[] data)
     {
         string keypadData = string.Empty;
         foreach (var keypadByte in data)
@@ -253,7 +287,14 @@ public class DeviceManagementService : IDeviceManagementService
             }
         }
         
-        KeypadReadReceived?.Invoke(this, keypadData);
+        if (_synchronizationContext != null)
+        {
+            _synchronizationContext.Post(_ => KeypadReadReceived?.Invoke(this, keypadData), null);
+        }
+        else
+        {
+            KeypadReadReceived?.Invoke(this, keypadData);
+        }
     }
 
     private static string FormatData(BitArray bitArray)
