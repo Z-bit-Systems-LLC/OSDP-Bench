@@ -239,7 +239,18 @@ public class DeviceManagementService : IDeviceManagementService
         string keypadData = string.Empty;
         foreach (var keypadByte in data)
         {
-            keypadData = keypadData += char.ConvertFromUtf32(keypadByte);
+            if (keypadByte == 0x7F)
+            {
+                keypadData = keypadData += "*";
+            }
+            else if (keypadByte == 0x0D)
+            {
+                keypadData = keypadData += "#";
+            }
+            else
+            {
+                keypadData = keypadData += char.ConvertFromUtf32(keypadByte);
+            }
         }
         
         KeypadReadReceived?.Invoke(this, keypadData);

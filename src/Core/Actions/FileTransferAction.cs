@@ -3,10 +3,7 @@ using OSDP.Net.Model.CommandData;
 
 namespace OSDPBench.Core.Actions;
 
-/// <summary>
-/// Represents an action that controls the buzzer on a device.
-/// </summary>
-public class ControlBuzzerAction : IDeviceAction
+public class FileTransferAction : IDeviceAction
 {
     /// <inheritdoc />
     public string Name => "Test Buzzer";
