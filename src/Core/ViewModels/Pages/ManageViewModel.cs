@@ -178,6 +178,7 @@ namespace OSDPBench.Core.ViewModels.Pages
         [ObservableProperty] private ObservableCollection<IDeviceAction> _availableDeviceActions =
         [
             new ControlBuzzerAction(),
+            new FileTransferAction(),
             new MonitorCardReads(), 
             new MonitorKeypadReads(),
             new ResetCypressDeviceAction(), 

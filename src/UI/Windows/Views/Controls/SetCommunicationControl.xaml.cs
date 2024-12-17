@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 
 namespace OSDPBench.Windows.Views.Controls;
 
-public partial class SetCommunicationControl : INotifyPropertyChanged
+public sealed partial class SetCommunicationControl : INotifyPropertyChanged
 {
     public SetCommunicationControl(int[] availableBaudRates, uint connectedBaudRate, byte connectedAddress)
     {
@@ -34,7 +34,7 @@ public partial class SetCommunicationControl : INotifyPropertyChanged
     
     public event PropertyChangedEventHandler? PropertyChanged;
 
-    protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+    private void OnPropertyChanged([CallerMemberName] string? propertyName = null)
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }

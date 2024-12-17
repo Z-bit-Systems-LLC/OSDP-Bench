@@ -14,6 +14,8 @@ namespace OSDPBench.Windows.Views.Pages
     /// </summary>
     public partial class ManagePage : INavigableView<ManageViewModel>
     {
+        private static FileTransferParameters _fileTransferParameters = new FileTransferParameters();
+        
         public ManagePage(ManageViewModel viewModel)
         {
             ViewModel = viewModel;
@@ -33,6 +35,11 @@ namespace OSDPBench.Windows.Views.Pages
                 case ControlBuzzerAction when ViewModel.ConnectedPortName != null:
                 {
                     ControlBuzzerControl();
+                    break;
+                }
+                case FileTransferAction when ViewModel.ConnectedPortName != null:
+                {
+                    FileTransferControl();
                     break;
                 }
                 case MonitorCardReads when ViewModel.ConnectedPortName != null:
@@ -68,6 +75,17 @@ namespace OSDPBench.Windows.Views.Pages
             PerformActionButton.Visibility = Visibility.Visible;
             
             var actionControl = new ControlBuzzerControl();
+
+            DeviceActionControl.Children.Add(actionControl);
+        }
+
+        private void FileTransferControl()
+        {
+            PerformActionButton.Visibility = Visibility.Visible;
+            
+            ViewModel.DeviceActionParameter = _fileTransferParameters;
+            
+            var actionControl = new FileTransferControl(_fileTransferParameters);
 
             DeviceActionControl.Children.Add(actionControl);
         }

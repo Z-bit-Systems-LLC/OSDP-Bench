@@ -275,15 +275,15 @@ public sealed class DeviceManagementService : IDeviceManagementService
         {
             if (keypadByte == 0x7F)
             {
-                keypadData = keypadData += "*";
+                keypadData += "*";
             }
             else if (keypadByte == 0x0D)
             {
-                keypadData = keypadData += "#";
+                keypadData += "#";
             }
             else
             {
-                keypadData = keypadData += char.ConvertFromUtf32(keypadByte);
+                keypadData += char.ConvertFromUtf32(keypadByte);
             }
         }
         
