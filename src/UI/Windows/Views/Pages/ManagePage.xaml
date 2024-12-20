@@ -10,8 +10,7 @@
       d:DataContext="{d:DesignInstance local:ManagePage,
 									 IsDesignTimeCreatable=False}"
       d:DesignHeight="450" d:DesignWidth="800"
-      Title="Manage"
-      IsVisibleChanged="ManagePage_OnIsVisibleChanged">
+      Title="Manage">
     
     <Page.Resources>
         <converters:StringToVisibilityConverter x:Key="StringToVisibilityConverter" />
@@ -20,10 +19,8 @@
     <StackPanel 
         Orientation="Vertical"
         Margin="0 5">
-        <StackPanel  Name="DeviceInformationStackPanel"
-                        Orientation="Vertical"
-                     Visibility="{Binding Path=ViewModel.StatusLevel, Converter={StaticResource StringToVisibilityConverter}, ConverterParameter=Disconnected, Mode=OneWay}"
-                     IsVisibleChanged="DeviceInformationStackPanel_OnIsVisibleChanged">
+        <StackPanel  Orientation="Vertical"
+                     Visibility="{Binding Path=ViewModel.StatusLevel, Converter={StaticResource StringToVisibilityConverter}, ConverterParameter=Disconnected, Mode=OneWay}">
             <TextBlock
                 FontSize="32"
                 Margin="20 10 20 0"
@@ -55,7 +52,7 @@
                 HorizontalAlignment="Center"
                 TextAlignment="Center"
                 TextWrapping="Wrap"
-                Text="{Binding ViewModel.IdentityLookup.VendorName}"
+                Text="{Binding Path=ViewModel.IdentityLookup.VendorName}"
                 d:Text="ABC Corporation"/>
             <TextBlock
                 FontSize="20"

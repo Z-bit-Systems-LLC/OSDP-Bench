@@ -14,14 +14,16 @@ namespace OSDPBench.Windows.Views.Pages
     /// </summary>
     public partial class ManagePage : INavigableView<ManageViewModel>
     {
-        private static FileTransferParameters _fileTransferParameters = new FileTransferParameters();
+        private static readonly FileTransferParameters FileTransferParameters = new();
         
         public ManagePage(ManageViewModel viewModel)
         {
             ViewModel = viewModel;
             DataContext = this;
-
+            
             InitializeComponent();
+            
+            viewModel.SelectedDeviceAction = viewModel.AvailableDeviceActions.FirstOrDefault();
         }
 
         public ManageViewModel ViewModel { get; }
@@ -83,9 +85,9 @@ namespace OSDPBench.Windows.Views.Pages
         {
             PerformActionButton.Visibility = Visibility.Visible;
             
-            ViewModel.DeviceActionParameter = _fileTransferParameters;
+            ViewModel.DeviceActionParameter = FileTransferParameters;
             
-            var actionControl = new FileTransferControl(_fileTransferParameters);
+            var actionControl = new FileTransferControl(FileTransferParameters);
 
             DeviceActionControl.Children.Add(actionControl);
         }
@@ -156,20 +158,6 @@ namespace OSDPBench.Windows.Views.Pages
             };
 
             DeviceActionControl.Children.Add(actionControl);
-        }
-
-        private void DeviceInformationStackPanel_OnIsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
-        {
-            if (DeviceInformationStackPanel.Visibility != Visibility.Visible || ViewModel.StatusLevel != StatusLevel.Connected) return;
-
-            DeviceActionsComboBox.SelectedIndex = 0;
-        }
-
-        private void ManagePage_OnIsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
-        {
-            if (ViewModel.StatusLevel != StatusLevel.Connected) return;
-
-            DeviceActionsComboBox.SelectedIndex = 0;
         }
     }
 }
