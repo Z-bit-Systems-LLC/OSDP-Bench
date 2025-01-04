@@ -180,23 +180,24 @@
 	                            <StackPanel Orientation="Vertical">
 		                            <Label Content="Security Key"
 		                                   Target="{Binding ElementName=AddressNumberBox}" />
-		                            <TextBox Text="{Binding ViewModel.SecurityKey}">
-			                            <TextBox.Style>
-				                            <Style TargetType="TextBox">
-					                            <Style.Triggers>
-						                            <MultiDataTrigger>
-							                            <MultiDataTrigger.Conditions>
-								                            <Condition Binding="{Binding ElementName=UseSecureChannelCheckBox, Path=IsChecked}" Value="True"/>
-								                            <Condition Binding="{Binding ElementName=UseDefaultKeyCheckBox, Path=IsChecked}" Value="False"/>
-							                            </MultiDataTrigger.Conditions>
-							                            <Setter Property="IsEnabled" Value="True"/>
-						                            </MultiDataTrigger>
-					                            </Style.Triggers>
-					                            <Setter Property="IsEnabled" Value="False"/>
-				                            </Style>
-			                            </TextBox.Style>
-		                            </TextBox>
-	                            </StackPanel>
+                                    <TextBox Text="{Binding ViewModel.SecurityKey}">
+                                        <TextBox.Style>
+                                            <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
+                                                <!-- Only add the specific triggers needed -->
+                                                <Setter Property="IsEnabled" Value="False"/>
+                                                <Style.Triggers>
+                                                    <MultiDataTrigger>
+                                                        <MultiDataTrigger.Conditions>
+                                                            <Condition Binding="{Binding ElementName=UseSecureChannelCheckBox, Path=IsChecked}" Value="True"/>
+                                                            <Condition Binding="{Binding ElementName=UseDefaultKeyCheckBox, Path=IsChecked}" Value="False"/>
+                                                        </MultiDataTrigger.Conditions>
+                                                        <Setter Property="IsEnabled" Value="True"/>
+                                                    </MultiDataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBox.Style>
+                                    </TextBox>
+                                </StackPanel>
                             </StackPanel>
                             
                             <ui:Button Grid.Row="1" Grid.Column="2"  Content="Connect"
