@@ -48,5 +48,16 @@ namespace OSDPBench.Windows.Views.Pages
         }
 
         public MainWindowViewModel ViewModel { get; }
+
+        public string AppVersion
+        {
+            get
+            {
+                var version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
+                return version != null ? $"Version {version.Major}.{version.Minor}.{version.Build}" : string.Empty;
+            }
+        }
+
+        public string CopyWriteNotice => $"\u00a9 {DateTime.Now.Year} Z-bit Systems, LLC";
     }
 }
