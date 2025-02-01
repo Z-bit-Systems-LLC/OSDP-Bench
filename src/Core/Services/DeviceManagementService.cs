@@ -4,6 +4,7 @@ using OSDP.Net;
 using OSDP.Net.Connections;
 using OSDP.Net.Model.ReplyData;
 using OSDP.Net.PanelCommands.DeviceDiscover;
+using OSDP.Net.Tracing;
 using OSDPBench.Core.Actions;
 using OSDPBench.Core.Models;
 
@@ -96,9 +97,14 @@ public sealed class DeviceManagementService : IDeviceManagementService
         Address = address;
         BaudRate = (uint)connection.BaudRate;
 
-        _connectionId = _panel.StartConnection(connection);
+        _connectionId = _panel.StartConnection(connection, TimeSpan.FromMilliseconds(20), Tracer);
         _panel.AddDevice(_connectionId, address, true, useSecureChannel, 
             useDefaultSecurityKey ? null : securityKey);
+    }
+    
+    private void Tracer(TraceEntry traceEntry)
+    {
+        OnTraceEntryReceived(traceEntry);
     }
 
     /// <inheritdoc />
@@ -264,7 +270,7 @@ public sealed class DeviceManagementService : IDeviceManagementService
             CardReadReceived?.Invoke(this, data);
         }
     }
-    
+
     /// <inheritdoc />
     public event EventHandler<string>? KeypadReadReceived;
 
@@ -294,6 +300,21 @@ public sealed class DeviceManagementService : IDeviceManagementService
         else
         {
             KeypadReadReceived?.Invoke(this, keypadData);
+        }
+    }
+    
+    /// <inheritdoc />
+    public event EventHandler<TraceEntry>? TraceEntryReceived;
+
+    private void OnTraceEntryReceived(TraceEntry traceEntry)
+    {
+        if (_synchronizationContext != null)
+        {
+            _synchronizationContext.Post(_ => TraceEntryReceived?.Invoke(this, traceEntry), null);
+        }
+        else
+        {
+            TraceEntryReceived?.Invoke(this, traceEntry);
         }
     }
 
