@@ -48,6 +48,8 @@ public partial class App
             services.AddSingleton<ConnectViewModel>();
             services.AddSingleton<ManagePage>();
             services.AddSingleton<ManageViewModel>();
+            services.AddSingleton<MonitorPage>();
+            services.AddSingleton<MonitorViewModel>();
             services.AddSingleton<InfoPage>();
 
             services.AddSingleton<IDeviceManagementService, DeviceManagementService>();
@@ -73,6 +75,9 @@ public partial class App
     private void OnStartup(object sender, StartupEventArgs e)
     {
         Host.Start();
+        
+        Host.Services.GetService<ManageViewModel>();
+        Host.Services.GetService<MonitorViewModel>();
     }
 
     /// <summary>

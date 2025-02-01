@@ -34,6 +34,11 @@
                         <ui:SymbolIcon Symbol="Toolbox24" />
                     </ui:NavigationViewItem.Icon>
                 </ui:NavigationViewItem>
+                <ui:NavigationViewItem Content="Monitor" TargetPageType="{x:Type pages:MonitorPage}" NavigationCacheMode="Required">
+                    <ui:NavigationViewItem.Icon>
+                        <ui:SymbolIcon Symbol="Tv24" />
+                    </ui:NavigationViewItem.Icon>
+                </ui:NavigationViewItem>
             </ui:NavigationView.MenuItems>
             <ui:NavigationView.FooterMenuItems>
                 <ui:NavigationViewItem Content="Info" TargetPageType="{x:Type pages:InfoPage}">

@@ -4,6 +4,7 @@ using OSDP.Net;
 using OSDP.Net.Connections;
 using OSDP.Net.Model.ReplyData;
 using OSDP.Net.PanelCommands.DeviceDiscover;
+using OSDP.Net.Tracing;
 using OSDPBench.Core.Actions;
 using OSDPBench.Core.Models;
 
@@ -18,6 +19,7 @@ public sealed class DeviceManagementService : IDeviceManagementService
 {
     private readonly ControlPanel _panel = new();
     private readonly SynchronizationContext? _synchronizationContext;
+    private readonly TimeSpan _defaultPollInterval = TimeSpan.FromMilliseconds(20);
     
     private Guid _connectionId;
     private bool _isDiscovering;
@@ -80,6 +82,9 @@ public sealed class DeviceManagementService : IDeviceManagementService
 
     /// <inheritdoc />
     public uint BaudRate { get; private set; }
+    
+    /// <inheritdoc />
+    public bool IsUsingSecureChannel { get; private set; }
 
     /// <inheritdoc />
     public bool UsesDefaultSecurityKey { get; private set; }
@@ -95,10 +100,16 @@ public sealed class DeviceManagementService : IDeviceManagementService
 
         Address = address;
         BaudRate = (uint)connection.BaudRate;
+        IsUsingSecureChannel = useSecureChannel;
 
-        _connectionId = _panel.StartConnection(connection);
+        _connectionId = _panel.StartConnection(connection, _defaultPollInterval, Tracer);
         _panel.AddDevice(_connectionId, address, true, useSecureChannel, 
             useDefaultSecurityKey ? null : securityKey);
+    }
+    
+    private void Tracer(TraceEntry traceEntry)
+    {
+        OnTraceEntryReceived(traceEntry);
     }
 
     /// <inheritdoc />
@@ -137,7 +148,7 @@ public sealed class DeviceManagementService : IDeviceManagementService
 
         OnDeviceLookupsChanged();
 
-        _connectionId = _panel.StartConnection(results.Connection);
+        _connectionId = _panel.StartConnection(results.Connection, _defaultPollInterval, Tracer);
         _panel.AddDevice(_connectionId, Address, CapabilitiesLookup.CRC, false);
 
         return results;
@@ -188,6 +199,29 @@ public sealed class DeviceManagementService : IDeviceManagementService
         CapabilitiesLookup = null;
 
         await _panel.Shutdown();
+
+        try
+        {
+            await WaitUntilDeviceIsOffline();
+        }
+        catch
+        {
+            // ignored
+        }
+    }
+    
+    private async Task WaitUntilDeviceIsOffline()
+    {
+        using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(5)); // Timeout handling
+        while (_panel.IsOnline(_connectionId, Address))
+        {
+            if (cts.Token.IsCancellationRequested)
+            {
+                throw new TimeoutException("The device did not go offline within the specified timeout.");
+            }
+
+            await Task.Delay(TimeSpan.FromMilliseconds(100), cts.Token);
+        }
     }
 
     /// <inheritdoc />
@@ -264,7 +298,7 @@ public sealed class DeviceManagementService : IDeviceManagementService
             CardReadReceived?.Invoke(this, data);
         }
     }
-    
+
     /// <inheritdoc />
     public event EventHandler<string>? KeypadReadReceived;
 
@@ -294,6 +328,21 @@ public sealed class DeviceManagementService : IDeviceManagementService
         else
         {
             KeypadReadReceived?.Invoke(this, keypadData);
+        }
+    }
+    
+    /// <inheritdoc />
+    public event EventHandler<TraceEntry>? TraceEntryReceived;
+
+    private void OnTraceEntryReceived(TraceEntry traceEntry)
+    {
+        if (_synchronizationContext != null)
+        {
+            _synchronizationContext.Post(_ => TraceEntryReceived?.Invoke(this, traceEntry), null);
+        }
+        else
+        {
+            TraceEntryReceived?.Invoke(this, traceEntry);
         }
     }
 
