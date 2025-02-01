@@ -143,7 +143,7 @@ public sealed class DeviceManagementService : IDeviceManagementService
 
         OnDeviceLookupsChanged();
 
-        _connectionId = _panel.StartConnection(results.Connection);
+        _connectionId = _panel.StartConnection(results.Connection, TimeSpan.FromMilliseconds(20), Tracer);
         _panel.AddDevice(_connectionId, Address, CapabilitiesLookup.CRC, false);
 
         return results;
