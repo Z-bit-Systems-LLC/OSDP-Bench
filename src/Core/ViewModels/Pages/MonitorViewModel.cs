@@ -43,6 +43,8 @@ public partial class MonitorViewModel : ObservableObject
 
     private void OnDeviceManagementServiceOnTraceEntryReceived(object? _, TraceEntry traceEntry)
     {
+        if (_deviceManagementService.IsUsingSecureChannel) return;
+        
         var build = new PacketTraceEntryBuilder();
         var packetTraceEntry = build.FromTraceEntry(traceEntry, _lastPacketEntry).Build();
 

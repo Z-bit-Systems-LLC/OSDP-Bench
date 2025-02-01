@@ -40,6 +40,11 @@ public interface IDeviceManagementService
     uint BaudRate { get; }
 
     /// <summary>
+    /// Indicates whether the communication channel with the device is secured using a secure channel protocol.
+    /// </summary>
+    bool IsUsingSecureChannel { get; }
+
+    /// <summary>
     /// Gets a value indicating whether the device uses the default security key.
     /// </summary>
     /// <value>

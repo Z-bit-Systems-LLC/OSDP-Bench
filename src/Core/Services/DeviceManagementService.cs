@@ -82,6 +82,9 @@ public sealed class DeviceManagementService : IDeviceManagementService
 
     /// <inheritdoc />
     public uint BaudRate { get; private set; }
+    
+    /// <inheritdoc />
+    public bool IsUsingSecureChannel { get; private set; }
 
     /// <inheritdoc />
     public bool UsesDefaultSecurityKey { get; private set; }
@@ -97,6 +100,7 @@ public sealed class DeviceManagementService : IDeviceManagementService
 
         Address = address;
         BaudRate = (uint)connection.BaudRate;
+        IsUsingSecureChannel = useSecureChannel;
 
         _connectionId = _panel.StartConnection(connection, _defaultPollInterval, Tracer);
         _panel.AddDevice(_connectionId, address, true, useSecureChannel, 
@@ -195,6 +199,29 @@ public sealed class DeviceManagementService : IDeviceManagementService
         CapabilitiesLookup = null;
 
         await _panel.Shutdown();
+
+        try
+        {
+            await WaitUntilDeviceIsOffline();
+        }
+        catch
+        {
+            // ignored
+        }
+    }
+    
+    private async Task WaitUntilDeviceIsOffline()
+    {
+        using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(5)); // Timeout handling
+        while (_panel.IsOnline(_connectionId, Address))
+        {
+            if (cts.Token.IsCancellationRequested)
+            {
+                throw new TimeoutException("The device did not go offline within the specified timeout.");
+            }
+
+            await Task.Delay(TimeSpan.FromMilliseconds(100), cts.Token);
+        }
     }
 
     /// <inheritdoc />
