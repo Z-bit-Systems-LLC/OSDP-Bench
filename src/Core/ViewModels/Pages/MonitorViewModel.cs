@@ -28,13 +28,17 @@ public partial class MonitorViewModel : ObservableObject
 
     private void OnDeviceManagementServiceOnConnectionStatusChange(object? _, bool isOnline)
     {
-        if (isOnline)
-        {
-            TraceEntriesView.Clear();
-            _lastPacketEntry = null;
-        }
+        if (isOnline) InitializePollingMetrics();
         
         StatusLevel = isOnline ? StatusLevel.Connected : StatusLevel.Disconnected;
+    }
+
+    private void InitializePollingMetrics()
+    {
+        TraceEntriesView.Clear();
+        _lastPacketEntry = null;
+        NumberOfPolls = 0;
+        NumberOfAcksToPolls = 0;
     }
 
     private void OnDeviceManagementServiceOnTraceEntryReceived(object? _, TraceEntry traceEntry)
@@ -42,13 +46,22 @@ public partial class MonitorViewModel : ObservableObject
         var build = new PacketTraceEntryBuilder();
         var packetTraceEntry = build.FromTraceEntry(traceEntry, _lastPacketEntry).Build();
 
-        if (packetTraceEntry.Packet.CommandType == CommandType.Poll || (_lastPacketEntry?.Packet.CommandType == CommandType.Poll && packetTraceEntry.Packet.ReplyType == ReplyType.Ack))
+        bool notDisplaying = false;
+        if (packetTraceEntry.Packet.CommandType == CommandType.Poll)
         {
-            _lastPacketEntry = packetTraceEntry;
-            return;
+            NumberOfPolls++;
+            notDisplaying = true;
+        }
+
+        if (_lastPacketEntry?.Packet.CommandType == CommandType.Poll && packetTraceEntry.Packet.ReplyType == ReplyType.Ack)
+        {
+            NumberOfAcksToPolls++;
+            notDisplaying = true;
         }
 
         _lastPacketEntry = packetTraceEntry;
+
+        if (notDisplaying) return;
 
         TraceEntriesView.Add(packetTraceEntry);
         if (TraceEntriesView.Count > 20)
@@ -60,4 +73,8 @@ public partial class MonitorViewModel : ObservableObject
     [ObservableProperty] private ObservableCollection<PacketTraceEntry> _traceEntriesView = [];
     
     [ObservableProperty] private StatusLevel _statusLevel = StatusLevel.Disconnected;
+
+    [ObservableProperty] private uint _numberOfPolls;
+    
+    [ObservableProperty] private uint _numberOfAcksToPolls;
 }
