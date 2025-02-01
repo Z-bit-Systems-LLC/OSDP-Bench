@@ -19,6 +19,7 @@ public sealed class DeviceManagementService : IDeviceManagementService
 {
     private readonly ControlPanel _panel = new();
     private readonly SynchronizationContext? _synchronizationContext;
+    private readonly TimeSpan _defaultPollInterval = TimeSpan.FromMilliseconds(20);
     
     private Guid _connectionId;
     private bool _isDiscovering;
@@ -97,7 +98,7 @@ public sealed class DeviceManagementService : IDeviceManagementService
         Address = address;
         BaudRate = (uint)connection.BaudRate;
 
-        _connectionId = _panel.StartConnection(connection, TimeSpan.FromMilliseconds(20), Tracer);
+        _connectionId = _panel.StartConnection(connection, _defaultPollInterval, Tracer);
         _panel.AddDevice(_connectionId, address, true, useSecureChannel, 
             useDefaultSecurityKey ? null : securityKey);
     }
@@ -143,7 +144,7 @@ public sealed class DeviceManagementService : IDeviceManagementService
 
         OnDeviceLookupsChanged();
 
-        _connectionId = _panel.StartConnection(results.Connection, TimeSpan.FromMilliseconds(20), Tracer);
+        _connectionId = _panel.StartConnection(results.Connection, _defaultPollInterval, Tracer);
         _panel.AddDevice(_connectionId, Address, CapabilitiesLookup.CRC, false);
 
         return results;

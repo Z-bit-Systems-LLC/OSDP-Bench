@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using OSDP.Net.Messages;
+using OSDP.Net.Tracing;
 using OSDPBench.Core.Models;
 using OSDPBench.Core.Services;
 
@@ -21,36 +22,42 @@ public partial class MonitorViewModel : ObservableObject
         _deviceManagementService = deviceManagementService ??
                                    throw new ArgumentNullException(nameof(deviceManagementService));
 
-        _deviceManagementService.ConnectionStatusChange += (_, status) =>
-        {
-            if (status)
-            {
-                TraceEntriesView.Clear();
-                _lastPacketEntry = null;
-            }
-        };
-            
-        _deviceManagementService.TraceEntryReceived += (_, traceEntry) =>
-        {
-            var build = new PacketTraceEntryBuilder();
-            var packetTraceEntry = build.FromTraceEntry(traceEntry, _lastPacketEntry).Build();
+        _deviceManagementService.ConnectionStatusChange += OnDeviceManagementServiceOnConnectionStatusChange;
+        _deviceManagementService.TraceEntryReceived += OnDeviceManagementServiceOnTraceEntryReceived;
+    }
 
-            if (packetTraceEntry.Packet.CommandType == CommandType.Poll ||
-                (_lastPacketEntry?.Packet.CommandType == CommandType.Poll && packetTraceEntry.Packet.ReplyType == ReplyType.Ack))
-            {
-                _lastPacketEntry = packetTraceEntry;
-                return;
-            }
+    private void OnDeviceManagementServiceOnConnectionStatusChange(object? _, bool isOnline)
+    {
+        if (isOnline)
+        {
+            TraceEntriesView.Clear();
+            _lastPacketEntry = null;
+        }
+        
+        StatusLevel = isOnline ? StatusLevel.Connected : StatusLevel.Disconnected;
+    }
 
+    private void OnDeviceManagementServiceOnTraceEntryReceived(object? _, TraceEntry traceEntry)
+    {
+        var build = new PacketTraceEntryBuilder();
+        var packetTraceEntry = build.FromTraceEntry(traceEntry, _lastPacketEntry).Build();
+
+        if (packetTraceEntry.Packet.CommandType == CommandType.Poll || (_lastPacketEntry?.Packet.CommandType == CommandType.Poll && packetTraceEntry.Packet.ReplyType == ReplyType.Ack))
+        {
             _lastPacketEntry = packetTraceEntry;
+            return;
+        }
 
-            TraceEntriesView.Add(packetTraceEntry);
-            if (TraceEntriesView.Count > 20)
-            {
-                TraceEntriesView.RemoveAt(0);
-            }
-        };
+        _lastPacketEntry = packetTraceEntry;
+
+        TraceEntriesView.Add(packetTraceEntry);
+        if (TraceEntriesView.Count > 20)
+        {
+            TraceEntriesView.RemoveAt(0);
+        }
     }
 
     [ObservableProperty] private ObservableCollection<PacketTraceEntry> _traceEntriesView = [];
+    
+    [ObservableProperty] private StatusLevel _statusLevel = StatusLevel.Disconnected;
 }
