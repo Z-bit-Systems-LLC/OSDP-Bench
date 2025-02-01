@@ -15,6 +15,7 @@
 	
 	<Page.Resources>
 		<converters:StringToVisibilityConverter x:Key="StringToVisibilityConverter" />
+		<converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
 	</Page.Resources>
 	
 	<StackPanel 
@@ -40,52 +41,73 @@
 		</StackPanel>
 		<StackPanel  Orientation="Vertical"
 		             Visibility="{Binding Path=ViewModel.StatusLevel, Converter={StaticResource StringToVisibilityConverter}, ConverterParameter=Connected, Mode=OneWay}">
-			<StackPanel Orientation="Horizontal" Margin="10 5">
-				<TextBlock Text="Outgoing Polls" Margin="0 0 5 0 "/>
-				<TextBlock Text="{Binding Path=ViewModel.NumberOfPolls}"
-				           Margin="0 0 15 0 "
-				           FontWeight="Bold"/>
-				<TextBlock Text="Ack Replies to Polls" Margin="0 0 5 0 "/>
-				<TextBlock Text="{Binding Path=ViewModel.NumberOfAcksToPolls}"
-				           Margin="0 0 15 0 "
-				           FontWeight="Bold"/>
+			<StackPanel  Orientation="Vertical"
+			             Visibility="{Binding Path=ViewModel.UsingSecureChannel, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}">
+				<TextBlock
+					FontSize="32"
+					Margin="20 10 20 0"
+					HorizontalAlignment="Center"
+					TextAlignment="Center"
+					TextWrapping="Wrap"
+					Foreground="Orange"
+					Text="Monitoring is not available for secure channel"/>
+				<TextBlock
+					FontSize="24"
+					Margin="20 10 20 0"
+					HorizontalAlignment="Center"
+					TextAlignment="Center"
+					TextWrapping="Wrap"
+					Text="An update will be out soon that supports secure channel"/>
 			</StackPanel>
-			<DataGrid ItemsSource="{Binding ViewModel.TraceEntriesView}" 
-			          AutoGenerateColumns="False" 
-			          CanUserAddRows="False" 
-			          IsReadOnly="True" 
-			          Margin="10 5" 
-			          RowDetailsVisibilityMode="Collapsed">
+			<StackPanel  Orientation="Vertical"
+			             Visibility="{Binding Path=ViewModel.UsingSecureChannel, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=Invert, Mode=OneWay}">
+				<StackPanel Orientation="Horizontal" Margin="10 5">
+					<TextBlock Text="Outgoing Polls" Margin="0 0 5 0 "/>
+					<TextBlock Text="{Binding Path=ViewModel.NumberOfPolls}"
+					           Margin="0 0 15 0 "
+					           FontWeight="Bold"/>
+					<TextBlock Text="Ack Replies to Polls" Margin="0 0 5 0 "/>
+					<TextBlock Text="{Binding Path=ViewModel.NumberOfAcksToPolls}"
+					           Margin="0 0 15 0 "
+					           FontWeight="Bold"/>
+				</StackPanel>
+				<DataGrid ItemsSource="{Binding ViewModel.TraceEntriesView}" 
+				          AutoGenerateColumns="False" 
+				          CanUserAddRows="False" 
+				          IsReadOnly="True" 
+				          Margin="10 5" 
+				          RowDetailsVisibilityMode="Collapsed">
 
-				<!-- DataGrid Columns -->
-				<DataGrid.Columns>
-					<DataGridTextColumn Header="TimeStamp" Binding="{Binding LocalTimestamp, StringFormat={}{0:HH:mm:ss.fff}}" />
-					<DataGridTextColumn Header="Interval (ms)" Binding="{Binding Interval.TotalMilliseconds, StringFormat={}{0:N0}}" />
-					<DataGridTextColumn Header="Direction" Binding="{Binding Direction}" />
-					<DataGridTextColumn Header="Address" Binding="{Binding Packet.Address}" />
-					<DataGridTextColumn Header="Type" Binding="{Binding Type}" />
-	        
-					<!-- Button Column -->
-					<DataGridTemplateColumn Header="Details" Width="*">
-						<DataGridTemplateColumn.CellTemplate>
-							<DataTemplate>
-								<ui:Button Content="Expand" DataContext="{Binding Details}"
-								           Margin="5"
-								        Click="ToggleRowDetails" />
-							</DataTemplate>
-						</DataGridTemplateColumn.CellTemplate>
-					</DataGridTemplateColumn>
-				</DataGrid.Columns>
+					<!-- DataGrid Columns -->
+					<DataGrid.Columns>
+						<DataGridTextColumn Header="TimeStamp" Binding="{Binding LocalTimestamp, StringFormat={}{0:HH:mm:ss.fff}}" />
+						<DataGridTextColumn Header="Interval (ms)" Binding="{Binding Interval.TotalMilliseconds, StringFormat={}{0:N0}}" />
+						<DataGridTextColumn Header="Direction" Binding="{Binding Direction}" />
+						<DataGridTextColumn Header="Address" Binding="{Binding Packet.Address}" />
+						<DataGridTextColumn Header="Type" Binding="{Binding Type}" />
+		        
+						<!-- Button Column -->
+						<DataGridTemplateColumn Header="Details" Width="*">
+							<DataGridTemplateColumn.CellTemplate>
+								<DataTemplate>
+									<ui:Button Content="Expand" DataContext="{Binding Details}"
+									           Margin="5"
+									        Click="ToggleRowDetails" />
+								</DataTemplate>
+							</DataGridTemplateColumn.CellTemplate>
+						</DataGridTemplateColumn>
+					</DataGrid.Columns>
 
-				<!-- RowDetailsTemplate -->
-				<DataGrid.RowDetailsTemplate>
-					<DataTemplate DataType="{x:Type models:PacketTraceEntry}">
-						<TextBlock Text="{Binding Details}"
-						           FontFamily="Consolas"
-						           Margin="10" />
-					</DataTemplate>
-				</DataGrid.RowDetailsTemplate>
-			</DataGrid>
+					<!-- RowDetailsTemplate -->
+					<DataGrid.RowDetailsTemplate>
+						<DataTemplate DataType="{x:Type models:PacketTraceEntry}">
+							<TextBlock Text="{Binding Details}"
+							           FontFamily="Consolas"
+							           Margin="10" />
+						</DataTemplate>
+					</DataGrid.RowDetailsTemplate>
+				</DataGrid>
+			</StackPanel>
 		</StackPanel>
     </StackPanel>
 </Page>

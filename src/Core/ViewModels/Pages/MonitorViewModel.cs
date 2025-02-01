@@ -43,7 +43,8 @@ public partial class MonitorViewModel : ObservableObject
 
     private void OnDeviceManagementServiceOnTraceEntryReceived(object? _, TraceEntry traceEntry)
     {
-        if (_deviceManagementService.IsUsingSecureChannel) return;
+        UsingSecureChannel = _deviceManagementService.IsUsingSecureChannel;
+        if (UsingSecureChannel) return;
         
         var build = new PacketTraceEntryBuilder();
         var packetTraceEntry = build.FromTraceEntry(traceEntry, _lastPacketEntry).Build();
@@ -79,4 +80,6 @@ public partial class MonitorViewModel : ObservableObject
     [ObservableProperty] private uint _numberOfPolls;
     
     [ObservableProperty] private uint _numberOfAcksToPolls;
+    
+    [ObservableProperty] private bool _usingSecureChannel;
 }
