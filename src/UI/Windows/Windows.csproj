@@ -13,8 +13,8 @@
     <AssemblyName>OSDPBench</AssemblyName>
     <RootNamespace>OSDPBench.Windows</RootNamespace>
     <StartupObject>OSDPBench.Windows.App</StartupObject>
-    <AssemblyVersion>3.0.3.0</AssemblyVersion>
-    <FileVersion>3.0.3.0</FileVersion>
+    <AssemblyVersion>3.0.4.0</AssemblyVersion>
+    <FileVersion>3.0.4.0</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>

@@ -66,10 +66,10 @@ public partial class MonitorViewModel : ObservableObject
 
         if (notDisplaying) return;
 
-        TraceEntriesView.Add(packetTraceEntry);
+        TraceEntriesView.Insert(0, packetTraceEntry);
         if (TraceEntriesView.Count > 20)
         {
-            TraceEntriesView.RemoveAt(0);
+            TraceEntriesView.RemoveAt(TraceEntriesView.Count - 1);
         }
     }
 
