@@ -12,6 +12,13 @@
                 <ui:ThemesDictionary />
                 <ui:ControlsDictionary />
             </ResourceDictionary.MergedDictionaries>
+            <Style x:Key="PageTitleStyle" TargetType="TextBlock">
+                <Setter Property="FontSize" Value="36"/>
+                <Setter Property="FontWeight" Value="Bold"/>
+                <Setter Property="HorizontalAlignment" Value="Left"/>
+                <Setter Property="Foreground" Value="LightGray"/>
+                <Setter Property="Margin" Value="10 0 0 0"/>
+            </Style>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

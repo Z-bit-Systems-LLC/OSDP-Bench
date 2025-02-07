@@ -10,7 +10,7 @@
 	  d:DataContext="{d:DesignInstance pages:ConnectPage,
 									 IsDesignTimeCreatable=False}"
 	  d:DesignHeight="450" d:DesignWidth="800"
-	  Title="ConnectPage">
+	  Title="Connect">
 
     <Page.Resources>
         <converters:StatusLevelConverter x:Key="StatusLevelConverter" />
@@ -20,9 +20,12 @@
     <StackPanel 
 		Orientation="Vertical"
 		Margin="0 5">
-        <ui:CardExpander IsExpanded="True"
-			Margin="10 5"
-			ContentPadding="10 5">
+	    <TextBlock 
+		    Text="{Binding RelativeSource={RelativeSource AncestorType=Page}, Path=Title}"
+		    Style="{StaticResource PageTitleStyle}"/>
+	    <ui:CardExpander IsExpanded="True"
+	                     Margin="10 5"
+	                     ContentPadding="10 5">
             <ui:CardExpander.Header>
                 <Grid>
                     <Grid.RowDefinitions>

@@ -19,6 +19,9 @@
     <StackPanel 
         Orientation="Vertical"
         Margin="0 5">
+        <TextBlock 
+            Text="{Binding RelativeSource={RelativeSource AncestorType=Page}, Path=Title}"
+            Style="{StaticResource PageTitleStyle}"/>
         <StackPanel  Orientation="Vertical"
                      Visibility="{Binding Path=ViewModel.StatusLevel, Converter={StaticResource StringToVisibilityConverter}, ConverterParameter=Disconnected, Mode=OneWay}">
             <TextBlock
