@@ -19,8 +19,8 @@
     <RepositoryType>git</RepositoryType>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <AssemblyVersion>1.0.2</AssemblyVersion>
-    <FileVersion>1.0.2</FileVersion>
+    <AssemblyVersion>3.0.5</AssemblyVersion>
+    <FileVersion>3.0.5</FileVersion>
     <Platforms>AnyCPU;ARM64;x64</Platforms>
   </PropertyGroup>
 
