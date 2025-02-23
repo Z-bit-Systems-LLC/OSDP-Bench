@@ -1,6 +1,8 @@
-﻿using System.Windows;
+﻿using System.Net.Http;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using System.Windows.Documents;
 using OSDPBench.Core.Actions;
 using OSDPBench.Core.Models;
 using OSDPBench.Core.ViewModels.Pages;
@@ -158,5 +160,24 @@ public partial class ManagePage : INavigableView<ManageViewModel>
         };
 
         DeviceActionControl.Children.Add(actionControl);
+    }
+
+    private async void Hyperlink_OnClick(object sender, RoutedEventArgs eventArgs)
+    {
+        string vendorCode = ((Run)((Hyperlink)sender).Inlines.FirstInline).Text;
+        string url = $"https://macvendors.com/query/{vendorCode}";
+
+        using var client = new HttpClient();
+        
+        try
+        {
+            string result = await client.GetStringAsync(url);
+
+            MessageBox.Show(result, "Vendor Information");
+        }
+        catch (Exception exception)
+        {
+            MessageBox.Show($"Unable to open OUI lookup: {exception.Message}");
+        }
     }
 }
