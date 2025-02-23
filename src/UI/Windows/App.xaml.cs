@@ -9,6 +9,7 @@ using OSDPBench.Windows.Services;
 using OSDPBench.Windows.Views.Pages;
 using OSDPBench.Windows.Views.Windows;
 using Wpf.Ui;
+using Wpf.Ui.Abstractions;
 
 namespace OSDPBench.Windows;
 
@@ -28,9 +29,6 @@ public partial class App
         {
             services.AddHostedService<ApplicationHostService>();
 
-            // Page resolver service
-            services.AddSingleton<IPageService, PageService>();
-
             // Theme manipulation
             services.AddSingleton<IThemeService, ThemeService>();
 
@@ -39,6 +37,7 @@ public partial class App
 
             // Service containing navigation, same as INavigationWindow... but without window
             services.AddSingleton<INavigationService, NavigationService>();
+            services.AddSingleton<INavigationViewPageProvider, PageService>();
 
             // Main window with navigation
             services.AddSingleton<INavigationWindow, MainWindow>();

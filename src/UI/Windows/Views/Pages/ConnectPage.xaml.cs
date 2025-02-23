@@ -1,31 +1,30 @@
 ﻿using OSDPBench.Core.ViewModels.Pages;
-using Wpf.Ui.Controls;
+using Wpf.Ui.Abstractions.Controls;
 
-namespace OSDPBench.Windows.Views.Pages
+namespace OSDPBench.Windows.Views.Pages;
+
+/// <summary>
+/// Interaction logic for ConnectPage.xaml
+/// </summary>
+public partial class ConnectPage : INavigableView<ConnectViewModel>
 {
-    /// <summary>
-    /// Interaction logic for ConnectPage.xaml
-    /// </summary>
-    public partial class ConnectPage : INavigableView<ConnectViewModel>
+    public ConnectPage(ConnectViewModel viewModel)
     {
-        public ConnectPage(ConnectViewModel viewModel)
+        ViewModel = viewModel;
+        DataContext = this;
+
+        InitializeComponent();
+
+        Loaded += async (_, _) =>
         {
-            ViewModel = viewModel;
-            DataContext = this;
-
-            InitializeComponent();
-
-            Loaded += async (_, _) =>
+            if (!ViewModel.AvailableSerialPorts.Any())
             {
-                if (!ViewModel.AvailableSerialPorts.Any())
-                {
-                    await ViewModel.ScanSerialPortsCommand.ExecuteAsync(null);
-                }
-            };
-        }
-
-        public ConnectViewModel ViewModel { get; }
-        
-        public IEnumerable<string> ConnectionTypes => ["Discover", "Manual"];
+                await ViewModel.ScanSerialPortsCommand.ExecuteAsync(null);
+            }
+        };
     }
+
+    public ConnectViewModel ViewModel { get; }
+        
+    public IEnumerable<string> ConnectionTypes => ["Discover", "Manual"];
 }
