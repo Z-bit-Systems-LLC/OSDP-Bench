@@ -49,14 +49,34 @@
                 TextAlignment="Center"
                 TextWrapping="Wrap"
                 Text="Device Information"/>
-            <TextBlock
-                FontSize="24"
-                Margin="20 10 20 0"
-                HorizontalAlignment="Center"
-                TextAlignment="Center"
-                TextWrapping="Wrap"
-                Text="{Binding Path=ViewModel.IdentityLookup.VendorName}"
-                d:Text="ABC Corporation"/>
+            <StackPanel Orientation="Horizontal"
+                        Margin="20 0 20 0"
+                        HorizontalAlignment="Center">
+                <TextBlock
+                    FontSize="24"
+                    TextAlignment="Left"
+                    TextWrapping="Wrap"
+                    Text="{Binding Path=ViewModel.IdentityLookup.VendorName}"
+                    d:Text="ABC Corporation"/>
+                <TextBlock
+                    FontSize="24"
+                    TextAlignment="Left"
+                    TextWrapping="Wrap"
+                    Text=" ("/>
+                <TextBlock
+                    FontSize="24"
+                    TextAlignment="Left"
+                    TextWrapping="Wrap">
+                    <Hyperlink Click="Hyperlink_OnClick">
+                        <Run Text="{Binding Path=ViewModel.IdentityLookup.VendorCode}"/>
+                    </Hyperlink>
+                </TextBlock>
+                <TextBlock
+                    FontSize="24"
+                    TextAlignment="Left"
+                    TextWrapping="Wrap"
+                    Text=")"/>
+            </StackPanel>
             <TextBlock
                 FontSize="20"
                 Margin="20 0 20 0"

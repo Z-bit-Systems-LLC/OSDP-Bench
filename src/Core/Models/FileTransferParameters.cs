@@ -52,11 +52,6 @@ public partial class FileTransferParameters : ObservableObject
         }
     }
 
-    partial void OnTotalBytesChanged(int value)
-    {
-        UpdateProgressPercentage();
-    }
-
     private void UpdateProgressPercentage()
     {
         if (TotalBytes <= 0)

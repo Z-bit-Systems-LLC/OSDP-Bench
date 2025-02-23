@@ -2,7 +2,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using OSDPBench.Core.ViewModels.Pages;
-using Wpf.Ui.Controls;
+using Wpf.Ui.Abstractions.Controls;
 using Button = Wpf.Ui.Controls.Button;
 
 namespace OSDPBench.Windows.Views.Pages;

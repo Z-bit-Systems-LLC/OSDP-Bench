@@ -81,6 +81,7 @@ public partial class IdentityLookup : ObservableObject
         
         VendorName = "Unknown Vendor";
         Model = "Unknown Model";
+        VendorCode = BitConverter.ToString(deviceIdentification.VendorCode.ToArray());
 
         var foundDevice = ((IEnumerable) _lookup).Cast<dynamic>().FirstOrDefault(device =>
             device.VendorCode.ToString() == BitConverter.ToString(deviceIdentification.VendorCode.ToArray()));
@@ -103,6 +104,8 @@ public partial class IdentityLookup : ObservableObject
         VersionNumber =
             $"{deviceIdentification.FirmwareMajor}.{deviceIdentification.FirmwareMinor}.{deviceIdentification.FirmwareBuild}";
     }
+
+    [ObservableProperty] private string _vendorCode = string.Empty;
 
     [ObservableProperty] private string _vendorName = string.Empty;
 
