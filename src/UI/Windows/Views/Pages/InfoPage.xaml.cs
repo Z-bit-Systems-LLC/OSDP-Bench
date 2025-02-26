@@ -58,4 +58,7 @@ public sealed partial class InfoPage : INavigableView<MainWindowViewModel>
     }
 
     public string CopyWriteNotice => $"\u00a9 {DateTime.Now.Year} Z-bit Systems, LLC";
+    
+    public bool IsDarkMode => 
+        Wpf.Ui.Appearance.ApplicationThemeManager.GetAppTheme() == Wpf.Ui.Appearance.ApplicationTheme.Dark;
 }
