@@ -16,13 +16,24 @@
                 <Setter Property="FontSize" Value="36"/>
                 <Setter Property="FontWeight" Value="Bold"/>
                 <Setter Property="HorizontalAlignment" Value="Left"/>
-                <Setter Property="Foreground" Value="LightGray"/>
+                <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}"/>
                 <Setter Property="Margin" Value="10 0 0 0"/>
             </Style>
             <Style TargetType="DataGridColumnHeader">
+                <Setter Property="Background" Value="{DynamicResource ControlFillColorDefaultBrush}"/>
+                <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource ControlElevationBorderBrush}"/>
+                <Setter Property="BorderThickness" Value="0,0,0,1"/>
+                <Setter Property="Padding" Value="8,4"/>
                 <Setter Property="FontWeight" Value="Bold"/>
-                <Setter Property="Background" Value="#F0F0F0"/> 
-                <Setter Property="Padding" Value="10"/>
+                <Style.Triggers>
+                    <Trigger Property="IsMouseOver" Value="True">
+                        <Setter Property="Background" Value="{DynamicResource ControlFillColorSecondaryBrush}"/>
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+            <Style TargetType="TextBlock">
+                <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}"/>
             </Style>
         </ResourceDictionary>
     </Application.Resources>

@@ -23,22 +23,37 @@
         </Grid.ColumnDefinitions>
         <StackPanel Grid.Column="0"
                     Grid.Row="0">
-            <ui:TextBlock Text="OSDP Bench" FontTypography="BodyStrong" />
-            <ui:TextBlock Text="{Binding AppVersion}" FontTypography="BodyStrong" />
-            <ui:TextBlock Text="{Binding CopyWriteNotice}" FontTypography="BodyStrong" />
+            <TextBlock Text="OSDP Bench" FontWeight="Bold" />
+            <TextBlock Text="{Binding AppVersion}" FontWeight="Bold"  />
+            <TextBlock Text="{Binding CopyWriteNotice}" FontWeight="Bold"  />
         </StackPanel>
-
+        
         <Image Grid.Column="1"
                Grid.Row="0" 
-               Source="../../Assets/logo.png" />
+               Source="../../Assets/logo.png">
+            <Image.Style>
+                <Style TargetType="Image">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsDarkMode}" Value="True">
+                            <Setter Property="Effect">
+                                <Setter.Value>
+                                    <pages:InvertEffect />
+                                </Setter.Value>
+                            </Setter>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Image.Style>
+        </Image>
 
         <StackPanel Grid.Column="0"
                     Grid.Row="2" 
                     Grid.ColumnSpan="2">
-            <ui:TextBlock Text="License Info"
+            <TextBlock Text="License Info"
                        HorizontalAlignment="Center"
                        Margin="0, 30, 0,10"
-                       FontTypography="Title" />
+                       FontWeight="DemiBold"
+                       FontSize="32"/>
             <ui:CardExpander>
                 <ui:CardExpander.Header>
                     <ui:TextBlock
