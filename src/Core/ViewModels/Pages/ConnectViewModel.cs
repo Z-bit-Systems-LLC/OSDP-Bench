@@ -30,9 +30,9 @@ public partial class ConnectViewModel : ObservableObject
         _deviceManagementService.NakReplyReceived += DeviceManagementServiceOnNakReplyReceived;
     }
 
-    private void DeviceManagementServiceOnConnectionStatusChange(object? sender, bool isConnected)
+    private void DeviceManagementServiceOnConnectionStatusChange(object? sender, ConnectionStatus connectionStatus)
     {
-        if (isConnected)
+        if (connectionStatus == ConnectionStatus.Connected)
         {
             StatusText = "Connected";
             NakText = string.Empty;
@@ -42,6 +42,11 @@ public partial class ConnectViewModel : ObservableObject
         {
             StatusText = "Attempting to connect";
             StatusLevel = StatusLevel.Connecting;
+        }
+        else if (connectionStatus == ConnectionStatus.InvalidSecurityKey)
+        {
+            StatusText = "Invalid security key";
+            StatusLevel = StatusLevel.Error;
         }
         else
         {

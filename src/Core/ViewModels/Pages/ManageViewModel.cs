@@ -164,9 +164,23 @@ public partial class ManageViewModel : ObservableObject
         ConnectedBaudRate = _deviceManagementService.BaudRate;
     }
 
-    private void DeviceManagementServiceOnConnectionStatusChange(object? sender, bool isOnline)
+    private void DeviceManagementServiceOnConnectionStatusChange(object? sender, ConnectionStatus connectionStatus)
     {
-        StatusLevel = isOnline ? StatusLevel.Connected : StatusLevel.Disconnected;
+        switch (connectionStatus)
+        {
+            case ConnectionStatus.Disconnected:
+                StatusLevel = StatusLevel.Disconnected;
+                break;
+            case ConnectionStatus.Connected:
+                StatusLevel = StatusLevel.Connected;
+                break;
+            case ConnectionStatus.InvalidSecurityKey:
+                StatusLevel = StatusLevel.Error;
+                break;
+            default:
+                StatusLevel = StatusLevel.Disconnected;
+                break;
+        }
     }
 
     [ObservableProperty] private string? _connectedPortName;

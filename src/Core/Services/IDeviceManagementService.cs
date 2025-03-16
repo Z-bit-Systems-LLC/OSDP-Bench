@@ -100,7 +100,7 @@ public interface IDeviceManagementService
     /// <summary>
     /// Represents a variable that tracks the connection status change event.
     /// </summary>
-    event EventHandler<bool> ConnectionStatusChange;
+    event EventHandler<ConnectionStatus> ConnectionStatusChange;
 
     /// <summary>
     /// Occurs when the device lookups (IdentityLookup or CapabilitiesLookup) change.
