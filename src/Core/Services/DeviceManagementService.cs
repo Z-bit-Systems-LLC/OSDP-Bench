@@ -23,6 +23,7 @@ public sealed class DeviceManagementService : IDeviceManagementService
     
     private Guid _connectionId;
     private bool _isDiscovering;
+    private bool _invalidSecurityKey;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DeviceManagementService"/> class.
@@ -55,11 +56,27 @@ public sealed class DeviceManagementService : IDeviceManagementService
 
                 OnDeviceLookupsChanged();
             }
+            
+            _invalidSecurityKey = false;
 
-            OnConnectionStatusChange(args.IsConnected);
+            OnConnectionStatusChange(args.IsConnected ? ConnectionStatus.Connected : ConnectionStatus.Disconnected);
         };
 
-        _panel.NakReplyReceived += (_, args) => { OnNakReplyReceived(ToFormattedText(args.Nak.ErrorCode)); };
+        _panel.NakReplyReceived += (_, args) =>
+        {
+            OnNakReplyReceived(ToFormattedText(args.Nak.ErrorCode));
+            if (args.Nak.ErrorCode == ErrorCode.CommunicationSecurityNotMet && !_invalidSecurityKey)
+            {
+                _invalidSecurityKey = true;
+                OnConnectionStatusChange(ConnectionStatus.InvalidSecurityKey);
+                Task.Run(async () =>
+                {
+                    IdentityLookup = new IdentityLookup(await _panel.IdReport(_connectionId, Address));
+
+                    OnDeviceLookupsChanged();
+                });
+            }
+        };
 
         _panel.RawCardDataReplyReceived += (_, args) =>
         {
@@ -225,21 +242,17 @@ public sealed class DeviceManagementService : IDeviceManagementService
     }
 
     /// <inheritdoc />
-    public event EventHandler<bool>? ConnectionStatusChange;
+    public event EventHandler<ConnectionStatus>? ConnectionStatusChange;
 
-    /// <summary>
-    /// Event handler for the connection status change.
-    /// </summary>
-    /// <param name="isConnected">A boolean value indicating if the connection status is connected or not.</param>
-    private void OnConnectionStatusChange(bool isConnected)
+    private void OnConnectionStatusChange(ConnectionStatus connectionStatus)
     {
         if (_synchronizationContext != null)
         {
-            _synchronizationContext.Post(_ => ConnectionStatusChange?.Invoke(this, isConnected), null);
+            _synchronizationContext.Post(_ => ConnectionStatusChange?.Invoke(this, connectionStatus), null);
         }
         else
         {
-            ConnectionStatusChange?.Invoke(this, isConnected);
+            ConnectionStatusChange?.Invoke(this, connectionStatus);
         }
     }
 

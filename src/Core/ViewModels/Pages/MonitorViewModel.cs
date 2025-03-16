@@ -26,11 +26,11 @@ public partial class MonitorViewModel : ObservableObject
         _deviceManagementService.TraceEntryReceived += OnDeviceManagementServiceOnTraceEntryReceived;
     }
 
-    private void OnDeviceManagementServiceOnConnectionStatusChange(object? _, bool isOnline)
+    private void OnDeviceManagementServiceOnConnectionStatusChange(object? _, ConnectionStatus connectionStatus)
     {
-        if (isOnline) InitializePollingMetrics();
+        if (connectionStatus == ConnectionStatus.Connected) InitializePollingMetrics();
         
-        StatusLevel = isOnline ? StatusLevel.Connected : StatusLevel.Disconnected;
+        StatusLevel = connectionStatus == ConnectionStatus.Connected ? StatusLevel.Connected : StatusLevel.Disconnected;
     }
 
     private void InitializePollingMetrics()
