@@ -47,7 +47,15 @@ public partial class MonitorViewModel : ObservableObject
         if (UsingSecureChannel) return;
         
         var build = new PacketTraceEntryBuilder();
-        var packetTraceEntry = build.FromTraceEntry(traceEntry, _lastPacketEntry).Build();
+        PacketTraceEntry packetTraceEntry;
+        try
+        {
+            packetTraceEntry = build.FromTraceEntry(traceEntry, _lastPacketEntry).Build();
+        }
+        catch (Exception)
+        {
+            return;
+        }
 
         bool notDisplaying = false;
         if (packetTraceEntry.Packet.CommandType == CommandType.Poll)
