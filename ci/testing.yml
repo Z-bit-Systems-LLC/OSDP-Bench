@@ -10,7 +10,7 @@
   inputs:
     command: 'test'
     projects: 'test/*Tests/*.csproj'
-    arguments: '--configuration $(buildConfiguration)' --collect:"XPlat Code Coverage"'
+    arguments: '--configuration $(buildConfiguration) --collect:"XPlat Code Coverage"'
 
 - task: reportgenerator@5
   displayName: 'Generate Code Coverage Report'
