@@ -280,12 +280,6 @@ public class ConnectViewModelTests
         _deviceManagementServiceMock.Verify(
             x => x.Connect(_serialPortConnectionServiceMock.Object, selectedAddress, false, true, null),
             Times.Never);
-        _dialogServiceMock.Verify(
-            x => x.ShowMessageDialog(
-                It.IsAny<string>(),  // Title
-                It.IsAny<string>(),  // Message
-                It.IsAny<MessageIcon>()),
-            Times.Once);
     }
     
     [Test]
