@@ -19,9 +19,10 @@
     targetdir: '$(Build.SourcesDirectory)/coveragereport'
     reporttypes: 'Cobertura;HtmlInline_AzurePipelines'
 
-- task: PublishCodeCoverageResults@1
+- task: PublishCodeCoverageResults@2
   displayName: 'Publish Code Coverage Results'
   inputs:
     codeCoverageTool: 'Cobertura'
     summaryFileLocation: '$(Build.SourcesDirectory)/coveragereport/Cobertura.xml'
     reportDirectory: '$(Build.SourcesDirectory)/coveragereport'
+    failIfCoverageEmpty: true  # Optional: Makes the build fail if no coverage data is found
