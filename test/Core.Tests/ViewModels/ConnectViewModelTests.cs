@@ -84,9 +84,9 @@ public class ConnectViewModelTests
         // Verify that the dialog service was called to show a message to the user
         _dialogServiceMock.Verify(
             x => x.ShowMessageDialog(
-                It.IsAny<string>(),  // Message content
                 It.IsAny<string>(),  // Title
-                It.IsAny<MessageIcon>()),  // Button options 
+                It.IsAny<string>(),  // Message
+                It.IsAny<MessageIcon>()),
             Times.Once);
         Assert.That(_viewModel.StatusLevel, Is.EqualTo(StatusLevel.NotReady));
     }
@@ -172,5 +172,74 @@ public class ConnectViewModelTests
                 It.IsAny<DiscoveryProgress>(),
                 It.IsAny<CancellationToken>()),
             Times.Never);
+    }
+
+    [Test]
+    public async Task ConnectViewModel_ExecuteConnectDeviceCommand()
+    {
+        // Arrange
+        string selectedPort = "COM1";
+        int selectedBaudRate = 9600;
+        byte selectedAddress = 1;
+        _serialPortConnectionServiceMock.Setup(x => x.GetConnection(selectedPort, selectedBaudRate))
+            .Returns(_serialPortConnectionServiceMock.Object);
+        
+        _viewModel.SelectedSerialPort = new AvailableSerialPort("COM1", selectedPort, "Description 1");
+        _viewModel.SelectedBaudRate = selectedBaudRate;
+        _viewModel.SelectedAddress = selectedAddress;
+
+        // Act
+        await _viewModel.ConnectDeviceCommand.ExecuteAsync(null);
+
+        // Assert
+        Assert.That(_viewModel.StatusLevel, Is.EqualTo(StatusLevel.ConnectingManually));
+        _serialPortConnectionServiceMock.Verify(
+            x => x.GetConnection(selectedPort, selectedBaudRate),
+            Times.Once);
+        _deviceManagementServiceMock.Verify(x => x.Shutdown(),
+            Times.Once);
+        _deviceManagementServiceMock.Verify(
+            x => x.Connect(_serialPortConnectionServiceMock.Object, selectedAddress, false, true, null),
+            Times.Once);
+        Assert.That(_viewModel.ConnectedAddress, Is.EqualTo(selectedAddress));
+        Assert.That(_viewModel.ConnectedBaudRate, Is.EqualTo(selectedBaudRate));
+    }
+    
+    [Test]
+    public async Task ConnectViewModel_ExecuteConnectDeviceCommand_InvalidSecurityKey()
+    {
+        // Arrange
+        string selectedPort = "COM1";
+        int selectedBaudRate = 9600;
+        byte selectedAddress = 1;
+        _serialPortConnectionServiceMock.Setup(x => x.GetConnection(selectedPort, selectedBaudRate))
+            .Returns(_serialPortConnectionServiceMock.Object);
+        
+        _viewModel.SelectedSerialPort = new AvailableSerialPort("COM1", selectedPort, "Description 1");
+        _viewModel.SelectedBaudRate = selectedBaudRate;
+        _viewModel.SelectedAddress = selectedAddress;
+        _viewModel.SecurityKey = "1234556";
+        _viewModel.UseSecureChannel = true;
+        _viewModel.UseDefaultKey = false;
+
+        // Act
+        await _viewModel.ConnectDeviceCommand.ExecuteAsync(null);
+
+        // Assert
+        Assert.That(_viewModel.StatusLevel, Is.EqualTo(StatusLevel.ConnectingManually));
+        _serialPortConnectionServiceMock.Verify(
+            x => x.GetConnection(selectedPort, selectedBaudRate),
+            Times.Never);
+        _deviceManagementServiceMock.Verify(x => x.Shutdown(),
+            Times.Never);
+        _deviceManagementServiceMock.Verify(
+            x => x.Connect(_serialPortConnectionServiceMock.Object, selectedAddress, false, true, null),
+            Times.Never);
+        _dialogServiceMock.Verify(
+            x => x.ShowMessageDialog(
+                It.IsAny<string>(),  // Title
+                It.IsAny<string>(),  // Message
+                It.IsAny<MessageIcon>()),
+            Times.Once);
     }
 }
