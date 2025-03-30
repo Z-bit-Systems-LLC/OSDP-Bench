@@ -20,6 +20,8 @@ public sealed class DeviceManagementService : IDeviceManagementService
     private readonly ControlPanel _panel = new();
     private readonly SynchronizationContext? _synchronizationContext;
     private readonly TimeSpan _defaultPollInterval = TimeSpan.FromMilliseconds(20);
+    private readonly TimeSpan _defaultShutdownTimeout = TimeSpan.FromSeconds(5);
+    private readonly TimeSpan _defaultResponseTimeout = TimeSpan.FromSeconds(1);
     
     private Guid _connectionId;
     private bool _isDiscovering;
@@ -46,7 +48,7 @@ public sealed class DeviceManagementService : IDeviceManagementService
                     CapabilitiesLookup =
                         new CapabilitiesLookup(await _panel.DeviceCapabilities(_connectionId, Address));
 
-                    OnDeviceLookupsChanged();
+                    RaiseEvent(DeviceLookupsChanged);
                 });
             }
             else
@@ -54,35 +56,35 @@ public sealed class DeviceManagementService : IDeviceManagementService
                 IdentityLookup = null;
                 CapabilitiesLookup = null;
 
-                OnDeviceLookupsChanged();
+                RaiseEvent(DeviceLookupsChanged);
             }
             
             _invalidSecurityKey = false;
 
-            OnConnectionStatusChange(args.IsConnected ? ConnectionStatus.Connected : ConnectionStatus.Disconnected);
+            RaiseEvent(ConnectionStatusChange, args.IsConnected ? ConnectionStatus.Connected : ConnectionStatus.Disconnected);
         };
 
         _panel.NakReplyReceived += (_, args) =>
         {
-            OnNakReplyReceived(ToFormattedText(args.Nak.ErrorCode));
+            RaiseEvent(NakReplyReceived, ToFormattedText(args.Nak.ErrorCode));
             if (args.Nak.ErrorCode == ErrorCode.CommunicationSecurityNotMet && !_invalidSecurityKey)
             {
                 _invalidSecurityKey = true;
-                OnConnectionStatusChange(ConnectionStatus.InvalidSecurityKey);
+                RaiseEvent(ConnectionStatusChange, ConnectionStatus.InvalidSecurityKey);
                 Task.Run(async () =>
                 {
                     IdentityLookup = new IdentityLookup(await _panel.IdReport(_connectionId, Address));
 
-                    OnDeviceLookupsChanged();
+                    RaiseEvent(DeviceLookupsChanged);
                 });
             }
         };
 
         _panel.RawCardDataReplyReceived += (_, args) =>
         {
-            OnCardReadReceived(FormatData(args.RawCardData.Data));
+            RaiseEvent(CardReadReceived, FormatData(args.RawCardData.Data));
         };
-        _panel.KeypadReplyReceived += (_, args) => OnKeypadReadReceived(args.KeypadData.Data);
+        _panel.KeypadReplyReceived += (_, args) => RaiseEvent(KeypadReadReceived, FormatKeypadData(args.KeypadData.Data));
     }
 
     /// <inheritdoc />
@@ -126,7 +128,7 @@ public sealed class DeviceManagementService : IDeviceManagementService
     
     private void Tracer(TraceEntry traceEntry)
     {
-        OnTraceEntryReceived(traceEntry);
+        RaiseEvent(TraceEntryReceived, traceEntry);
     }
 
     /// <inheritdoc />
@@ -135,7 +137,7 @@ public sealed class DeviceManagementService : IDeviceManagementService
     {
         IdentityLookup = null;
         CapabilitiesLookup = null;
-        OnDeviceLookupsChanged();
+        RaiseEvent(DeviceLookupsChanged);
 
         await Shutdown();
 
@@ -163,7 +165,7 @@ public sealed class DeviceManagementService : IDeviceManagementService
         CapabilitiesLookup = new CapabilitiesLookup(results.Capabilities);
         UsesDefaultSecurityKey = results.UsesDefaultSecurityKey;
 
-        OnDeviceLookupsChanged();
+        RaiseEvent(DeviceLookupsChanged);
 
         _connectionId = _panel.StartConnection(results.Connection, _defaultPollInterval, Tracer);
         _panel.AddDevice(_connectionId, Address, CapabilitiesLookup.CRC, false);
@@ -177,7 +179,7 @@ public sealed class DeviceManagementService : IDeviceManagementService
         var options = new DiscoveryOptions
         {
             ProgressCallback = progress,
-            ResponseTimeout = TimeSpan.FromSeconds(1),
+            ResponseTimeout = _defaultResponseTimeout,
             CancellationToken = cancellationToken
         };
 
@@ -221,15 +223,21 @@ public sealed class DeviceManagementService : IDeviceManagementService
         {
             await WaitUntilDeviceIsOffline();
         }
-        catch
+        catch (TimeoutException ex)
         {
-            // ignored
+            // Log or handle the timeout exception
+            Console.WriteLine($"Warning: {ex.Message}");
+        }
+        catch (Exception ex)
+        {
+            // Log unexpected exceptions during shutdown
+            Console.WriteLine($"Error during device shutdown: {ex.Message}");
         }
     }
     
     private async Task WaitUntilDeviceIsOffline()
     {
-        using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(5)); // Timeout handling
+        using var cts = new CancellationTokenSource(_defaultShutdownTimeout);
         while (_panel.IsOnline(_connectionId, Address))
         {
             if (cts.Token.IsCancellationRequested)
@@ -246,119 +254,84 @@ public sealed class DeviceManagementService : IDeviceManagementService
     /// <inheritdoc />
     public event EventHandler<ConnectionStatus>? ConnectionStatusChange;
 
-    private void OnConnectionStatusChange(ConnectionStatus connectionStatus)
-    {
-        if (_synchronizationContext != null)
-        {
-            _synchronizationContext.Post(_ => ConnectionStatusChange?.Invoke(this, connectionStatus), null);
-        }
-        else
-        {
-            ConnectionStatusChange?.Invoke(this, connectionStatus);
-        }
-    }
-
     /// <inheritdoc />
     public event EventHandler? DeviceLookupsChanged;
-
-    /// <summary>
-    /// Raises the <see cref="DeviceLookupsChanged"/> event.
-    /// </summary>
-    private void OnDeviceLookupsChanged()
-    {
-        if (_synchronizationContext != null)
-        {
-            _synchronizationContext.Post(_ => DeviceLookupsChanged?.Invoke(this, EventArgs.Empty), null);
-        }
-        else
-        {
-            DeviceLookupsChanged?.Invoke(this, EventArgs.Empty);
-        }
-    }
 
     /// <inheritdoc />
     public event EventHandler<string>? NakReplyReceived;
 
-    /// <summary>
-    /// Event handler for Nak reply received.
-    /// </summary>
-    /// <param name="errorMessage">The error message.</param>
-    private void OnNakReplyReceived(string errorMessage)
-    {
-        if (_synchronizationContext != null)
-        {
-            _synchronizationContext.Post(_ => NakReplyReceived?.Invoke(this, errorMessage), null);
-        }
-        else
-        {
-            NakReplyReceived?.Invoke(this, errorMessage);
-        }
-    }
-
     /// <inheritdoc />
     public event EventHandler<string>? CardReadReceived;
 
-    /// <summary>
-    /// Raises the CardReadReceived event when card data is received.
-    /// </summary>
-    /// <param name="data">The card data received.</param>
-    private void OnCardReadReceived(string data)
-    {
-        if (_synchronizationContext != null)
-        {
-            _synchronizationContext.Post(_ => CardReadReceived?.Invoke(this, data), null);
-        }
-        else
-        {
-            CardReadReceived?.Invoke(this, data);
-        }
-    }
-
     /// <inheritdoc />
     public event EventHandler<string>? KeypadReadReceived;
-
-    private void OnKeypadReadReceived(byte[] data)
-    {
-        string keypadData = string.Empty;
-        foreach (var keypadByte in data)
-        {
-            if (keypadByte == 0x7F)
-            {
-                keypadData += "*";
-            }
-            else if (keypadByte == 0x0D)
-            {
-                keypadData += "#";
-            }
-            else
-            {
-                keypadData += char.ConvertFromUtf32(keypadByte);
-            }
-        }
-        
-        if (_synchronizationContext != null)
-        {
-            _synchronizationContext.Post(_ => KeypadReadReceived?.Invoke(this, keypadData), null);
-        }
-        else
-        {
-            KeypadReadReceived?.Invoke(this, keypadData);
-        }
-    }
     
     /// <inheritdoc />
     public event EventHandler<TraceEntry>? TraceEntryReceived;
 
-    private void OnTraceEntryReceived(TraceEntry traceEntry)
+    /// <summary>
+    /// Helper method to raise events with proper synchronization context handling
+    /// </summary>
+    /// <param name="eventHandler">The event handler to raise</param>
+    private void RaiseEvent(EventHandler? eventHandler)
     {
+        if (eventHandler == null) return;
+        
         if (_synchronizationContext != null)
         {
-            _synchronizationContext.Post(_ => TraceEntryReceived?.Invoke(this, traceEntry), null);
+            _synchronizationContext.Post(_ => eventHandler.Invoke(this, EventArgs.Empty), null);
         }
         else
         {
-            TraceEntryReceived?.Invoke(this, traceEntry);
+            eventHandler.Invoke(this, EventArgs.Empty);
         }
+    }
+    
+    /// <summary>
+    /// Helper method to raise events with proper synchronization context handling
+    /// </summary>
+    /// <typeparam name="T">The type of event argument</typeparam>
+    /// <param name="eventHandler">The event handler to raise</param>
+    /// <param name="arg">The event argument</param>
+    private void RaiseEvent<T>(EventHandler<T>? eventHandler, T arg)
+    {
+        if (eventHandler == null) return;
+        
+        if (_synchronizationContext != null)
+        {
+            _synchronizationContext.Post(_ => eventHandler.Invoke(this, arg), null);
+        }
+        else
+        {
+            eventHandler.Invoke(this, arg);
+        }
+    }
+    
+    /// <summary>
+    /// Format keypad data from byte array to string representation
+    /// </summary>
+    /// <param name="data">Keypad data as byte array</param>
+    /// <returns>Formatted keypad string</returns>
+    private static string FormatKeypadData(byte[] data)
+    {
+        var keypadData = new StringBuilder();
+        foreach (var keypadByte in data)
+        {
+            if (keypadByte == 0x7F)
+            {
+                keypadData.Append("*");
+            }
+            else if (keypadByte == 0x0D)
+            {
+                keypadData.Append("#");
+            }
+            else
+            {
+                keypadData.Append(char.ConvertFromUtf32(keypadByte));
+            }
+        }
+        
+        return keypadData.ToString();
     }
 
     private static string FormatData(BitArray bitArray)
