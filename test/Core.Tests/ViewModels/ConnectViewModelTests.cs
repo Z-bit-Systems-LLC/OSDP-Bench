@@ -50,6 +50,7 @@ public class ConnectViewModelTests
     public async Task ConnectViewModel_ExecuteScanSerialPortsCommand()
     {
         // Arrange
+        _viewModel.StatusLevel = StatusLevel.Ready;
         var expectedAvailableSerialPorts = new[]
         {
             new AvailableSerialPort("id1", "test1", "desc1"),
@@ -71,6 +72,7 @@ public class ConnectViewModelTests
     public async Task ConnectViewModel_ExecuteScanSerialPortsCommand_NoPortsFound()
     {
         // Arrange
+        _viewModel.StatusLevel = StatusLevel.Ready;
         _serialPortConnectionServiceMock.Setup(x => x.FindAvailableSerialPorts())
             .ReturnsAsync(Array.Empty<AvailableSerialPort>());
 
@@ -86,9 +88,35 @@ public class ConnectViewModelTests
             x => x.ShowMessageDialog(
                 It.IsAny<string>(),  // Title
                 It.IsAny<string>(),  // Message
-                It.IsAny<MessageIcon>()),
+                MessageIcon.Error),
             Times.Once);
         Assert.That(_viewModel.StatusLevel, Is.EqualTo(StatusLevel.NotReady));
+    }
+    
+    [Test]
+    public async Task ConnectViewModel_ExecuteScanSerialPortsCommand_AlreadyConnected()
+    {
+        // Arrange
+        _viewModel.StatusLevel = StatusLevel.Connected;
+        var expectedAvailableSerialPorts = new[]
+        {
+            new AvailableSerialPort("id1", "test1", "desc1"),
+            new AvailableSerialPort("id2", "test2", "desc2")
+        };
+        _serialPortConnectionServiceMock.Setup(expression => expression.FindAvailableSerialPorts())
+            .ReturnsAsync(expectedAvailableSerialPorts);
+        _dialogServiceMock.Setup(expression => expression.ShowConfirmationDialog(
+            It.IsAny<string>(), // Message
+            It.IsAny<string>(), // Message
+            MessageIcon.Warning)).ReturnsAsync(true);
+
+        // Act
+        await _viewModel.ScanSerialPortsCommand.ExecuteAsync(null);
+
+        // Assert
+        Assert.That(expectedAvailableSerialPorts.Length, Is.EqualTo(_viewModel.AvailableSerialPorts.Count));
+        Assert.That(expectedAvailableSerialPorts, Is.EqualTo(_viewModel.AvailableSerialPorts));
+        Assert.That(_viewModel.StatusLevel, Is.EqualTo(StatusLevel.Ready));
     }
     
     [Test]

@@ -11,7 +11,7 @@ public partial class ConnectViewModel : ObservableObject
 {
     private readonly IDialogService _dialogService;
     private readonly IDeviceManagementService _deviceManagementService;
-    private ISerialPortConnectionService? _serialPortConnectionService;
+    private ISerialPortConnectionService _serialPortConnectionService;
 
     /// <summary>
     /// ViewModel for the Connect page.
@@ -107,7 +107,6 @@ public partial class ConnectViewModel : ObservableObject
         AvailableSerialPorts.Clear();
 
         var serialPortConnectionService = _serialPortConnectionService;
-        if (serialPortConnectionService == null) return;
 
         var foundAvailableSerialPorts = await serialPortConnectionService.FindAvailableSerialPorts();
 
@@ -135,7 +134,6 @@ public partial class ConnectViewModel : ObservableObject
     private async Task DiscoverDevice(CancellationToken token)
     {
         var serialPortConnectionService = _serialPortConnectionService;
-        if (serialPortConnectionService == null) return;
 
         string serialPortName = SelectedSerialPort?.Name ?? string.Empty;
         if (string.IsNullOrWhiteSpace(serialPortName)) return;
@@ -173,7 +171,7 @@ public partial class ConnectViewModel : ObservableObject
                     StatusText =
                         $"Successfully discovered device {current.Connection.BaudRate} with address {current.Address}";
                     StatusLevel = StatusLevel.Discovered;
-                    _serialPortConnectionService = current.Connection as ISerialPortConnectionService;
+                    if (current.Connection is ISerialPortConnectionService service) _serialPortConnectionService = service;
                     ConnectedAddress = current.Address;
                     ConnectedBaudRate = current.Connection.BaudRate;
                     break;
@@ -225,7 +223,6 @@ public partial class ConnectViewModel : ObservableObject
     private async Task ConnectDevice()
     {
         var serialPortConnectionService = _serialPortConnectionService;
-        if (serialPortConnectionService == null) return;
 
         string serialPortName = SelectedSerialPort?.Name ?? string.Empty;
         if (string.IsNullOrWhiteSpace(serialPortName)) return;
