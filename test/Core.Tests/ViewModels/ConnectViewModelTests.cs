@@ -120,6 +120,30 @@ public class ConnectViewModelTests
     }
     
     [Test]
+    public async Task ConnectViewModel_ExecuteScanSerialPortsCommand_CancelAlreadyConnected()
+    {
+        // Arrange
+        _viewModel.StatusLevel = StatusLevel.Connected;
+        var expectedAvailableSerialPorts = new[]
+        {
+            new AvailableSerialPort("id1", "test1", "desc1"),
+            new AvailableSerialPort("id2", "test2", "desc2")
+        };
+        _serialPortConnectionServiceMock.Setup(expression => expression.FindAvailableSerialPorts())
+            .ReturnsAsync(expectedAvailableSerialPorts);
+        _dialogServiceMock.Setup(expression => expression.ShowConfirmationDialog(
+            It.IsAny<string>(), // Message
+            It.IsAny<string>(), // Message
+            MessageIcon.Warning)).ReturnsAsync(false);
+
+        // Act
+        await _viewModel.ScanSerialPortsCommand.ExecuteAsync(null);
+
+        // Assert
+        Assert.That(_viewModel.StatusLevel, Is.EqualTo(StatusLevel.Connected));
+    }
+    
+    [Test]
     public async Task ConnectViewModel_ExecuteDiscoverDeviceCommand()
     {
         // Arrange
@@ -231,6 +255,37 @@ public class ConnectViewModelTests
             Times.Once);
         Assert.That(_viewModel.ConnectedAddress, Is.EqualTo(selectedAddress));
         Assert.That(_viewModel.ConnectedBaudRate, Is.EqualTo(selectedBaudRate));
+    }
+    
+    [Test]
+    public async Task ConnectViewModel_ExecuteConnectDeviceCommand_NoSerialPortSelected()
+    {
+        // Arrange
+        int selectedBaudRate = 9600;
+        byte selectedAddress = 1;
+        
+        _viewModel.SelectedSerialPort = null;
+        _viewModel.SelectedBaudRate = selectedBaudRate;
+        _viewModel.SelectedAddress = selectedAddress;
+        _viewModel.SecurityKey = "1234556";
+        _viewModel.UseSecureChannel = true;
+        _viewModel.UseDefaultKey = false;
+
+        // Act
+        await _viewModel.ConnectDeviceCommand.ExecuteAsync(null);
+
+        // Assert
+        _deviceManagementServiceMock.Verify(x => x.Shutdown(),
+            Times.Never);
+        _deviceManagementServiceMock.Verify(
+            x => x.Connect(_serialPortConnectionServiceMock.Object, selectedAddress, false, true, null),
+            Times.Never);
+        _dialogServiceMock.Verify(
+            x => x.ShowMessageDialog(
+                It.IsAny<string>(),  // Title
+                It.IsAny<string>(),  // Message
+                It.IsAny<MessageIcon>()),
+            Times.Once);
     }
     
     [Test]
