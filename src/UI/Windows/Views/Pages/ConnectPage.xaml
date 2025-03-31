@@ -152,13 +152,15 @@
                                 <ComboBox Name="BaudRateComboBox"
 										  Margin="0 0 20 0"
                                           ItemsSource="{Binding ViewModel.AvailableBaudRates}"
-                                          SelectedItem="{Binding ViewModel.SelectedBaudRate}"/>
+                                          SelectedItem="{Binding  Path=ViewModel.SelectedBaudRate, Mode=TwoWay}"/>
                             </StackPanel>
                             <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Vertical">
                                 <Label Content="Address"
 										   Target="{Binding ElementName=AddressNumberBox}" />
                                 <ui:NumberBox Name="AddressNumberBox"
-											  Value="{Binding ViewModel.SelectedAddress}"
+											  Value="{Binding Path=ViewModel.SelectedAddress, Mode=TwoWay}"
+											  TextChanged="AddressNumberBox_OnTextChanged"
+											  ValueChanged="AddressNumberBox_OnValueChanged"
 											  Margin="0 0 20 0"
                                               Minimum="0"
 											  Maximum="127"
@@ -171,19 +173,19 @@
 	                            <StackPanel Orientation="Horizontal">
 		                            <CheckBox Name="UseSecureChannelCheckBox"
 		                                      Content="Use Secure Channel" 
-		                                      IsChecked="{Binding ViewModel.UseSecureChannel}"/>
+		                                      IsChecked="{Binding Path=ViewModel.UseSecureChannel,  Mode=TwoWay}"/>
 		                            
 		                            <CheckBox Name="UseDefaultKeyCheckBox"
 		                                      Content="Use Default Key" 
 		                                      Margin="10,0,0,0"
 		                                      IsEnabled="{Binding ElementName=UseSecureChannelCheckBox, Path=IsChecked}"
-		                                      IsChecked="{Binding ViewModel.UseDefaultKey}"/>
+		                                      IsChecked="{Binding  Path=ViewModel.UseDefaultKey,  Mode=TwoWay}"/>
 	                            </StackPanel>
 	                           
 	                            <StackPanel Orientation="Vertical">
 		                            <Label Content="Security Key"
 		                                   Target="{Binding ElementName=AddressNumberBox}" />
-                                    <TextBox Text="{Binding ViewModel.SecurityKey}">
+                                    <TextBox Text="{Binding Path=ViewModel.SecurityKey,  Mode=TwoWay}">
                                         <TextBox.Style>
                                             <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
                                                 <!-- Only add the specific triggers needed -->

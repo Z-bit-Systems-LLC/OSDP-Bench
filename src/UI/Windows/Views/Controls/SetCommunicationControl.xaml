@@ -20,13 +20,15 @@
             <ComboBox Name="BaudRateComboBox"
                       Margin="0 0 20 0"
                       ItemsSource="{Binding AvailableBaudRates}"
-                      SelectedItem="{Binding SelectedBaudRate}"/>
+                      SelectedItem="{Binding SelectedBaudRate, Mode=TwoWay}"/>
         </StackPanel>
         <StackPanel Grid.Column="1" Orientation="Vertical">
             <Label Content="Address"
                    Target="{Binding ElementName=BaudRateComboBox}" />
             <ui:NumberBox Name="AddressNumberBox"
-                          Value="{Binding SelectedAddress}"
+                          TextChanged="AddressNumberBox_OnTextChanged"
+                          ValueChanged="AddressNumberBox_OnValueChanged"
+                          Value="{Binding SelectedAddress, Mode=TwoWay}"
                           Margin="0 0 20 0"
                           Minimum="0"
                           Maximum="127"

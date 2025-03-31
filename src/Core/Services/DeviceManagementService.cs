@@ -239,6 +239,8 @@ public sealed class DeviceManagementService : IDeviceManagementService
 
             await Task.Delay(TimeSpan.FromMilliseconds(100), cts.Token);
         }
+        
+        await Task.Delay(TimeSpan.FromSeconds(1), cts.Token);
     }
 
     /// <inheritdoc />
