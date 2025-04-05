@@ -35,25 +35,16 @@ jobs:
       vmImage: 'windows-latest'
     steps:
       - template: ci/testing.yml
-  
-  # Add a new job for version bumping when develop is merged to main
+
   - job: version_bump
     condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
     pool:
       vmImage: 'windows-latest'
+    dependsOn:
+      testing
     steps:
       - checkout: self
         persistCredentials: true
-
-      - powershell: |
-          # Check if this is a merge from develop to main
-          $commitMessage = git log --format=%B -n 1 $(Build.SourceVersion)
-          if ($commitMessage -match "Merge.*develop") {
-            Write-Host "##vso[task.setvariable variable=IsMergeFromDevelop]true"
-          } else {
-            Write-Host "##vso[task.setvariable variable=IsMergeFromDevelop]false"
-          }
-        displayName: 'Check if merge from develop'
 
       - powershell: |
           # Find version file (could be Directory.Build.props, .csproj, or AssemblyInfo.cs)
@@ -70,7 +61,7 @@ jobs:
           
           # Read current version
           $fileContent = Get-Content $versionFile -Raw
-          if ($fileContent -match '<Version>(.*?)</Version>') {
+          if ($fileContent -match '<Version>(.*?)</AssemblyVersion>') {
             $currentVersion = $matches[1]
             Write-Host "Current version: $currentVersion"
           
@@ -95,7 +86,8 @@ jobs:
             Write-Host "New version: $newVersion"
           
             # Update version in file
-            $fileContent = $fileContent -replace '<Version>(.*?)</Version>', "<Version>$newVersion</Version>"
+            $fileContent = $fileContent -replace '<AssemblyVersion>(.*?)</AssemblyVersion>', "<AssemblyVersion>$newVersion</AssemblyVersion>"
+            $fileContent = $fileContent -replace '<FileVersion>(.*?)</FileVersion>', "<FileVersion>$newVersion</FileVersion>"
             Set-Content -Path $versionFile -Value $fileContent
           
             # Set version number as build variable
@@ -123,7 +115,6 @@ jobs:
             Write-Host "##vso[task.logissue type=warning]No version tag found in $versionFile"
           }
         displayName: 'Bump patch version'
-        condition: eq(variables['IsMergeFromDevelop'], 'true')
         env:
           SYSTEM_ACCESSTOKEN: $(System.AccessToken)
           
