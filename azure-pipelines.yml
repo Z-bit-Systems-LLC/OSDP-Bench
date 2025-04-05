@@ -15,7 +15,6 @@ variables:
   outputDirectory: '$(build.binariesDirectory)/$(buildConfiguration)'
   buildPlatform: 'x64|ARM64'
   appxPackageDir: '$(build.artifactStagingDirectory)\AppxPackages\\'
-  IsMergeFromDevelop: $[eq(variables['Build.SourceBranch'], 'refs/heads/main')]
 
 jobs:
 #- job: android_build
@@ -61,7 +60,7 @@ jobs:
           
           # Read current version
           $fileContent = Get-Content $versionFile -Raw
-          if ($fileContent -match '<Version>(.*?)</AssemblyVersion>') {
+          if ($fileContent -match '<AssemblyVersion>(.*?)</AssemblyVersion>') {
             $currentVersion = $matches[1]
             Write-Host "Current version: $currentVersion"
           
