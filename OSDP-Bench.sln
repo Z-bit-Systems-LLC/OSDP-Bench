@@ -8,6 +8,9 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UI", "UI", "{6AF5FFEF-AFBA-4BB8-A14F-FDE4AEEC19AB}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Settings", "Settings", "{8FB5794C-299E-4B9E-8D0D-6BFC695DA91B}"
+	ProjectSection(SolutionItems) = preProject
+		Directory.Build.props = Directory.Build.props
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ci", "ci", "{5D426D86-43BB-4D6D-A6BF-0ACC65A19C92}"
 	ProjectSection(SolutionItems) = preProject
