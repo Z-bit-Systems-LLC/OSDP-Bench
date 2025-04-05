@@ -15,6 +15,7 @@ variables:
   outputDirectory: '$(build.binariesDirectory)/$(buildConfiguration)'
   buildPlatform: 'x64|ARM64'
   appxPackageDir: '$(build.artifactStagingDirectory)\AppxPackages\\'
+  IsMergeFromDevelop: $[eq(variables['Build.SourceBranch'], 'refs/heads/main')]
 
 jobs:
 #- job: android_build
@@ -28,77 +29,109 @@ jobs:
 #    vmImage: 'windows-latest'
 #  steps:
 #    - template: ci/winui-build.yml
-      
-- job: testing
-  pool:
-    vmImage: 'windows-latest'
-  steps:
-    - template: ci/testing.yml
-      
-    - powershell: |
-        # Find version file (could be Directory.Build.props, .csproj, or AssemblyInfo.cs)
-        # This example assumes Directory.Build.props
-        $versionFile = "Directory.Build.props"
-        
-        if (Test-Path $versionFile) {
-          Write-Host "Using $versionFile for version"
-        } else {
-          # Try to find the main project file
-          $versionFile = Get-ChildItem -Path . -Filter "*.csproj" -Recurse | Select-Object -First 1 -ExpandProperty FullName
-          Write-Host "Using $versionFile for version"
-        }
-        
-        # Read current version
-        $fileContent = Get-Content $versionFile -Raw
-        if ($fileContent -match '<Version>(.*?)</Version>') {
-          $currentVersion = $matches[1]
-          Write-Host "Current version: $currentVersion"
-        
-          # Parse version components
-          $versionParts = $currentVersion.Split('.')
-          $major = $versionParts[0]
-          $minor = $versionParts[1]
-          $patch = [int]$versionParts[2]
-        
-          # Increment patch number instead of build number
-          $patch++
-        
-          # Keep build number if it exists, otherwise just use major.minor.patch
-          if ($versionParts.Length -gt 3) {
-            $build = $versionParts[3]
-            $newVersion = "$major.$minor.$patch.$build"
+
+  - job: testing
+    pool:
+      vmImage: 'windows-latest'
+    steps:
+      - template: ci/testing.yml
+  
+  # Add a new job for version bumping when develop is merged to main
+  - job: version_bump
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
+    pool:
+      vmImage: 'windows-latest'
+    steps:
+      - checkout: self
+        persistCredentials: true
+
+      - powershell: |
+          # Check if this is a merge from develop to main
+          $commitMessage = git log --format=%B -n 1 $(Build.SourceVersion)
+          if ($commitMessage -match "Merge.*develop") {
+            Write-Host "##vso[task.setvariable variable=IsMergeFromDevelop]true"
           } else {
-            $newVersion = "$major.$minor.$patch"
+            Write-Host "##vso[task.setvariable variable=IsMergeFromDevelop]false"
           }
-        
-          Write-Host "New version: $newVersion"
-        
-          # Update version in file
-          $fileContent = $fileContent -replace '<Version>(.*?)</Version>', "<Version>$newVersion</Version>"
-          Set-Content -Path $versionFile -Value $fileContent
-        
-          # Configure git
-          git config user.email "azuredevops@z-bitco.com"
-          git config user.name "Azure DevOps Pipeline"
-        
-          # Commit and push changes
-          git add $versionFile
-          git commit -m "Bump version to $newVersion [skip ci]"
-        
-          # Set remote url with credentials
-          $accessToken = "$(System.AccessToken)"
-          $repoUrl = "$(Build.Repository.Uri)"
-        
-          # Remove the 'https://' prefix and add the PAT
-          $repoUrl = $repoUrl -replace "https://", "https://`:$accessToken@"
-        
-          git push $repoUrl HEAD:main
-        
-          Write-Host "Version bumped to $newVersion"
-        } else {
-          Write-Host "##vso[task.logissue type=warning]No version tag found in $versionFile"
-        }
-      displayName: 'Bump patch version'
-      condition: eq(variables['IsMergeFromDevelop'], 'true')
-      env:
-        SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+        displayName: 'Check if merge from develop'
+
+      - powershell: |
+          # Find version file (could be Directory.Build.props, .csproj, or AssemblyInfo.cs)
+          # This example assumes Directory.Build.props
+          $versionFile = "Directory.Build.props"
+          
+          if (Test-Path $versionFile) {
+            Write-Host "Using $versionFile for version"
+          } else {
+            # Try to find the main project file
+            $versionFile = Get-ChildItem -Path . -Filter "*.csproj" -Recurse | Select-Object -First 1 -ExpandProperty FullName
+            Write-Host "Using $versionFile for version"
+          }
+          
+          # Read current version
+          $fileContent = Get-Content $versionFile -Raw
+          if ($fileContent -match '<Version>(.*?)</Version>') {
+            $currentVersion = $matches[1]
+            Write-Host "Current version: $currentVersion"
+          
+            # Parse version components
+            $versionParts = $currentVersion.Split('.')
+            $major = $versionParts[0]
+            $minor = $versionParts[1]
+            $patch = [int]$versionParts[2]
+            $build = $versionParts[3]
+          
+            # Increment patch number instead of build number
+            $patch++
+          
+            # Keep build number if it exists, otherwise just use major.minor.patch
+            if ($versionParts.Length -gt 3) {
+              $build = $versionParts[3]
+              $newVersion = "$major.$minor.$patch.$build"
+            } else {
+              $newVersion = "$major.$minor.$patch"
+            }
+          
+            Write-Host "New version: $newVersion"
+          
+            # Update version in file
+            $fileContent = $fileContent -replace '<Version>(.*?)</Version>', "<Version>$newVersion</Version>"
+            Set-Content -Path $versionFile -Value $fileContent
+          
+            # Set version number as build variable
+            Write-Host "##vso[task.setvariable variable=BuildVersion]$newVersion"
+          
+            # Configure git
+            git config user.email "azuredevops@z-bitco.com"
+            git config user.name "Azure DevOps Pipeline"
+          
+            # Commit and push changes
+            git add $versionFile
+            git commit -m "Bump version to $newVersion [skip ci]"
+          
+            # Set remote url with credentials
+            $accessToken = "$(System.AccessToken)"
+            $repoUrl = "$(Build.Repository.Uri)"
+          
+            # Remove the 'https://' prefix and add the PAT
+            $repoUrl = $repoUrl -replace "https://", "https://`:$accessToken@"
+          
+            git push $repoUrl HEAD:main
+          
+            Write-Host "Version bumped to $newVersion"
+          } else {
+            Write-Host "##vso[task.logissue type=warning]No version tag found in $versionFile"
+          }
+        displayName: 'Bump patch version'
+        condition: eq(variables['IsMergeFromDevelop'], 'true')
+        env:
+          SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+          
+      # Update build number with the version we just set
+      - powershell: |
+          # Set the build number to the version
+          if ("$(BuildVersion)" -ne "") {
+            Write-Host "##vso[build.updatebuildnumber]$(BuildVersion)"
+          }
+        displayName: 'Update build number'
+        condition: and(succeeded(), ne(variables['BuildVersion'], ''))
