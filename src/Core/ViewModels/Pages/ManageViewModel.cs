@@ -2,6 +2,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using OSDP.Net.Connections;
+using OSDP.Net.Tracing;
 using OSDPBench.Core.Actions;
 using OSDPBench.Core.Models;
 using OSDPBench.Core.Services;
@@ -19,6 +20,8 @@ public partial class ManageViewModel : ObservableObject
 {
     private readonly IDialogService _dialogService;
     private readonly IDeviceManagementService _deviceManagementService;
+    
+    private PacketTraceEntry? _lastPacketEntry;
 
     /// <inheritdoc />
     public ManageViewModel(IDialogService dialogService, IDeviceManagementService deviceManagementService)
@@ -38,6 +41,7 @@ public partial class ManageViewModel : ObservableObject
         _deviceManagementService.CardReadReceived += DeviceManagementServiceOnCardReadReceived;
         _deviceManagementService.KeypadReadReceived += DeviceManagementServiceOnKeypadReadReceived;
         _deviceManagementService.DeviceLookupsChanged += DeviceManagementServiceOnDeviceLookupsChanged;
+        _deviceManagementService.TraceEntryReceived += OnDeviceManagementServiceOnTraceEntryReceived;
     }
 
     [RelayCommand]
@@ -155,6 +159,35 @@ public partial class ManageViewModel : ObservableObject
     {
         KeypadReadData += keypadReadData;
     }
+    
+    private void OnDeviceManagementServiceOnTraceEntryReceived(object? sender, TraceEntry traceEntry)
+    {
+        if (_deviceManagementService.IsUsingSecureChannel) return;
+
+        var build = new PacketTraceEntryBuilder();
+        PacketTraceEntry packetTraceEntry;
+        try
+        {
+            packetTraceEntry = build.FromTraceEntry(traceEntry, _lastPacketEntry).Build();
+        }
+        catch (Exception)
+        {
+            return;
+        }
+
+        switch (packetTraceEntry.Direction)
+        {
+            // Flash appropriate LED based on direction
+            case TraceDirection.Output:
+                LastTxActiveTime = DateTime.Now;
+                break;
+            case TraceDirection.Input or TraceDirection.Trace:
+                LastRxActiveTime = DateTime.Now;
+                break;
+        }
+        
+        _lastPacketEntry = packetTraceEntry;
+    }
 
     private void UpdateFields()
     {
@@ -209,4 +242,8 @@ public partial class ManageViewModel : ObservableObject
     [ObservableProperty] private IDeviceAction? _selectedDeviceAction;
 
     [ObservableProperty] private object? _deviceActionParameter;
+    
+    [ObservableProperty] private DateTime _lastTxActiveTime;
+    
+    [ObservableProperty] private DateTime _lastRxActiveTime;
 }

@@ -4,6 +4,7 @@ using OSDP.Net.Messages;
 using OSDP.Net.Tracing;
 using OSDPBench.Core.Models;
 using OSDPBench.Core.Services;
+using static OSDP.Net.Tracing.TraceDirection;
 
 namespace OSDPBench.Core.ViewModels.Pages;
 
@@ -37,15 +38,14 @@ public partial class MonitorViewModel : ObservableObject
     {
         TraceEntriesView.Clear();
         _lastPacketEntry = null;
-        NumberOfPolls = 0;
-        NumberOfAcksToPolls = 0;
     }
 
     private void OnDeviceManagementServiceOnTraceEntryReceived(object? _, TraceEntry traceEntry)
     {
         UsingSecureChannel = _deviceManagementService.IsUsingSecureChannel;
-        if (UsingSecureChannel) return;
         
+        if (UsingSecureChannel) return;
+
         var build = new PacketTraceEntryBuilder();
         PacketTraceEntry packetTraceEntry;
         try
@@ -57,18 +57,20 @@ public partial class MonitorViewModel : ObservableObject
             return;
         }
 
-        bool notDisplaying = false;
-        if (packetTraceEntry.Packet.CommandType == CommandType.Poll)
+        switch (packetTraceEntry.Direction)
         {
-            NumberOfPolls++;
-            notDisplaying = true;
+            // Flash appropriate LED based on direction
+            case Output:
+                LastTxActiveTime = DateTime.Now;
+                break;
+            case Input or Trace:
+                LastRxActiveTime = DateTime.Now;
+                break;
         }
 
-        if (_lastPacketEntry?.Packet.CommandType == CommandType.Poll && packetTraceEntry.Packet.ReplyType == ReplyType.Ack)
-        {
-            NumberOfAcksToPolls++;
-            notDisplaying = true;
-        }
+        bool notDisplaying = packetTraceEntry.Packet.CommandType == CommandType.Poll ||
+                             _lastPacketEntry?.Packet.CommandType == CommandType.Poll &&
+                             packetTraceEntry.Packet.ReplyType == ReplyType.Ack;
 
         _lastPacketEntry = packetTraceEntry;
 
@@ -85,9 +87,9 @@ public partial class MonitorViewModel : ObservableObject
     
     [ObservableProperty] private StatusLevel _statusLevel = StatusLevel.Disconnected;
 
-    [ObservableProperty] private uint _numberOfPolls;
+    [ObservableProperty] private DateTime _lastTxActiveTime;
     
-    [ObservableProperty] private uint _numberOfAcksToPolls;
+    [ObservableProperty] private DateTime _lastRxActiveTime;
     
     [ObservableProperty] private bool _usingSecureChannel;
 }

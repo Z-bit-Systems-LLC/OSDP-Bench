@@ -2,6 +2,7 @@
 using CommunityToolkit.Mvvm.Input;
 using OSDP.Net.PanelCommands.DeviceDiscover;
 using System.Collections.ObjectModel;
+using OSDP.Net.Tracing;
 using OSDPBench.Core.Models;
 using OSDPBench.Core.Services;
 
@@ -11,7 +12,9 @@ public partial class ConnectViewModel : ObservableObject
 {
     private readonly IDialogService _dialogService;
     private readonly IDeviceManagementService _deviceManagementService;
+    
     private ISerialPortConnectionService _serialPortConnectionService;
+    private PacketTraceEntry? _lastPacketEntry;
 
     /// <summary>
     /// ViewModel for the Connect page.
@@ -28,6 +31,36 @@ public partial class ConnectViewModel : ObservableObject
         
         _deviceManagementService.ConnectionStatusChange += DeviceManagementServiceOnConnectionStatusChange;
         _deviceManagementService.NakReplyReceived += DeviceManagementServiceOnNakReplyReceived;
+        _deviceManagementService.TraceEntryReceived += OnDeviceManagementServiceOnTraceEntryReceived;
+    }
+
+    private void OnDeviceManagementServiceOnTraceEntryReceived(object? sender, TraceEntry traceEntry)
+    {
+        if (_deviceManagementService.IsUsingSecureChannel) return;
+
+        var build = new PacketTraceEntryBuilder();
+        PacketTraceEntry packetTraceEntry;
+        try
+        {
+            packetTraceEntry = build.FromTraceEntry(traceEntry, _lastPacketEntry).Build();
+        }
+        catch (Exception)
+        {
+            return;
+        }
+
+        switch (packetTraceEntry.Direction)
+        {
+            // Flash appropriate LED based on direction
+            case TraceDirection.Output:
+                LastTxActiveTime = DateTime.Now;
+                break;
+            case TraceDirection.Input or TraceDirection.Trace:
+                LastRxActiveTime = DateTime.Now;
+                break;
+        }
+        
+        _lastPacketEntry = packetTraceEntry;
     }
 
     private void DeviceManagementServiceOnConnectionStatusChange(object? sender, ConnectionStatus connectionStatus)
@@ -88,6 +121,10 @@ public partial class ConnectViewModel : ObservableObject
     [ObservableProperty] private bool _useDefaultKey = true;
 
     [ObservableProperty] private string _securityKey = string.Empty;
+    
+    [ObservableProperty] private DateTime _lastTxActiveTime;
+    
+    [ObservableProperty] private DateTime _lastRxActiveTime;
 
     [RelayCommand]
     private async Task ScanSerialPorts()
