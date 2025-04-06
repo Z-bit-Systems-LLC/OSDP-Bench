@@ -77,7 +77,7 @@ public partial class ConnectViewModel : ObservableObject
 
     [ObservableProperty] private int _selectedBaudRate = 9600;
 
-    [ObservableProperty] private byte _selectedAddress;
+    [ObservableProperty] private double _selectedAddress;
 
     [ObservableProperty] private byte _connectedAddress;
 
@@ -249,9 +249,9 @@ public partial class ConnectViewModel : ObservableObject
 
         await _deviceManagementService.Shutdown();
         await _deviceManagementService.Connect(
-            serialPortConnectionService.GetConnection(serialPortName, SelectedBaudRate), SelectedAddress,
+            serialPortConnectionService.GetConnection(serialPortName, SelectedBaudRate), (byte)SelectedAddress,
             UseSecureChannel, UseDefaultKey, securityKey);
-        ConnectedAddress = SelectedAddress;
+        ConnectedAddress = (byte)SelectedAddress;
         ConnectedBaudRate = SelectedBaudRate;
     }
 }

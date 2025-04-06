@@ -108,7 +108,7 @@ public partial class ManagePage : INavigableView<ManageViewModel>
         {
             ViewModel.DeviceActionParameter = new CommunicationParameters(
                 ViewModel.ConnectedPortName, (uint)actionControl.SelectedBaudRate,
-                actionControl.SelectedAddress);
+                (byte)actionControl.SelectedAddress);
         };
         DeviceActionControl.Children.Add(actionControl);
     }

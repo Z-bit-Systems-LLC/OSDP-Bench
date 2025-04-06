@@ -1,5 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Windows.Controls;
+using Wpf.Ui.Controls;
 
 namespace OSDPBench.Windows.Views.Controls;
 
@@ -10,8 +12,8 @@ public sealed partial class SetCommunicationControl : INotifyPropertyChanged
         DataContext = this;
 
         AvailableBaudRates = availableBaudRates;
-        _selectedBaudRate = (int)connectedBaudRate;
-        _selectedAddress = connectedAddress;
+        SelectedBaudRate = (int)connectedBaudRate;
+        SelectedAddress = connectedAddress;
 
         InitializeComponent();
     }
@@ -25,8 +27,8 @@ public sealed partial class SetCommunicationControl : INotifyPropertyChanged
         set => SetField(ref _selectedBaudRate, value);
     }
 
-    private byte _selectedAddress;
-    public byte SelectedAddress
+    private double _selectedAddress;
+    public double SelectedAddress
     {
         get => _selectedAddress;
         set => SetField(ref _selectedAddress, value);
@@ -44,5 +46,15 @@ public sealed partial class SetCommunicationControl : INotifyPropertyChanged
         if (EqualityComparer<T>.Default.Equals(field, value)) return;
         field = value;
         OnPropertyChanged(propertyName);
+    }
+
+    private void AddressNumberBox_OnTextChanged(object sender, TextChangedEventArgs e)
+    {
+        SelectedAddress = AddressNumberBox.Value ?? 0;
+    }
+
+    private void AddressNumberBox_OnValueChanged(object sender, NumberBoxValueChangedEventArgs args)
+    {
+        SelectedAddress = AddressNumberBox.Value ?? 0;
     }
 }
