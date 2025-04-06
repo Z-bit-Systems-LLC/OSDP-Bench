@@ -7,6 +7,7 @@
       xmlns:local="clr-namespace:OSDPBench.Windows.Views.Pages"
       xmlns:models="clr-namespace:OSDPBench.Core.Models;assembly=OSDPBench.Core"
       xmlns:converters="clr-namespace:OSDPBench.Windows.Converters"
+      xmlns:controls="clr-namespace:OSDPBench.Windows.Views.Controls"
       mc:Ignorable="d" 
       d:DataContext="{d:DesignInstance local:MonitorPage,
 									 IsDesignTimeCreatable=False}"
@@ -21,9 +22,33 @@
 	<StackPanel 
 		Orientation="Vertical"
 		Margin="0 5">
-		<TextBlock 
-			Text="{Binding RelativeSource={RelativeSource AncestorType=Page}, Path=Title}"
-			Style="{StaticResource PageTitleStyle}"/>
+		
+		<Grid Margin="10 5">
+			<TextBlock 
+				Text="{Binding RelativeSource={RelativeSource AncestorType=Page}, Path=Title}"
+				Style="{StaticResource PageTitleStyle}"/>
+            
+			<StackPanel Orientation="Horizontal" 
+			            HorizontalAlignment="Right" 
+			            VerticalAlignment="Center">
+				<StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0 0 15 0">
+					<TextBlock Text="Tx" VerticalAlignment="Center" Margin="0 0 5 0"/>
+					<controls:LedControl 
+						LastActivityTime="{Binding Path=ViewModel.LastTxActiveTime}" 
+						LedColor="Red" 
+						VerticalAlignment="Center"/>
+				</StackPanel>
+            
+				<StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+					<TextBlock Text="Rx" VerticalAlignment="Center" Margin="0 0 5 0"/>
+					<controls:LedControl 
+						LastActivityTime="{Binding Path=ViewModel.LastRxActiveTime}" 
+						LedColor="Red" 
+						VerticalAlignment="Center"/>
+				</StackPanel>
+			</StackPanel>
+		</Grid>
+		
 		<StackPanel  Orientation="Vertical"
 		             Visibility="{Binding Path=ViewModel.StatusLevel, Converter={StaticResource StringToVisibilityConverter}, ConverterParameter=Disconnected, Mode=OneWay}">
 			<TextBlock
@@ -64,16 +89,7 @@
 			</StackPanel>
 			<StackPanel  Orientation="Vertical"
 			             Visibility="{Binding Path=ViewModel.UsingSecureChannel, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=Invert, Mode=OneWay}">
-				<StackPanel Orientation="Horizontal" Margin="10 5">
-					<TextBlock Text="Outgoing Polls" Margin="0 0 5 0 "/>
-					<TextBlock Text="{Binding Path=ViewModel.NumberOfPolls}"
-					           Margin="0 0 15 0 "
-					           FontWeight="Bold"/>
-					<TextBlock Text="Ack Replies to Polls" Margin="0 0 5 0 "/>
-					<TextBlock Text="{Binding Path=ViewModel.NumberOfAcksToPolls}"
-					           Margin="0 0 15 0 "
-					           FontWeight="Bold"/>
-				</StackPanel>
+
 				<DataGrid ItemsSource="{Binding ViewModel.TraceEntriesView}" 
 				          AutoGenerateColumns="False" 
 				          CanUserAddRows="False" 

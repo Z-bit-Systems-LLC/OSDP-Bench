@@ -6,6 +6,7 @@
 	  xmlns:pages="clr-namespace:OSDPBench.Windows.Views.Pages"
 	  xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
 	  xmlns:converters="clr-namespace:OSDPBench.Windows.Converters"
+	  xmlns:controls="clr-namespace:OSDPBench.Windows.Views.Controls"
 	  mc:Ignorable="d" 
 	  d:DataContext="{d:DesignInstance pages:ConnectPage,
 									 IsDesignTimeCreatable=False}"
@@ -20,9 +21,31 @@
     <StackPanel 
 		Orientation="Vertical"
 		Margin="0 5">
-	    <TextBlock 
-		    Text="{Binding RelativeSource={RelativeSource AncestorType=Page}, Path=Title}"
-		    Style="{StaticResource PageTitleStyle}"/>
+	    <Grid Margin="10 5">
+		    <TextBlock 
+			    Text="{Binding RelativeSource={RelativeSource AncestorType=Page}, Path=Title}"
+			    Style="{StaticResource PageTitleStyle}"/>
+            
+		    <StackPanel Orientation="Horizontal" 
+		                HorizontalAlignment="Right" 
+		                VerticalAlignment="Center">
+			    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0 0 15 0">
+				    <TextBlock Text="Tx" VerticalAlignment="Center" Margin="0 0 5 0"/>
+				    <controls:LedControl 
+					    LastActivityTime="{Binding Path=ViewModel.LastTxActiveTime}" 
+					    LedColor="Red" 
+					    VerticalAlignment="Center"/>
+			    </StackPanel>
+            
+			    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+				    <TextBlock Text="Rx" VerticalAlignment="Center" Margin="0 0 5 0"/>
+				    <controls:LedControl 
+					    LastActivityTime="{Binding Path=ViewModel.LastRxActiveTime}" 
+					    LedColor="Red" 
+					    VerticalAlignment="Center"/>
+			    </StackPanel>
+		    </StackPanel>
+	    </Grid>
 	    <ui:CardExpander IsExpanded="True"
 	                     Margin="10 5"
 	                     ContentPadding="10 5">
