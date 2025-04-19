@@ -1,5 +1,8 @@
 # OSDP-Bench Development Guidelines
 
+## References
+- OSDP.Net source code: https://github.com/bytedreamer/OSDP.Net
+
 ## Build Commands
 - Build solution: `dotnet build OSDP-Bench.sln`
 - Build specific project: `dotnet build src/Core/Core.csproj`
