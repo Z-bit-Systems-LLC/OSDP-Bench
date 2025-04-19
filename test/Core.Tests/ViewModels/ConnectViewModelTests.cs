@@ -16,6 +16,14 @@ namespace OSDPBench.Core.Tests.ViewModels;
 [TestFixture(TestOf = typeof(ConnectViewModel))]
 public class ConnectViewModelTests
 {
+    // Constants for common test values
+    private const string TestPortId = "COM1";
+    private const string TestPortName = "Port 1";
+    private const string TestPortDescription = "Description 1";
+    private const int TestBaudRate = 9600;
+    private const byte TestAddress = 1;
+    
+    // Mock objects
     private Mock<IDialogService> _dialogServiceMock;
     private Mock<IDeviceManagementService> _deviceManagementServiceMock;
     private Mock<ISerialPortConnectionService> _serialPortConnectionServiceMock;
@@ -46,25 +54,22 @@ public class ConnectViewModelTests
         Assert.That(expectedBaudRates , Is.EqualTo(_viewModel.AvailableBaudRates.ToArray()));
     }
 
+    #region ScanSerialPorts Tests
+
     [Test]
     public async Task ConnectViewModel_ExecuteScanSerialPortsCommand()
     {
         // Arrange
         _viewModel.StatusLevel = StatusLevel.Ready;
-        var expectedAvailableSerialPorts = new[]
-        {
-            new AvailableSerialPort("id1", "test1", "desc1"),
-            new AvailableSerialPort("id2", "test2", "desc2")
-        };
-        _serialPortConnectionServiceMock.Setup(expression => expression.FindAvailableSerialPorts())
-            .ReturnsAsync(expectedAvailableSerialPorts);
+        var availablePorts = CreateTestSerialPorts();
+        SetupSerialPortMockWithPorts(availablePorts);
 
         // Act
         await _viewModel.ScanSerialPortsCommand.ExecuteAsync(null);
 
         // Assert
-        Assert.That(expectedAvailableSerialPorts.Length, Is.EqualTo(_viewModel.AvailableSerialPorts.Count));
-        Assert.That(expectedAvailableSerialPorts, Is.EqualTo(_viewModel.AvailableSerialPorts));
+        Assert.That(availablePorts.Length, Is.EqualTo(_viewModel.AvailableSerialPorts.Count));
+        Assert.That(availablePorts, Is.EqualTo(_viewModel.AvailableSerialPorts));
         Assert.That(_viewModel.StatusLevel, Is.EqualTo(StatusLevel.Ready));
     }
     
@@ -73,8 +78,7 @@ public class ConnectViewModelTests
     {
         // Arrange
         _viewModel.StatusLevel = StatusLevel.Ready;
-        _serialPortConnectionServiceMock.Setup(x => x.FindAvailableSerialPorts())
-            .ReturnsAsync(Array.Empty<AvailableSerialPort>());
+        SetupSerialPortMockWithPorts(Array.Empty<AvailableSerialPort>());
 
         // Act
         await _viewModel.ScanSerialPortsCommand.ExecuteAsync(null);
@@ -98,24 +102,16 @@ public class ConnectViewModelTests
     {
         // Arrange
         _viewModel.StatusLevel = StatusLevel.Connected;
-        var expectedAvailableSerialPorts = new[]
-        {
-            new AvailableSerialPort("id1", "test1", "desc1"),
-            new AvailableSerialPort("id2", "test2", "desc2")
-        };
-        _serialPortConnectionServiceMock.Setup(expression => expression.FindAvailableSerialPorts())
-            .ReturnsAsync(expectedAvailableSerialPorts);
-        _dialogServiceMock.Setup(expression => expression.ShowConfirmationDialog(
-            It.IsAny<string>(), // Message
-            It.IsAny<string>(), // Message
-            MessageIcon.Warning)).ReturnsAsync(true);
+        var availablePorts = CreateTestSerialPorts();
+        SetupSerialPortMockWithPorts(availablePorts);
+        SetupDialogConfirmation(true);
 
         // Act
         await _viewModel.ScanSerialPortsCommand.ExecuteAsync(null);
 
         // Assert
-        Assert.That(expectedAvailableSerialPorts.Length, Is.EqualTo(_viewModel.AvailableSerialPorts.Count));
-        Assert.That(expectedAvailableSerialPorts, Is.EqualTo(_viewModel.AvailableSerialPorts));
+        Assert.That(availablePorts.Length, Is.EqualTo(_viewModel.AvailableSerialPorts.Count));
+        Assert.That(availablePorts, Is.EqualTo(_viewModel.AvailableSerialPorts));
         Assert.That(_viewModel.StatusLevel, Is.EqualTo(StatusLevel.Ready));
     }
     
@@ -124,17 +120,9 @@ public class ConnectViewModelTests
     {
         // Arrange
         _viewModel.StatusLevel = StatusLevel.Connected;
-        var expectedAvailableSerialPorts = new[]
-        {
-            new AvailableSerialPort("id1", "test1", "desc1"),
-            new AvailableSerialPort("id2", "test2", "desc2")
-        };
-        _serialPortConnectionServiceMock.Setup(expression => expression.FindAvailableSerialPorts())
-            .ReturnsAsync(expectedAvailableSerialPorts);
-        _dialogServiceMock.Setup(expression => expression.ShowConfirmationDialog(
-            It.IsAny<string>(), // Message
-            It.IsAny<string>(), // Message
-            MessageIcon.Warning)).ReturnsAsync(false);
+        var availablePorts = CreateTestSerialPorts();
+        SetupSerialPortMockWithPorts(availablePorts);
+        SetupDialogConfirmation(false);
 
         // Act
         await _viewModel.ScanSerialPortsCommand.ExecuteAsync(null);
@@ -143,36 +131,21 @@ public class ConnectViewModelTests
         Assert.That(_viewModel.StatusLevel, Is.EqualTo(StatusLevel.Connected));
     }
     
+    #endregion
+
+    #region DiscoverDevice Tests
+    
     [Test]
     public async Task ConnectViewModel_ExecuteDiscoverDeviceCommand()
     {
         // Arrange
-        var discoveryResult = Mock.Of<DiscoveryResult>(r => r.Status == DiscoveryStatus.Started);
+        SetupForDiscoveryTest(DiscoveryStatus.Started);
         
-        _serialPortConnectionServiceMock.Setup(x => x.GetConnection(It.IsAny<string>(), It.IsAny<int>()))
-            .Returns(Mock.Of<ISerialPortConnectionService>());
-            
-        _deviceManagementServiceMock.Setup(x => x.DiscoverDevice(
-                It.IsAny<IEnumerable<IOsdpConnection>>(),
-                It.IsAny<DiscoveryProgress>(),
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync(discoveryResult);
-        
-        // Select a serial port and baud rate in the viewmodel
-        _viewModel.SelectedSerialPort = new AvailableSerialPort("COM1", "Port 1", "Description 1");
-        _viewModel.SelectedBaudRate = 9600;
-
         // Act
         await _viewModel.DiscoverDeviceCommand.ExecuteAsync(null);
 
         // Assert
-        // Verify the device management service's DiscoverDevice method was called
-        _deviceManagementServiceMock.Verify(
-            x => x.DiscoverDevice(
-                It.IsAny<IEnumerable<IOsdpConnection>>(),
-                It.IsAny<DiscoveryProgress>(),
-                It.IsAny<CancellationToken>()),
-            Times.Once);
+        VerifyDiscoveryWasCalled();
         Assert.That(_viewModel.StatusLevel, Is.EqualTo(StatusLevel.Discovering));
     }
     
@@ -180,30 +153,15 @@ public class ConnectViewModelTests
     public async Task ConnectViewModel_ExecuteDiscoverDeviceCommand_Cancelled()
     {
         // Arrange
-        _serialPortConnectionServiceMock.Setup(x => x.GetConnection(It.IsAny<string>(), It.IsAny<int>()))
-            .Returns(Mock.Of<ISerialPortConnectionService>());
-            
-        _deviceManagementServiceMock.Setup(x => x.DiscoverDevice(
-                It.IsAny<IEnumerable<IOsdpConnection>>(),
-                It.IsAny<DiscoveryProgress>(),
-                It.IsAny<CancellationToken>()))
-            .ThrowsAsync(new OperationCanceledException());
-        
-        // Select a serial port and baud rate in the viewmodel
-        _viewModel.SelectedSerialPort = new AvailableSerialPort("COM1", "Port 1", "Description 1");
-        _viewModel.SelectedBaudRate = 9600;
+        SetupConnectionService();
+        SetupDiscoveryWithException(new OperationCanceledException());
+        SelectTestSerialPortAndBaudRate();
 
         // Act
         await _viewModel.DiscoverDeviceCommand.ExecuteAsync(null);
 
         // Assert
-        // Verify the device management service's DiscoverDevice method was called
-        _deviceManagementServiceMock.Verify(
-            x => x.DiscoverDevice(
-                It.IsAny<IEnumerable<IOsdpConnection>>(),
-                It.IsAny<DiscoveryProgress>(),
-                It.IsAny<CancellationToken>()),
-            Times.Once);
+        VerifyDiscoveryWasCalled();
     }
     
     [Test]
@@ -211,34 +169,26 @@ public class ConnectViewModelTests
     {
         // Arrange
         _viewModel.SelectedSerialPort = null;
-        _viewModel.SelectedBaudRate = 9600;
+        _viewModel.SelectedBaudRate = TestBaudRate;
 
         // Act
         await _viewModel.DiscoverDeviceCommand.ExecuteAsync(null);
 
         // Assert
-        // Verify that the device management service was not called
-        _deviceManagementServiceMock.Verify(
-            x => x.DiscoverDevice(
-                It.IsAny<IEnumerable<IOsdpConnection>>(),
-                It.IsAny<DiscoveryProgress>(),
-                It.IsAny<CancellationToken>()),
-            Times.Never);
+        VerifyDiscoveryWasNotCalled();
     }
+    
+    #endregion
+
+    #region ConnectDevice Tests
 
     [Test]
     public async Task ConnectViewModel_ExecuteConnectDeviceCommand()
     {
         // Arrange
-        string selectedPort = "COM1";
-        int selectedBaudRate = 9600;
-        byte selectedAddress = 1;
-        _serialPortConnectionServiceMock.Setup(x => x.GetConnection(selectedPort, selectedBaudRate))
-            .Returns(_serialPortConnectionServiceMock.Object);
-        
-        _viewModel.SelectedSerialPort = new AvailableSerialPort("COM1", selectedPort, "Description 1");
-        _viewModel.SelectedBaudRate = selectedBaudRate;
-        _viewModel.SelectedAddress = selectedAddress;
+        SetupConnectionServiceWithPort(TestPortName, TestBaudRate);
+        SelectTestSerialPortAndBaudRate();
+        _viewModel.SelectedAddress = TestAddress;
 
         // Act
         await _viewModel.ConnectDeviceCommand.ExecuteAsync(null);
@@ -246,39 +196,32 @@ public class ConnectViewModelTests
         // Assert
         Assert.That(_viewModel.StatusLevel, Is.EqualTo(StatusLevel.ConnectingManually));
         _serialPortConnectionServiceMock.Verify(
-            x => x.GetConnection(selectedPort, selectedBaudRate),
+            x => x.GetConnection(TestPortName, TestBaudRate),
             Times.Once);
-        _deviceManagementServiceMock.Verify(x => x.Shutdown(),
-            Times.Once);
+        _deviceManagementServiceMock.Verify(x => x.Shutdown(), Times.Once);
         _deviceManagementServiceMock.Verify(
-            x => x.Connect(_serialPortConnectionServiceMock.Object, selectedAddress, false, true, null),
+            x => x.Connect(_serialPortConnectionServiceMock.Object, TestAddress, false, true, null),
             Times.Once);
-        Assert.That(_viewModel.ConnectedAddress, Is.EqualTo(selectedAddress));
-        Assert.That(_viewModel.ConnectedBaudRate, Is.EqualTo(selectedBaudRate));
+        Assert.That(_viewModel.ConnectedAddress, Is.EqualTo(TestAddress));
+        Assert.That(_viewModel.ConnectedBaudRate, Is.EqualTo(TestBaudRate));
     }
     
     [Test]
     public async Task ConnectViewModel_ExecuteConnectDeviceCommand_NoSerialPortSelected()
     {
         // Arrange
-        int selectedBaudRate = 9600;
-        byte selectedAddress = 1;
-        
         _viewModel.SelectedSerialPort = null;
-        _viewModel.SelectedBaudRate = selectedBaudRate;
-        _viewModel.SelectedAddress = selectedAddress;
-        _viewModel.SecurityKey = "1234556";
-        _viewModel.UseSecureChannel = true;
-        _viewModel.UseDefaultKey = false;
+        _viewModel.SelectedBaudRate = TestBaudRate;
+        _viewModel.SelectedAddress = TestAddress;
+        SetupSecureChannelParameters("1234556", true, false);
 
         // Act
         await _viewModel.ConnectDeviceCommand.ExecuteAsync(null);
 
         // Assert
-        _deviceManagementServiceMock.Verify(x => x.Shutdown(),
-            Times.Never);
+        _deviceManagementServiceMock.Verify(x => x.Shutdown(), Times.Never);
         _deviceManagementServiceMock.Verify(
-            x => x.Connect(_serialPortConnectionServiceMock.Object, selectedAddress, false, true, null),
+            x => x.Connect(_serialPortConnectionServiceMock.Object, TestAddress, false, true, null),
             Times.Never);
     }
     
@@ -286,18 +229,10 @@ public class ConnectViewModelTests
     public async Task ConnectViewModel_ExecuteConnectDeviceCommand_InvalidSecurityKey()
     {
         // Arrange
-        string selectedPort = "COM1";
-        int selectedBaudRate = 9600;
-        byte selectedAddress = 1;
-        _serialPortConnectionServiceMock.Setup(x => x.GetConnection(selectedPort, selectedBaudRate))
-            .Returns(_serialPortConnectionServiceMock.Object);
-        
-        _viewModel.SelectedSerialPort = new AvailableSerialPort("COM1", selectedPort, "Description 1");
-        _viewModel.SelectedBaudRate = selectedBaudRate;
-        _viewModel.SelectedAddress = selectedAddress;
-        _viewModel.SecurityKey = "1234556";
-        _viewModel.UseSecureChannel = true;
-        _viewModel.UseDefaultKey = false;
+        SetupConnectionServiceWithPort(TestPortName, TestBaudRate);
+        SelectTestSerialPortAndBaudRate();
+        _viewModel.SelectedAddress = TestAddress;
+        SetupSecureChannelParameters("1234556", true, false);
 
         // Act
         await _viewModel.ConnectDeviceCommand.ExecuteAsync(null);
@@ -305,12 +240,11 @@ public class ConnectViewModelTests
         // Assert
         Assert.That(_viewModel.StatusLevel, Is.EqualTo(StatusLevel.ConnectingManually));
         _serialPortConnectionServiceMock.Verify(
-            x => x.GetConnection(selectedPort, selectedBaudRate),
+            x => x.GetConnection(TestPortName, TestBaudRate),
             Times.Never);
-        _deviceManagementServiceMock.Verify(x => x.Shutdown(),
-            Times.Never);
+        _deviceManagementServiceMock.Verify(x => x.Shutdown(), Times.Never);
         _deviceManagementServiceMock.Verify(
-            x => x.Connect(_serialPortConnectionServiceMock.Object, selectedAddress, false, true, null),
+            x => x.Connect(_serialPortConnectionServiceMock.Object, TestAddress, false, true, null),
             Times.Never);
         _dialogServiceMock.Verify(
             x => x.ShowMessageDialog(
@@ -320,14 +254,15 @@ public class ConnectViewModelTests
             Times.Once);
     }
     
+    #endregion
+
+    #region Event Handler Tests
+    
     [Test]
     public void ConnectViewModel_DeviceManagementServiceOnConnectionStatusChange_Connected()
     {
         // Act
-        _deviceManagementServiceMock.Raise(
-            d => d.ConnectionStatusChange += null!, 
-            EventArgs.Empty, 
-            ConnectionStatus.Connected);
+        RaiseConnectionStatusEvent(ConnectionStatus.Connected);
         
         // Assert
         Assert.That(_viewModel.StatusText, Is.EqualTo("Connected"));
@@ -339,10 +274,7 @@ public class ConnectViewModelTests
     public void ConnectViewModel_DeviceManagementServiceOnConnectionStatusChange_Disconnected()
     {
         // Act
-        _deviceManagementServiceMock.Raise(
-            d => d.ConnectionStatusChange += null!, 
-            EventArgs.Empty, 
-            ConnectionStatus.Disconnected);
+        RaiseConnectionStatusEvent(ConnectionStatus.Disconnected);
         
         // Assert
         Assert.That(_viewModel.StatusText, Is.EqualTo("Disconnected"));
@@ -353,10 +285,7 @@ public class ConnectViewModelTests
     public void ConnectViewModel_DeviceManagementServiceOnConnectionStatusChange_InvalidSecurityKey()
     {
         // Act
-        _deviceManagementServiceMock.Raise(
-            d => d.ConnectionStatusChange += null!, 
-            EventArgs.Empty, 
-            ConnectionStatus.InvalidSecurityKey);
+        RaiseConnectionStatusEvent(ConnectionStatus.InvalidSecurityKey);
         
         // Assert
         Assert.That(_viewModel.StatusText, Is.EqualTo("Invalid security key"));
@@ -370,10 +299,7 @@ public class ConnectViewModelTests
         _viewModel.StatusLevel = StatusLevel.Discovered;
         
         // Act
-        _deviceManagementServiceMock.Raise(
-            d => d.ConnectionStatusChange += null!, 
-            EventArgs.Empty, 
-            ConnectionStatus.Disconnected); // Any non-Connected status will do
+        RaiseConnectionStatusEvent(ConnectionStatus.Disconnected); // Any non-Connected status will do
         
         // Assert
         Assert.That(_viewModel.StatusText, Is.EqualTo("Attempting to connect"));
@@ -396,29 +322,153 @@ public class ConnectViewModelTests
         Assert.That(_viewModel.NakText, Is.EqualTo(expectedNakMessage));
     }
     
-    // We'll skip the trace entry tests for now as they require more complex mocking
-    // and we should focus on the refactoring opportunities first
+    #endregion
     
-    /*
-    [Test]
-    public void ConnectViewModel_HandleTraceEntry_OutputDirection()
+    #region Helper Methods
+    
+    /// <summary>
+    /// Creates an array of test serial ports for use in tests
+    /// </summary>
+    private static AvailableSerialPort[] CreateTestSerialPorts()
     {
-        // This test requires more setup to properly mock the PacketTraceEntryBuilder
-        // and the interaction with TraceEntry
+        return new[]
+        {
+            new AvailableSerialPort("id1", "test1", "desc1"),
+            new AvailableSerialPort("id2", "test2", "desc2")
+        };
     }
     
-    [Test]
-    public void ConnectViewModel_HandleTraceEntry_InputDirection()
+    /// <summary>
+    /// Sets up the serial port connection service mock to return the specified ports
+    /// </summary>
+    private void SetupSerialPortMockWithPorts(AvailableSerialPort[] ports)
     {
-        // This test requires more setup to properly mock the PacketTraceEntryBuilder
-        // and the interaction with TraceEntry
+        _serialPortConnectionServiceMock.Setup(expression => expression.FindAvailableSerialPorts())
+            .ReturnsAsync(ports);
     }
     
-    [Test]
-    public void ConnectViewModel_HandleTraceEntry_IgnoredWhenUsingSecureChannel()
+    /// <summary>
+    /// Sets up the dialog service to return the specified confirmation result
+    /// </summary>
+    private void SetupDialogConfirmation(bool confirmResult)
     {
-        // This test requires more setup to properly mock the PacketTraceEntryBuilder
-        // and the interaction with TraceEntry
+        _dialogServiceMock.Setup(expression => expression.ShowConfirmationDialog(
+            It.IsAny<string>(), // Title
+            It.IsAny<string>(), // Message
+            MessageIcon.Warning)).ReturnsAsync(confirmResult);
     }
-    */
+    
+    /// <summary>
+    /// Sets up the connection service mock for discovery tests
+    /// </summary>
+    private void SetupConnectionService()
+    {
+        _serialPortConnectionServiceMock.Setup(x => x.GetConnection(It.IsAny<string>(), It.IsAny<int>()))
+            .Returns(Mock.Of<ISerialPortConnectionService>());
+    }
+    
+    /// <summary>
+    /// Sets up the discovery service to return a result with the specified status
+    /// </summary>
+    private void SetupDiscoveryWithStatus(DiscoveryStatus status)
+    {
+        var discoveryResult = Mock.Of<DiscoveryResult>(r => r.Status == status);
+        _deviceManagementServiceMock.Setup(x => x.DiscoverDevice(
+                It.IsAny<IEnumerable<IOsdpConnection>>(),
+                It.IsAny<DiscoveryProgress>(),
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(discoveryResult);
+    }
+    
+    /// <summary>
+    /// Sets up the discovery service to throw the specified exception
+    /// </summary>
+    private void SetupDiscoveryWithException(Exception exception)
+    {
+        _deviceManagementServiceMock.Setup(x => x.DiscoverDevice(
+                It.IsAny<IEnumerable<IOsdpConnection>>(),
+                It.IsAny<DiscoveryProgress>(),
+                It.IsAny<CancellationToken>()))
+            .ThrowsAsync(exception);
+    }
+    
+    /// <summary>
+    /// Sets up a complete discovery test with both connection and discovery status
+    /// </summary>
+    private void SetupForDiscoveryTest(DiscoveryStatus status)
+    {
+        SetupConnectionService();
+        SetupDiscoveryWithStatus(status);
+        SelectTestSerialPortAndBaudRate();
+    }
+    
+    /// <summary>
+    /// Sets up the connection service with a specific port and baud rate
+    /// </summary>
+    private void SetupConnectionServiceWithPort(string portName, int baudRate)
+    {
+        _serialPortConnectionServiceMock.Setup(x => x.GetConnection(portName, baudRate))
+            .Returns(_serialPortConnectionServiceMock.Object);
+    }
+    
+    /// <summary>
+    /// Selects a test serial port and baud rate in the view model
+    /// </summary>
+    private void SelectTestSerialPortAndBaudRate()
+    {
+        _viewModel.SelectedSerialPort = new AvailableSerialPort(TestPortId, TestPortName, TestPortDescription);
+        _viewModel.SelectedBaudRate = TestBaudRate;
+    }
+    
+    /// <summary>
+    /// Sets up secure channel parameters in the view model
+    /// </summary>
+    private void SetupSecureChannelParameters(string key, bool useSecureChannel, bool useDefaultKey)
+    {
+        _viewModel.SecurityKey = key;
+        _viewModel.UseSecureChannel = useSecureChannel;
+        _viewModel.UseDefaultKey = useDefaultKey;
+    }
+    
+    /// <summary>
+    /// Raises the connection status change event with the specified status
+    /// </summary>
+    private void RaiseConnectionStatusEvent(ConnectionStatus status)
+    {
+        _deviceManagementServiceMock.Raise(
+            d => d.ConnectionStatusChange += null!, 
+            EventArgs.Empty, 
+            status);
+    }
+    
+    /// <summary>
+    /// Verifies that the discovery method was called
+    /// </summary>
+    private void VerifyDiscoveryWasCalled()
+    {
+        _deviceManagementServiceMock.Verify(
+            x => x.DiscoverDevice(
+                It.IsAny<IEnumerable<IOsdpConnection>>(),
+                It.IsAny<DiscoveryProgress>(),
+                It.IsAny<CancellationToken>()),
+            Times.Once);
+    }
+    
+    /// <summary>
+    /// Verifies that the discovery method was not called
+    /// </summary>
+    private void VerifyDiscoveryWasNotCalled()
+    {
+        _deviceManagementServiceMock.Verify(
+            x => x.DiscoverDevice(
+                It.IsAny<IEnumerable<IOsdpConnection>>(),
+                It.IsAny<DiscoveryProgress>(),
+                It.IsAny<CancellationToken>()),
+            Times.Never);
+    }
+    
+    #endregion
+    
+    // Future enhancements: Add trace entry tests which require more complex mocking
+    // For now we'll focus on the refactoring opportunities
 }
