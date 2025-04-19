@@ -44,6 +44,7 @@
 
 4. Test improvements:
    - ✅ Increase test coverage for ConnectViewModel (Completed in PR feature/refactor-connect-viewmodel)
+   - ✅ Improve ManageViewModel test coverage, especially for reset device action
    - Remove duplicated setup code in ConnectViewModelTests.cs
    - Add more tests for other components
 

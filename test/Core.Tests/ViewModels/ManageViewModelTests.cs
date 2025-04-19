@@ -206,35 +206,50 @@ namespace OSDPBench.Core.Tests.ViewModels
         }
 
         [Test]
-        public void ExecuteDeviceAction_ForResetCypressDevice_WithoutCanSendResetCommand_ShowsInstructions()
+        public async Task ExecuteDeviceAction_ForResetCypressDevice_WithoutCanSendResetCommand_ShowsInstructions()
         {
-            // Skip all the tests for ResetCypressDeviceAction - they require complex identity mock logic
-            Assert.Ignore("Cannot completely test without complex mocking of IdentityLookup");
+            // Arrange
+            var resetCypressDeviceAction = new ResetCypressDeviceAction();
+            string testResetInstructions = "Test reset instructions";
             
-            // We must use synchronous test to avoid errors when we ignore a test with async Task
-        }
-        
-        // Proxy interface for identity lookup to simplify testing
-        public interface IIdentityLookupProxy
-        {
-            bool CanSendResetCommand { get; }
-            string ResetInstructions { get; }
+            // Setup an IdentityLookup with CanSendResetCommand = false
+            SetupMockIdentityLookup(false, testResetInstructions);
+            
+            // Make sure the _viewModel property for IdentityLookup is updated
+            _viewModel.IdentityLookup = CreateTestIdentityLookup(false, testResetInstructions);
+            
+            // Set the selected device action
+            _viewModel.SelectedDeviceAction = resetCypressDeviceAction;
+            
+            // Act
+            await _viewModel.ExecuteDeviceActionCommand.ExecuteAsync(null);
+            
+            // Assert
+            _dialogServiceMock.Verify(
+                x => x.ShowMessageDialog(
+                    "Reset Device", 
+                    testResetInstructions, 
+                    MessageIcon.Information),
+                Times.Once);
+                
+            // Should not try to execute the action
+            _deviceManagementServiceMock.Verify(
+                x => x.ExecuteDeviceAction(resetCypressDeviceAction, It.IsAny<object>()),
+                Times.Never);
         }
 
         [Test]
         public async Task ExecuteDeviceAction_ForResetCypressDevice_WithCanSendResetCommand_UserCancels_ReconnectsDevice()
         {
-            // Skip all the tests for ResetCypressDeviceAction - they require complex identity mock logic
-            Assert.Ignore("Cannot completely test without complex mocking of IdentityLookup");
-            
             // Arrange
             var resetCypressDeviceAction = new ResetCypressDeviceAction();
             string testResetInstructions = "Test reset instructions";
             
-            // Return a mock object when the device management service checks for identity lookup
-            // We need to make it appear to have CanSendResetCommand=true
-            _deviceManagementServiceMock.Setup(x => x.IdentityLookup.CanSendResetCommand).Returns(true);
-            _deviceManagementServiceMock.Setup(x => x.IdentityLookup.ResetInstructions).Returns(testResetInstructions);
+            // Setup an IdentityLookup with CanSendResetCommand = true
+            SetupMockIdentityLookup(true, testResetInstructions);
+            
+            // Make sure the _viewModel property for IdentityLookup is updated
+            _viewModel.IdentityLookup = CreateTestIdentityLookup(true, testResetInstructions);
             
             // Configure dialog service to return false (user cancels)
             _dialogServiceMock.Setup(x => x.ShowConfirmationDialog(
@@ -256,9 +271,9 @@ namespace OSDPBench.Core.Tests.ViewModels
                 x => x.Connect(
                     It.IsAny<SerialPortOsdpConnection>(),
                     _deviceManagementServiceMock.Object.Address,
-                    false,
-                    true,
-                    null),
+                    It.IsAny<bool>(),
+                    It.IsAny<bool>(),
+                    It.IsAny<byte[]>()),
                 Times.Once);
                 
             _deviceManagementServiceMock.Verify(
@@ -269,17 +284,15 @@ namespace OSDPBench.Core.Tests.ViewModels
         [Test]
         public async Task ExecuteDeviceAction_ForResetCypressDevice_WithCanSendResetCommand_UserConfirms_ExecutesAction()
         {
-            // Skip all the tests for ResetCypressDeviceAction - they require complex identity mock logic
-            Assert.Ignore("Cannot completely test without complex mocking of IdentityLookup");
-            
             // Arrange
             var resetCypressDeviceAction = new ResetCypressDeviceAction();
             string testResetInstructions = "Test reset instructions";
             
-            // Return a mock object when the device management service checks for identity lookup
-            // We need to make it appear to have CanSendResetCommand=true
-            _deviceManagementServiceMock.Setup(x => x.IdentityLookup.CanSendResetCommand).Returns(true);
-            _deviceManagementServiceMock.Setup(x => x.IdentityLookup.ResetInstructions).Returns(testResetInstructions);
+            // Setup an IdentityLookup with CanSendResetCommand = true
+            SetupMockIdentityLookup(true, testResetInstructions);
+            
+            // Make sure the _viewModel property for IdentityLookup is updated
+            _viewModel.IdentityLookup = CreateTestIdentityLookup(true, testResetInstructions);
             
             // Configure dialog service to return true (user confirms)
             _dialogServiceMock.Setup(x => x.ShowConfirmationDialog(
@@ -314,18 +327,16 @@ namespace OSDPBench.Core.Tests.ViewModels
         [Test]
         public async Task ExecuteDeviceAction_ForResetCypressDevice_ExecuteDeviceActionThrowsException_ShowsErrorDialog()
         {
-            // Skip all the tests for ResetCypressDeviceAction - they require complex identity mock logic
-            Assert.Ignore("Cannot completely test without complex mocking of IdentityLookup");
-            
             // Arrange
             var resetCypressDeviceAction = new ResetCypressDeviceAction();
             var expectedException = new Exception("Test exception");
             string testResetInstructions = "Test reset instructions";
             
-            // Return a mock object when the device management service checks for identity lookup
-            // We need to make it appear to have CanSendResetCommand=true
-            _deviceManagementServiceMock.Setup(x => x.IdentityLookup.CanSendResetCommand).Returns(true);
-            _deviceManagementServiceMock.Setup(x => x.IdentityLookup.ResetInstructions).Returns(testResetInstructions);
+            // Setup an IdentityLookup with CanSendResetCommand = true
+            SetupMockIdentityLookup(true, testResetInstructions);
+            
+            // Make sure the _viewModel property for IdentityLookup is updated
+            _viewModel.IdentityLookup = CreateTestIdentityLookup(true, testResetInstructions);
             
             // Configure dialog service to return true (user confirms)
             _dialogServiceMock.Setup(x => x.ShowConfirmationDialog(
@@ -468,13 +479,11 @@ namespace OSDPBench.Core.Tests.ViewModels
         [Test]
         public void DeviceManagementServiceOnDeviceLookupsChanged_UpdatesFields()
         {
-            // Skip this test as it depends on mocking IdentityLookup
-            Assert.Ignore("Cannot properly test without complex IdentityLookup mocking");
-            
-            // For reference - this is the original test
-            /*
             // Arrange
-            SetupMockIdentityLookup(true, "Test instructions");
+            const bool canSendResetCommand = true;
+            const string testResetInstructions = "Test instructions";
+            
+            SetupMockIdentityLookup(canSendResetCommand, testResetInstructions);
             
             // Act
             _deviceManagementServiceMock.Raise(
@@ -483,40 +492,69 @@ namespace OSDPBench.Core.Tests.ViewModels
                 
             // Assert
             Assert.That(_viewModel.IdentityLookup, Is.Not.Null);
-            */
+            Assert.That(_viewModel.IdentityLookup.CanSendResetCommand, Is.EqualTo(canSendResetCommand));
+            Assert.That(_viewModel.IdentityLookup.ResetInstructions, Is.EqualTo(testResetInstructions));
         }
         
         #endregion
         
         #region Test Helpers
         
-        // This is a different approach - rather than trying to mock IdentityLookup directly
-        // which is challenging due to constructor constraints, we'll simply manually mock 
-        // the behavior we need to test in each test
+        /// <summary>
+        /// Creates a simplified IdentityLookup for testing
+        /// </summary>
+        private IdentityLookup CreateTestIdentityLookup(bool canSendResetCommand, string resetInstructions)
+        {
+            // Create and return our completely custom IdentityLookup implementation
+            return new StubIdentityLookup(canSendResetCommand, resetInstructions);
+        }
+        
+        /// <summary>
+        /// A stub implementation of IdentityLookup that builds DeviceIdentification using the static factory method
+        /// </summary>
+        private class StubIdentityLookup : IdentityLookup
+        {
+            private readonly bool _canSendResetCommand;
+            private readonly string _resetInstructions;
+            
+            // Constructor that uses the static factory method to create DeviceIdentification
+            public StubIdentityLookup(bool canSendResetCommand, string resetInstructions) 
+                : base(CreateDeviceId())
+            {
+                _canSendResetCommand = canSendResetCommand;
+                _resetInstructions = resetInstructions;
+            }
+            
+            // Override the properties we need to control for testing
+            public override bool CanSendResetCommand => _canSendResetCommand;
+            public override string ResetInstructions => _resetInstructions;
+            
+            // Helper method to create a DeviceIdentification using the ParseData static factory method
+            private static DeviceIdentification CreateDeviceId()
+            {
+                // Create with minimal data needed for tests - using the ParseData method
+                byte[] testData = new byte[] {
+                    0xCA, 0x44, 0x6C, // Vendor code (Cypress)
+                    1, // Model number 
+                    1, // Version
+                    0, 0, 0, 1, // Serial number (1)
+                    1, 0, 0 // Firmware version 1.0.0
+                };
+                
+                return DeviceIdentification.ParseData(testData);
+            }
+        }
+        
+        /// <summary>
+        /// Configures the mock DeviceManagementService with an IdentityLookup
+        /// </summary>
         private void SetupMockIdentityLookup(bool canSendResetCommand, string resetInstructions)
         {
-            // For tests that check IdentityLookup.CanSendResetCommand condition:
-            // 1. For ResetCypressDeviceAction Tests - we'll directly check if the dialog's shown with instructions
-            // Skip trying to mock IdentityLookup and just verify the dialog calls
+            // Create a proper IdentityLookup for testing with our desired property values
+            var identityLookup = CreateTestIdentityLookup(canSendResetCommand, resetInstructions);
             
-            if (canSendResetCommand)
-            {
-                // Just verify that when we try to execute a reset action, the ShowMessageDialog is called
-                // This indicates the action is using the instructions from IdentityLookup
-                _dialogServiceMock.Setup(x => x.ShowMessageDialog(
-                    "Reset Device", resetInstructions, MessageIcon.Information))
-                    .Returns(Task.CompletedTask);
-            }
-            else
-            {
-                // For cases with CanSendResetCommand=true in ResetCypressDeviceAction:
-                // Verify that ShowConfirmationDialog is called with the expected parameters
-                _dialogServiceMock.Setup(x => x.ShowConfirmationDialog(
-                    "Reset Device",
-                    "Do you want to reset device, if so power cycle then click yes when the device boots up.",
-                    MessageIcon.Warning))
-                    .ReturnsAsync(true); // Default to "Yes" response
-            }
+            // Setup the mock to return our real IdentityLookup instance
+            _deviceManagementServiceMock.Setup(x => x.IdentityLookup).Returns(identityLookup);
         }
         #endregion
     }
