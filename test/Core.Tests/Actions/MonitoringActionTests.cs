@@ -2,8 +2,6 @@
 using System.Threading.Tasks;
 using NUnit.Framework;
 using OSDPBench.Core.Actions;
-using OSDP.Net;
-using Moq;
 
 namespace OSDPBench.Core.Tests.Actions;
 
