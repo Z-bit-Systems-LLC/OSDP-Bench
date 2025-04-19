@@ -268,8 +268,8 @@ public partial class ManageViewModel : ObservableObject
     [
         new ControlBuzzerAction(),
         new FileTransferAction(),
-        new MonitorCardReads(), 
-        new MonitorKeypadReads(),
+        new MonitoringAction(MonitoringType.CardReads),
+        new MonitoringAction(MonitoringType.KeypadReads),
         new ResetCypressDeviceAction(), 
         new SetCommunicationAction(),
         new SetReaderLedAction()
