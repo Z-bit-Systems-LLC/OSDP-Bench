@@ -27,10 +27,10 @@
 
 ## Refactoring Opportunities
 
-1. ConnectViewModel.cs:
-   - Extract large switch statement in DiscoverDevice method
-   - Split ScanSerialPorts method with multiple responsibilities
-   - Simplify nested logic in ConnectDevice
+1. ✅ ConnectViewModel.cs: (Completed in PR feature/refactor-connect-viewmodel)
+   - ✅ Extract large switch statement in DiscoverDevice method
+   - ✅ Split ScanSerialPorts method with multiple responsibilities
+   - ✅ Simplify nested logic in ConnectDevice
 
 2. ManageViewModel.cs:
    - Refactor 57-line ExecuteDeviceAction method
@@ -40,11 +40,12 @@
    - MonitorCardReads.cs and MonitorKeyPadReads.cs
 
 4. Test improvements:
+   - ✅ Increase test coverage for ConnectViewModel (Completed in PR feature/refactor-connect-viewmodel)
    - Remove duplicated setup code in ConnectViewModelTests.cs
-   - Increase test coverage beyond just ConnectViewModel
+   - Add more tests for other components
 
 5. Cross-cutting concerns:
    - Standardize inconsistent error handling approaches
    - Reduce ViewModels coupling to DeviceManagementService
    - Fix naming inconsistencies (MonitorKeypadReads vs MonitorKeyPadReads)
-   - Convert hardcoded values (BaudRates, timeouts) to constants
+   - ✅ Convert hardcoded values to constants (BaudRates done in ConnectViewModel)
