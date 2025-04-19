@@ -10,6 +10,7 @@ using OSDPBench.Core.ViewModels.Pages;
 using NUnit.Framework;
 using OSDP.Net.Connections;
 using OSDP.Net.PanelCommands.DeviceDiscover;
+using OSDP.Net.Tracing;
 
 namespace OSDPBench.Core.Tests.ViewModels;
 
@@ -319,4 +320,106 @@ public class ConnectViewModelTests
                 It.IsAny<MessageIcon>()),
             Times.Once);
     }
+    
+    [Test]
+    public void ConnectViewModel_DeviceManagementServiceOnConnectionStatusChange_Connected()
+    {
+        // Act
+        _deviceManagementServiceMock.Raise(
+            d => d.ConnectionStatusChange += null, 
+            EventArgs.Empty, 
+            ConnectionStatus.Connected);
+        
+        // Assert
+        Assert.That(_viewModel.StatusText, Is.EqualTo("Connected"));
+        Assert.That(_viewModel.NakText, Is.EqualTo(string.Empty));
+        Assert.That(_viewModel.StatusLevel, Is.EqualTo(StatusLevel.Connected));
+    }
+    
+    [Test]
+    public void ConnectViewModel_DeviceManagementServiceOnConnectionStatusChange_Disconnected()
+    {
+        // Act
+        _deviceManagementServiceMock.Raise(
+            d => d.ConnectionStatusChange += null, 
+            EventArgs.Empty, 
+            ConnectionStatus.Disconnected);
+        
+        // Assert
+        Assert.That(_viewModel.StatusText, Is.EqualTo("Disconnected"));
+        Assert.That(_viewModel.StatusLevel, Is.EqualTo(StatusLevel.Disconnected));
+    }
+    
+    [Test]
+    public void ConnectViewModel_DeviceManagementServiceOnConnectionStatusChange_InvalidSecurityKey()
+    {
+        // Act
+        _deviceManagementServiceMock.Raise(
+            d => d.ConnectionStatusChange += null, 
+            EventArgs.Empty, 
+            ConnectionStatus.InvalidSecurityKey);
+        
+        // Assert
+        Assert.That(_viewModel.StatusText, Is.EqualTo("Invalid security key"));
+        Assert.That(_viewModel.StatusLevel, Is.EqualTo(StatusLevel.Error));
+    }
+    
+    [Test]
+    public void ConnectViewModel_DeviceManagementServiceOnConnectionStatusChange_WhenDiscoveredStatus()
+    {
+        // Arrange
+        _viewModel.StatusLevel = StatusLevel.Discovered;
+        
+        // Act
+        _deviceManagementServiceMock.Raise(
+            d => d.ConnectionStatusChange += null, 
+            EventArgs.Empty, 
+            ConnectionStatus.Disconnected); // Any non-Connected status will do
+        
+        // Assert
+        Assert.That(_viewModel.StatusText, Is.EqualTo("Attempting to connect"));
+        Assert.That(_viewModel.StatusLevel, Is.EqualTo(StatusLevel.Connecting));
+    }
+    
+    [Test]
+    public void ConnectViewModel_DeviceManagementServiceOnNakReplyReceived()
+    {
+        // Arrange
+        string expectedNakMessage = "Invalid checksum";
+        
+        // Act
+        _deviceManagementServiceMock.Raise(
+            d => d.NakReplyReceived += null, 
+            EventArgs.Empty, 
+            expectedNakMessage);
+        
+        // Assert
+        Assert.That(_viewModel.NakText, Is.EqualTo(expectedNakMessage));
+    }
+    
+    // We'll skip the trace entry tests for now as they require more complex mocking
+    // and we should focus on the refactoring opportunities first
+    
+    /*
+    [Test]
+    public void ConnectViewModel_HandleTraceEntry_OutputDirection()
+    {
+        // This test requires more setup to properly mock the PacketTraceEntryBuilder
+        // and the interaction with TraceEntry
+    }
+    
+    [Test]
+    public void ConnectViewModel_HandleTraceEntry_InputDirection()
+    {
+        // This test requires more setup to properly mock the PacketTraceEntryBuilder
+        // and the interaction with TraceEntry
+    }
+    
+    [Test]
+    public void ConnectViewModel_HandleTraceEntry_IgnoredWhenUsingSecureChannel()
+    {
+        // This test requires more setup to properly mock the PacketTraceEntryBuilder
+        // and the interaction with TraceEntry
+    }
+    */
 }

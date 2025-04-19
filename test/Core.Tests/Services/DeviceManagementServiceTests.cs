@@ -293,8 +293,9 @@ namespace OSDPBench.Core.Tests.Services
             
             Assert.That(method, Is.Not.Null, "FormatData method should exist");
             
-            // Test bit array conversion
-            var bitArray = new BitArray([true, false, true, true, false]);
+            // Test bit array conversion - use explicit bool[] cast to resolve ambiguity
+            bool[] boolArray = [true, false, true, true, false];
+            var bitArray = new BitArray(boolArray);
             var result = method.Invoke(null, [bitArray]) as string;
             
             Assert.That(result, Is.EqualTo("10110"));
