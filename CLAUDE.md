@@ -27,28 +27,23 @@
 
 ## Refactoring Opportunities
 
-1. DeviceManagementService.cs: 
-   - Extract duplicate event raising patterns into helper methods
-   - Improve error handling in empty catch blocks
-   - Split long class (374 lines) into focused components
-
-2. ConnectViewModel.cs:
+1. ConnectViewModel.cs:
    - Extract large switch statement in DiscoverDevice method
    - Split ScanSerialPorts method with multiple responsibilities
    - Simplify nested logic in ConnectDevice
 
-3. ManageViewModel.cs:
+2. ManageViewModel.cs:
    - Refactor 57-line ExecuteDeviceAction method
    - Extract special handling for ResetCypressDeviceAction
 
-4. Consolidate nearly identical implementations:
+3. Consolidate nearly identical implementations:
    - MonitorCardReads.cs and MonitorKeyPadReads.cs
 
-5. Test improvements:
+4. Test improvements:
    - Remove duplicated setup code in ConnectViewModelTests.cs
    - Increase test coverage beyond just ConnectViewModel
 
-6. Cross-cutting concerns:
+5. Cross-cutting concerns:
    - Standardize inconsistent error handling approaches
    - Reduce ViewModels coupling to DeviceManagementService
    - Fix naming inconsistencies (MonitorKeypadReads vs MonitorKeyPadReads)
