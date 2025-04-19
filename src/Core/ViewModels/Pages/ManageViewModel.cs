@@ -47,85 +47,123 @@ public partial class ManageViewModel : ObservableObject
     [RelayCommand]
     private async Task ExecuteDeviceAction()
     {
-        object? result = null;
-        if (SelectedDeviceAction != null)
+        if (SelectedDeviceAction == null) return;
+
+        try 
         {
-            if (SelectedDeviceAction is ResetCypressDeviceAction && IdentityLookup != null)
+            if (SelectedDeviceAction is ResetCypressDeviceAction)
             {
-                if (!IdentityLookup.CanSendResetCommand)
-                {
-                    await _dialogService.ShowMessageDialog("Reset Device", IdentityLookup.ResetInstructions,
-                        MessageIcon.Information);
-                    return;
-                }
-
-                await _deviceManagementService.Shutdown();
-                if (!await _dialogService.ShowConfirmationDialog("Reset Device",
-                        "Do you want to reset device, if so power cycle then click yes when the device boots up.",
-                        MessageIcon.Warning))
-                {
-                    await _deviceManagementService.Connect(new SerialPortOsdpConnection(
-                        _deviceManagementService.PortName,
-                        (int)_deviceManagementService.BaudRate), _deviceManagementService.Address);
-                    return;
-                }
-
-                try
-                {
-                    await _deviceManagementService.ExecuteDeviceAction(SelectedDeviceAction,
-                        new SerialPortOsdpConnection(_deviceManagementService.PortName,
-                            (int)_deviceManagementService.BaudRate));
-                    await _dialogService.ShowMessageDialog("Reset Device",
-                        "Successfully sent reset commands. Power cycle device again and then perform a discovery.",
-                        MessageIcon.Information);
-                }
-                catch (Exception exception)
-                {
-                    await _dialogService.ShowMessageDialog("Reset Device",
-                        exception.Message + " Perform a discovery to reconnect to the device.",
-                        MessageIcon.Error);
-                }
-
+                await HandleResetCypressDeviceAction();
                 return;
             }
 
-            try
+            var result = await ExecuteSelectedDeviceAction();
+            if (result != null && SelectedDeviceAction is SetCommunicationAction)
             {
-                result = await _deviceManagementService.ExecuteDeviceAction(SelectedDeviceAction,
-                    DeviceActionParameter);
-            }
-            catch (Exception exception)
-            {
-                await _dialogService.ShowMessageDialog("Performing Action",
-                    $"Issue with performing action. {exception.Message}", MessageIcon.Warning);
-                return;
+                await HandleSetCommunicationAction(result);
             }
         }
-
-        if (SelectedDeviceAction is SetCommunicationAction)
+        catch (Exception exception)
         {
-            if (result is CommunicationParameters connectionParameters)
-            {
-                if (_deviceManagementService.BaudRate == connectionParameters.BaudRate &&
-                    _deviceManagementService.Address == connectionParameters.Address)
-                {
-                    await _dialogService.ShowMessageDialog("Update Communications",
-                        $"Communication parameters didn't change.", MessageIcon.Warning);
-                    return;
-                }
-
-                await _dialogService.ShowMessageDialog("Update Communications",
-                    "Successfully update communications, reconnecting with new settings.", MessageIcon.Information);
-
-                await _deviceManagementService.Shutdown();
-
-                await Task.Delay(TimeSpan.FromSeconds(1));
-
-                await _deviceManagementService.Connect(
-                    new SerialPortOsdpConnection(_deviceManagementService.PortName,
-                        (int)connectionParameters.BaudRate), connectionParameters.Address);
-            }
+            await _dialogService.ShowMessageDialog("Performing Action",
+                $"Issue with performing action. {exception.Message}", MessageIcon.Warning);
         }
+    }
+
+    private async Task<object?> ExecuteSelectedDeviceAction()
+    {
+        try
+        {
+            return await _deviceManagementService.ExecuteDeviceAction(SelectedDeviceAction!, DeviceActionParameter);
+        }
+        catch (Exception exception)
+        {
+            await _dialogService.ShowMessageDialog("Performing Action",
+                $"Issue with performing action. {exception.Message}", MessageIcon.Warning);
+            return null;
+        }
+    }
+
+    private async Task HandleSetCommunicationAction(object result)
+    {
+        if (result is not CommunicationParameters connectionParameters) return;
+
+        bool parametersChanged = 
+            _deviceManagementService.BaudRate != connectionParameters.BaudRate ||
+            _deviceManagementService.Address != connectionParameters.Address;
+
+        if (!parametersChanged)
+        {
+            await _dialogService.ShowMessageDialog("Update Communications",
+                "Communication parameters didn't change.", MessageIcon.Warning);
+            return;
+        }
+
+        await _dialogService.ShowMessageDialog("Update Communications",
+            "Successfully update communications, reconnecting with new settings.", MessageIcon.Information);
+
+        await _deviceManagementService.Shutdown();
+        await Task.Delay(TimeSpan.FromSeconds(1));
+        await _deviceManagementService.Connect(
+            new SerialPortOsdpConnection(_deviceManagementService.PortName,
+                (int)connectionParameters.BaudRate), connectionParameters.Address);
+    }
+
+    private async Task HandleResetCypressDeviceAction()
+    {
+        if (IdentityLookup == null) return;
+
+        if (!IdentityLookup.CanSendResetCommand)
+        {
+            await _dialogService.ShowMessageDialog(
+                "Reset Device", 
+                IdentityLookup.ResetInstructions,
+                MessageIcon.Information);
+            return;
+        }
+
+        await _deviceManagementService.Shutdown();
+        
+        bool userConfirmed = await _dialogService.ShowConfirmationDialog(
+            "Reset Device",
+            "Do you want to reset device, if so power cycle then click yes when the device boots up.",
+            MessageIcon.Warning);
+            
+        if (!userConfirmed)
+        {
+            await ReconnectWithCurrentSettings();
+            return;
+        }
+
+        try
+        {
+            await _deviceManagementService.ExecuteDeviceAction(
+                SelectedDeviceAction!,
+                new SerialPortOsdpConnection(
+                    _deviceManagementService.PortName,
+                    (int)_deviceManagementService.BaudRate));
+                    
+            await _dialogService.ShowMessageDialog(
+                "Reset Device",
+                "Successfully sent reset commands. Power cycle device again and then perform a discovery.",
+                MessageIcon.Information);
+        }
+        catch (Exception exception)
+        {
+            await _dialogService.ShowMessageDialog(
+                "Reset Device",
+                exception.Message + " Perform a discovery to reconnect to the device.",
+                MessageIcon.Error);
+        }
+    }
+    
+    private async Task ReconnectWithCurrentSettings()
+    {
+        await _deviceManagementService.Connect(
+            new SerialPortOsdpConnection(
+                _deviceManagementService.PortName,
+                (int)_deviceManagementService.BaudRate), 
+            _deviceManagementService.Address);
     }
 
     [ObservableProperty] private IReadOnlyList<int> _availableBaudRates =
