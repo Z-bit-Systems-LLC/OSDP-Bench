@@ -1,14 +1,12 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Moq;
 using NUnit.Framework;
 using OSDP.Net;
 using OSDP.Net.Connections;
-using OSDP.Net.Model.CommandData;
 using OSDP.Net.Model.ReplyData;
 using OSDP.Net.PanelCommands.DeviceDiscover;
 using OSDP.Net.Tracing;
@@ -23,8 +21,8 @@ namespace OSDPBench.Core.Tests.Services
     {
         private DeviceManagementService _deviceManagementService;
         private Mock<IOsdpConnection> _connectionMock;
-        private byte _testAddress = 0x7F;
-        private uint _testBaudRate = 9600;
+        private readonly byte _testAddress = 0x7F;
+        private readonly uint _testBaudRate = 9600;
         
         // Helper method for DiscoveryProgress
         private void UpdateStatus(DiscoveryResult result)
@@ -69,8 +67,8 @@ namespace OSDPBench.Core.Tests.Services
         public async Task Connect_SetsAddressAndBaudRate()
         {
             // Arrange
-            bool useSecureChannel = false;
-            bool useDefaultSecurityKey = true;
+            const bool useSecureChannel = false;
+            const bool useDefaultSecurityKey = true;
 
             // Act
             await _deviceManagementService.Connect(_connectionMock.Object, _testAddress, useSecureChannel, useDefaultSecurityKey, null);
@@ -85,8 +83,8 @@ namespace OSDPBench.Core.Tests.Services
         public async Task Connect_WithSecureChannel_SetsIsUsingSecureChannel()
         {
             // Arrange
-            bool useSecureChannel = true;
-            bool useDefaultSecurityKey = true;
+            const bool useSecureChannel = true;
+            const bool useDefaultSecurityKey = true;
 
             // Act
             await _deviceManagementService.Connect(_connectionMock.Object, _testAddress, useSecureChannel, useDefaultSecurityKey, null);
@@ -99,9 +97,9 @@ namespace OSDPBench.Core.Tests.Services
         public async Task Connect_WithCustomSecurityKey_UsesProvidedKey()
         {
             // Arrange
-            bool useSecureChannel = true;
-            bool useDefaultSecurityKey = false;
-            byte[] customKey = new byte[] { 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08 };
+            const bool useSecureChannel = true;
+            const bool useDefaultSecurityKey = false;
+            byte[] customKey = [0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08];
 
             // Act
             await _deviceManagementService.Connect(_connectionMock.Object, _testAddress, useSecureChannel, useDefaultSecurityKey, customKey);
@@ -220,12 +218,10 @@ namespace OSDPBench.Core.Tests.Services
         {
             // Arrange
             var statusChangeReceived = false;
-            ConnectionStatus receivedStatus = ConnectionStatus.Disconnected;
             
-            _deviceManagementService.ConnectionStatusChange += (sender, status) => 
+            _deviceManagementService.ConnectionStatusChange += (_, _) => 
             {
                 statusChangeReceived = true;
-                receivedStatus = status;
             };
             
             // Act
@@ -241,12 +237,12 @@ namespace OSDPBench.Core.Tests.Services
         {
             // We can't check if events are null directly, but we can subscribe to them
             // and verify no errors occur
-            EventHandler<ConnectionStatus> connectionHandler = (sender, args) => { };
-            EventHandler deviceLookupsHandler = (sender, args) => { };
-            EventHandler<string> nakHandler = (sender, args) => { };
-            EventHandler<string> cardReadHandler = (sender, args) => { };
-            EventHandler<string> keypadHandler = (sender, args) => { };
-            EventHandler<TraceEntry> traceHandler = (sender, args) => { };
+            EventHandler<ConnectionStatus> connectionHandler = (_, _) => { };
+            EventHandler deviceLookupsHandler = (_, _) => { };
+            EventHandler<string> nakHandler = (_, _) => { };
+            EventHandler<string> cardReadHandler = (_, _) => { };
+            EventHandler<string> keypadHandler = (_, _) => { };
+            EventHandler<TraceEntry> traceHandler = (_, _) => { };
             
             // Act - subscribe to events
             _deviceManagementService.ConnectionStatusChange += connectionHandler;
@@ -282,8 +278,8 @@ namespace OSDPBench.Core.Tests.Services
             Assert.That(method, Is.Not.Null, "FormatKeypadData method should exist");
             
             // Test special values
-            byte[] data = new byte[] { 0x31, 0x32, 0x7F, 0x0D }; // "12*#"
-            var result = method.Invoke(null, new object[] { data }) as string;
+            byte[] data = [0x31, 0x32, 0x7F, 0x0D]; // "12*#"
+            var result = method.Invoke(null, [data]) as string;
             
             Assert.That(result, Is.EqualTo("12*#"));
         }
@@ -298,8 +294,8 @@ namespace OSDPBench.Core.Tests.Services
             Assert.That(method, Is.Not.Null, "FormatData method should exist");
             
             // Test bit array conversion
-            var bitArray = new BitArray(new[] { true, false, true, true, false });
-            var result = method.Invoke(null, new object[] { bitArray }) as string;
+            var bitArray = new BitArray([true, false, true, true, false]);
+            var result = method.Invoke(null, [bitArray]) as string;
             
             Assert.That(result, Is.EqualTo("10110"));
         }
@@ -314,7 +310,7 @@ namespace OSDPBench.Core.Tests.Services
             Assert.That(method, Is.Not.Null, "ToFormattedText method should exist");
             
             // Test error code formatting
-            var result = method.Invoke(null, new object[] { ErrorCode.CommunicationSecurityNotMet }) as string;
+            var result = method.Invoke(null, [ErrorCode.CommunicationSecurityNotMet]) as string;
             
             Assert.That(result, Is.EqualTo("Communication Security Not Met"));
         }
