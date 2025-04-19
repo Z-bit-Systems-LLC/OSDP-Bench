@@ -32,9 +32,9 @@
    - ✅ Split ScanSerialPorts method with multiple responsibilities
    - ✅ Simplify nested logic in ConnectDevice
 
-2. ManageViewModel.cs:
-   - Refactor 57-line ExecuteDeviceAction method
-   - Extract special handling for ResetCypressDeviceAction
+2. ✅ ManageViewModel.cs: (Completed in PR feature/refactor-manageviewmodel)
+   - ✅ Refactor 57-line ExecuteDeviceAction method
+   - ✅ Extract special handling for ResetCypressDeviceAction
 
 3. Consolidate nearly identical implementations:
    - MonitorCardReads.cs and MonitorKeyPadReads.cs
