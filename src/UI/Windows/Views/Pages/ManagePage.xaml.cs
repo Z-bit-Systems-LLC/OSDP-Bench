@@ -34,43 +34,47 @@ public partial class ManagePage : INavigableView<ManageViewModel>
     {
         DeviceActionControl.Children.Clear();
             
-        switch (DeviceActionsComboBox.SelectedValue)
+        if (ViewModel.ConnectedPortName == null)
         {
-            case ControlBuzzerAction when ViewModel.ConnectedPortName != null:
-            {
+            return;
+        }
+        
+        var selectedAction = DeviceActionsComboBox.SelectedValue as IDeviceAction;
+
+        switch (selectedAction)
+        {
+            case ControlBuzzerAction:
                 ControlBuzzerControl();
                 break;
-            }
-            case FileTransferAction when ViewModel.ConnectedPortName != null:
-            {
+                
+            case FileTransferAction:
                 FileTransferControl();
                 break;
-            }
-            case MonitorCardReads when ViewModel.ConnectedPortName != null:
-            {
-                MonitorCardReadsControl();
+                
+            case MonitoringAction monitoringAction:
+                switch (monitoringAction.MonitoringType)
+                {
+                    case MonitoringType.CardReads:
+                        MonitorCardReadsControl();
+                        break;
+                        
+                    case MonitoringType.KeypadReads:
+                        MonitorKeypadReadsControl();
+                        break;
+                }
                 break;
-            }
-            case MonitorKeypadReads when ViewModel.ConnectedPortName != null:
-            {
-                MonitorKeypadReadsControl();
-                break;
-            }
-            case ResetCypressDeviceAction when ViewModel.ConnectedPortName != null:
-            {
+                
+            case ResetCypressDeviceAction:
                 ResetControl();
                 break;
-            }
-            case SetCommunicationAction when ViewModel.ConnectedPortName != null:
-            {
+                
+            case SetCommunicationAction:
                 SetCommunicationActionControl();
                 break;
-            }
-            case SetReaderLedAction when ViewModel.ConnectedPortName != null:
-            {
+                
+            case SetReaderLedAction:
                 SetReaderLedActionControl();
                 break;
-            }
         }
     }
 
