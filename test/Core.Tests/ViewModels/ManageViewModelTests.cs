@@ -27,7 +27,7 @@ namespace OSDPBench.Core.Tests.ViewModels
             // Setup device management service's properties
             _deviceManagementServiceMock.Setup(x => x.PortName).Returns("COM1");
             _deviceManagementServiceMock.Setup(x => x.BaudRate).Returns(9600u);
-            _deviceManagementServiceMock.Setup(x => x.Address).Returns((byte)1);
+            _deviceManagementServiceMock.Setup(x => x.Address).Returns(1);
             _deviceManagementServiceMock.Setup(x => x.IsConnected).Returns(true);
             
             _viewModel = new ManageViewModel(
@@ -212,7 +212,7 @@ namespace OSDPBench.Core.Tests.ViewModels
             var resetCypressDeviceAction = new ResetCypressDeviceAction();
             string testResetInstructions = "Test reset instructions";
             
-            // Setup an IdentityLookup with CanSendResetCommand = false
+            // Set up an IdentityLookup with CanSendResetCommand = false
             SetupMockIdentityLookup(false, testResetInstructions);
             
             // Make sure the _viewModel property for IdentityLookup is updated
@@ -245,7 +245,7 @@ namespace OSDPBench.Core.Tests.ViewModels
             var resetCypressDeviceAction = new ResetCypressDeviceAction();
             string testResetInstructions = "Test reset instructions";
             
-            // Setup an IdentityLookup with CanSendResetCommand = true
+            // Set up an IdentityLookup with CanSendResetCommand = true
             SetupMockIdentityLookup(true, testResetInstructions);
             
             // Make sure the _viewModel property for IdentityLookup is updated
@@ -288,7 +288,7 @@ namespace OSDPBench.Core.Tests.ViewModels
             var resetCypressDeviceAction = new ResetCypressDeviceAction();
             string testResetInstructions = "Test reset instructions";
             
-            // Setup an IdentityLookup with CanSendResetCommand = true
+            // Set up an IdentityLookup with CanSendResetCommand = true
             SetupMockIdentityLookup(true, testResetInstructions);
             
             // Make sure the _viewModel property for IdentityLookup is updated
@@ -332,7 +332,7 @@ namespace OSDPBench.Core.Tests.ViewModels
             var expectedException = new Exception("Test exception");
             string testResetInstructions = "Test reset instructions";
             
-            // Setup an IdentityLookup with CanSendResetCommand = true
+            // Set up an IdentityLookup with CanSendResetCommand = true
             SetupMockIdentityLookup(true, testResetInstructions);
             
             // Make sure the _viewModel property for IdentityLookup is updated
@@ -553,7 +553,7 @@ namespace OSDPBench.Core.Tests.ViewModels
             // Create a proper IdentityLookup for testing with our desired property values
             var identityLookup = CreateTestIdentityLookup(canSendResetCommand, resetInstructions);
             
-            // Setup the mock to return our real IdentityLookup instance
+            // Set up the mock to return our real IdentityLookup instance
             _deviceManagementServiceMock.Setup(x => x.IdentityLookup).Returns(identityLookup);
         }
         #endregion
