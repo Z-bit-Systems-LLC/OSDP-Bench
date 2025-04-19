@@ -10,7 +10,6 @@ using OSDPBench.Core.ViewModels.Pages;
 using NUnit.Framework;
 using OSDP.Net.Connections;
 using OSDP.Net.PanelCommands.DeviceDiscover;
-using OSDP.Net.Tracing;
 
 namespace OSDPBench.Core.Tests.ViewModels;
 
@@ -326,7 +325,7 @@ public class ConnectViewModelTests
     {
         // Act
         _deviceManagementServiceMock.Raise(
-            d => d.ConnectionStatusChange += null, 
+            d => d.ConnectionStatusChange += null!, 
             EventArgs.Empty, 
             ConnectionStatus.Connected);
         
@@ -341,7 +340,7 @@ public class ConnectViewModelTests
     {
         // Act
         _deviceManagementServiceMock.Raise(
-            d => d.ConnectionStatusChange += null, 
+            d => d.ConnectionStatusChange += null!, 
             EventArgs.Empty, 
             ConnectionStatus.Disconnected);
         
@@ -355,7 +354,7 @@ public class ConnectViewModelTests
     {
         // Act
         _deviceManagementServiceMock.Raise(
-            d => d.ConnectionStatusChange += null, 
+            d => d.ConnectionStatusChange += null!, 
             EventArgs.Empty, 
             ConnectionStatus.InvalidSecurityKey);
         
@@ -372,7 +371,7 @@ public class ConnectViewModelTests
         
         // Act
         _deviceManagementServiceMock.Raise(
-            d => d.ConnectionStatusChange += null, 
+            d => d.ConnectionStatusChange += null!, 
             EventArgs.Empty, 
             ConnectionStatus.Disconnected); // Any non-Connected status will do
         
@@ -389,7 +388,7 @@ public class ConnectViewModelTests
         
         // Act
         _deviceManagementServiceMock.Raise(
-            d => d.NakReplyReceived += null, 
+            d => d.NakReplyReceived += null!, 
             EventArgs.Empty, 
             expectedNakMessage);
         
