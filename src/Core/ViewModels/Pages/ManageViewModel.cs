@@ -49,7 +49,7 @@ public partial class ManageViewModel : ObservableObject
     {
         if (SelectedDeviceAction == null) return;
 
-        try 
+        await ExceptionHelper.ExecuteSafelyAsync(_dialogService, "Performing Action", async () =>
         {
             if (SelectedDeviceAction is ResetCypressDeviceAction)
             {
@@ -62,26 +62,16 @@ public partial class ManageViewModel : ObservableObject
             {
                 await HandleSetCommunicationAction(result);
             }
-        }
-        catch (Exception exception)
-        {
-            await _dialogService.ShowMessageDialog("Performing Action",
-                $"Issue with performing action. {exception.Message}", MessageIcon.Warning);
-        }
+        });
     }
 
     private async Task<object?> ExecuteSelectedDeviceAction()
     {
-        try
-        {
-            return await _deviceManagementService.ExecuteDeviceAction(SelectedDeviceAction!, DeviceActionParameter);
-        }
-        catch (Exception exception)
-        {
-            await _dialogService.ShowMessageDialog("Performing Action",
-                $"Issue with performing action. {exception.Message}", MessageIcon.Warning);
-            return null;
-        }
+        return await ExceptionHelper.ExecuteSafelyAsync(
+            _dialogService,
+            "Performing Action", 
+            async () => await _deviceManagementService.ExecuteDeviceAction(SelectedDeviceAction!, DeviceActionParameter),
+            null);
     }
 
     private async Task HandleSetCommunicationAction(object result)
@@ -135,24 +125,27 @@ public partial class ManageViewModel : ObservableObject
             return;
         }
 
-        try
+        bool success = await ExceptionHelper.ExecuteSafelyAsync(_dialogService, "Reset Device", async () =>
         {
             await _deviceManagementService.ExecuteDeviceAction(
                 SelectedDeviceAction!,
                 new SerialPortOsdpConnection(
                     _deviceManagementService.PortName,
                     (int)_deviceManagementService.BaudRate));
-                    
+        });
+        
+        if (success)
+        {
             await _dialogService.ShowMessageDialog(
                 "Reset Device",
                 "Successfully sent reset commands. Power cycle device again and then perform a discovery.",
                 MessageIcon.Information);
         }
-        catch (Exception exception)
+        else
         {
             await _dialogService.ShowMessageDialog(
                 "Reset Device",
-                exception.Message + " Perform a discovery to reconnect to the device.",
+                "Failed to reset the device. Perform a discovery to reconnect to the device.",
                 MessageIcon.Error);
         }
     }

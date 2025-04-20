@@ -49,7 +49,7 @@
    - ✅ Add more tests for other components (Added MonitorViewModel tests in PR feature/test-improvements)
 
 5. Cross-cutting concerns:
-   - Standardize inconsistent error handling approaches
-   - Reduce ViewModels coupling to DeviceManagementService
-   - Fix naming inconsistencies (MonitorKeypadReads vs MonitorKeyPadReads)
+   - ✅ Standardize inconsistent error handling approaches
+   - ✅ Reduce ViewModels coupling to DeviceManagementService
+   - ✅ Fix naming inconsistencies (MonitorKeypadReads vs MonitorKeyPadReads)
    - ✅ Convert hardcoded values to constants (BaudRates done in ConnectViewModel)

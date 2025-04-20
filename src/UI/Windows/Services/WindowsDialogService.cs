@@ -35,4 +35,18 @@ internal class WindowsDialogService : IDialogService
 
         return Task.FromResult(result == MessageBoxResult.OK);
     }
+    
+    /// <inheritdoc/>
+    public Task ShowExceptionDialog(string title, Exception exception)
+    {
+        string message = FormatExceptionMessage(exception);
+        return ShowMessageDialog(title, message, MessageIcon.Error);
+    }
+    
+    private static string FormatExceptionMessage(Exception exception)
+    {
+        if (exception == null) return "Unknown error occurred.";
+        
+        return $"{exception.Message}\n\nDetails: {exception.GetType().Name}";
+    }
 }

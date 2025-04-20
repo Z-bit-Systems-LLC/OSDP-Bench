@@ -81,7 +81,7 @@ namespace OSDPBench.Core.Tests.ViewModels
         }
 
         [Test]
-        public async Task ExecuteDeviceAction_WhenExceptionThrown_ShowsErrorDialog()
+        public async Task ExecuteDeviceAction_WhenExceptionThrown_ShowsExceptionDialog()
         {
             // Arrange
             var mockAction = new Mock<IDeviceAction>();
@@ -100,10 +100,9 @@ namespace OSDPBench.Core.Tests.ViewModels
             
             // Assert
             _dialogServiceMock.Verify(
-                x => x.ShowMessageDialog(
+                x => x.ShowExceptionDialog(
                     "Performing Action", 
-                    It.Is<string>(s => s.Contains(expectedException.Message)), 
-                    MessageIcon.Warning),
+                    It.Is<Exception>(e => e.Message.Contains(expectedException.Message))),
                 Times.Once);
         }
 
@@ -367,9 +366,15 @@ namespace OSDPBench.Core.Tests.ViewModels
                 Times.Once);
                 
             _dialogServiceMock.Verify(
-                x => x.ShowMessageDialog(
+                x => x.ShowExceptionDialog(
                     "Reset Device", 
-                    It.Is<string>(s => s.Contains(expectedException.Message)), 
+                    It.Is<Exception>(e => e.Message.Contains(expectedException.Message))),
+                Times.Once);
+                
+            _dialogServiceMock.Verify(
+                x => x.ShowMessageDialog(
+                    "Reset Device",
+                    "Failed to reset the device. Perform a discovery to reconnect to the device.",
                     MessageIcon.Error),
                 Times.Once);
         }
