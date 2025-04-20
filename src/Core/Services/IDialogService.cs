@@ -20,8 +20,15 @@ public interface IDialogService
     /// <param name="message">The content of the confirmation dialog.</param>
     /// <param name="messageIcon">The icon to display in the confirmation dialog.</param>
     /// <returns>A task that represents the asynchronous operation. The task result contains a boolean value that is true if the user clicks OK, and false otherwise.</returns>
-
     Task<bool> ShowConfirmationDialog(string title, string message, MessageIcon messageIcon);
+    
+    /// <summary>
+    /// Shows an error dialog for an exception.
+    /// </summary>
+    /// <param name="title">The title of the dialog.</param>
+    /// <param name="exception">The exception to display information about.</param>
+    /// <returns>A task representing the asynchronous operation.</returns>
+    Task ShowExceptionDialog(string title, Exception exception);
 }
 
 /// <summary>
@@ -29,9 +36,18 @@ public interface IDialogService
 /// </summary>
 public enum MessageIcon
 {
-#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
+    /// <summary>
+    /// Information icon.
+    /// </summary>
     Information,
+    
+    /// <summary>
+    /// Error icon.
+    /// </summary>
     Error,
+    
+    /// <summary>
+    /// Warning icon.
+    /// </summary>
     Warning
-#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
 }
