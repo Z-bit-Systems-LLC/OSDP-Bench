@@ -1,8 +1,6 @@
 using System;
 using Moq;
 using NUnit.Framework;
-using OSDP.Net.Messages;
-using OSDP.Net.Tracing;
 using OSDPBench.Core.Models;
 using OSDPBench.Core.Services;
 using OSDPBench.Core.ViewModels.Pages;
