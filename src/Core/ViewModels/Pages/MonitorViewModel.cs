@@ -22,6 +22,8 @@ public partial class MonitorViewModel : ObservableObject
     {
         _deviceManagementService = deviceManagementService ??
                                    throw new ArgumentNullException(nameof(deviceManagementService));
+        
+        StatusLevel = _deviceManagementService.IsConnected ? StatusLevel.Connected : StatusLevel.Disconnected;
 
         _deviceManagementService.ConnectionStatusChange += OnDeviceManagementServiceOnConnectionStatusChange;
         _deviceManagementService.TraceEntryReceived += OnDeviceManagementServiceOnTraceEntryReceived;
