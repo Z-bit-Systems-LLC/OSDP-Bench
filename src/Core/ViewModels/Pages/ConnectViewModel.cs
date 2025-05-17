@@ -125,7 +125,7 @@ public partial class ConnectViewModel : ObservableObject
 
     [ObservableProperty] private int _selectedBaudRate = DefaultBaudRates[0]; // Default to first baud rate (9600)
 
-    [ObservableProperty] private double _selectedAddress;
+    [ObservableProperty] private byte _selectedAddress;
 
     [ObservableProperty] private byte _connectedAddress;
 
@@ -144,7 +144,7 @@ public partial class ConnectViewModel : ObservableObject
     [RelayCommand]
     private async Task ScanSerialPorts()
     {
-        // Check if user wants to proceed when already connected
+        // Check if the user wants to proceed when already connected
         if (!await ConfirmScanWhenConnected()) return;
 
         // Prepare for scanning
@@ -345,12 +345,12 @@ public partial class ConnectViewModel : ObservableObject
         
         await _deviceManagementService.Connect(
             _serialPortConnectionService.GetConnection(serialPortName, SelectedBaudRate), 
-            (byte)SelectedAddress,
+            SelectedAddress,
             UseSecureChannel, 
             UseDefaultKey, 
             securityKey);
             
-        ConnectedAddress = (byte)SelectedAddress;
+        ConnectedAddress = SelectedAddress;
         ConnectedBaudRate = SelectedBaudRate;
     }
 }
