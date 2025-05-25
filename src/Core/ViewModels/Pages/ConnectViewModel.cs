@@ -115,7 +115,7 @@ public partial class ConnectViewModel : ObservableObject
 
     [ObservableProperty] private string _nakText = string.Empty;
 
-    [ObservableProperty] private StatusLevel _statusLevel = StatusLevel.Ready;
+    [ObservableProperty] private StatusLevel _statusLevel = StatusLevel.NotReady;
 
     [ObservableProperty] private ObservableCollection<AvailableSerialPort> _availableSerialPorts = [];
 
