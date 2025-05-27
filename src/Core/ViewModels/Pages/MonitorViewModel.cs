@@ -23,6 +23,7 @@ public partial class MonitorViewModel : ObservableObject
         _deviceManagementService = deviceManagementService ??
                                    throw new ArgumentNullException(nameof(deviceManagementService));
         
+        UpdateConnectionInfo();
         StatusLevel = _deviceManagementService.IsConnected ? StatusLevel.Connected : StatusLevel.Disconnected;
 
         _deviceManagementService.ConnectionStatusChange += OnDeviceManagementServiceOnConnectionStatusChange;
@@ -33,7 +34,14 @@ public partial class MonitorViewModel : ObservableObject
     {
         if (connectionStatus == ConnectionStatus.Connected) InitializePollingMetrics();
         
+        UpdateConnectionInfo();
         StatusLevel = connectionStatus == ConnectionStatus.Connected ? StatusLevel.Connected : StatusLevel.Disconnected;
+    }
+
+    private void UpdateConnectionInfo()
+    {
+        ConnectedAddress = _deviceManagementService.Address;
+        ConnectedBaudRate = _deviceManagementService.BaudRate;
     }
 
     private void InitializePollingMetrics()
@@ -94,4 +102,8 @@ public partial class MonitorViewModel : ObservableObject
     [ObservableProperty] private DateTime _lastRxActiveTime;
     
     [ObservableProperty] private bool _usingSecureChannel;
+    
+    [ObservableProperty] private byte _connectedAddress;
+
+    [ObservableProperty] private uint _connectedBaudRate;
 }
