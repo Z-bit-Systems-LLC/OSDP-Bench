@@ -66,10 +66,18 @@ public interface IDeviceManagementService
     /// <param name="connection">The connection to use for communication.</param>
     /// <param name="address">The address of the device.</param>
     /// <param name="useSecureChannel">Connect device using secure channel</param>
-    /// <param name="useDefaultSecurityKey">Use the default key to connect with secure channel</param>
+    /// <param name="useDefaultSecurityKey">Use the default key to connect with a secure channel</param>
     /// <param name="securityKey">Security key if default is not used</param>
     Task Connect(IOsdpConnection connection, byte address, bool useSecureChannel = false,
         bool useDefaultSecurityKey = true, byte[]? securityKey = null);
+    
+    /// <summary>
+    /// Reestablishes a connection with a device using the specified connection and address.
+    /// </summary>
+    /// <param name="osdpConnection">The connection instance to use for communication.</param>
+    /// <param name="address">The address of the device to reconnect with.</param>
+    /// <returns>A task representing the asynchronous reconnect operation.</returns>
+    Task Reconnect(IOsdpConnection osdpConnection, byte address);
 
     /// <summary>
     /// Discovers a device asynchronously over the provided connections.

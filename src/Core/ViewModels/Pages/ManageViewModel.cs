@@ -1,7 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using OSDP.Net.Connections;
 using OSDP.Net.Tracing;
 using OSDPBench.Core.Actions;
 using OSDPBench.Core.Models;
@@ -20,16 +19,19 @@ public partial class ManageViewModel : ObservableObject
 {
     private readonly IDialogService _dialogService;
     private readonly IDeviceManagementService _deviceManagementService;
+    private readonly ISerialPortConnectionService _serialPortConnectionService;
     
     private PacketTraceEntry? _lastPacketEntry;
 
     /// <inheritdoc />
-    public ManageViewModel(IDialogService dialogService, IDeviceManagementService deviceManagementService)
+    public ManageViewModel(IDialogService dialogService, IDeviceManagementService deviceManagementService, ISerialPortConnectionService serialPortConnectionService)
     {
         _dialogService = dialogService ??
                          throw new ArgumentNullException(nameof(dialogService));
         _deviceManagementService = deviceManagementService ??
                                    throw new ArgumentNullException(nameof(deviceManagementService));
+        _serialPortConnectionService = serialPortConnectionService ??
+                                       throw new ArgumentNullException(nameof(serialPortConnectionService));
 
         LastCardNumberRead = string.Empty;
         KeypadReadData = string.Empty;
@@ -92,11 +94,11 @@ public partial class ManageViewModel : ObservableObject
         await _dialogService.ShowMessageDialog("Update Communications",
             "Successfully update communications, reconnecting with new settings.", MessageIcon.Information);
 
-        await _deviceManagementService.Shutdown();
-        await Task.Delay(TimeSpan.FromSeconds(1));
-        await _deviceManagementService.Connect(
-            new SerialPortOsdpConnection(_deviceManagementService.PortName,
+        if (_deviceManagementService.PortName != null)
+        {    await _deviceManagementService.Reconnect(_serialPortConnectionService.GetConnection(
+                _deviceManagementService.PortName,
                 (int)connectionParameters.BaudRate), connectionParameters.Address);
+        }
     }
 
     private async Task HandleResetCypressDeviceAction()
@@ -121,17 +123,26 @@ public partial class ManageViewModel : ObservableObject
             
         if (!userConfirmed)
         {
-            await ReconnectWithCurrentSettings();
+            if (_deviceManagementService.PortName != null)
+            {    
+                await _deviceManagementService.Reconnect(_serialPortConnectionService.GetConnection(
+                        _deviceManagementService.PortName,
+                        (int)_deviceManagementService.BaudRate),
+                    _deviceManagementService.Address);
+            }
             return;
         }
 
         bool success = await ExceptionHelper.ExecuteSafelyAsync(_dialogService, "Reset Device", async () =>
         {
-            await _deviceManagementService.ExecuteDeviceAction(
-                SelectedDeviceAction!,
-                new SerialPortOsdpConnection(
-                    _deviceManagementService.PortName,
-                    (int)_deviceManagementService.BaudRate));
+            if (_deviceManagementService.PortName != null)
+            {
+                await _deviceManagementService.ExecuteDeviceAction(
+                    SelectedDeviceAction!,
+                    _serialPortConnectionService.GetConnection(
+                        _deviceManagementService.PortName,
+                        (int)_deviceManagementService.BaudRate));
+            }
         });
         
         if (success)
@@ -148,15 +159,6 @@ public partial class ManageViewModel : ObservableObject
                 "Failed to reset the device. Perform a discovery to reconnect to the device.",
                 MessageIcon.Error);
         }
-    }
-    
-    private async Task ReconnectWithCurrentSettings()
-    {
-        await _deviceManagementService.Connect(
-            new SerialPortOsdpConnection(
-                _deviceManagementService.PortName,
-                (int)_deviceManagementService.BaudRate), 
-            _deviceManagementService.Address);
     }
 
     [ObservableProperty] private IReadOnlyList<int> _availableBaudRates =
@@ -208,7 +210,7 @@ public partial class ManageViewModel : ObservableObject
 
         switch (packetTraceEntry.Direction)
         {
-            // Flash appropriate LED based on direction
+            // Flash the appropriate LED based on a direction
             case TraceDirection.Output:
                 LastTxActiveTime = DateTime.Now;
                 break;

@@ -26,6 +26,7 @@ public sealed class DeviceManagementService : IDeviceManagementService
     private Guid _connectionId;
     private bool _isDiscovering;
     private bool _invalidSecurityKey;
+    private byte[]? _securityKey;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DeviceManagementService"/> class.
@@ -116,10 +117,12 @@ public sealed class DeviceManagementService : IDeviceManagementService
         bool useDefaultSecurityKey, byte[]? securityKey)
     {
         await Shutdown();
-
+        
         Address = address;
         BaudRate = (uint)connection.BaudRate;
         IsUsingSecureChannel = useSecureChannel;
+        UsesDefaultSecurityKey = useDefaultSecurityKey;
+        _securityKey = securityKey;
 
         _connectionId = _panel.StartConnection(connection, _defaultPollInterval, Tracer);
         _panel.AddDevice(_connectionId, address, true, useSecureChannel, 
@@ -269,6 +272,12 @@ public sealed class DeviceManagementService : IDeviceManagementService
     /// <inheritdoc />
     public event EventHandler<TraceEntry>? TraceEntryReceived;
 
+    /// <inheritdoc />
+    public async Task Reconnect(IOsdpConnection osdpConnection, byte connectionParametersAddress)
+    {
+        await Connect(osdpConnection, connectionParametersAddress, IsUsingSecureChannel, UsesDefaultSecurityKey, _securityKey);
+    }
+
     /// <summary>
     /// Helper method to raise events with proper synchronization context handling
     /// </summary>
@@ -310,7 +319,7 @@ public sealed class DeviceManagementService : IDeviceManagementService
     /// <summary>
     /// Format keypad data from byte array to string representation
     /// </summary>
-    /// <param name="data">Keypad data as byte array</param>
+    /// <param name="data">Keypad data as a byte array</param>
     /// <returns>Formatted keypad string</returns>
     private static string FormatKeypadData(byte[] data)
     {
