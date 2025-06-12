@@ -32,11 +32,11 @@ public partial class ConnectPage : INavigableView<ConnectViewModel>
 
     private void AddressNumberBox_OnTextChanged(object sender, TextChangedEventArgs e)
     {
-        ViewModel.SelectedAddress = AddressNumberBox.Value ?? 0;
+        ViewModel.SelectedAddress = (byte)(AddressNumberBox.Value ?? 0);
     }
 
     private void AddressNumberBox_OnValueChanged(object sender, NumberBoxValueChangedEventArgs args)
     {
-        ViewModel.SelectedAddress = AddressNumberBox.Value ?? 0;
+        ViewModel.SelectedAddress = (byte)(AddressNumberBox.Value ?? 0);
     }
 }

@@ -16,6 +16,7 @@ namespace OSDPBench.Core.Tests.ViewModels
     {
         private Mock<IDialogService> _dialogServiceMock;
         private Mock<IDeviceManagementService> _deviceManagementServiceMock;
+        private Mock<ISerialPortConnectionService> _serialPortConnnectionServiceMock;
         private ManageViewModel _viewModel;
 
         [SetUp]
@@ -23,6 +24,7 @@ namespace OSDPBench.Core.Tests.ViewModels
         {
             _dialogServiceMock = new Mock<IDialogService>();
             _deviceManagementServiceMock = new Mock<IDeviceManagementService>();
+            _serialPortConnnectionServiceMock = new Mock<ISerialPortConnectionService>();
             
             // Setup device management service's properties
             _deviceManagementServiceMock.Setup(x => x.PortName).Returns("COM1");
@@ -32,7 +34,8 @@ namespace OSDPBench.Core.Tests.ViewModels
             
             _viewModel = new ManageViewModel(
                 _dialogServiceMock.Object,
-                _deviceManagementServiceMock.Object
+                _deviceManagementServiceMock.Object,
+                _serialPortConnnectionServiceMock.Object
             );
         }
 
@@ -150,16 +153,11 @@ namespace OSDPBench.Core.Tests.ViewModels
                     "Successfully update communications, reconnecting with new settings.", 
                     MessageIcon.Information),
                 Times.Once);
-                
-            _deviceManagementServiceMock.Verify(x => x.Shutdown(), Times.Once);
             
             _deviceManagementServiceMock.Verify(
-                x => x.Connect(
+                x => x.Reconnect(
                     It.IsAny<SerialPortOsdpConnection>(),
-                    newAddress,
-                    false,
-                    true,
-                    null),
+                    newAddress),
                 Times.Once);
         }
 
@@ -267,12 +265,9 @@ namespace OSDPBench.Core.Tests.ViewModels
             _deviceManagementServiceMock.Verify(x => x.Shutdown(), Times.Once);
             
             _deviceManagementServiceMock.Verify(
-                x => x.Connect(
+                x => x.Reconnect(
                     It.IsAny<SerialPortOsdpConnection>(),
-                    _deviceManagementServiceMock.Object.Address,
-                    It.IsAny<bool>(),
-                    It.IsAny<bool>(),
-                    It.IsAny<byte[]>()),
+                    _deviceManagementServiceMock.Object.Address),
                 Times.Once);
                 
             _deviceManagementServiceMock.Verify(
