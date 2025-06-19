@@ -147,11 +147,48 @@
                             <ui:Button  Content="Start Discovery"
 										Margin="10 5"
 										HorizontalAlignment="Center"
-										Command="{Binding ViewModel.DiscoverDeviceCommand}"/>
+										Command="{Binding ViewModel.DiscoverDeviceCommand}">
+                                <ui:Button.Style>
+                                    <Style TargetType="ui:Button" BasedOn="{StaticResource {x:Type ui:Button}}">
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding ViewModel.StatusLevel}" Value="Connected">
+                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </ui:Button.Style>
+                            </ui:Button>
                             <ui:Button  Content="Cancel Discovery"
 										Margin="10 5"
 										HorizontalAlignment="Center"
-										Command="{Binding ViewModel.DiscoverDeviceCancelCommand}"/>
+										Command="{Binding ViewModel.DiscoverDeviceCancelCommand}">
+                                <ui:Button.Style>
+                                    <Style TargetType="ui:Button" BasedOn="{StaticResource {x:Type ui:Button}}">
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding ViewModel.StatusLevel}" Value="Connected">
+                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </ui:Button.Style>
+                            </ui:Button>
+                            <ui:Button  Content="Disconnect"
+										Margin="10 5"
+										HorizontalAlignment="Center"
+										Command="{Binding ViewModel.DisconnectDeviceCommand}">
+                                <ui:Button.Style>
+                                    <Style TargetType="ui:Button" BasedOn="{StaticResource {x:Type ui:Button}}">
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding ViewModel.StatusLevel}" Value="Connected">
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </ui:Button.Style>
+                            </ui:Button>
                         </StackPanel>
                     </StackPanel>
                 </Grid>
@@ -232,7 +269,34 @@
                                        Margin="10 0"
                                        HorizontalAlignment="Right"
                                        VerticalAlignment="Bottom"
-                                       Command="{Binding ViewModel.ConnectDeviceCommand}"/>
+                                       Command="{Binding ViewModel.ConnectDeviceCommand}">
+                                <ui:Button.Style>
+                                    <Style TargetType="ui:Button" BasedOn="{StaticResource {x:Type ui:Button}}">
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding ViewModel.StatusLevel}" Value="Connected">
+                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </ui:Button.Style>
+                            </ui:Button>
+                            <ui:Button Grid.Row="1" Grid.Column="2"  Content="Disconnect"
+                                       Margin="10 0"
+                                       HorizontalAlignment="Right"
+                                       VerticalAlignment="Bottom"
+                                       Command="{Binding ViewModel.DisconnectDeviceCommand}">
+                                <ui:Button.Style>
+                                    <Style TargetType="ui:Button" BasedOn="{StaticResource {x:Type ui:Button}}">
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding ViewModel.StatusLevel}" Value="Connected">
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </ui:Button.Style>
+                            </ui:Button>
                         </Grid>
                     </StackPanel>
                 </Grid>

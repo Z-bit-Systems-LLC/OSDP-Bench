@@ -353,6 +353,18 @@ public partial class ConnectViewModel : ObservableObject
         ConnectedAddress = SelectedAddress;
         ConnectedBaudRate = SelectedBaudRate;
     }
+
+    [RelayCommand]
+    private async Task DisconnectDevice()
+    {
+        await _deviceManagementService.Shutdown();
+        StatusText = "Disconnected";
+        StatusLevel = StatusLevel.Disconnected;
+        NakText = string.Empty;
+        _lastPacketEntry = null;
+        LastTxActiveTime = DateTime.MinValue;
+        LastRxActiveTime = DateTime.MinValue;
+    }
 }
 
 /// <summary>
