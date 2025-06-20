@@ -47,6 +47,7 @@
     <ProjectReference Include="..\..\Core\Core.csproj" />
   </ItemGroup>
 
+
   <ItemGroup>
     <Page Update="Views\Controls\MonitorKeypadReadsControl.xaml">
       <Generator>MSBuild:Compile</Generator>
