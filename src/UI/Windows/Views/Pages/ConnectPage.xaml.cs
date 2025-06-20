@@ -2,6 +2,7 @@
 using OSDPBench.Core.ViewModels.Pages;
 using Wpf.Ui.Abstractions.Controls;
 using Wpf.Ui.Controls;
+using OSDPBench.Core.Resources;
 
 namespace OSDPBench.Windows.Views.Pages;
 
@@ -20,7 +21,7 @@ public partial class ConnectPage : INavigableView<ConnectViewModel>
 
     public ConnectViewModel ViewModel { get; }
         
-    public IEnumerable<string> ConnectionTypes => ["Discover", "Manual"];
+    public IEnumerable<string> ConnectionTypes => [OSDPBench.Core.Resources.Resources.GetString("ConnectionType_Discover"), OSDPBench.Core.Resources.Resources.GetString("ConnectionType_Manual")];
 
     private void AddressNumberBox_OnTextChanged(object sender, TextChangedEventArgs e)
     {

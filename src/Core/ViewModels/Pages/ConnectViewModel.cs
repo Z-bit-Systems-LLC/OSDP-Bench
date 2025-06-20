@@ -5,6 +5,7 @@ using System.Collections.ObjectModel;
 using OSDP.Net.Tracing;
 using OSDPBench.Core.Models;
 using OSDPBench.Core.Services;
+using OSDPBench.Core.Resources;
 
 namespace OSDPBench.Core.ViewModels.Pages;
 
@@ -96,23 +97,23 @@ public partial class ConnectViewModel : ObservableObject, IDisposable
     {
         if (connectionStatus == ConnectionStatus.Connected)
         {
-            StatusText = "Connected";
+            StatusText = OSDPBench.Core.Resources.Resources.GetString("Status_Connected");
             NakText = string.Empty;
             StatusLevel = StatusLevel.Connected;
         }
         else if (StatusLevel == StatusLevel.Discovered)
         {
-            StatusText = "Attempting to connect";
+            StatusText = OSDPBench.Core.Resources.Resources.GetString("Status_AttemptingToConnect");
             StatusLevel = StatusLevel.Connecting;
         }
         else if (connectionStatus == ConnectionStatus.InvalidSecurityKey)
         {
-            StatusText = "Invalid security key";
+            StatusText = OSDPBench.Core.Resources.Resources.GetString("Status_InvalidSecurityKey");
             StatusLevel = StatusLevel.Error;
         }
         else
         {
-            StatusText = "Disconnected";
+            StatusText = OSDPBench.Core.Resources.Resources.GetString("Status_Disconnected");
             StatusLevel = StatusLevel.Disconnected;
         }
     }
@@ -180,7 +181,7 @@ public partial class ConnectViewModel : ObservableObject, IDisposable
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error initializing serial ports: {ex.Message}");
+            Console.WriteLine(OSDPBench.Core.Resources.Resources.GetString("Error_InitializingSerialPorts").Replace("{0}", ex.Message));
             StatusLevel = StatusLevel.NotReady;
         }
     }
@@ -221,27 +222,27 @@ public partial class ConnectViewModel : ObservableObject, IDisposable
         switch (current.Status)
         {
             case DiscoveryStatus.Started:
-                StatusText = "Attempting to discover device";
+                StatusText = OSDPBench.Core.Resources.Resources.GetString("Status_AttemptingToDiscover");
                 break;
                 
             case DiscoveryStatus.LookingForDeviceOnConnection:
-                StatusText = $"Attempting to discover device at {current.Connection.BaudRate}";
+                StatusText = OSDPBench.Core.Resources.Resources.GetString("Status_AttemptingToDiscoverAtBaudRate").Replace("{0}", current.Connection.BaudRate.ToString());
                 break;
                 
             case DiscoveryStatus.ConnectionWithDeviceFound:
-                StatusText = $"Found device at {current.Connection.BaudRate}";
+                StatusText = OSDPBench.Core.Resources.Resources.GetString("Status_FoundDeviceAtBaudRate").Replace("{0}", current.Connection.BaudRate.ToString());
                 break;
                 
             case DiscoveryStatus.LookingForDeviceAtAddress:
-                StatusText = $"Attempting to determine device at {current.Connection.BaudRate} with address {current.Address}";
+                StatusText = OSDPBench.Core.Resources.Resources.GetString("Status_AttemptingToDetermineDevice").Replace("{0}", current.Connection.BaudRate.ToString()).Replace("{1}", current.Address.ToString());
                 break;
                 
             case DiscoveryStatus.DeviceIdentified:
-                StatusText = $"Attempting to identify device at {current.Connection.BaudRate} with address {current.Address}";
+                StatusText = OSDPBench.Core.Resources.Resources.GetString("Status_AttemptingToIdentifyDevice").Replace("{0}", current.Connection.BaudRate.ToString()).Replace("{1}", current.Address.ToString());
                 break;
                 
             case DiscoveryStatus.CapabilitiesDiscovered:
-                StatusText = $"Attempting to get capabilities of device at {current.Connection.BaudRate} with address {current.Address}";
+                StatusText = OSDPBench.Core.Resources.Resources.GetString("Status_AttemptingToGetCapabilities").Replace("{0}", current.Connection.BaudRate.ToString()).Replace("{1}", current.Address.ToString());
                 break;
                 
             case DiscoveryStatus.Succeeded:
@@ -249,18 +250,18 @@ public partial class ConnectViewModel : ObservableObject, IDisposable
                 break;
                 
             case DiscoveryStatus.DeviceNotFound:
-                StatusText = "Failed to connect to device";
+                StatusText = OSDPBench.Core.Resources.Resources.GetString("Status_FailedToConnect");
                 StatusLevel = StatusLevel.Error;
                 break;
                 
             case DiscoveryStatus.Error:
-                StatusText = "Error while discovering device";
+                StatusText = OSDPBench.Core.Resources.Resources.GetString("Status_ErrorWhileDiscovering");
                 StatusLevel = StatusLevel.Error;
                 break;
                 
             case DiscoveryStatus.Cancelled:
                 StatusLevel = StatusLevel.Error;
-                StatusText = "Cancelled discovery";
+                StatusText = OSDPBench.Core.Resources.Resources.GetString("Status_CancelledDiscovery");
                 break;
                 
             default:
@@ -270,7 +271,7 @@ public partial class ConnectViewModel : ObservableObject, IDisposable
 
     private void HandleSuccessfulDiscovery(DiscoveryResult result)
     {
-        StatusText = $"Successfully discovered device {result.Connection.BaudRate} with address {result.Address}";
+        StatusText = OSDPBench.Core.Resources.Resources.GetString("Status_SuccessfullyDiscovered").Replace("{0}", result.Connection.BaudRate.ToString()).Replace("{1}", result.Address.ToString());
         StatusLevel = StatusLevel.Discovered;
         
         if (result.Connection is ISerialPortConnectionService service)
@@ -289,7 +290,7 @@ public partial class ConnectViewModel : ObservableObject, IDisposable
         
         string serialPortName = SelectedSerialPort?.Name ?? string.Empty;
         StatusLevel = StatusLevel.ConnectingManually;
-        StatusText = "Attempting to connect manually";
+        StatusText = OSDPBench.Core.Resources.Resources.GetString("Status_AttemptingToConnectManually");
 
         byte[]? securityKey = await GetSecurityKey();
         if (securityKey == null && !UseDefaultKey) return;
@@ -308,8 +309,8 @@ public partial class ConnectViewModel : ObservableObject, IDisposable
         catch (Exception exception)
         {
             await _dialogService.ShowMessageDialog(
-                "Connect", 
-                $"Invalid security key entered. {exception.Message}",
+                OSDPBench.Core.Resources.Resources.GetString("Dialog_Connect_Title"), 
+                OSDPBench.Core.Resources.Resources.GetString("Dialog_InvalidSecurityKeyMessage").Replace("{0}", exception.Message),
                 MessageIcon.Error);
             return null;
         }
@@ -334,7 +335,7 @@ public partial class ConnectViewModel : ObservableObject, IDisposable
     private async Task DisconnectDevice()
     {
         await _deviceManagementService.Shutdown();
-        StatusText = "Disconnected";
+        StatusText = OSDPBench.Core.Resources.Resources.GetString("Status_Disconnected");
         StatusLevel = StatusLevel.Disconnected;
         NakText = string.Empty;
         _lastPacketEntry = null;
@@ -390,23 +391,23 @@ public partial class ConnectViewModel : ObservableObject, IDisposable
             // Show notification based on change type
             if (e.ChangeType == UsbDeviceChangeType.Connected)
             {
-                UsbStatusText = "USB device connected";
+                UsbStatusText = OSDPBench.Core.Resources.Resources.GetString("USB_DeviceConnected");
             }
             else if (e.ChangeType == UsbDeviceChangeType.Disconnected)
             {
-                UsbStatusText = "USB device disconnected";
+                UsbStatusText = OSDPBench.Core.Resources.Resources.GetString("USB_DeviceDisconnected");
                 
                 // If we were connected and the device was removed, update status
                 if (StatusLevel == StatusLevel.Connected && !e.AvailablePorts.Contains(_deviceManagementService.PortName ?? ""))
                 {
                     await _deviceManagementService.Shutdown();
                     StatusLevel = StatusLevel.Disconnected;
-                    StatusText = "Device disconnected - USB removed";
+                    StatusText = OSDPBench.Core.Resources.Resources.GetString("Status_DeviceDisconnectedUSBRemoved");
                 }
             }
             else
             {
-                UsbStatusText = "USB ports changed";
+                UsbStatusText = OSDPBench.Core.Resources.Resources.GetString("USB_PortsChanged");
             }
             
             // Clear USB status after 3 seconds
@@ -415,7 +416,7 @@ public partial class ConnectViewModel : ObservableObject, IDisposable
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error handling USB device change: {ex.Message}");
+            Console.WriteLine(OSDPBench.Core.Resources.Resources.GetString("Error_HandlingUSBDeviceChange").Replace("{0}", ex.Message));
         }
     }
     

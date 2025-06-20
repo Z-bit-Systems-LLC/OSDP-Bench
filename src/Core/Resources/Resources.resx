@@ -355,4 +355,152 @@
     <value>OSDP Bench</value>
     <comment>Main window title</comment>
   </data>
+  
+  <!-- ViewModel Status Messages -->
+  <data name="Status_AttemptingToConnect" xml:space="preserve">
+    <value>Attempting to connect</value>
+    <comment>Status when attempting to connect to device</comment>
+  </data>
+  <data name="Status_InvalidSecurityKey" xml:space="preserve">
+    <value>Invalid security key</value>
+    <comment>Status when security key is invalid</comment>
+  </data>
+  <data name="Status_AttemptingToDiscover" xml:space="preserve">
+    <value>Attempting to discover device</value>
+    <comment>Status when starting device discovery</comment>
+  </data>
+  <data name="Status_AttemptingToDiscoverAtBaudRate" xml:space="preserve">
+    <value>Attempting to discover device at {0}</value>
+    <comment>Status when discovering at specific baud rate. {0} = baud rate</comment>
+  </data>
+  <data name="Status_FoundDeviceAtBaudRate" xml:space="preserve">
+    <value>Found device at {0}</value>
+    <comment>Status when device found at baud rate. {0} = baud rate</comment>
+  </data>
+  <data name="Status_AttemptingToDetermineDevice" xml:space="preserve">
+    <value>Attempting to determine device at {0} with address {1}</value>
+    <comment>Status when determining device. {0} = baud rate, {1} = address</comment>
+  </data>
+  <data name="Status_AttemptingToIdentifyDevice" xml:space="preserve">
+    <value>Attempting to identify device at {0} with address {1}</value>
+    <comment>Status when identifying device. {0} = baud rate, {1} = address</comment>
+  </data>
+  <data name="Status_AttemptingToGetCapabilities" xml:space="preserve">
+    <value>Attempting to get capabilities of device at {0} with address {1}</value>
+    <comment>Status when getting device capabilities. {0} = baud rate, {1} = address</comment>
+  </data>
+  <data name="Status_SuccessfullyDiscovered" xml:space="preserve">
+    <value>Successfully discovered device {0} with address {1}</value>
+    <comment>Status when device successfully discovered. {0} = baud rate, {1} = address</comment>
+  </data>
+  <data name="Status_FailedToConnect" xml:space="preserve">
+    <value>Failed to connect to device</value>
+    <comment>Status when connection failed</comment>
+  </data>
+  <data name="Status_ErrorWhileDiscovering" xml:space="preserve">
+    <value>Error while discovering device</value>
+    <comment>Status when error occurred during discovery</comment>
+  </data>
+  <data name="Status_CancelledDiscovery" xml:space="preserve">
+    <value>Cancelled discovery</value>
+    <comment>Status when discovery was cancelled</comment>
+  </data>
+  <data name="Status_AttemptingToConnectManually" xml:space="preserve">
+    <value>Attempting to connect manually</value>
+    <comment>Status when attempting manual connection</comment>
+  </data>
+  <data name="Status_DeviceDisconnectedUSBRemoved" xml:space="preserve">
+    <value>Device disconnected - USB removed</value>
+    <comment>Status when device disconnected due to USB removal</comment>
+  </data>
+  
+  <!-- USB Device Change Messages -->
+  <data name="USB_DeviceConnected" xml:space="preserve">
+    <value>USB device connected</value>
+    <comment>Message when USB device is connected</comment>
+  </data>
+  <data name="USB_DeviceDisconnected" xml:space="preserve">
+    <value>USB device disconnected</value>
+    <comment>Message when USB device is disconnected</comment>
+  </data>
+  <data name="USB_PortsChanged" xml:space="preserve">
+    <value>USB ports changed</value>
+    <comment>Message when USB ports have changed</comment>
+  </data>
+  
+  <!-- Dialog Messages -->
+  <data name="Dialog_Connect_Title" xml:space="preserve">
+    <value>Connect</value>
+    <comment>Title for connection dialog</comment>
+  </data>
+  <data name="Dialog_InvalidSecurityKeyMessage" xml:space="preserve">
+    <value>Invalid security key entered. {0}</value>
+    <comment>Error message for invalid security key. {0} = exception message</comment>
+  </data>
+  
+  <!-- Console Error Messages -->
+  <data name="Error_InitializingSerialPorts" xml:space="preserve">
+    <value>Error initializing serial ports: {0}</value>
+    <comment>Console error when serial port initialization fails. {0} = error message</comment>
+  </data>
+  <data name="Error_HandlingUSBDeviceChange" xml:space="preserve">
+    <value>Error handling USB device change: {0}</value>
+    <comment>Console error when USB device change handling fails. {0} = error message</comment>
+  </data>
+  
+  <!-- ManageViewModel Dialog Messages -->
+  <data name="Dialog_PerformingAction_Title" xml:space="preserve">
+    <value>Performing Action</value>
+    <comment>Title for dialog when performing device action</comment>
+  </data>
+  <data name="Dialog_UpdateCommunications_Title" xml:space="preserve">
+    <value>Update Communications</value>
+    <comment>Title for update communications dialog</comment>
+  </data>
+  <data name="Dialog_UpdateCommunications_NoChange" xml:space="preserve">
+    <value>Communication parameters didn't change.</value>
+    <comment>Message when communication parameters haven't changed</comment>
+  </data>
+  <data name="Dialog_UpdateCommunications_Success" xml:space="preserve">
+    <value>Successfully update communications, reconnecting with new settings.</value>
+    <comment>Message when communication parameters updated successfully</comment>
+  </data>
+  <data name="Dialog_ResetDevice_Title" xml:space="preserve">
+    <value>Reset Device</value>
+    <comment>Title for reset device dialog</comment>
+  </data>
+  <data name="Dialog_ResetDevice_Confirmation" xml:space="preserve">
+    <value>Do you want to reset device, if so power cycle then click yes when the device boots up.</value>
+    <comment>Confirmation message for device reset</comment>
+  </data>
+  <data name="Dialog_ResetDevice_Success" xml:space="preserve">
+    <value>Successfully sent reset commands. Power cycle device again and then perform a discovery.</value>
+    <comment>Message when device reset successful</comment>
+  </data>
+  <data name="Dialog_ResetDevice_Failed" xml:space="preserve">
+    <value>Failed to reset the device. Perform a discovery to reconnect to the device.</value>
+    <comment>Message when device reset failed</comment>
+  </data>
+  
+  <!-- Code-behind Messages -->
+  <data name="Dialog_VendorInformation_Title" xml:space="preserve">
+    <value>Vendor Information</value>
+    <comment>Title for vendor information dialog</comment>
+  </data>
+  <data name="Error_OUILookupFailed" xml:space="preserve">
+    <value>Unable to open OUI lookup: {0}</value>
+    <comment>Error message when OUI lookup fails. {0} = exception message</comment>
+  </data>
+  <data name="Monitor_Collapse" xml:space="preserve">
+    <value>Collapse</value>
+    <comment>Button text to collapse row details</comment>
+  </data>
+  <data name="ConnectionType_Discover" xml:space="preserve">
+    <value>Discover</value>
+    <comment>Connection type option for discovery</comment>
+  </data>
+  <data name="ConnectionType_Manual" xml:space="preserve">
+    <value>Manual</value>
+    <comment>Connection type option for manual connection</comment>
+  </data>
 </root>

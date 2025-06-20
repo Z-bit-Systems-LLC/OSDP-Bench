@@ -5,6 +5,7 @@ using OSDP.Net.Tracing;
 using OSDPBench.Core.Actions;
 using OSDPBench.Core.Models;
 using OSDPBench.Core.Services;
+using OSDPBench.Core.Resources;
 
 namespace OSDPBench.Core.ViewModels.Pages;
 
@@ -51,7 +52,7 @@ public partial class ManageViewModel : ObservableObject
     {
         if (SelectedDeviceAction == null) return;
 
-        await ExceptionHelper.ExecuteSafelyAsync(_dialogService, "Performing Action", async () =>
+        await ExceptionHelper.ExecuteSafelyAsync(_dialogService, OSDPBench.Core.Resources.Resources.GetString("Dialog_PerformingAction_Title"), async () =>
         {
             if (SelectedDeviceAction is ResetCypressDeviceAction)
             {
@@ -71,7 +72,7 @@ public partial class ManageViewModel : ObservableObject
     {
         return await ExceptionHelper.ExecuteSafelyAsync(
             _dialogService,
-            "Performing Action", 
+            OSDPBench.Core.Resources.Resources.GetString("Dialog_PerformingAction_Title"), 
             async () => await _deviceManagementService.ExecuteDeviceAction(SelectedDeviceAction!, DeviceActionParameter),
             null);
     }
@@ -86,13 +87,13 @@ public partial class ManageViewModel : ObservableObject
 
         if (!parametersChanged)
         {
-            await _dialogService.ShowMessageDialog("Update Communications",
-                "Communication parameters didn't change.", MessageIcon.Warning);
+            await _dialogService.ShowMessageDialog(OSDPBench.Core.Resources.Resources.GetString("Dialog_UpdateCommunications_Title"),
+                OSDPBench.Core.Resources.Resources.GetString("Dialog_UpdateCommunications_NoChange"), MessageIcon.Warning);
             return;
         }
 
-        await _dialogService.ShowMessageDialog("Update Communications",
-            "Successfully update communications, reconnecting with new settings.", MessageIcon.Information);
+        await _dialogService.ShowMessageDialog(OSDPBench.Core.Resources.Resources.GetString("Dialog_UpdateCommunications_Title"),
+            OSDPBench.Core.Resources.Resources.GetString("Dialog_UpdateCommunications_Success"), MessageIcon.Information);
 
         if (_deviceManagementService.PortName != null)
         {    await _deviceManagementService.Reconnect(_serialPortConnectionService.GetConnection(
@@ -108,7 +109,7 @@ public partial class ManageViewModel : ObservableObject
         if (!IdentityLookup.CanSendResetCommand)
         {
             await _dialogService.ShowMessageDialog(
-                "Reset Device", 
+                OSDPBench.Core.Resources.Resources.GetString("Dialog_ResetDevice_Title"), 
                 IdentityLookup.ResetInstructions,
                 MessageIcon.Information);
             return;
@@ -117,8 +118,8 @@ public partial class ManageViewModel : ObservableObject
         await _deviceManagementService.Shutdown();
         
         bool userConfirmed = await _dialogService.ShowConfirmationDialog(
-            "Reset Device",
-            "Do you want to reset device, if so power cycle then click yes when the device boots up.",
+            OSDPBench.Core.Resources.Resources.GetString("Dialog_ResetDevice_Title"),
+            OSDPBench.Core.Resources.Resources.GetString("Dialog_ResetDevice_Confirmation"),
             MessageIcon.Warning);
             
         if (!userConfirmed)
@@ -133,7 +134,7 @@ public partial class ManageViewModel : ObservableObject
             return;
         }
 
-        bool success = await ExceptionHelper.ExecuteSafelyAsync(_dialogService, "Reset Device", async () =>
+        bool success = await ExceptionHelper.ExecuteSafelyAsync(_dialogService, OSDPBench.Core.Resources.Resources.GetString("Dialog_ResetDevice_Title"), async () =>
         {
             if (_deviceManagementService.PortName != null)
             {
@@ -148,15 +149,15 @@ public partial class ManageViewModel : ObservableObject
         if (success)
         {
             await _dialogService.ShowMessageDialog(
-                "Reset Device",
-                "Successfully sent reset commands. Power cycle device again and then perform a discovery.",
+                OSDPBench.Core.Resources.Resources.GetString("Dialog_ResetDevice_Title"),
+                OSDPBench.Core.Resources.Resources.GetString("Dialog_ResetDevice_Success"),
                 MessageIcon.Information);
         }
         else
         {
             await _dialogService.ShowMessageDialog(
-                "Reset Device",
-                "Failed to reset the device. Perform a discovery to reconnect to the device.",
+                OSDPBench.Core.Resources.Resources.GetString("Dialog_ResetDevice_Title"),
+                OSDPBench.Core.Resources.Resources.GetString("Dialog_ResetDevice_Failed"),
                 MessageIcon.Error);
         }
     }

@@ -16,7 +16,7 @@ using System.Resources;
 namespace OSDPBench.Core.Resources;
 
 /// <summary>
-/// A strongly-typed resource class, for looking up localized strings, etc.
+/// A strongly typed resource class for looking up localized strings, etc.
 /// </summary>
 public class Resources
 {
@@ -27,7 +27,7 @@ public class Resources
     /// <summary>
     /// Returns the cached ResourceManager instance used by this class.
     /// </summary>
-    internal static ResourceManager ResourceManager
+    public static ResourceManager ResourceManager
     {
         get
         {
@@ -44,7 +44,7 @@ public class Resources
     /// Overrides the current thread's CurrentUICulture property for all
     /// resource lookups using this strongly typed resource class.
     /// </summary>
-    internal static CultureInfo? Culture
+    public static CultureInfo? Culture
     {
         get => _resourceCulture;
         set => _resourceCulture = value;

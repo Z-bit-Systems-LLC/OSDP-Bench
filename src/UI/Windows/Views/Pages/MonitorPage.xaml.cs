@@ -4,6 +4,7 @@ using System.Windows.Media;
 using OSDPBench.Core.ViewModels.Pages;
 using Wpf.Ui.Abstractions.Controls;
 using Button = Wpf.Ui.Controls.Button;
+using OSDPBench.Core.Resources;
 
 namespace OSDPBench.Windows.Views.Pages;
 
@@ -33,7 +34,7 @@ public partial class MonitorPage : INavigableView<MonitorViewModel>
                     ? Visibility.Collapsed
                     : Visibility.Visible;
                 
-                button.Content = row.DetailsVisibility == Visibility.Visible ? "Collapse" : "Expand";
+                button.Content = row.DetailsVisibility == Visibility.Visible ? OSDPBench.Core.Resources.Resources.GetString("Monitor_Collapse") : OSDPBench.Core.Resources.Resources.GetString("Monitor_Expand");
             }
         }
     }
