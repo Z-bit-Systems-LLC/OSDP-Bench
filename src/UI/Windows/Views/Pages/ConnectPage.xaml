@@ -69,22 +69,36 @@
             </ui:CardExpander.Header>
             <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition MinWidth="200" />
-                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="200"/>
+                    <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
-                <StackPanel Grid.Column="0" 
-						Orientation="Vertical">
+                
+                <!-- Serial Port Selection -->
+                <StackPanel Grid.Column="0" Orientation="Vertical">
                     <Label Content="Serial Port"
-							   Target="{Binding ElementName=SerialPortComboBox}" />
+                           Target="{Binding ElementName=SerialPortComboBox}" />
                     <ComboBox x:Name="SerialPortComboBox"
                               ItemsSource="{Binding ViewModel.AvailableSerialPorts }"
                               DisplayMemberPath="Name"
                               SelectedItem="{Binding ViewModel.SelectedSerialPort}"/>
                 </StackPanel>
-                <ui:Button Grid.Column="1"  Content="Rescan Ports"
-						   Margin="5 0"
-						   VerticalAlignment="Bottom"
-						   Command="{Binding ViewModel.ScanSerialPortsCommand}"/>
+                
+                <!-- USB Status Display -->
+                <TextBlock Grid.Column="1"
+                           Text="{Binding ViewModel.UsbStatusText}"
+                           VerticalAlignment="Center"
+                           Margin="10,0,0,0"
+                           Foreground="{ui:ThemeResource TextFillColorSecondaryBrush}">
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Text, RelativeSource={RelativeSource Self}}" Value="">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
             </Grid>
         </ui:CardExpander>
         <ui:CardExpander IsExpanded="True"

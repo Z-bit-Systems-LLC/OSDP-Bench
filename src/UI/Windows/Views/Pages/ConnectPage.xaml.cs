@@ -16,14 +16,6 @@ public partial class ConnectPage : INavigableView<ConnectViewModel>
         DataContext = this;
 
         InitializeComponent();
-
-        Loaded += async (_, _) =>
-        {
-            if (!ViewModel.AvailableSerialPorts.Any())
-            {
-                await ViewModel.ScanSerialPortsCommand.ExecuteAsync(null);
-            }
-        };
     }
 
     public ConnectViewModel ViewModel { get; }

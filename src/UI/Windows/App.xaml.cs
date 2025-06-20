@@ -54,7 +54,7 @@ public partial class App
             services.AddSingleton<IDeviceManagementService, DeviceManagementService>();
             services.AddSingleton<IDialogService, WindowsDialogService>();
             services.AddSingleton<ISerialPortConnectionService, WindowsSerialPortConnectionService>();
-            services.AddSingleton<IDialogService, WindowsDialogService>();
+            services.AddSingleton<IUsbDeviceMonitorService, WindowsUsbDeviceMonitorService>();
         }).Build();
 
     /// <summary>
@@ -84,6 +84,13 @@ public partial class App
     /// </summary>
     private async void OnExit(object sender, ExitEventArgs e)
     {
+        // Dispose of services that need explicit cleanup
+        var connectViewModel = Host.Services.GetService<ConnectViewModel>();
+        connectViewModel?.Dispose();
+        
+        var usbMonitor = Host.Services.GetService<IUsbDeviceMonitorService>();
+        usbMonitor?.Dispose();
+        
         await Host.StopAsync();
 
         Host.Dispose();

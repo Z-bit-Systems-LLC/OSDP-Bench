@@ -11,22 +11,25 @@ namespace OSDPBench.Core.ViewModels.Pages;
 /// <summary>
 /// ViewModel for the Connect page.
 /// </summary>
-public partial class ConnectViewModel : ObservableObject
+public partial class ConnectViewModel : ObservableObject, IDisposable
 {
     // Default baud rates available for connection
     private static readonly IReadOnlyList<int> DefaultBaudRates = [9600, 19200, 38400, 57600, 115200, 230400];
     
     private readonly IDialogService _dialogService;
     private readonly IDeviceManagementService _deviceManagementService;
+    private readonly IUsbDeviceMonitorService? _usbDeviceMonitorService;
     
     private ISerialPortConnectionService _serialPortConnectionService;
     private PacketTraceEntry? _lastPacketEntry;
+    private bool _isDisposed;
+    private Timer? _usbStatusTimer;
 
     /// <summary>
     /// ViewModel for the Connect page.
     /// </summary>
     public ConnectViewModel(IDialogService dialogService, IDeviceManagementService deviceManagementService,
-        ISerialPortConnectionService serialPortConnectionService)
+        ISerialPortConnectionService serialPortConnectionService, IUsbDeviceMonitorService? usbDeviceMonitorService = null)
     {
         _dialogService = dialogService ??
                          throw new ArgumentNullException(nameof(dialogService));
@@ -34,10 +37,21 @@ public partial class ConnectViewModel : ObservableObject
                                    throw new ArgumentNullException(nameof(deviceManagementService));
         _serialPortConnectionService = serialPortConnectionService ??
                                        throw new ArgumentNullException(nameof(serialPortConnectionService));
+        _usbDeviceMonitorService = usbDeviceMonitorService;
         
         _deviceManagementService.ConnectionStatusChange += DeviceManagementServiceOnConnectionStatusChange;
         _deviceManagementService.NakReplyReceived += DeviceManagementServiceOnNakReplyReceived;
         _deviceManagementService.TraceEntryReceived += OnDeviceManagementServiceOnTraceEntryReceived;
+        
+        // Start USB monitoring if available
+        if (_usbDeviceMonitorService != null)
+        {
+            _usbDeviceMonitorService.UsbDeviceChanged += OnUsbDeviceChanged;
+            _usbDeviceMonitorService.StartMonitoring();
+        }
+        
+        // Perform initial port scan
+        Task.Run(async () => await InitializeSerialPorts());
     }
 
     private void OnDeviceManagementServiceOnTraceEntryReceived(object? sender, TraceEntry traceEntry)
@@ -140,71 +154,33 @@ public partial class ConnectViewModel : ObservableObject
     [ObservableProperty] private DateTime _lastTxActiveTime;
     
     [ObservableProperty] private DateTime _lastRxActiveTime;
+    
+    [ObservableProperty] private string _usbStatusText = string.Empty;
 
-    [RelayCommand]
-    private async Task ScanSerialPorts()
+    private async Task InitializeSerialPorts()
     {
-        // Check if the user wants to proceed when already connected
-        if (!await ConfirmScanWhenConnected()) return;
-
-        // Prepare for scanning
-        await PrepareForSerialPortScan();
-
-        // Perform the scan and populate the available ports
-        bool portsFound = await FindAndPopulateSerialPorts();
-
-        // Update UI based on scan results
-        await UpdateUiAfterSerialPortScan(portsFound);
-    }
-
-    private async Task<bool> ConfirmScanWhenConnected()
-    {
-        if (StatusLevel != StatusLevel.Ready && StatusLevel != StatusLevel.NotReady)
+        try
         {
-            return await _dialogService.ShowConfirmationDialog(
-                "Rescan Serial Ports",
-                "This will shutdown existing connection to the PD. Are you sure you want to continue?",
-                MessageIcon.Warning);
+            var foundPorts = await _serialPortConnectionService.FindAvailableSerialPorts();
+            
+            foreach (var port in foundPorts)
+            {
+                AvailableSerialPorts.Add(port);
+            }
+            
+            if (AvailableSerialPorts.Count > 0)
+            {
+                SelectedSerialPort = AvailableSerialPorts.First();
+                StatusLevel = StatusLevel.Ready;
+            }
+            else
+            {
+                StatusLevel = StatusLevel.NotReady;
+            }
         }
-        
-        return true;
-    }
-
-    private async Task PrepareForSerialPortScan()
-    {
-        StatusLevel = StatusLevel.NotReady;
-        await _deviceManagementService.Shutdown();
-        StatusText = string.Empty;
-        NakText = string.Empty;
-        AvailableSerialPorts.Clear();
-    }
-
-    private async Task<bool> FindAndPopulateSerialPorts()
-    {
-        var foundPorts = await _serialPortConnectionService.FindAvailableSerialPorts();
-        bool anyFound = false;
-        
-        foreach (var port in foundPorts)
+        catch (Exception ex)
         {
-            anyFound = true;
-            AvailableSerialPorts.Add(port);
-        }
-        
-        return anyFound;
-    }
-
-    private async Task UpdateUiAfterSerialPortScan(bool portsFound)
-    {
-        if (portsFound)
-        {
-            SelectedSerialPort = AvailableSerialPorts.First();
-            StatusLevel = StatusLevel.Ready;
-        }
-        else
-        {
-            await _dialogService.ShowMessageDialog("Error",
-                "No serial ports are available. Make sure that required drivers are installed.", 
-                MessageIcon.Error);
+            Console.WriteLine($"Error initializing serial ports: {ex.Message}");
             StatusLevel = StatusLevel.NotReady;
         }
     }
@@ -364,6 +340,116 @@ public partial class ConnectViewModel : ObservableObject
         _lastPacketEntry = null;
         LastTxActiveTime = DateTime.MinValue;
         LastRxActiveTime = DateTime.MinValue;
+    }
+    
+    private async void OnUsbDeviceChanged(object? sender, UsbDeviceChangedEventArgs e)
+    {
+        try
+        {
+            // Get current port selection
+            var currentlySelectedPort = SelectedSerialPort?.Name;
+            
+            // Clear and repopulate the available ports
+            AvailableSerialPorts.Clear();
+            
+            var availablePorts = await _serialPortConnectionService.FindAvailableSerialPorts();
+            foreach (var port in availablePorts)
+            {
+                AvailableSerialPorts.Add(port);
+            }
+            
+            // Handle port selection based on change type
+            if (AvailableSerialPorts.Count > 0)
+            {
+                // Try to reselect the previously selected port if it still exists
+                var previousPort = AvailableSerialPorts.FirstOrDefault(p => p.Name == currentlySelectedPort);
+                if (previousPort != null)
+                {
+                    SelectedSerialPort = previousPort;
+                }
+                else
+                {
+                    // Select the first available port
+                    SelectedSerialPort = AvailableSerialPorts.First();
+                }
+                
+                if (StatusLevel == StatusLevel.NotReady)
+                {
+                    StatusLevel = StatusLevel.Ready;
+                }
+            }
+            else
+            {
+                SelectedSerialPort = null;
+                if (StatusLevel == StatusLevel.Ready)
+                {
+                    StatusLevel = StatusLevel.NotReady;
+                }
+            }
+            
+            // Show notification based on change type
+            if (e.ChangeType == UsbDeviceChangeType.Connected)
+            {
+                UsbStatusText = "USB device connected";
+            }
+            else if (e.ChangeType == UsbDeviceChangeType.Disconnected)
+            {
+                UsbStatusText = "USB device disconnected";
+                
+                // If we were connected and the device was removed, update status
+                if (StatusLevel == StatusLevel.Connected && !e.AvailablePorts.Contains(_deviceManagementService.PortName ?? ""))
+                {
+                    await _deviceManagementService.Shutdown();
+                    StatusLevel = StatusLevel.Disconnected;
+                    StatusText = "Device disconnected - USB removed";
+                }
+            }
+            else
+            {
+                UsbStatusText = "USB ports changed";
+            }
+            
+            // Clear USB status after 3 seconds
+            _usbStatusTimer?.Dispose();
+            _usbStatusTimer = new Timer(_ => UsbStatusText = string.Empty, null, TimeSpan.FromSeconds(3), Timeout.InfiniteTimeSpan);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error handling USB device change: {ex.Message}");
+        }
+    }
+    
+    /// <inheritdoc />
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+    
+    /// <summary>
+    /// Releases unmanaged and - optionally - managed resources.
+    /// </summary>
+    protected virtual void Dispose(bool disposing)
+    {
+        if (_isDisposed) return;
+        
+        if (disposing)
+        {
+            // Unsubscribe from events
+            _deviceManagementService.ConnectionStatusChange -= DeviceManagementServiceOnConnectionStatusChange;
+            _deviceManagementService.NakReplyReceived -= DeviceManagementServiceOnNakReplyReceived;
+            _deviceManagementService.TraceEntryReceived -= OnDeviceManagementServiceOnTraceEntryReceived;
+            
+            if (_usbDeviceMonitorService != null)
+            {
+                _usbDeviceMonitorService.UsbDeviceChanged -= OnUsbDeviceChanged;
+                _usbDeviceMonitorService.StopMonitoring();
+            }
+            
+            _usbStatusTimer?.Dispose();
+        }
+        
+        _isDisposed = true;
     }
 }
 

@@ -53,85 +53,27 @@ public class ConnectViewModelTests
         Assert.That(expectedBaudRates.Length, Is.EqualTo(_viewModel.AvailableBaudRates.Count));
         Assert.That(expectedBaudRates , Is.EqualTo(_viewModel.AvailableBaudRates.ToArray()));
     }
-
-    #region ScanSerialPorts Tests
-
-    [Test]
-    public async Task ConnectViewModel_ExecuteScanSerialPortsCommand()
-    {
-        // Arrange
-        _viewModel.StatusLevel = StatusLevel.Ready;
-        var availablePorts = CreateTestSerialPorts();
-        SetupSerialPortMockWithPorts(availablePorts);
-
-        // Act
-        await _viewModel.ScanSerialPortsCommand.ExecuteAsync(null);
-
-        // Assert
-        Assert.That(availablePorts.Length, Is.EqualTo(_viewModel.AvailableSerialPorts.Count));
-        Assert.That(availablePorts, Is.EqualTo(_viewModel.AvailableSerialPorts));
-        Assert.That(_viewModel.StatusLevel, Is.EqualTo(StatusLevel.Ready));
-    }
     
     [Test]
-    public async Task ConnectViewModel_ExecuteScanSerialPortsCommand_NoPortsFound()
+    public async Task ConnectViewModel_InitializesSerialPortsOnStartup()
     {
         // Arrange
-        _viewModel.StatusLevel = StatusLevel.Ready;
-        SetupSerialPortMockWithPorts(Array.Empty<AvailableSerialPort>());
-
-        // Act
-        await _viewModel.ScanSerialPortsCommand.ExecuteAsync(null);
-
-        // Assert
-        Assert.That(_viewModel.AvailableSerialPorts.Count, Is.EqualTo(0));
-        Assert.That(_viewModel.AvailableSerialPorts, Is.Empty);
+        var availablePorts = CreateTestSerialPorts();
+        SetupSerialPortMockWithPorts(availablePorts);
         
-        // Verify that the dialog service was called to show a message to the user
-        _dialogServiceMock.Verify(
-            x => x.ShowMessageDialog(
-                It.IsAny<string>(),  // Title
-                It.IsAny<string>(),  // Message
-                MessageIcon.Error),
-            Times.Once);
-        Assert.That(_viewModel.StatusLevel, Is.EqualTo(StatusLevel.NotReady));
-    }
-    
-    [Test]
-    public async Task ConnectViewModel_ExecuteScanSerialPortsCommand_AlreadyConnected()
-    {
-        // Arrange
-        _viewModel.StatusLevel = StatusLevel.Connected;
-        var availablePorts = CreateTestSerialPorts();
-        SetupSerialPortMockWithPorts(availablePorts);
-        SetupDialogConfirmation(true);
-
-        // Act
-        await _viewModel.ScanSerialPortsCommand.ExecuteAsync(null);
-
+        // Act - Create a new view model which should trigger initialization
+        var newViewModel = new ConnectViewModel(
+            _dialogServiceMock.Object,
+            _deviceManagementServiceMock.Object,
+            _serialPortConnectionServiceMock.Object);
+        
+        // Wait a bit for the async initialization to complete
+        await Task.Delay(100);
+        
         // Assert
-        Assert.That(availablePorts.Length, Is.EqualTo(_viewModel.AvailableSerialPorts.Count));
-        Assert.That(availablePorts, Is.EqualTo(_viewModel.AvailableSerialPorts));
-        Assert.That(_viewModel.StatusLevel, Is.EqualTo(StatusLevel.Ready));
+        Assert.That(newViewModel.AvailableSerialPorts.Count, Is.GreaterThan(0));
+        Assert.That(newViewModel.StatusLevel, Is.EqualTo(StatusLevel.Ready));
     }
-    
-    [Test]
-    public async Task ConnectViewModel_ExecuteScanSerialPortsCommand_CancelAlreadyConnected()
-    {
-        // Arrange
-        _viewModel.StatusLevel = StatusLevel.Connected;
-        var availablePorts = CreateTestSerialPorts();
-        SetupSerialPortMockWithPorts(availablePorts);
-        SetupDialogConfirmation(false);
-
-        // Act
-        await _viewModel.ScanSerialPortsCommand.ExecuteAsync(null);
-
-        // Assert
-        Assert.That(_viewModel.StatusLevel, Is.EqualTo(StatusLevel.Connected));
-    }
-    
-    #endregion
 
     #region DiscoverDevice Tests
     
@@ -347,16 +289,6 @@ public class ConnectViewModelTests
             .ReturnsAsync(ports);
     }
     
-    /// <summary>
-    /// Sets up the dialog service to return the specified confirmation result
-    /// </summary>
-    private void SetupDialogConfirmation(bool confirmResult)
-    {
-        _dialogServiceMock.Setup(expression => expression.ShowConfirmationDialog(
-            It.IsAny<string>(), // Title
-            It.IsAny<string>(), // Message
-            MessageIcon.Warning)).ReturnsAsync(confirmResult);
-    }
     
     /// <summary>
     /// Sets up the connection service mock for discovery tests
