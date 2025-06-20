@@ -65,80 +65,81 @@
         </StackPanel>
         <StackPanel  Orientation="Vertical"
                      Visibility="{Binding Path=ViewModel.StatusLevel, Converter={StaticResource StringToVisibilityConverter}, ConverterParameter=Connected;Error, Mode=OneWay}">
-            <TextBlock
-                FontSize="32"
-                Margin="20 10 20 0"
-                HorizontalAlignment="Center"
-                TextAlignment="Center"
-                TextWrapping="Wrap"
-                Text="Device Information"/>
-            <StackPanel Orientation="Horizontal"
-                        Margin="20 0 20 0"
-                        HorizontalAlignment="Center">
-                <TextBlock
-                    FontSize="24"
-                    TextAlignment="Left"
-                    TextWrapping="Wrap"
-                    Text="{Binding Path=ViewModel.IdentityLookup.VendorName}"
-                    d:Text="ABC Corporation"/>
-                <TextBlock
-                    FontSize="24"
-                    TextAlignment="Left"
-                    TextWrapping="Wrap"
-                    Text=" ("/>
-                <TextBlock
-                    FontSize="24"
-                    TextAlignment="Left"
-                    TextWrapping="Wrap">
-                    <Hyperlink Click="Hyperlink_OnClick">
-                        <Run Text="{Binding Path=ViewModel.IdentityLookup.VendorCode}"/>
-                    </Hyperlink>
-                </TextBlock>
-                <TextBlock
-                    FontSize="24"
-                    TextAlignment="Left"
-                    TextWrapping="Wrap"
-                    Text=")"/>
-            </StackPanel>
-            <TextBlock
-                FontSize="20"
-                Margin="20 0 20 0"
-                HorizontalAlignment="Center"
-                TextAlignment="Center"
-                TextWrapping="Wrap"
-                Text="{Binding ViewModel.IdentityLookup.Model}"
-                d:Text="Reader"/>
-            
-            <StackPanel Orientation="Horizontal"
-                        Margin="20 0 20 0"
-                        HorizontalAlignment="Center">
-                <TextBlock
-                    FontSize="20"
-                    TextAlignment="Left"
-                    TextWrapping="Wrap"
-                    Text="S/N - "/>
-                <TextBlock
-                    FontSize="20"
-                    TextAlignment="Left"
-                    TextWrapping="Wrap"
-                    Text="{Binding ViewModel.IdentityLookup.SerialNumber}"
-                    d:Text="0000"/> 
-            </StackPanel>
+            <ui:Card Margin="10 5" Padding="10">
+                <StackPanel Orientation="Vertical">
+                    <ui:TextBlock
+                        VerticalAlignment="Center"
+                        FontTypography="Subtitle"
+                        Text="Device Information" 
+                        TextWrapping="Wrap"
+                        Margin="0,0,0,10"/>
+                    <StackPanel Orientation="Horizontal"
+                                Margin="10 0 10 0"
+                                HorizontalAlignment="Center">
+                        <TextBlock
+                            FontSize="24"
+                            TextAlignment="Left"
+                            TextWrapping="Wrap"
+                            Text="{Binding Path=ViewModel.IdentityLookup.VendorName}"
+                            d:Text="ABC Corporation"/>
+                        <TextBlock
+                            FontSize="24"
+                            TextAlignment="Left"
+                            TextWrapping="Wrap"
+                            Text=" ("/>
+                        <TextBlock
+                            FontSize="24"
+                            TextAlignment="Left"
+                            TextWrapping="Wrap">
+                            <Hyperlink Click="Hyperlink_OnClick">
+                                <Run Text="{Binding Path=ViewModel.IdentityLookup.VendorCode}"/>
+                            </Hyperlink>
+                        </TextBlock>
+                        <TextBlock
+                            FontSize="24"
+                            TextAlignment="Left"
+                            TextWrapping="Wrap"
+                            Text=")"/>
+                    </StackPanel>
+                    <TextBlock
+                        FontSize="20"
+                        Margin="10 0 10 0"
+                        HorizontalAlignment="Center"
+                        TextAlignment="Center"
+                        TextWrapping="Wrap"
+                        Text="{Binding ViewModel.IdentityLookup.Model}"
+                        d:Text="Reader"/>
+                    
+                    <StackPanel Orientation="Horizontal"
+                                Margin="10 0 10 0"
+                                HorizontalAlignment="Center">
+                        <TextBlock
+                            FontSize="20"
+                            TextAlignment="Left"
+                            TextWrapping="Wrap"
+                            Text="S/N - "/>
+                        <TextBlock
+                            FontSize="20"
+                            TextAlignment="Left"
+                            TextWrapping="Wrap"
+                            Text="{Binding ViewModel.IdentityLookup.SerialNumber}"
+                            d:Text="0000"/> 
+                    </StackPanel>
 
-            <TextBlock
-                FontSize="20"
-                Margin="20 0 20 0"
-                HorizontalAlignment="Center"
-                TextAlignment="Center"
-                TextWrapping="Wrap"
-                Text="{Binding ViewModel.IdentityLookup.VersionNumber}"
-                d:Text="1.2.4"/>
+                    <TextBlock
+                        FontSize="20"
+                        Margin="10 0 10 0"
+                        HorizontalAlignment="Center"
+                        TextAlignment="Center"
+                        TextWrapping="Wrap"
+                        Text="{Binding ViewModel.IdentityLookup.VersionNumber}"
+                        d:Text="1.2.4"/>
+                </StackPanel>
+            </ui:Card>
             
-            <ui:CardExpander IsExpanded="True"
-                         Margin=" 10 5"
-                         ContentPadding="10 5">
-                <ui:CardExpander.Header>
-                    <Grid>
+            <ui:Card Margin="10 5" Padding="10">
+                <StackPanel Orientation="Vertical">
+                    <Grid Margin="0,0,0,10">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
@@ -180,20 +181,17 @@
 
                        
                     </Grid>
-                </ui:CardExpander.Header>
-                <ui:CardExpander.Content>
-                    <StackPanel Orientation="Vertical">
-                        <Grid Name="DeviceActionControl"
-                              Margin="5, 10" />
+                    
+                    <Grid Name="DeviceActionControl"
+                          Margin="5, 10" />
 
-                        <ui:Button Name="PerformActionButton"
-                            Content="{Binding ViewModel.SelectedDeviceAction.PerformActionName}"
-                                    Margin="10 5"
-                                    HorizontalAlignment="Left"
-                                    Command="{Binding ViewModel.ExecuteDeviceActionCommand}"/>
-                    </StackPanel>
-                </ui:CardExpander.Content>
-            </ui:CardExpander>
+                    <ui:Button Name="PerformActionButton"
+                        Content="{Binding ViewModel.SelectedDeviceAction.PerformActionName}"
+                                Margin="10 5"
+                                HorizontalAlignment="Left"
+                                Command="{Binding ViewModel.ExecuteDeviceActionCommand}"/>
+                </StackPanel>
+            </ui:Card>
         </StackPanel>
     </StackPanel>
 </Page>

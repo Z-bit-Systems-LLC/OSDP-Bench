@@ -46,28 +46,15 @@
 			    </StackPanel>
 		    </StackPanel>
 	    </Grid>
-	    <ui:CardExpander IsExpanded="True"
-	                     Margin="10 5"
-	                     ContentPadding="10 5">
-            <ui:CardExpander.Header>
+	    <ui:Card Margin="10 5" Padding="10">
+            <StackPanel Orientation="Vertical">
+                <ui:TextBlock
+					VerticalAlignment="Center"
+                    FontTypography="Subtitle"
+					Text="Serial Port Selection" 
+					TextWrapping="Wrap"
+                    Margin="0,0,0,10"/>
                 <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                    </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="Auto"/>
-                    </Grid.ColumnDefinitions>
-                    <ui:TextBlock
-						Grid.Row="0"
-						Grid.Column="0"
-						VerticalAlignment="Center"
-                        FontTypography="Subtitle"
-						Text="Serial Port Selection" 
-						TextWrapping="Wrap"/>
-                </Grid>
-            </ui:CardExpander.Header>
-            <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="200"/>
                     <ColumnDefinition Width="*"/>
@@ -100,12 +87,11 @@
                     </TextBlock.Style>
                 </TextBlock>
             </Grid>
-        </ui:CardExpander>
-        <ui:CardExpander IsExpanded="True"
-						 Margin=" 10 5"
-						 ContentPadding="10 5">
-            <ui:CardExpander.Header>
-                <Grid>
+            </StackPanel>
+        </ui:Card>
+        <ui:Card Margin="10 5" Padding="10">
+            <StackPanel Orientation="Vertical">
+                <Grid Margin="0,0,0,10">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
@@ -144,8 +130,7 @@
 						ItemsSource="{Binding ConnectionTypes }"
 						SelectedValue="Discover"/>
                 </Grid>
-            </ui:CardExpander.Header>
-            <StackPanel Orientation="Vertical">
+                
                 <Grid 
 					Visibility="{Binding ElementName=ConnectionTypeComboBox, Path=SelectedValue, Converter={StaticResource StringToVisibilityConverter}, ConverterParameter=Discover, Mode=OneWay}">
                     <StackPanel Orientation="Vertical">
@@ -353,6 +338,6 @@
                     </TextBlock.Style>
                 </TextBlock>
             </StackPanel>
-        </ui:CardExpander>
+        </ui:Card>
     </StackPanel>
 </Page>
