@@ -6,6 +6,7 @@
         xmlns:local="clr-namespace:OSDPBench.Windows.Views.Windows"
         xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
         xmlns:pages="clr-namespace:OSDPBench.Windows.Views.Pages"
+        xmlns:markup="clr-namespace:OSDPBench.Windows.Markup"
         ExtendsContentIntoTitleBar="True"
         WindowCornerPreference="Round"
         WindowStartupLocation="CenterScreen"
@@ -24,24 +25,24 @@
                            IsBackButtonVisible="Collapsed"
                            PaneDisplayMode="LeftFluent" >
             <ui:NavigationView.MenuItems>
-                <ui:NavigationViewItem Content="Connect To PD" TargetPageType="{x:Type pages:ConnectPage}" NavigationCacheMode="Required">
+                <ui:NavigationViewItem Content="{markup:Localize Navigation_ConnectToPD}" TargetPageType="{x:Type pages:ConnectPage}" NavigationCacheMode="Required">
                     <ui:NavigationViewItem.Icon>
                         <ui:SymbolIcon Symbol="Connector24" />
                     </ui:NavigationViewItem.Icon>
                 </ui:NavigationViewItem>
-                <ui:NavigationViewItem Content="Manage PD" TargetPageType="{x:Type pages:ManagePage}" NavigationCacheMode="Required">
+                <ui:NavigationViewItem Content="{markup:Localize Navigation_ManagePD}" TargetPageType="{x:Type pages:ManagePage}" NavigationCacheMode="Required">
                     <ui:NavigationViewItem.Icon>
                         <ui:SymbolIcon Symbol="Toolbox24" />
                     </ui:NavigationViewItem.Icon>
                 </ui:NavigationViewItem>
-                <ui:NavigationViewItem Content="Monitor" TargetPageType="{x:Type pages:MonitorPage}" NavigationCacheMode="Required">
+                <ui:NavigationViewItem Content="{markup:Localize Navigation_Monitor}" TargetPageType="{x:Type pages:MonitorPage}" NavigationCacheMode="Required">
                     <ui:NavigationViewItem.Icon>
                         <ui:SymbolIcon Symbol="Tv24" />
                     </ui:NavigationViewItem.Icon>
                 </ui:NavigationViewItem>
             </ui:NavigationView.MenuItems>
             <ui:NavigationView.FooterMenuItems>
-                <ui:NavigationViewItem Content="Info" TargetPageType="{x:Type pages:InfoPage}">
+                <ui:NavigationViewItem Content="{markup:Localize Navigation_Info}" TargetPageType="{x:Type pages:InfoPage}">
                     <ui:NavigationViewItem.Icon>
                         <ui:SymbolIcon Symbol="Info24" />
                     </ui:NavigationViewItem.Icon>
@@ -51,7 +52,7 @@
 
         <ui:TitleBar
             x:Name="TitleBar"
-            Title="OSDP Bench"
+            Title="{markup:Localize Window_Title}"
             Grid.Row="0"
             CloseWindowByDoubleClickOnIcon="True">
             <ui:TitleBar.Icon>

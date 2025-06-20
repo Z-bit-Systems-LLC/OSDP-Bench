@@ -331,4 +331,28 @@
     <value>Rx</value>
     <comment>Reception activity indicator</comment>
   </data>
+  
+  <!-- Navigation Menu Items -->
+  <data name="Navigation_ConnectToPD" xml:space="preserve">
+    <value>Connect To PD</value>
+    <comment>Navigation menu item for Connect page</comment>
+  </data>
+  <data name="Navigation_ManagePD" xml:space="preserve">
+    <value>Manage PD</value>
+    <comment>Navigation menu item for Manage page</comment>
+  </data>
+  <data name="Navigation_Monitor" xml:space="preserve">
+    <value>Monitor</value>
+    <comment>Navigation menu item for Monitor page</comment>
+  </data>
+  <data name="Navigation_Info" xml:space="preserve">
+    <value>Info</value>
+    <comment>Navigation menu item for Info page</comment>
+  </data>
+  
+  <!-- Window Title -->
+  <data name="Window_Title" xml:space="preserve">
+    <value>OSDP Bench</value>
+    <comment>Main window title</comment>
+  </data>
 </root>

@@ -7,11 +7,12 @@
       xmlns:converters="clr-namespace:OSDPBench.Windows.Converters"
       xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
       xmlns:controls="clr-namespace:OSDPBench.Windows.Views.Controls"
+      xmlns:markup="clr-namespace:OSDPBench.Windows.Markup"
       mc:Ignorable="d" 
       d:DataContext="{d:DesignInstance local:ManagePage,
 									 IsDesignTimeCreatable=False}"
       d:DesignHeight="450" d:DesignWidth="800"
-      Title="Manage">
+      Title="{markup:Localize Page_Manage}">
     
     <Page.Resources>
         <converters:StringToVisibilityConverter x:Key="StringToVisibilityConverter" />
@@ -29,7 +30,7 @@
                         HorizontalAlignment="Right" 
                         VerticalAlignment="Center">
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0 0 15 0">
-                    <TextBlock Text="Tx" VerticalAlignment="Center" Margin="0 0 5 0"/>
+                    <TextBlock Text="{markup:Localize Activity_Tx}" VerticalAlignment="Center" Margin="0 0 5 0"/>
                     <controls:LedControl 
                         LastActivityTime="{Binding Path=ViewModel.LastTxActiveTime}" 
                         LedColor="Red" 
@@ -37,7 +38,7 @@
                 </StackPanel>
             
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                    <TextBlock Text="Rx" VerticalAlignment="Center" Margin="0 0 5 0"/>
+                    <TextBlock Text="{markup:Localize Activity_Rx}" VerticalAlignment="Center" Margin="0 0 5 0"/>
                     <controls:LedControl 
                         LastActivityTime="{Binding Path=ViewModel.LastRxActiveTime}" 
                         LedColor="Red" 
@@ -54,14 +55,14 @@
                 TextAlignment="Center"
                 TextWrapping="Wrap"
                 Foreground="Orange"
-                Text="Device has not been Identified"/>
+                Text="{markup:Localize Manage_DeviceNotIdentified}"/>
             <TextBlock
                 FontSize="24"
                 Margin="20 10 20 0"
                 HorizontalAlignment="Center"
                 TextAlignment="Center"
                 TextWrapping="Wrap"
-                Text="The Connection page will provide more details"/>
+                Text="{markup:Localize Manage_ConnectionPageDetails}"/>
         </StackPanel>
         <StackPanel  Orientation="Vertical"
                      Visibility="{Binding Path=ViewModel.StatusLevel, Converter={StaticResource StringToVisibilityConverter}, ConverterParameter=Connected;Error, Mode=OneWay}">
@@ -70,7 +71,7 @@
                     <ui:TextBlock
                         VerticalAlignment="Center"
                         FontTypography="Subtitle"
-                        Text="Device Information" 
+                        Text="{markup:Localize Manage_DeviceInformation}" 
                         TextWrapping="Wrap"
                         Margin="0,0,0,10"/>
                     <StackPanel Orientation="Horizontal"
@@ -117,7 +118,7 @@
                             FontSize="20"
                             TextAlignment="Left"
                             TextWrapping="Wrap"
-                            Text="S/N - "/>
+                            Text="{markup:Localize Device_SerialNumberPrefix}"/>
                         <TextBlock
                             FontSize="20"
                             TextAlignment="Left"
@@ -153,7 +154,7 @@
                             Grid.Column="0"
                             VerticalAlignment="Center"
                             FontTypography="Subtitle"
-                            Text="Device Action" 
+                            Text="{markup:Localize Manage_DeviceAction}" 
                             TextWrapping="Wrap"/>
                         <ui:TextBlock
                             Grid.Row="1"
@@ -162,7 +163,7 @@
                             Foreground="{ui:ThemeResource TextFillColorSecondaryBrush}"
                             TextWrapping="Wrap">
                             <ui:TextBlock.Text>
-                                <MultiBinding StringFormat="Device connected at address {0} running at a baud rate of {1}">
+                                <MultiBinding StringFormat="{markup:Localize Connection_DeviceConnectedFormat}">
                                     <Binding Path="ViewModel.ConnectedAddress" />
                                     <Binding Path="ViewModel.ConnectedBaudRate" />
                                 </MultiBinding>

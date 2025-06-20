@@ -7,11 +7,12 @@
 	  xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
 	  xmlns:converters="clr-namespace:OSDPBench.Windows.Converters"
 	  xmlns:controls="clr-namespace:OSDPBench.Windows.Views.Controls"
+	  xmlns:markup="clr-namespace:OSDPBench.Windows.Markup"
 	  mc:Ignorable="d" 
 	  d:DataContext="{d:DesignInstance pages:ConnectPage,
 									 IsDesignTimeCreatable=False}"
 	  d:DesignHeight="450" d:DesignWidth="800"
-	  Title="Connect">
+	  Title="{markup:Localize Page_Connect}">
 
     <Page.Resources>
         <converters:StatusLevelConverter x:Key="StatusLevelConverter" />
@@ -30,7 +31,7 @@
 		                HorizontalAlignment="Right" 
 		                VerticalAlignment="Center">
 			    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0 0 15 0">
-				    <TextBlock Text="Tx" VerticalAlignment="Center" Margin="0 0 5 0"/>
+				    <TextBlock Text="{markup:Localize Activity_Tx}" VerticalAlignment="Center" Margin="0 0 5 0"/>
 				    <controls:LedControl 
 					    LastActivityTime="{Binding Path=ViewModel.LastTxActiveTime}" 
 					    LedColor="Red" 
@@ -38,7 +39,7 @@
 			    </StackPanel>
             
 			    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-				    <TextBlock Text="Rx" VerticalAlignment="Center" Margin="0 0 5 0"/>
+				    <TextBlock Text="{markup:Localize Activity_Rx}" VerticalAlignment="Center" Margin="0 0 5 0"/>
 				    <controls:LedControl 
 					    LastActivityTime="{Binding Path=ViewModel.LastRxActiveTime}" 
 					    LedColor="Red" 
@@ -51,7 +52,7 @@
                 <ui:TextBlock
 					VerticalAlignment="Center"
                     FontTypography="Subtitle"
-					Text="Serial Port Selection" 
+					Text="{markup:Localize Connect_SerialPortSelection}" 
 					TextWrapping="Wrap"
                     Margin="0,0,0,10"/>
                 <Grid>
@@ -62,7 +63,7 @@
                 
                 <!-- Serial Port Selection -->
                 <StackPanel Grid.Column="0" Orientation="Vertical">
-                    <Label Content="Serial Port"
+                    <Label Content="{markup:Localize Connect_SerialPort}"
                            Target="{Binding ElementName=SerialPortComboBox}" />
                     <ComboBox x:Name="SerialPortComboBox"
                               ItemsSource="{Binding ViewModel.AvailableSerialPorts }"
@@ -105,7 +106,7 @@
 						Grid.Column="0"
 						VerticalAlignment="Center"
                         FontTypography="Subtitle"
-						Text="Connect to PD" 
+						Text="{markup:Localize Connect_ConnectToPD}" 
 						TextWrapping="Wrap"/>
                     <ui:TextBlock
 						Grid.Row="1"
@@ -115,7 +116,7 @@
 						Foreground="{ui:ThemeResource TextFillColorSecondaryBrush}"
 						TextWrapping="Wrap">
                         <ui:TextBlock.Text>
-                            <MultiBinding StringFormat="Device connected at address {0} running at a baud rate of {1}">
+                            <MultiBinding StringFormat="{markup:Localize Connection_DeviceConnectedFormat}">
                                 <Binding Path="ViewModel.ConnectedAddress" />
                                 <Binding Path="ViewModel.ConnectedBaudRate" />
                             </MultiBinding>
@@ -139,11 +140,11 @@
 							HorizontalAlignment="Center"
 							FontSize="16"
 							FontTypography="Body"
-							Text="Discovery will only work properly with a single device connected" 
+							Text="{markup:Localize Connect_DiscoveryWarning}" 
 							TextWrapping="Wrap"/>
                         <StackPanel Orientation="Horizontal"
 									HorizontalAlignment="Left">
-                            <ui:Button  Content="Start Discovery"
+                            <ui:Button  Content="{markup:Localize Connect_StartDiscovery}"
 										Margin="10 5"
 										HorizontalAlignment="Center"
 										Command="{Binding ViewModel.DiscoverDeviceCommand}">
@@ -158,7 +159,7 @@
                                     </Style>
                                 </ui:Button.Style>
                             </ui:Button>
-                            <ui:Button  Content="Cancel Discovery"
+                            <ui:Button  Content="{markup:Localize Connect_CancelDiscovery}"
 										Margin="10 5"
 										HorizontalAlignment="Center"
 										Command="{Binding ViewModel.DiscoverDeviceCancelCommand}">
@@ -173,7 +174,7 @@
                                     </Style>
                                 </ui:Button.Style>
                             </ui:Button>
-                            <ui:Button  Content="Disconnect"
+                            <ui:Button  Content="{markup:Localize Connect_Disconnect}"
 										Margin="10 5"
 										HorizontalAlignment="Center"
 										Command="{Binding ViewModel.DisconnectDeviceCommand}">
@@ -206,7 +207,7 @@
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
                             <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Vertical">
-                                <Label Content="Baud Rate"
+                                <Label Content="{markup:Localize Connect_BaudRate}"
 										   Target="{Binding ElementName=BaudRateComboBox}" />
                                 <ComboBox Name="BaudRateComboBox"
 										  Margin="0 0 20 0"
@@ -214,7 +215,7 @@
                                           SelectedItem="{Binding  Path=ViewModel.SelectedBaudRate, Mode=TwoWay}"/>
                             </StackPanel>
                             <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Vertical">
-                                <Label Content="Address"
+                                <Label Content="{markup:Localize Connect_Address}"
 										   Target="{Binding ElementName=AddressNumberBox}" />
                                 <ui:NumberBox Name="AddressNumberBox"
 											  Value="{Binding Path=ViewModel.SelectedAddress, Mode=TwoWay}"
@@ -231,18 +232,18 @@
                                         Orientation="Vertical">
 	                            <StackPanel Orientation="Horizontal">
 		                            <CheckBox Name="UseSecureChannelCheckBox"
-		                                      Content="Use Secure Channel" 
+		                                      Content="{markup:Localize Connect_UseSecureChannel}" 
 		                                      IsChecked="{Binding Path=ViewModel.UseSecureChannel,  Mode=TwoWay}"/>
 		                            
 		                            <CheckBox Name="UseDefaultKeyCheckBox"
-		                                      Content="Use Default Key" 
+		                                      Content="{markup:Localize Connect_UseDefaultKey}" 
 		                                      Margin="10,0,0,0"
 		                                      IsEnabled="{Binding ElementName=UseSecureChannelCheckBox, Path=IsChecked}"
 		                                      IsChecked="{Binding  Path=ViewModel.UseDefaultKey,  Mode=TwoWay}"/>
 	                            </StackPanel>
 	                           
 	                            <StackPanel Orientation="Vertical">
-		                            <Label Content="Security Key"
+		                            <Label Content="{markup:Localize Connect_SecurityKey}"
 		                                   Target="{Binding ElementName=AddressNumberBox}" />
                                     <TextBox Text="{Binding Path=ViewModel.SecurityKey,  Mode=TwoWay}">
                                         <TextBox.Style>
@@ -264,7 +265,7 @@
                                 </StackPanel>
                             </StackPanel>
                             
-                            <ui:Button Grid.Row="1" Grid.Column="2"  Content="Connect"
+                            <ui:Button Grid.Row="1" Grid.Column="2"  Content="{markup:Localize Connect_Connect}"
                                        Margin="10 0"
                                        HorizontalAlignment="Right"
                                        VerticalAlignment="Bottom"
@@ -280,7 +281,7 @@
                                     </Style>
                                 </ui:Button.Style>
                             </ui:Button>
-                            <ui:Button Grid.Row="1" Grid.Column="2"  Content="Disconnect"
+                            <ui:Button Grid.Row="1" Grid.Column="2"  Content="{markup:Localize Connect_Disconnect}"
                                        Margin="10 0"
                                        HorizontalAlignment="Right"
                                        VerticalAlignment="Bottom"
