@@ -12,17 +12,23 @@
 
 using System.Globalization;
 using System.Resources;
+using System.ComponentModel;
 
 namespace OSDPBench.Core.Resources;
 
 /// <summary>
 /// A strongly typed resource class for looking up localized strings, etc.
 /// </summary>
-public class Resources
+public class Resources : INotifyPropertyChanged
 {
     private static ResourceManager? _resourceManager;
     
     private static CultureInfo? _resourceCulture;
+    
+    /// <summary>
+    /// Event raised when resource properties change due to culture changes
+    /// </summary>
+    public static event PropertyChangedEventHandler? PropertyChanged;
     
     /// <summary>
     /// Returns the cached ResourceManager instance used by this class.
@@ -47,7 +53,14 @@ public class Resources
     public static CultureInfo? Culture
     {
         get => _resourceCulture;
-        set => _resourceCulture = value;
+        set 
+        { 
+            if (_resourceCulture != value)
+            {
+                _resourceCulture = value;
+                OnPropertyChanged();
+            }
+        }
     }
     
     /// <summary>
@@ -57,4 +70,33 @@ public class Resources
     {
         return ResourceManager.GetString(key, _resourceCulture) ?? $"[{key}]";
     }
+    
+    /// <summary>
+    /// Changes the current culture and notifies all subscribers
+    /// </summary>
+    public static void ChangeCulture(CultureInfo newCulture)
+    {
+        Culture = newCulture;
+        System.Threading.Thread.CurrentThread.CurrentCulture = newCulture;
+        System.Threading.Thread.CurrentThread.CurrentUICulture = newCulture;
+        
+        // Notify all properties that depend on culture have changed
+        OnPropertyChanged(string.Empty);
+    }
+    
+    /// <summary>
+    /// Raises the PropertyChanged event
+    /// </summary>
+    private static void OnPropertyChanged([System.Runtime.CompilerServices.CallerMemberName] string? propertyName = null)
+    {
+        PropertyChanged?.Invoke(null, new PropertyChangedEventArgs(propertyName));
+    }
+    
+    #region INotifyPropertyChanged Implementation
+    event PropertyChangedEventHandler? INotifyPropertyChanged.PropertyChanged
+    {
+        add => PropertyChanged += value;
+        remove => PropertyChanged -= value;
+    }
+    #endregion
 }

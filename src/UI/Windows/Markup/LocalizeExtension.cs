@@ -1,5 +1,6 @@
 using System.Globalization;
 using System.Windows.Markup;
+using System.Windows.Data;
 using OSDPBench.Core.Resources;
 
 namespace OSDPBench.Windows.Markup;
@@ -31,10 +32,10 @@ public class LocalizeExtension : MarkupExtension
     }
 
     /// <summary>
-    /// Provides the localized value
+    /// Provides the localized value or a binding if possible
     /// </summary>
     /// <param name="serviceProvider">The service provider</param>
-    /// <returns>The localized string value</returns>
+    /// <returns>The localized string value or binding</returns>
     public override object ProvideValue(IServiceProvider serviceProvider)
     {
         if (string.IsNullOrEmpty(Key))
@@ -42,13 +43,27 @@ public class LocalizeExtension : MarkupExtension
 
         try
         {
-            // Use the Resources class to get the localized string
-            return Resources.GetString(Key);
+            // Create a binding to the LocalizedStringBinding for dynamic updates
+            var localizedBinding = new LocalizedStringBinding(Key);
+            var binding = new Binding(nameof(LocalizedStringBinding.Value))
+            {
+                Source = localizedBinding,
+                Mode = BindingMode.OneWay
+            };
+            
+            return binding.ProvideValue(serviceProvider);
         }
         catch
         {
-            // Return the key in brackets if there's an error
-            return $"[{Key}]";
+            // Fallback to static string if binding fails
+            try
+            {
+                return Resources.GetString(Key);
+            }
+            catch
+            {
+                return $"[{Key}]";
+            }
         }
     }
 }

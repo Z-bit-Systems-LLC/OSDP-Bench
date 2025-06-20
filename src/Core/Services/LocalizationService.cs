@@ -1,5 +1,6 @@
 using System.Globalization;
 using System.Resources;
+using OSDPBench.Core.Resources;
 
 namespace OSDPBench.Core.Services;
 
@@ -19,11 +20,14 @@ public class LocalizationService : ILocalizationService
         _resourceManager = new ResourceManager("OSDPBench.Core.Resources.Resources", typeof(LocalizationService).Assembly);
         _currentCulture = CultureInfo.CurrentUICulture;
         
-        // Initialize supported cultures - start with just English, more can be added later
+        // Initialize supported cultures - start with English, more can be added later
         SupportedCultures = new List<CultureInfo>
         {
             new("en-US"), // English (United States)
-            new("en-GB")  // English (United Kingdom)
+            new("es-ES"), // Spanish (Spain) - placeholder for future
+            new("fr-FR"), // French (France) - placeholder for future
+            new("de-DE"), // German (Germany) - placeholder for future
+            new("ja-JP")  // Japanese (Japan) - placeholder for future
         }.AsReadOnly();
     }
     
@@ -35,11 +39,7 @@ public class LocalizationService : ILocalizationService
         {
             if (_currentCulture.Equals(value)) return;
             
-            _currentCulture = value;
-            CultureInfo.CurrentUICulture = value;
-            CultureInfo.CurrentCulture = value;
-            
-            CultureChanged?.Invoke(this, value);
+            ChangeCulture(value);
         }
     }
     
@@ -52,15 +52,7 @@ public class LocalizationService : ILocalizationService
     /// <inheritdoc />
     public string GetString(string key)
     {
-        try
-        {
-            var value = _resourceManager.GetString(key, _currentCulture);
-            return value ?? $"[{key}]"; // Return key in brackets if not found
-        }
-        catch
-        {
-            return $"[{key}]"; // Return key in brackets on error
-        }
+        return OSDPBench.Core.Resources.Resources.GetString(key);
     }
     
     /// <inheritdoc />
@@ -75,5 +67,45 @@ public class LocalizationService : ILocalizationService
         {
             return $"[{key}]"; // Return key in brackets on error
         }
+    }
+    
+    /// <inheritdoc />
+    public void ChangeCulture(CultureInfo culture)
+    {
+        if (_currentCulture.Equals(culture)) return;
+        
+        _currentCulture = culture;
+        
+        // Update system culture
+        CultureInfo.CurrentUICulture = culture;
+        CultureInfo.CurrentCulture = culture;
+        
+        // Update the Resources class culture (this will trigger PropertyChanged)
+        OSDPBench.Core.Resources.Resources.ChangeCulture(culture);
+        
+        // Notify our own listeners
+        CultureChanged?.Invoke(this, culture);
+    }
+    
+    /// <inheritdoc />
+    public void ChangeCulture(string cultureName)
+    {
+        try
+        {
+            var culture = new CultureInfo(cultureName);
+            ChangeCulture(culture);
+        }
+        catch (CultureNotFoundException)
+        {
+            // If culture not found, fall back to English
+            ChangeCulture(new CultureInfo("en-US"));
+        }
+    }
+    
+    /// <inheritdoc />
+    public string GetCultureDisplayName(CultureInfo culture)
+    {
+        // Return the native name of the culture
+        return culture.NativeName;
     }
 }

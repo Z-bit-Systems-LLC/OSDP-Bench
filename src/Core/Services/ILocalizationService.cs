@@ -36,4 +36,23 @@ public interface ILocalizationService
     /// <param name="args">Format arguments</param>
     /// <returns>The formatted localized string</returns>
     string GetString(string key, params object[] args);
+    
+    /// <summary>
+    /// Changes the current culture and notifies all components
+    /// </summary>
+    /// <param name="culture">The new culture to set</param>
+    void ChangeCulture(CultureInfo culture);
+    
+    /// <summary>
+    /// Changes the current culture by culture name
+    /// </summary>
+    /// <param name="cultureName">The culture name (e.g., "en-US", "es-ES")</param>
+    void ChangeCulture(string cultureName);
+    
+    /// <summary>
+    /// Gets the display name for a culture in the current language
+    /// </summary>
+    /// <param name="culture">The culture to get the display name for</param>
+    /// <returns>The localized display name</returns>
+    string GetCultureDisplayName(CultureInfo culture);
 }
