@@ -67,12 +67,51 @@ public class ConnectViewModelTests
             _deviceManagementServiceMock.Object,
             _serialPortConnectionServiceMock.Object);
         
-        // Wait a bit for the async initialization to complete
-        await Task.Delay(100);
+        // Wait for initialization to complete
+        await newViewModel.InitializationComplete;
         
         // Assert
         Assert.That(newViewModel.AvailableSerialPorts.Count, Is.GreaterThan(0));
         Assert.That(newViewModel.StatusLevel, Is.EqualTo(StatusLevel.Ready));
+    }
+    
+    [Test]
+    public async Task ConnectViewModel_InitializesSerialPortsOnStartup_NoPortsFound()
+    {
+        // Arrange
+        var emptyPorts = new AvailableSerialPort[0];
+        SetupSerialPortMockWithPorts(emptyPorts);
+        
+        // Act - Create a new view model which should trigger initialization
+        var newViewModel = new ConnectViewModel(
+            _dialogServiceMock.Object,
+            _deviceManagementServiceMock.Object,
+            _serialPortConnectionServiceMock.Object);
+        
+        // Wait for initialization to complete
+        await newViewModel.InitializationComplete;
+        
+        // Assert
+        Assert.That(newViewModel.AvailableSerialPorts.Count, Is.EqualTo(0));
+        Assert.That(newViewModel.StatusLevel, Is.EqualTo(StatusLevel.NotReady));
+    }
+    
+    [Test]
+    public void ConnectViewModel_InitializesSerialPortsOnStartup_HandlesException()
+    {
+        // Arrange
+        _serialPortConnectionServiceMock.Setup(x => x.FindAvailableSerialPorts())
+            .ThrowsAsync(new Exception("Test exception"));
+        
+        // Act - Create a new view model which should trigger initialization
+        var newViewModel = new ConnectViewModel(
+            _dialogServiceMock.Object,
+            _deviceManagementServiceMock.Object,
+            _serialPortConnectionServiceMock.Object);
+        
+        // Assert - InitializationComplete should throw the exception
+        Assert.ThrowsAsync<Exception>(async () => await newViewModel.InitializationComplete);
+        Assert.That(newViewModel.StatusLevel, Is.EqualTo(StatusLevel.NotReady));
     }
 
     #region DiscoverDevice Tests
@@ -81,6 +120,7 @@ public class ConnectViewModelTests
     public async Task ConnectViewModel_ExecuteDiscoverDeviceCommand()
     {
         // Arrange
+        await _viewModel.InitializationComplete;
         SetupForDiscoveryTest(DiscoveryStatus.Started);
         
         // Act
@@ -95,6 +135,7 @@ public class ConnectViewModelTests
     public async Task ConnectViewModel_ExecuteDiscoverDeviceCommand_Cancelled()
     {
         // Arrange
+        await _viewModel.InitializationComplete;
         SetupConnectionService();
         SetupDiscoveryWithException(new OperationCanceledException());
         SelectTestSerialPortAndBaudRate();
@@ -110,6 +151,7 @@ public class ConnectViewModelTests
     public async Task ConnectViewModel_ExecuteDiscoverDeviceCommand_NoPortSelected()
     {
         // Arrange
+        await _viewModel.InitializationComplete;
         _viewModel.SelectedSerialPort = null;
         _viewModel.SelectedBaudRate = TestBaudRate;
 
@@ -128,6 +170,7 @@ public class ConnectViewModelTests
     public async Task ConnectViewModel_ExecuteConnectDeviceCommand()
     {
         // Arrange
+        await _viewModel.InitializationComplete;
         SetupConnectionServiceWithPort(TestPortName, TestBaudRate);
         SelectTestSerialPortAndBaudRate();
         _viewModel.SelectedAddress = TestAddress;
@@ -152,6 +195,7 @@ public class ConnectViewModelTests
     public async Task ConnectViewModel_ExecuteConnectDeviceCommand_NoSerialPortSelected()
     {
         // Arrange
+        await _viewModel.InitializationComplete;
         _viewModel.SelectedSerialPort = null;
         _viewModel.SelectedBaudRate = TestBaudRate;
         _viewModel.SelectedAddress = TestAddress;
@@ -171,6 +215,7 @@ public class ConnectViewModelTests
     public async Task ConnectViewModel_ExecuteConnectDeviceCommand_InvalidSecurityKey()
     {
         // Arrange
+        await _viewModel.InitializationComplete;
         SetupConnectionServiceWithPort(TestPortName, TestBaudRate);
         SelectTestSerialPortAndBaudRate();
         _viewModel.SelectedAddress = TestAddress;
@@ -201,8 +246,11 @@ public class ConnectViewModelTests
     #region Event Handler Tests
     
     [Test]
-    public void ConnectViewModel_DeviceManagementServiceOnConnectionStatusChange_Connected()
+    public async Task ConnectViewModel_DeviceManagementServiceOnConnectionStatusChange_Connected()
     {
+        // Arrange
+        await _viewModel.InitializationComplete;
+        
         // Act
         RaiseConnectionStatusEvent(ConnectionStatus.Connected);
         
@@ -213,8 +261,11 @@ public class ConnectViewModelTests
     }
     
     [Test]
-    public void ConnectViewModel_DeviceManagementServiceOnConnectionStatusChange_Disconnected()
+    public async Task ConnectViewModel_DeviceManagementServiceOnConnectionStatusChange_Disconnected()
     {
+        // Arrange
+        await _viewModel.InitializationComplete;
+        
         // Act
         RaiseConnectionStatusEvent(ConnectionStatus.Disconnected);
         
@@ -224,8 +275,11 @@ public class ConnectViewModelTests
     }
     
     [Test]
-    public void ConnectViewModel_DeviceManagementServiceOnConnectionStatusChange_InvalidSecurityKey()
+    public async Task ConnectViewModel_DeviceManagementServiceOnConnectionStatusChange_InvalidSecurityKey()
     {
+        // Arrange
+        await _viewModel.InitializationComplete;
+        
         // Act
         RaiseConnectionStatusEvent(ConnectionStatus.InvalidSecurityKey);
         
@@ -235,9 +289,12 @@ public class ConnectViewModelTests
     }
     
     [Test]
-    public void ConnectViewModel_DeviceManagementServiceOnConnectionStatusChange_WhenDiscoveredStatus()
+    public async Task ConnectViewModel_DeviceManagementServiceOnConnectionStatusChange_WhenDiscoveredStatus()
     {
         // Arrange
+        // Wait for initialization to complete
+        await _viewModel.InitializationComplete;
+        
         _viewModel.StatusLevel = StatusLevel.Discovered;
         
         // Act

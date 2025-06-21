@@ -25,6 +25,12 @@ public partial class ConnectViewModel : ObservableObject, IDisposable
     private PacketTraceEntry? _lastPacketEntry;
     private bool _isDisposed;
     private Timer? _usbStatusTimer;
+    private readonly TaskCompletionSource<bool> _initializationComplete = new();
+
+    /// <summary>
+    /// Gets a task that completes when the initial serial port scan is finished.
+    /// </summary>
+    public Task InitializationComplete => _initializationComplete.Task;
 
     /// <summary>
     /// ViewModel for the Connect page.
@@ -178,11 +184,14 @@ public partial class ConnectViewModel : ObservableObject, IDisposable
             {
                 StatusLevel = StatusLevel.NotReady;
             }
+            
+            _initializationComplete.SetResult(true);
         }
         catch (Exception ex)
         {
             Console.WriteLine(OSDPBench.Core.Resources.Resources.GetString("Error_InitializingSerialPorts").Replace("{0}", ex.Message));
             StatusLevel = StatusLevel.NotReady;
+            _initializationComplete.SetException(ex);
         }
     }
 

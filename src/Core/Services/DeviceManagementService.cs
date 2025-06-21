@@ -240,15 +240,31 @@ public sealed class DeviceManagementService : IDeviceManagementService
     
     private async Task WaitUntilDeviceIsOffline()
     {
-        using var cts = new CancellationTokenSource(_defaultShutdownTimeout);
-        while (_panel.IsOnline(_connectionId, Address))
+        // Skip waiting if we never had a valid connection
+        if (_connectionId == Guid.Empty)
         {
-            if (cts.Token.IsCancellationRequested)
+            return;
+        }
+        
+        using var cts = new CancellationTokenSource(_defaultShutdownTimeout);
+        
+        // Check if the connection exists before querying its status
+        try
+        {
+            while (_panel.IsOnline(_connectionId, Address))
             {
-                throw new TimeoutException("The device did not go offline within the specified timeout.");
-            }
+                if (cts.Token.IsCancellationRequested)
+                {
+                    throw new TimeoutException("The device did not go offline within the specified timeout.");
+                }
 
-            await Task.Delay(TimeSpan.FromMilliseconds(100), cts.Token);
+                await Task.Delay(TimeSpan.FromMilliseconds(100), cts.Token);
+            }
+        }
+        catch (KeyNotFoundException)
+        {
+            // Connection was already removed from the panel, which is fine during shutdown
+            return;
         }
         
         await Task.Delay(TimeSpan.FromSeconds(1), cts.Token);
