@@ -193,7 +193,7 @@
     <comment>Header for connection settings section</comment>
   </data>
   <data name="Connect_DiscoveryWarning" xml:space="preserve">
-    <value>只有在连接的单个设备时才能正常工作</value>
+    <value>发现功能仅在连接单个设备时才能正常工作</value>
     <comment>Warning message about device discovery</comment>
   </data>
   <data name="Connect_StartDiscovery" xml:space="preserve">
@@ -238,7 +238,7 @@
     <comment>Message when device is not identified</comment>
   </data>
   <data name="Manage_ConnectionPageDetails" xml:space="preserve">
-    <value>Connection （连接） 页面将提供更多详细信息</value>
+    <value>连接页面将提供更多详细信息</value>
     <comment>Message directing user to connection page</comment>
   </data>
   <data name="Manage_DeviceInformation" xml:space="preserve">
