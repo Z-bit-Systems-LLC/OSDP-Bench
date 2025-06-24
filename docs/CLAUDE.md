@@ -5,7 +5,7 @@
 
 ## Build Commands
 - Build solution: `dotnet build OSDP-Bench.sln`
-- Build specific project: `dotnet build src/Core/Core.csproj`
+- Build a specific project: `dotnet build src/Core/Core.csproj`
 - Build release version: `dotnet build -c Release OSDP-Bench.sln`
 
 ## Test Commands

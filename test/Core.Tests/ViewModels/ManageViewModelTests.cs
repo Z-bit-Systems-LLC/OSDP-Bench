@@ -332,7 +332,7 @@ namespace OSDPBench.Core.Tests.ViewModels
             // Make sure the _viewModel property for IdentityLookup is updated
             _viewModel.IdentityLookup = CreateTestIdentityLookup(true, testResetInstructions);
             
-            // Configure dialog service to return true (user confirms)
+            // Configure a dialog service to return true (user confirms)
             _dialogServiceMock.Setup(x => x.ShowConfirmationDialog(
                     "Reset Device",
                     "Do you want to reset device, if so power cycle then click yes when the device boots up.",
