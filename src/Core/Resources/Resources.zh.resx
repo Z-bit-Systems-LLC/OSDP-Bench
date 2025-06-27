@@ -249,6 +249,30 @@
     <value>设备作</value>
     <comment>Header for device action section</comment>
   </data>
+  <data name="Manage_LedColor" xml:space="preserve">
+    <value>LED Color</value>
+    <comment>Label for LED color selection</comment>
+  </data>
+  <data name="Manage_SelectedFile" xml:space="preserve">
+    <value>Selected File</value>
+    <comment>Label for file selection in file transfer</comment>
+  </data>
+  <data name="Manage_Browse" xml:space="preserve">
+    <value>Browse</value>
+    <comment>Button text for file browser</comment>
+  </data>
+  <data name="Manage_Progress" xml:space="preserve">
+    <value>Progress</value>
+    <comment>Label for file transfer progress</comment>
+  </data>
+  <data name="Manage_BytesOf" xml:space="preserve">
+    <value> Bytes/</value>
+    <comment>Text between transferred and total bytes</comment>
+  </data>
+  <data name="Manage_Bytes" xml:space="preserve">
+    <value> Bytes</value>
+    <comment>Text for bytes unit</comment>
+  </data>
   <!-- Monitor Page -->
   <data name="Monitor_DeviceNotConnected" xml:space="preserve">
     <value>设备未连接</value>
