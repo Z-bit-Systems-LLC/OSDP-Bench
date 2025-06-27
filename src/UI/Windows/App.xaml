@@ -11,20 +11,23 @@
             <ResourceDictionary.MergedDictionaries>
                 <ui:ThemesDictionary />
                 <ui:ControlsDictionary />
+                <!-- OSDP Bench Design System -->
+                <ResourceDictionary Source="Styles/DesignTokens.xaml"/>
+                <ResourceDictionary Source="Styles/ComponentStyles.xaml"/>
+                <ResourceDictionary Source="Styles/LayoutTemplates.xaml"/>
             </ResourceDictionary.MergedDictionaries>
-            <Style x:Key="PageTitleStyle" TargetType="TextBlock">
-                <Setter Property="FontSize" Value="36"/>
-                <Setter Property="FontWeight" Value="Bold"/>
-                <Setter Property="HorizontalAlignment" Value="Left"/>
-                <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}"/>
-                <Setter Property="Margin" Value="10 0 0 0"/>
-            </Style>
+            
+            <!-- Legacy styles - kept for backwards compatibility -->
+            <!-- Use Style="{StaticResource Page.Title}" for new implementations -->
+            <Style x:Key="PageTitleStyle" TargetType="TextBlock" BasedOn="{StaticResource Page.Title}"/>
+            
+            <!-- Enhanced DataGrid styles -->
             <Style TargetType="DataGridColumnHeader">
                 <Setter Property="Background" Value="{DynamicResource ControlFillColorDefaultBrush}"/>
                 <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}"/>
                 <Setter Property="BorderBrush" Value="{DynamicResource ControlElevationBorderBrush}"/>
                 <Setter Property="BorderThickness" Value="0,0,0,1"/>
-                <Setter Property="Padding" Value="8,4"/>
+                <Setter Property="Padding" Value="{StaticResource Padding.Control}"/>
                 <Setter Property="FontWeight" Value="Bold"/>
                 <Style.Triggers>
                     <Trigger Property="IsMouseOver" Value="True">
@@ -32,9 +35,10 @@
                     </Trigger>
                 </Style.Triggers>
             </Style>
-            <Style TargetType="TextBlock">
-                <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}"/>
-            </Style>
+            
+            <!-- Global TextBlock style -->
+            <Style TargetType="TextBlock" BasedOn="{StaticResource Text.Body}"/>
+            
         </ResourceDictionary>
     </Application.Resources>
 </Application>
