@@ -17,6 +17,7 @@
     <Page.Resources>
         <converters:StatusLevelConverter x:Key="StatusLevelConverter" />
         <converters:StringToVisibilityConverter x:Key="StringToVisibilityConverter" />
+        <converters:IndexToVisibilityConverter x:Key="IndexToVisibilityConverter" />
     </Page.Resources>
 
     <StackPanel 
@@ -129,11 +130,11 @@
 						Grid.Column="1"
 						Margin="0,0,16,0"
 						ItemsSource="{Binding ConnectionTypes }"
-						SelectedValue="Discover"/>
+						SelectedIndex="{Binding SelectedConnectionTypeIndex, Mode=TwoWay}"/>
                 </Grid>
                 
                 <Grid 
-					Visibility="{Binding ElementName=ConnectionTypeComboBox, Path=SelectedValue, Converter={StaticResource StringToVisibilityConverter}, ConverterParameter=Discover, Mode=OneWay}">
+					Visibility="{Binding ElementName=ConnectionTypeComboBox, Path=SelectedIndex, Converter={StaticResource IndexToVisibilityConverter}, ConverterParameter=0, Mode=OneWay}">
                     <StackPanel Orientation="Vertical">
                         <ui:TextBlock
 							Margin="10 5"
@@ -194,7 +195,7 @@
                 </Grid>
 
                 <Grid
-					Visibility="{Binding ElementName=ConnectionTypeComboBox, Path=SelectedValue, Converter={StaticResource StringToVisibilityConverter}, ConverterParameter=Manual, Mode=OneWay}">
+					Visibility="{Binding ElementName=ConnectionTypeComboBox, Path=SelectedIndex, Converter={StaticResource IndexToVisibilityConverter}, ConverterParameter=1, Mode=OneWay}">
                     <StackPanel Orientation="Vertical">
                         <Grid>
                             <Grid.RowDefinitions>
