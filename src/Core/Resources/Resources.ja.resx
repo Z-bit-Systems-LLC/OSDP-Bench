@@ -291,8 +291,36 @@
     <comment>Button text to expand row details</comment>
   </data>
   <data name="Monitor_ConnectionPageDetails" xml:space="preserve">
-    <value>接続ページでより詳細な情報を確認できます</value>
+    <value>The Connection page will provide more details</value>
     <comment>Message directing users to connection page for details</comment>
+  </data>
+  <data name="Monitor_LastCardRead" xml:space="preserve">
+    <value>Last Card Read</value>
+    <comment>Label for last card read display</comment>
+  </data>
+  <data name="Monitor_ReadHistory" xml:space="preserve">
+    <value>Read History</value>
+    <comment>Label for card read history section</comment>
+  </data>
+  <data name="Monitor_ClearHistory" xml:space="preserve">
+    <value>Clear History</value>
+    <comment>Button text to clear card read history</comment>
+  </data>
+  <data name="Monitor_ColumnDateTime" xml:space="preserve">
+    <value>Date/Time</value>
+    <comment>Column header for date/time in card read history</comment>
+  </data>
+  <data name="Monitor_ColumnCardNumber" xml:space="preserve">
+    <value>Card Number</value>
+    <comment>Column header for card number in card read history</comment>
+  </data>
+  <data name="Monitor_KeypadEntries" xml:space="preserve">
+    <value>Keypad Entries</value>
+    <comment>Label for keypad entries display</comment>
+  </data>
+  <data name="Monitor_Clear" xml:space="preserve">
+    <value>Clear</value>
+    <comment>Button text to clear keypad entries</comment>
   </data>
   <!-- Info Page -->
   <data name="Info_ApplicationName" xml:space="preserve">
