@@ -10,24 +10,44 @@ namespace OSDPBench.Core.Services;
 public class LocalizationService : ILocalizationService
 {
     private readonly ResourceManager _resourceManager;
+    private readonly IUserSettingsService? _userSettingsService;
     private CultureInfo _currentCulture;
     
     /// <summary>
     /// Initializes a new instance of the LocalizationService
     /// </summary>
-    public LocalizationService()
+    /// <param name="userSettingsService">Optional user settings service for persistence</param>
+    public LocalizationService(IUserSettingsService? userSettingsService)
     {
         _resourceManager = new ResourceManager("OSDPBench.Core.Resources.Resources", typeof(LocalizationService).Assembly);
-        _currentCulture = CultureInfo.CurrentUICulture;
+        _userSettingsService = userSettingsService;
+        
+        // Initialize culture from settings or system default
+        if (_userSettingsService?.Settings.PreferredCulture != null)
+        {
+            try
+            {
+                _currentCulture = new CultureInfo(_userSettingsService.Settings.PreferredCulture);
+            }
+            catch
+            {
+                _currentCulture = CultureInfo.CurrentUICulture;
+            }
+        }
+        else
+        {
+            _currentCulture = CultureInfo.CurrentUICulture;
+        }
         
         // Initialize supported cultures - start with English, more can be added later
         SupportedCultures = new List<CultureInfo>
         {
             new("en-US"), // English (United States)
-            new("es-ES"), // Spanish (Spain) - placeholder for future
-            new("fr-FR"), // French (France) - placeholder for future
-            new("de-DE"), // German (Germany) - placeholder for future
-            new("ja-JP")  // Japanese (Japan) - placeholder for future
+            new("es-ES"), // Spanish (Spain)
+            new("fr-FR"), // French (France)
+            new("de-DE"), // German (Germany)
+            new("ja-JP"), // Japanese (Japan)
+            new("zh-CN")  // Chinese (Simplified)
         }.AsReadOnly();
     }
     
@@ -82,6 +102,16 @@ public class LocalizationService : ILocalizationService
         
         // Update the Resources class culture (this will trigger PropertyChanged)
         OSDPBench.Core.Resources.Resources.ChangeCulture(culture);
+        
+        // Save preference to settings
+        if (_userSettingsService != null)
+        {
+            _ = Task.Run(async () => 
+            {
+                await _userSettingsService.UpdateSettingsAsync(settings => 
+                    settings.PreferredCulture = culture.Name);
+            });
+        }
         
         // Notify our own listeners
         CultureChanged?.Invoke(this, culture);

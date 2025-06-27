@@ -55,6 +55,7 @@ public partial class App
             services.AddSingleton<IDialogService, WindowsDialogService>();
             services.AddSingleton<ISerialPortConnectionService, WindowsSerialPortConnectionService>();
             services.AddSingleton<IUsbDeviceMonitorService, WindowsUsbDeviceMonitorService>();
+            services.AddSingleton<IUserSettingsService, UserSettingsService>();
             services.AddSingleton<ILocalizationService, LocalizationService>();
         }).Build();
 
@@ -72,9 +73,30 @@ public partial class App
     /// <summary>
     /// Occurs when the application is loading.
     /// </summary>
-    private void OnStartup(object sender, StartupEventArgs e)
+    private async void OnStartup(object sender, StartupEventArgs e)
     {
         Host.Start();
+        
+        // Initialize user settings before other services
+        var userSettingsService = Host.Services.GetService<IUserSettingsService>();
+        if (userSettingsService != null)
+        {
+            await userSettingsService.LoadAsync();
+        }
+        
+        // Initialize the localization service to apply saved culture
+        var localizationService = Host.Services.GetService<ILocalizationService>();
+        if (localizationService != null && userSettingsService?.Settings.PreferredCulture != null)
+        {
+            try
+            {
+                localizationService.ChangeCulture(userSettingsService.Settings.PreferredCulture);
+            }
+            catch
+            {
+                // If culture loading fails, continue with system default
+            }
+        }
         
         Host.Services.GetService<ManageViewModel>();
         Host.Services.GetService<MonitorViewModel>();

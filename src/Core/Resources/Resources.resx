@@ -541,26 +541,6 @@
     <value>Language</value>
     <comment>Label for language selection dropdown</comment>
   </data>
-  <data name="Language_English" xml:space="preserve">
-    <value>English</value>
-    <comment>English language option</comment>
-  </data>
-  <data name="Language_Spanish" xml:space="preserve">
-    <value>Español</value>
-    <comment>Spanish language option</comment>
-  </data>
-  <data name="Language_French" xml:space="preserve">
-    <value>Français</value>
-    <comment>French language option</comment>
-  </data>
-  <data name="Language_German" xml:space="preserve">
-    <value>Deutsch</value>
-    <comment>German language option</comment>
-  </data>
-  <data name="Language_Japanese" xml:space="preserve">
-    <value>日本語</value>
-    <comment>Japanese language option</comment>
-  </data>
   <data name="Language_SelectLanguage" xml:space="preserve">
     <value>Select Language</value>
     <comment>Tooltip for language selection</comment>

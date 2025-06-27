@@ -48,14 +48,15 @@ public partial class LanguageSelectionViewModel : ObservableObject
     {
         _localizationService = localizationService ?? throw new ArgumentNullException(nameof(localizationService));
         
-        // Initialize available languages
+        // Initialize available languages with native names that don't change
         AvailableLanguages = new ObservableCollection<LanguageItem>
         {
-            new("en-US", OSDPBench.Core.Resources.Resources.GetString("Language_English")),
-            new("es-ES", OSDPBench.Core.Resources.Resources.GetString("Language_Spanish")),
-            new("fr-FR", OSDPBench.Core.Resources.Resources.GetString("Language_French")),
-            new("de-DE", OSDPBench.Core.Resources.Resources.GetString("Language_German")),
-            new("ja-JP", OSDPBench.Core.Resources.Resources.GetString("Language_Japanese"))
+            new("en-US", "English"),
+            new("es-ES", "Español"),
+            new("fr-FR", "Français"), 
+            new("de-DE", "Deutsch"),
+            new("ja-JP", "日本語"),
+            new("zh-CN", "中文")
         };
         
         // Set current language as selected
@@ -65,9 +66,6 @@ public partial class LanguageSelectionViewModel : ObservableObject
         
         // Subscribe to culture changes to update selection
         _localizationService.CultureChanged += OnCultureChanged;
-        
-        // Subscribe to resource changes to update language names
-        OSDPBench.Core.Resources.Resources.PropertyChanged += OnResourcesPropertyChanged;
     }
     
     [RelayCommand]
@@ -99,36 +97,6 @@ public partial class LanguageSelectionViewModel : ObservableObject
         }
     }
     
-    private void OnResourcesPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
-    {
-        // Update language display names when culture changes
-        UpdateLanguageDisplayNames();
-    }
-    
-    private void UpdateLanguageDisplayNames()
-    {
-        // Update the display names while preserving culture codes
-        var languages = new[]
-        {
-            new LanguageItem("en-US", OSDPBench.Core.Resources.Resources.GetString("Language_English")),
-            new LanguageItem("es-ES", OSDPBench.Core.Resources.Resources.GetString("Language_Spanish")),
-            new LanguageItem("fr-FR", OSDPBench.Core.Resources.Resources.GetString("Language_French")),
-            new LanguageItem("de-DE", OSDPBench.Core.Resources.Resources.GetString("Language_German")),
-            new LanguageItem("ja-JP", OSDPBench.Core.Resources.Resources.GetString("Language_Japanese"))
-        };
-        
-        var selectedCode = SelectedLanguage?.CultureCode;
-        
-        AvailableLanguages.Clear();
-        foreach (var language in languages)
-        {
-            AvailableLanguages.Add(language);
-        }
-        
-        // Restore selection
-        SelectedLanguage = AvailableLanguages.FirstOrDefault(l => l.CultureCode == selectedCode) 
-                          ?? AvailableLanguages.First();
-    }
 }
 
 /// <summary>
