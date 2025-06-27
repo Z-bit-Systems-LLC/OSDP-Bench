@@ -290,6 +290,10 @@
     <value>Expandir</value>
     <comment>Button text to expand row details</comment>
   </data>
+  <data name="Monitor_ConnectionPageDetails" xml:space="preserve">
+    <value>La página de Conexión proporcionará más detalles</value>
+    <comment>Message directing users to connection page for details</comment>
+  </data>
   <!-- Info Page -->
   <data name="Info_ApplicationName" xml:space="preserve">
     <value>Banco OSDP</value>

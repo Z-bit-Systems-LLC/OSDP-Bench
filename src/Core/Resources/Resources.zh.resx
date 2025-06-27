@@ -290,6 +290,10 @@
     <value>扩大</value>
     <comment>Button text to expand row details</comment>
   </data>
+  <data name="Monitor_ConnectionPageDetails" xml:space="preserve">
+    <value>连接页面将提供更多详细信息</value>
+    <comment>Message directing users to connection page for details</comment>
+  </data>
   <!-- Info Page -->
   <data name="Info_ApplicationName" xml:space="preserve">
     <value>OSDP 工作台</value>

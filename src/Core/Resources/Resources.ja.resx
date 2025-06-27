@@ -290,6 +290,10 @@
     <value>膨らむ</value>
     <comment>Button text to expand row details</comment>
   </data>
+  <data name="Monitor_ConnectionPageDetails" xml:space="preserve">
+    <value>接続ページでより詳細な情報を確認できます</value>
+    <comment>Message directing users to connection page for details</comment>
+  </data>
   <!-- Info Page -->
   <data name="Info_ApplicationName" xml:space="preserve">
     <value>OSDPベンチ</value>

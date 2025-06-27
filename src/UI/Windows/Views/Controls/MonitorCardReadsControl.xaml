@@ -6,6 +6,7 @@
              xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
              xmlns:controls="clr-namespace:OSDPBench.Windows.Views.Controls"
              xmlns:models="clr-namespace:OSDPBench.Core.Models;assembly=OSDPBench.Core"
+             xmlns:markup="clr-namespace:OSDPBench.Windows.Markup"
              d:DataContext="{d:DesignInstance controls:MonitorCardReadsControl,
                                             IsDesignTimeCreatable=False}"
              mc:Ignorable="d"
@@ -19,7 +20,7 @@
         <StackPanel Grid.Row="0" 
                     Orientation="Vertical" 
                     Margin="0,0,0,10">
-            <Label Content="Last Card Read"
+            <Label Content="{markup:Localize Monitor_LastCardRead}"
                    Target="{Binding ElementName=CardNumberTextBox}" />
             <TextBox Name="CardNumberTextBox"
                      IsReadOnly="True"
@@ -34,10 +35,10 @@
             
             <DockPanel Grid.Row="0" 
                        Margin="0,0,20,5">
-                <Label Content="Read History"
+                <Label Content="{markup:Localize Monitor_ReadHistory}"
                        VerticalAlignment="Bottom"
                        DockPanel.Dock="Left"/>
-                <Button Content="Clear History"
+                <Button Content="{markup:Localize Monitor_ClearHistory}"
                         DockPanel.Dock="Right"
                         HorizontalAlignment="Right"
                         Click="ClearHistory_Click"/>
@@ -54,7 +55,7 @@
                          VerticalScrollBarVisibility="Auto"
                          MaxHeight="300" d:DataContext="{d:DesignInstance models:CardReadEntry}">
                 <ui:DataGrid.Columns>
-                    <DataGridTextColumn Header="Date/Time" 
+                    <DataGridTextColumn Header="{markup:Localize Monitor_ColumnDateTime}" 
                                            Binding="{Binding Timestamp, StringFormat='MM/dd/yyyy HH:mm:ss'}"
                                            Width="150">
                         <DataGridTextColumn.ElementStyle>
@@ -64,7 +65,7 @@
                             </Style>
                         </DataGridTextColumn.ElementStyle>
                     </DataGridTextColumn>
-                    <DataGridTemplateColumn Header="Card Number" 
+                    <DataGridTemplateColumn Header="{markup:Localize Monitor_ColumnCardNumber}" 
                                                Width="*">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>

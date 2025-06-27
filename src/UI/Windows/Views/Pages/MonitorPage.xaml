@@ -12,7 +12,7 @@
       d:DataContext="{d:DesignInstance local:MonitorPage,
 									 IsDesignTimeCreatable=False}"
       d:DesignHeight="450" d:DesignWidth="800"
-      Title="Monitor">
+      Title="{markup:Localize Page_Monitor}">
 	
 	<Page.Resources>
 		<converters:StringToVisibilityConverter x:Key="StringToVisibilityConverter" />
@@ -32,7 +32,7 @@
 			            HorizontalAlignment="Right" 
 			            VerticalAlignment="Center">
 				<StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0 0 15 0">
-					<TextBlock Text="Tx" VerticalAlignment="Center" Margin="0 0 5 0"/>
+					<TextBlock Text="{markup:Localize Activity_Tx}" VerticalAlignment="Center" Margin="0 0 5 0"/>
 					<controls:LedControl 
 						LastActivityTime="{Binding Path=ViewModel.LastTxActiveTime}" 
 						LedColor="Red" 
@@ -40,7 +40,7 @@
 				</StackPanel>
             
 				<StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-					<TextBlock Text="Rx" VerticalAlignment="Center" Margin="0 0 5 0"/>
+					<TextBlock Text="{markup:Localize Activity_Rx}" VerticalAlignment="Center" Margin="0 0 5 0"/>
 					<controls:LedControl 
 						LastActivityTime="{Binding Path=ViewModel.LastRxActiveTime}" 
 						LedColor="Red" 
@@ -58,14 +58,14 @@
 				TextAlignment="Center"
 				TextWrapping="Wrap"
 				Foreground="Orange"
-				Text="Device is not connected"/>
+				Text="{markup:Localize Monitor_DeviceNotConnected}"/>
 			<TextBlock
 				FontSize="24"
 				Margin="20 10 20 0"
 				HorizontalAlignment="Center"
 				TextAlignment="Center"
 				TextWrapping="Wrap"
-				Text="The Connection page will provide more details"/>
+				Text="{markup:Localize Monitor_ConnectionPageDetails}"/>
 		</StackPanel>
 		<StackPanel  Orientation="Vertical"
 		             Visibility="{Binding Path=ViewModel.StatusLevel, Converter={StaticResource StringToVisibilityConverter}, ConverterParameter=Connected, Mode=OneWay}">
@@ -78,14 +78,14 @@
 					TextAlignment="Center"
 					TextWrapping="Wrap"
 					Foreground="Orange"
-					Text="Monitoring is not available for secure channel"/>
+					Text="{markup:Localize Monitor_MonitoringNotAvailable}"/>
 				<TextBlock
 					FontSize="24"
 					Margin="20 10 20 0"
 					HorizontalAlignment="Center"
 					TextAlignment="Center"
 					TextWrapping="Wrap"
-					Text="An update will be out soon that supports secure channel"/>
+					Text="{markup:Localize Monitor_SecureChannelUpdate}"/>
 			</StackPanel>
 			<StackPanel  Orientation="Vertical"
 			             Visibility="{Binding Path=ViewModel.UsingSecureChannel, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=Invert, Mode=OneWay}">
@@ -99,14 +99,14 @@
 
 					<!-- DataGrid Columns -->
 					<DataGrid.Columns>
-						<DataGridTextColumn Header="TimeStamp" Binding="{Binding LocalTimestamp, StringFormat={}{0:HH:mm:ss.fff}}" />
-						<DataGridTextColumn Header="Interval (ms)" Binding="{Binding Interval.TotalMilliseconds, StringFormat={}{0:N0}}" />
-						<DataGridTextColumn Header="Direction" Binding="{Binding Direction}" />
-						<DataGridTextColumn Header="Address" Binding="{Binding Packet.Address}" />
-						<DataGridTextColumn Header="Type" Binding="{Binding Type}" />
+						<DataGridTextColumn Header="{markup:Localize Monitor_TimeStamp}" Binding="{Binding LocalTimestamp, StringFormat={}{0:HH:mm:ss.fff}}" />
+						<DataGridTextColumn Header="{markup:Localize Monitor_Interval}" Binding="{Binding Interval.TotalMilliseconds, StringFormat={}{0:N0}}" />
+						<DataGridTextColumn Header="{markup:Localize Monitor_Direction}" Binding="{Binding Direction}" />
+						<DataGridTextColumn Header="{markup:Localize Monitor_Address}" Binding="{Binding Packet.Address}" />
+						<DataGridTextColumn Header="{markup:Localize Monitor_Type}" Binding="{Binding Type}" />
 		        
 						<!-- Button Column -->
-						<DataGridTemplateColumn Header="Details" Width="*">
+						<DataGridTemplateColumn Header="{markup:Localize Monitor_Details}" Width="*">
 							<DataGridTemplateColumn.CellTemplate>
 								<DataTemplate>
 									<ui:Button Content="{markup:Localize Monitor_Expand}" DataContext="{Binding Details}"

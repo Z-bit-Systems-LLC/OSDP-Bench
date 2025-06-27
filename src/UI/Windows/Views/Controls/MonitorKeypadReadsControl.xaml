@@ -3,12 +3,13 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:markup="clr-namespace:OSDPBench.Windows.Markup"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid>
         <Grid>
             <StackPanel Orientation="Vertical">
-                <Label Content="Keypad Entries"
+                <Label Content="{markup:Localize Monitor_KeypadEntries}"
                        Target="{Binding ElementName=KeypadTextBox}" />
                 <StackPanel Orientation="Horizontal">
                     <TextBox Name="KeypadTextBox"
@@ -16,7 +17,7 @@
                                      IsReadOnly="True"
                                      Margin="0 0 20 0"/>
                     <Button Name="ClearButton"
-                            Content="Clear"
+                            Content="{markup:Localize Monitor_Clear}"
                             Click="ClearButton_OnClick"/>
                 </StackPanel>
             </StackPanel>
