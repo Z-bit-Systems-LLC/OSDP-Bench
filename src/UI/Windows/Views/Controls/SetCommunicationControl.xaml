@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
              xmlns:controls="clr-namespace:OSDPBench.Windows.Views.Controls"
+             xmlns:markup="clr-namespace:OSDPBench.Windows.Markup"
              d:DataContext="{d:DesignInstance Type=controls:SetCommunicationControl}"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
@@ -15,7 +16,7 @@
             <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
         <StackPanel Grid.Column="0" Orientation="Vertical">
-            <Label Content="Baud Rate"
+            <Label Content="{markup:Localize Connect_BaudRate}"
                    Target="{Binding ElementName=BaudRateComboBox}" />
             <ComboBox Name="BaudRateComboBox"
                       Margin="0 0 20 0"
@@ -23,7 +24,7 @@
                       SelectedItem="{Binding SelectedBaudRate, Mode=TwoWay}"/>
         </StackPanel>
         <StackPanel Grid.Column="1" Orientation="Vertical">
-            <Label Content="Address"
+            <Label Content="{markup:Localize Connect_Address}"
                    Target="{Binding ElementName=BaudRateComboBox}" />
             <ui:NumberBox Name="AddressNumberBox"
                           TextChanged="AddressNumberBox_OnTextChanged"

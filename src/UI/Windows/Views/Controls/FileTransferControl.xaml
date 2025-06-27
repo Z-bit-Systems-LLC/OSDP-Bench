@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:models="clr-namespace:OSDPBench.Core.Models;assembly=OSDPBench.Core"
              xmlns:converters="clr-namespace:OSDPBench.Windows.Converters"
+             xmlns:markup="clr-namespace:OSDPBench.Windows.Markup"
              d:DataContext="{d:DesignInstance models:FileTransferParameters,
                                             IsDesignTimeCreatable=false}"
              mc:Ignorable="d"
@@ -29,10 +30,10 @@
         
         <StackPanel Grid.Row="0" 
                     Orientation="Vertical">
-            <Label Content="Selected File"
+            <Label Content="{markup:Localize Manage_SelectedFile}"
                    Target="{Binding ElementName=FilePathTextBox}"/>
             <DockPanel>
-                <Button Content="Browse"
+                <Button Content="{markup:Localize Manage_Browse}"
                         DockPanel.Dock="Right"
                         Margin="10,0,0,0"
                         Click="BrowseFileButton_OnClick"
@@ -44,7 +45,7 @@
         </StackPanel>
 
         <StackPanel Grid.Row="2">
-            <Label Content="Progress"/>
+            <Label Content="{markup:Localize Manage_Progress}"/>
             <ProgressBar Value="{Binding ProgressPercentage, Mode=OneWay}"
                                   Maximum="100"
                                   Height="20"
@@ -52,9 +53,9 @@
             <Grid>
                 <TextBlock HorizontalAlignment="Left">
                     <Run Text="{Binding TransferredBytes, StringFormat={}{0:N0}}"/>
-                    <Run Text=" Bytes/"/>
+                    <Run Text="{markup:Localize Manage_BytesOf}"/>
                     <Run Text="{Binding TotalBytes, StringFormat={}{0:N0}}"/>
-                    <Run Text=" Bytes"/>
+                    <Run Text="{markup:Localize Manage_Bytes}"/>
                 </TextBlock>
             </Grid>
         </StackPanel>
