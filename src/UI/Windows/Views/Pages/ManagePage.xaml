@@ -30,7 +30,7 @@
                         HorizontalAlignment="Right" 
                         VerticalAlignment="Center">
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0 0 15 0">
-                    <TextBlock Text="{markup:Localize Activity_Tx}" VerticalAlignment="Center" Margin="0 0 5 0"/>
+                    <TextBlock Text="{markup:Localize Activity_Tx}" Style="{StaticResource Activity.Label}"/>
                     <controls:LedControl 
                         LastActivityTime="{Binding Path=ViewModel.LastTxActiveTime}" 
                         LedColor="Red" 
@@ -38,7 +38,7 @@
                 </StackPanel>
             
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                    <TextBlock Text="{markup:Localize Activity_Rx}" VerticalAlignment="Center" Margin="0 0 5 0"/>
+                    <TextBlock Text="{markup:Localize Activity_Rx}" Style="{StaticResource Activity.Label}"/>
                     <controls:LedControl 
                         LastActivityTime="{Binding Path=ViewModel.LastRxActiveTime}" 
                         LedColor="Red" 
@@ -48,20 +48,19 @@
         </Grid>
         <StackPanel  Orientation="Vertical"
                      Visibility="{Binding Path=ViewModel.StatusLevel, Converter={StaticResource StringToVisibilityConverter}, ConverterParameter=Disconnected, Mode=OneWay}">
-            <TextBlock
-                FontSize="32"
+            <TextBlock Style="{StaticResource Text.Warning}"
                 Margin="20 10 20 0"
                 HorizontalAlignment="Center"
                 TextAlignment="Center"
                 TextWrapping="Wrap"
-                Foreground="Orange"
+                FontSize="{StaticResource FontSize.Headline}"
                 Text="{markup:Localize Manage_DeviceNotIdentified}"/>
-            <TextBlock
-                FontSize="24"
+            <TextBlock Style="{StaticResource Text.Body}"
                 Margin="20 10 20 0"
                 HorizontalAlignment="Center"
                 TextAlignment="Center"
                 TextWrapping="Wrap"
+                FontSize="{StaticResource FontSize.Title}"
                 Text="{markup:Localize Manage_ConnectionPageDetails}"/>
         </StackPanel>
         <StackPanel  Orientation="Vertical"
@@ -77,33 +76,28 @@
                     <StackPanel Orientation="Horizontal"
                                 Margin="10 0 10 0"
                                 HorizontalAlignment="Center">
-                        <TextBlock
-                            FontSize="24"
+                        <TextBlock Style="{StaticResource Text.Title}"
                             TextAlignment="Left"
                             TextWrapping="Wrap"
                             Text="{Binding Path=ViewModel.IdentityLookup.VendorName}"
                             d:Text="ABC Corporation"/>
-                        <TextBlock
-                            FontSize="24"
+                        <TextBlock Style="{StaticResource Text.Title}"
                             TextAlignment="Left"
                             TextWrapping="Wrap"
                             Text=" ("/>
-                        <TextBlock
-                            FontSize="24"
+                        <TextBlock Style="{StaticResource Text.Title}"
                             TextAlignment="Left"
                             TextWrapping="Wrap">
                             <Hyperlink Click="Hyperlink_OnClick">
                                 <Run Text="{Binding Path=ViewModel.IdentityLookup.VendorCode}"/>
                             </Hyperlink>
                         </TextBlock>
-                        <TextBlock
-                            FontSize="24"
+                        <TextBlock Style="{StaticResource Text.Title}"
                             TextAlignment="Left"
                             TextWrapping="Wrap"
                             Text=")"/>
                     </StackPanel>
-                    <TextBlock
-                        FontSize="20"
+                    <TextBlock Style="{StaticResource Text.Subtitle}"
                         Margin="10 0 10 0"
                         HorizontalAlignment="Center"
                         TextAlignment="Center"
@@ -114,21 +108,18 @@
                     <StackPanel Orientation="Horizontal"
                                 Margin="10 0 10 0"
                                 HorizontalAlignment="Center">
-                        <TextBlock
-                            FontSize="20"
+                        <TextBlock Style="{StaticResource Text.Subtitle}"
                             TextAlignment="Left"
                             TextWrapping="Wrap"
                             Text="{markup:Localize Device_SerialNumberPrefix}"/>
-                        <TextBlock
-                            FontSize="20"
+                        <TextBlock Style="{StaticResource Text.Subtitle}"
                             TextAlignment="Left"
                             TextWrapping="Wrap"
                             Text="{Binding ViewModel.IdentityLookup.SerialNumber}"
                             d:Text="0000"/> 
                     </StackPanel>
 
-                    <TextBlock
-                        FontSize="20"
+                    <TextBlock Style="{StaticResource Text.Subtitle}"
                         Margin="10 0 10 0"
                         HorizontalAlignment="Center"
                         TextAlignment="Center"
@@ -156,11 +147,9 @@
                             FontTypography="Subtitle"
                             Text="{markup:Localize Manage_DeviceAction}" 
                             TextWrapping="Wrap"/>
-                        <ui:TextBlock
+                        <ui:TextBlock Style="{StaticResource Text.Caption}"
                             Grid.Row="1"
                             Grid.Column="0"
-                            FontSize="12"
-                            Foreground="{ui:ThemeResource TextFillColorSecondaryBrush}"
                             TextWrapping="Wrap">
                             <ui:TextBlock.Text>
                                 <MultiBinding StringFormat="{markup:Localize Connection_DeviceConnectedFormat}">
