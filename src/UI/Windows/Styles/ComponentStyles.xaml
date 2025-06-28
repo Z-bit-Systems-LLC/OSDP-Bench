@@ -78,6 +78,20 @@
     <Style x:Key="Card.Standard" TargetType="ui:Card">
         <Setter Property="Margin" Value="{StaticResource Margin.Card}"/>
         <Setter Property="Padding" Value="{StaticResource Padding.Card}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource ControlStrokeColorDefaultBrush}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="Background" Value="{DynamicResource CardBackgroundFillColorDefaultBrush}"/>
+        <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}"/>
+    </Style>
+    
+    <!-- Border Card Alternative -->
+    <Style x:Key="Card.Bordered" TargetType="Border">
+        <Setter Property="Margin" Value="{StaticResource Margin.Card}"/>
+        <Setter Property="Padding" Value="{StaticResource Padding.Card}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource ControlElevationBorderBrush}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="Background" Value="{DynamicResource CardBackgroundFillColorDefaultBrush}"/>
+        <Setter Property="CornerRadius" Value="{StaticResource CornerRadius.Medium}"/>
     </Style>
     
     <Style x:Key="Card.Content" TargetType="StackPanel">

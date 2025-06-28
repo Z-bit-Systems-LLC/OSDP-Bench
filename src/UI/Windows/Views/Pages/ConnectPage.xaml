@@ -20,42 +20,16 @@
         <converters:IndexToVisibilityConverter x:Key="IndexToVisibilityConverter" />
     </Page.Resources>
 
-    <StackPanel 
-		Orientation="Vertical"
-		Margin="0 5">
-	    <Grid Margin="10 5">
-		    <TextBlock 
-			    Text="{Binding RelativeSource={RelativeSource AncestorType=Page}, Path=Title}"
-			    Style="{StaticResource PageTitleStyle}"/>
-            
-		    <StackPanel Orientation="Horizontal" 
-		                HorizontalAlignment="Right" 
-		                VerticalAlignment="Center">
-			    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0 0 15 0">
-				    <TextBlock Text="{markup:Localize Activity_Tx}" VerticalAlignment="Center" Margin="0 0 5 0"/>
-				    <controls:LedControl 
-					    LastActivityTime="{Binding Path=ViewModel.LastTxActiveTime}" 
-					    LedColor="Red" 
-					    VerticalAlignment="Center"/>
-			    </StackPanel>
-            
-			    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-				    <TextBlock Text="{markup:Localize Activity_Rx}" VerticalAlignment="Center" Margin="0 0 5 0"/>
-				    <controls:LedControl 
-					    LastActivityTime="{Binding Path=ViewModel.LastRxActiveTime}" 
-					    LedColor="Red" 
-					    VerticalAlignment="Center"/>
-			    </StackPanel>
-		    </StackPanel>
-	    </Grid>
-	    <ui:Card Margin="10 5" Padding="10">
-            <StackPanel Orientation="Vertical">
-                <ui:TextBlock
-					VerticalAlignment="Center"
-                    FontTypography="Subtitle"
-					Text="{markup:Localize Connect_SerialPortSelection}" 
-					TextWrapping="Wrap"
-                    Margin="0,0,0,10"/>
+    <StackPanel Style="{StaticResource Page.Container}">
+        <!-- Page Header with Activity Indicators -->
+        <ContentControl Content="{Binding RelativeSource={RelativeSource AncestorType=Page}, Path=Title}"
+                        Template="{StaticResource Template.PageHeader}"/>
+        <Border Style="{StaticResource Card.Bordered}">
+            <StackPanel Style="{StaticResource Card.Content}">
+                <ui:TextBlock FontTypography="Subtitle"
+                              Text="{markup:Localize Connect_SerialPortSelection}"
+                              TextWrapping="Wrap"
+                              Margin="0,0,0,10"/>
                 <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="200"/>
@@ -65,6 +39,7 @@
                 <!-- Serial Port Selection -->
                 <StackPanel Grid.Column="0" Orientation="Vertical">
                     <Label Content="{markup:Localize Connect_SerialPort}"
+                           Style="{StaticResource Label.Standard}"
                            Target="{Binding ElementName=SerialPortComboBox}" />
                     <ComboBox x:Name="SerialPortComboBox"
                               ItemsSource="{Binding ViewModel.AvailableSerialPorts }"
@@ -76,10 +51,9 @@
                 <TextBlock Grid.Column="1"
                            Text="{Binding ViewModel.UsbStatusText}"
                            VerticalAlignment="Center"
-                           Margin="10,0,0,0"
-                           Foreground="{ui:ThemeResource TextFillColorSecondaryBrush}">
+                           Margin="10,0,0,0">
                     <TextBlock.Style>
-                        <Style TargetType="TextBlock">
+                        <Style TargetType="TextBlock" BasedOn="{StaticResource Text.Caption}">
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding Text, RelativeSource={RelativeSource Self}}" Value="">
                                     <Setter Property="Visibility" Value="Collapsed" />
@@ -90,10 +64,10 @@
                 </TextBlock>
             </Grid>
             </StackPanel>
-        </ui:Card>
-        <ui:Card Margin="10 5" Padding="10">
-            <StackPanel Orientation="Vertical">
-                <Grid Margin="0,0,0,10">
+        </Border>
+        <Border Style="{StaticResource Card.Bordered}">
+            <StackPanel Style="{StaticResource Card.Content}">
+                <Grid Style="{StaticResource Style.ConnectionSection}">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
@@ -102,20 +76,17 @@
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="Auto" MinWidth="100" />
                     </Grid.ColumnDefinitions>
-                    <ui:TextBlock
-						Grid.Row="0"
-						Grid.Column="0"
-						VerticalAlignment="Center"
-                        FontTypography="Subtitle"
-						Text="{markup:Localize Connect_ConnectToPD}" 
-						TextWrapping="Wrap"/>
-                    <ui:TextBlock
-						Grid.Row="1"
-						Grid.Column="0"
-						Visibility="{Binding Path=ViewModel.StatusLevel, Converter={StaticResource StringToVisibilityConverter}, ConverterParameter=Connected, Mode=OneWay}"
-						FontSize="12"
-						Foreground="{ui:ThemeResource TextFillColorSecondaryBrush}"
-						TextWrapping="Wrap">
+                    <ui:TextBlock FontTypography="Subtitle"
+                                  Grid.Row="0"
+                                  Grid.Column="0"
+                                  Text="{markup:Localize Connect_ConnectToPD}"
+                                  TextWrapping="Wrap"
+                                  Margin="0,0,0,10"/>
+                    <ui:TextBlock Style="{StaticResource Text.Caption}"
+                                  Grid.Row="1"
+                                  Grid.Column="0"
+                                  Visibility="{Binding Path=ViewModel.StatusLevel, Converter={StaticResource StringToVisibilityConverter}, ConverterParameter=Connected, Mode=OneWay}"
+                                  TextWrapping="Wrap">
                         <ui:TextBlock.Text>
                             <MultiBinding StringFormat="{markup:Localize Connection_DeviceConnectedFormat}">
                                 <Binding Path="ViewModel.ConnectedAddress" />
@@ -136,11 +107,9 @@
                 <Grid 
 					Visibility="{Binding ElementName=ConnectionTypeComboBox, Path=SelectedIndex, Converter={StaticResource IndexToVisibilityConverter}, ConverterParameter=0, Mode=OneWay}">
                     <StackPanel Orientation="Vertical">
-                        <ui:TextBlock
+                        <ui:TextBlock Style="{StaticResource Text.Body}"
 							Margin="10 5"
 							HorizontalAlignment="Center"
-							FontSize="16"
-							FontTypography="Body"
 							Text="{markup:Localize Connect_DiscoveryWarning}" 
 							TextWrapping="Wrap"/>
                         <StackPanel Orientation="Horizontal"
@@ -209,6 +178,7 @@
                             </Grid.ColumnDefinitions>
                             <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Vertical">
                                 <Label Content="{markup:Localize Connect_BaudRate}"
+                                       Style="{StaticResource Label.Standard}"
 										   Target="{Binding ElementName=BaudRateComboBox}" />
                                 <ComboBox Name="BaudRateComboBox"
 										  Margin="0 0 20 0"
@@ -217,6 +187,7 @@
                             </StackPanel>
                             <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Vertical">
                                 <Label Content="{markup:Localize Connect_Address}"
+                                       Style="{StaticResource Label.Standard}"
 										   Target="{Binding ElementName=AddressNumberBox}" />
                                 <ui:NumberBox Name="AddressNumberBox"
 											  Value="{Binding Path=ViewModel.SelectedAddress, Mode=TwoWay}"
@@ -245,6 +216,7 @@
 	                           
 	                            <StackPanel Orientation="Vertical">
 		                            <Label Content="{markup:Localize Connect_SecurityKey}"
+		                                   Style="{StaticResource Label.Standard}"
 		                                   Target="{Binding ElementName=AddressNumberBox}" />
                                     <TextBox Text="{Binding Path=ViewModel.SecurityKey,  Mode=TwoWay}">
                                         <TextBox.Style>
@@ -303,7 +275,6 @@
                 </Grid>
 
                 <TextBlock 
-					FontSize="24"
 					Margin="10 5"
 					HorizontalAlignment="Center"
 					TextAlignment="Center"
@@ -311,7 +282,7 @@
 					Foreground="{Binding ViewModel.StatusLevel, Converter={StaticResource StatusLevelConverter}}"
 					Text="{Binding ViewModel.StatusText}">
                     <TextBlock.Style>
-                        <Style TargetType="TextBlock">
+                        <Style TargetType="TextBlock" BasedOn="{StaticResource Text.Title}">
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding Text, RelativeSource={RelativeSource Self}}" Value="">
                                     <Setter Property="Visibility" Value="Collapsed" />
@@ -321,16 +292,15 @@
                     </TextBlock.Style>
                 </TextBlock>
                 <TextBlock 
-					FontSize="24"
 					Margin="10 5"
 					HorizontalAlignment="Center"
 					TextAlignment="Center"
 					TextWrapping="Wrap"
-					FontWeight="Bold"
-					Foreground="Red"
 					Text="{Binding ViewModel.NakText}">
                     <TextBlock.Style>
-                        <Style TargetType="TextBlock">
+                        <Style TargetType="TextBlock" BasedOn="{StaticResource Text.Error}">
+                            <Setter Property="FontSize" Value="{StaticResource FontSize.Title}"/>
+                            <Setter Property="FontWeight" Value="Bold"/>
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding Text, RelativeSource={RelativeSource Self}}" Value="">
                                     <Setter Property="Visibility" Value="Collapsed" />
@@ -340,6 +310,6 @@
                     </TextBlock.Style>
                 </TextBlock>
             </StackPanel>
-        </ui:Card>
+        </Border>
     </StackPanel>
 </Page>

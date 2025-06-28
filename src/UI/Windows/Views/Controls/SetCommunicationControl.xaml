@@ -15,26 +15,29 @@
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
-        <StackPanel Grid.Column="0" Orientation="Vertical">
+        <StackPanel Grid.Column="0" 
+                    Style="{StaticResource Section.Container}">
             <Label Content="{markup:Localize Connect_BaudRate}"
+                   Style="{StaticResource Label.Standard}"
                    Target="{Binding ElementName=BaudRateComboBox}" />
             <ComboBox Name="BaudRateComboBox"
                       Margin="0 0 20 0"
                       ItemsSource="{Binding AvailableBaudRates}"
                       SelectedItem="{Binding SelectedBaudRate, Mode=TwoWay}"/>
         </StackPanel>
-        <StackPanel Grid.Column="1" Orientation="Vertical">
+        <StackPanel Grid.Column="1" 
+                    Style="{StaticResource Section.Container}">
             <Label Content="{markup:Localize Connect_Address}"
-                   Target="{Binding ElementName=BaudRateComboBox}" />
+                   Style="{StaticResource Label.Standard}"
+                   Target="{Binding ElementName=AddressNumberBox}" />
             <ui:NumberBox Name="AddressNumberBox"
                           TextChanged="AddressNumberBox_OnTextChanged"
                           ValueChanged="AddressNumberBox_OnValueChanged"
                           Value="{Binding SelectedAddress, Mode=TwoWay}"
-                          Margin="0 0 20 0"
                           Minimum="0"
                           Maximum="127"
-                          MaxDecimalPlaces="0"
-                          ClearButtonEnabled="False"/>
+                          ClearButtonEnabled="False"
+                          MaxDecimalPlaces="0"/>
         </StackPanel>
     </Grid>
 
