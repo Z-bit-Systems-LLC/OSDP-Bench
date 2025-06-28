@@ -112,7 +112,7 @@
 
     <!-- Progress Bar Template -->
     <Style x:Key="ProgressBar.FileTransfer" TargetType="ProgressBar">
-        <Setter Property="Height" Value="20"/>
+        <Setter Property="Height" Value="{StaticResource Control.Height.Medium}"/>
         <Setter Property="Maximum" Value="100"/>
         <Setter Property="Margin" Value="0,0,0,4"/>
         <Setter Property="Background" Value="{DynamicResource ControlFillColorDefaultBrush}"/>

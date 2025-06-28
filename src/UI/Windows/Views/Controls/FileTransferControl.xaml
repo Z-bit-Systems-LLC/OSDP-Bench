@@ -14,17 +14,10 @@
     <UserControl.Resources>
         <converters:InverseBoolConverter x:Key="InverseBoolConverter" />
     </UserControl.Resources>
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="10"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="10"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
+    <StackPanel Orientation="Vertical" 
+                Margin="{StaticResource Margin.Card}">
         
-        <StackPanel Grid.Row="0" 
-                    Style="{StaticResource Section.Container}">
+        <StackPanel Orientation="Vertical" >
             <Label Content="{markup:Localize Manage_SelectedFile}"
                    Style="{StaticResource Label.Standard}"
                    Target="{Binding ElementName=FilePathTextBox}"/>
@@ -37,12 +30,14 @@
                 <TextBox Name="FilePathTextBox"
                          Text="{Binding FilePath}"
                          IsReadOnly="True"
-                         Style="{StaticResource TextBox.Standard}"/>
+                         Style="{StaticResource TextBox.Standard}"
+                         MinHeight="0"
+                         Height="Auto"
+                         VerticalAlignment="Center"/>
             </DockPanel>
         </StackPanel>
 
-        <StackPanel Grid.Row="2"
-                    Style="{StaticResource Section.Container}">
+        <StackPanel Orientation="Vertical">
             <Label Content="{markup:Localize Manage_Progress}"
                    Style="{StaticResource Label.Standard}"/>
             <ProgressBar Value="{Binding ProgressPercentage, Mode=OneWay}"
@@ -58,9 +53,8 @@
             </Grid>
         </StackPanel>
 
-        <TextBlock Grid.Row="4" 
-                   Style="{StaticResource Text.Body}"
+        <TextBlock Style="{StaticResource Text.Body}"
                    Text="{Binding StatusMessage}"
                    TextWrapping="Wrap"/>
-    </Grid>
+    </StackPanel>
 </UserControl>
