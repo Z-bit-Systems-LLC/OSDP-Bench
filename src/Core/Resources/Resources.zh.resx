@@ -212,6 +212,14 @@
     <value>波特率</value>
     <comment>Label for baud rate selection</comment>
   </data>
+  <data name="Connect_ConnectionSettings" xml:space="preserve">
+    <value>Connection Settings</value>
+    <comment>Header for connection settings section</comment>
+  </data>
+  <data name="Connect_SecuritySettings" xml:space="preserve">
+    <value>Security Settings</value>
+    <comment>Header for security settings section</comment>
+  </data>
   <data name="Connect_Address" xml:space="preserve">
     <value>地址</value>
     <comment>Label for device address input</comment>
