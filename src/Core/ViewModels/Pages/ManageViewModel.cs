@@ -196,7 +196,17 @@ public partial class ManageViewModel : ObservableObject
     
     private void OnDeviceManagementServiceOnTraceEntryReceived(object? sender, TraceEntry traceEntry)
     {
-        if (_deviceManagementService.IsUsingSecureChannel) return;
+        // Update activity indicators based on raw trace entry direction (works for encrypted packets too)
+        switch (traceEntry.Direction)
+        {
+            // Flash the appropriate LED based on a direction
+            case TraceDirection.Output:
+                LastTxActiveTime = DateTime.Now;
+                break;
+            case TraceDirection.Input or TraceDirection.Trace:
+                LastRxActiveTime = DateTime.Now;
+                break;
+        }
 
         var build = new PacketTraceEntryBuilder();
         PacketTraceEntry packetTraceEntry;
@@ -207,17 +217,6 @@ public partial class ManageViewModel : ObservableObject
         catch (Exception)
         {
             return;
-        }
-
-        switch (packetTraceEntry.Direction)
-        {
-            // Flash the appropriate LED based on a direction
-            case TraceDirection.Output:
-                LastTxActiveTime = DateTime.Now;
-                break;
-            case TraceDirection.Input or TraceDirection.Trace:
-                LastRxActiveTime = DateTime.Now;
-                break;
         }
         
         _lastPacketEntry = packetTraceEntry;

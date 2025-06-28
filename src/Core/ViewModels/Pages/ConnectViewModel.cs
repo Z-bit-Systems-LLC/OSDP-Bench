@@ -63,12 +63,11 @@ public partial class ConnectViewModel : ObservableObject, IDisposable
 
     private void OnDeviceManagementServiceOnTraceEntryReceived(object? sender, TraceEntry traceEntry)
     {
-        if (_deviceManagementService.IsUsingSecureChannel) return;
-
+        // Update activity indicators based on raw trace entry direction (works for encrypted packets too)
+        UpdateActivityIndicators(traceEntry.Direction);
+        
         PacketTraceEntry? packetTraceEntry = BuildPacketTraceEntry(traceEntry);
         if (packetTraceEntry == null) return;
-        
-        UpdateActivityIndicators(packetTraceEntry.Direction);
         
         _lastPacketEntry = packetTraceEntry;
     }
