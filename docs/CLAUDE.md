@@ -29,4 +29,11 @@
 - Keep methods focused and small with a single responsibility
 
 ## UI Style Guidelines
-For detailed UI styling guidelines and examples, see: `src/UI/Windows/Styles/README.md`
+- **Always use standard styles** - Apply predefined styles from the design system instead of inline properties
+- **Use design tokens for spacing** - Reference `{StaticResource Margin.Card}` instead of hardcoding values
+- **Apply semantic colors** - Use `{StaticResource Brush.Error}` instead of hardcoded colors like "Red"
+- **Follow the style hierarchy** - Check ComponentStyles.xaml and LayoutTemplates.xaml before creating custom styles
+- **Update existing code** - When modifying files, replace inline styling with standard styles
+- **Create reusable patterns** - If you find yourself repeating XAML structures, consider adding a new style or template
+
+For detailed UI styling guidelines and examples, see: `src/UI/Windows/Styles/StyleGuide.md`
