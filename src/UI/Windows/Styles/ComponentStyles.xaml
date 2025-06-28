@@ -159,13 +159,13 @@
         </Style.Triggers>
     </Style>
     
-    <Style x:Key="ComboBox.Standard" TargetType="ComboBox">
+    <Style x:Key="ComboBox.Standard" TargetType="ComboBox" BasedOn="{StaticResource {x:Type ComboBox}}">
         <Setter Property="MinHeight" Value="{StaticResource Control.Height.Medium}"/>
         <Setter Property="Margin" Value="{StaticResource Margin.Control}"/>
         <Setter Property="MinWidth" Value="{StaticResource Control.Width.Medium}"/>
     </Style>
     
-    <Style x:Key="NumberBox.Standard" TargetType="ui:NumberBox">
+    <Style x:Key="NumberBox.Standard" TargetType="ui:NumberBox" BasedOn="{StaticResource {x:Type ui:NumberBox}}">
         <Setter Property="MinHeight" Value="{StaticResource Control.Height.Medium}"/>
         <Setter Property="Margin" Value="{StaticResource Margin.Control}"/>
         <Setter Property="MinWidth" Value="{StaticResource Control.Width.Small}"/>
@@ -195,8 +195,10 @@
     </Style>
     
     <Style x:Key="Section.Header" TargetType="ui:TextBlock">
-        <Setter Property="FontTypography" Value="Subtitle"/>
-        <Setter Property="Margin" Value="0,0,0,16"/>
+        <Setter Property="FontTypography" Value="BodyStrong"/>
+        <Setter Property="FontSize" Value="16"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+        <Setter Property="Margin" Value="0,0,0,12"/>
         <Setter Property="TextWrapping" Value="Wrap"/>
     </Style>
     
