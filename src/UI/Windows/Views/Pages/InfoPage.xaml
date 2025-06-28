@@ -24,16 +24,16 @@
         </Grid.ColumnDefinitions>
         <StackPanel Grid.Column="0"
                     Grid.Row="0">
-            <TextBlock Text="{markup:Localize Info_ApplicationName}" FontWeight="Bold" />
-            <TextBlock Text="{Binding AppVersion}" FontWeight="Bold"  />
-            <TextBlock Text="{Binding CopyWriteNotice}" FontWeight="Bold"  />
+            <TextBlock Text="{markup:Localize Info_ApplicationName}" Style="{StaticResource Text.Title}" />
+            <TextBlock Text="{Binding AppVersion}" Style="{StaticResource Text.Subtitle}" />
+            <TextBlock Text="{Binding CopyWriteNotice}" Style="{StaticResource Text.Body}" />
             
             <!-- Language Selection -->
             <StackPanel Orientation="Horizontal" Margin="0,20,0,0">
                 <TextBlock Text="{markup:Localize Language_Selection}" 
+                           Style="{StaticResource Text.Subtitle}"
                            VerticalAlignment="Center" 
-                           Margin="0,0,10,0" 
-                           FontWeight="SemiBold"/>
+                           Margin="0,0,10,0"/>
                 <ComboBox x:Name="LanguageComboBox"
                           ItemsSource="{Binding ViewModel.LanguageViewModel.AvailableLanguages}"
                           SelectedItem="{Binding ViewModel.LanguageViewModel.SelectedLanguage, Mode=TwoWay}"
@@ -66,10 +66,9 @@
                     Grid.Row="2" 
                     Grid.ColumnSpan="2">
             <TextBlock Text="{markup:Localize Info_LicenseInfo}"
+                       Style="{StaticResource Text.Headline}"
                        HorizontalAlignment="Center"
-                       Margin="0, 30, 0,10"
-                       FontWeight="DemiBold"
-                       FontSize="32"/>
+                       Margin="0, 30, 0,10"/>
             <ui:CardExpander>
                 <ui:CardExpander.Header>
                     <ui:TextBlock
