@@ -66,6 +66,9 @@ Reusable styles for UI components.
 <!-- Text boxes -->
 <TextBox Style="{StaticResource TextBox.Standard}"/>
 
+<!-- Read-only text boxes (includes gray background, copy button, disabled context menu) -->
+<TextBox IsReadOnly="True" Style="{StaticResource TextBox.Standard}"/>
+
 <!-- Combo boxes -->
 <ComboBox Style="{StaticResource ComboBox.Standard}"/>
 
@@ -139,6 +142,40 @@ Templates for common layout patterns.
 - Mix explicit FontSize with typography styles
 - Use hardcoded colors (Red, Orange, etc.)
 - Create one-off styles without considering reusability
+- Override TextBox MinHeight in normal layouts (use design tokens instead)
+- Use StaticResource syntax within Thickness strings (e.g., `"0,0,0,{StaticResource Spacing.Medium}"`)
+
+#### Special Cases
+```xml
+<!-- Height-sensitive containers (DockPanel) - override TextBox MinHeight -->
+<TextBox Style="{StaticResource TextBox.Standard}"
+         MinHeight="0" Height="Auto" VerticalAlignment="Center"/>
+
+<!-- DataGrid with invisible selection -->
+<ui:DataGrid CanUserSortColumns="False">
+    <ui:DataGrid.RowStyle>
+        <Style TargetType="DataGridRow">
+            <Style.Triggers>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Background" Value="Transparent"/>
+                    <Setter Property="BorderBrush" Value="Transparent"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </ui:DataGrid.RowStyle>
+    <ui:DataGrid.CellStyle>
+        <Style TargetType="DataGridCell">
+            <Style.Triggers>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Background" Value="Transparent"/>
+                    <Setter Property="BorderBrush" Value="Transparent"/>
+                    <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </ui:DataGrid.CellStyle>
+</ui:DataGrid>
+```
 
 ### 3. Common Patterns
 

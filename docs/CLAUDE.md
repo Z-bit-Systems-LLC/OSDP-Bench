@@ -16,14 +16,17 @@
 
 ## Code Style Guidelines
 - Use C# 8.0+ features with async/await patterns for asynchronous operations
-- Follow MVVM design pattern for view models with ObservableObject and RelayCommand
+- Follow the MVVM design pattern for view models with ObservableObject and RelayCommand
 - Use dependency injection for services
 - Include XML documentation for public interfaces and methods
 - Use PascalCase for class, method, and public property names
-- Use _camelCase for private fields with underscore prefix
+- Use _camelCase for private fields with an underscore prefix
 - Implement defensive programming with null checks for constructor parameters
 - Use standard exception handling with try/catch blocks around external operations
 - Prefer async/await over direct Task management
 - Organize files into clear namespaces (Core, Models, Services, ViewModels, etc.)
 - Use meaningful variable names that reflect their purpose
 - Keep methods focused and small with a single responsibility
+
+## UI Style Guidelines
+For detailed UI styling guidelines and examples, see: `src/UI/Windows/Styles/README.md`

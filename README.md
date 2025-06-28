@@ -58,6 +58,7 @@ Core functionality is under an open source license to help increase the adoption
 
 ### Project Documentation
 - **[Developer Guidelines](docs/CLAUDE.md)** - Development guidelines and build commands
+- **[UI Style Guide](src/UI/Windows/Styles/StyleGuide.md)** - Comprehensive design system and styling guidelines
 
 ### Architecture Plans
 - **[Connection Plugin Architecture](docs/CONNECTION_PLUGIN_ARCHITECTURE.md)** - Plan for implementing pluggable connection types (Serial, Bluetooth, Network)
