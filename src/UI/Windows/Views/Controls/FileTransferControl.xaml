@@ -36,7 +36,8 @@
                            IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBoolConverter}}"/>
                 <TextBox Name="FilePathTextBox"
                          Text="{Binding FilePath}"
-                         IsReadOnly="True"/>
+                         IsReadOnly="True"
+                         Style="{StaticResource TextBox.Standard}"/>
             </DockPanel>
         </StackPanel>
 

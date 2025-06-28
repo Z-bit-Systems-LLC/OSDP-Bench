@@ -21,10 +21,13 @@
                     Orientation="Vertical" 
                     Margin="0,0,0,10">
             <Label Content="{markup:Localize Monitor_LastCardRead}"
+                   Style="{StaticResource Label.Standard}"
                    Target="{Binding ElementName=CardNumberTextBox}" />
             <TextBox Name="CardNumberTextBox"
                      IsReadOnly="True"
-                     Margin="0,0,20,0"/>
+                     Margin="0,0,20,0"
+                     FontFamily="Consolas"
+                     Style="{StaticResource TextBox.Standard}"/>
         </StackPanel>
 
         <Grid Grid.Row="1">
@@ -36,12 +39,14 @@
             <DockPanel Grid.Row="0" 
                        Margin="0,0,20,5">
                 <Label Content="{markup:Localize Monitor_ReadHistory}"
+                       Style="{StaticResource Label.Standard}"
                        VerticalAlignment="Bottom"
                        DockPanel.Dock="Left"/>
-                <Button Content="{markup:Localize Monitor_ClearHistory}"
-                        DockPanel.Dock="Right"
-                        HorizontalAlignment="Right"
-                        Click="ClearHistory_Click"/>
+                <ui:Button Content="{markup:Localize Monitor_ClearHistory}"
+                           Appearance="Secondary"
+                           DockPanel.Dock="Right"
+                           HorizontalAlignment="Right"
+                           Click="ClearHistory_Click"/>
             </DockPanel>
 
             <ui:DataGrid Grid.Row="1" 
@@ -53,7 +58,30 @@
                          BorderThickness="1"
                          HeadersVisibility="Column"
                          VerticalScrollBarVisibility="Auto"
-                         MaxHeight="300" d:DataContext="{d:DesignInstance models:CardReadEntry}">
+                         MaxHeight="300"
+                         CanUserSortColumns="False"
+                         d:DataContext="{d:DesignInstance models:CardReadEntry}">
+                <ui:DataGrid.RowStyle>
+                    <Style TargetType="DataGridRow">
+                        <Style.Triggers>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter Property="Background" Value="Transparent"/>
+                                <Setter Property="BorderBrush" Value="Transparent"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </ui:DataGrid.RowStyle>
+                <ui:DataGrid.CellStyle>
+                    <Style TargetType="DataGridCell">
+                        <Style.Triggers>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter Property="Background" Value="Transparent"/>
+                                <Setter Property="BorderBrush" Value="Transparent"/>
+                                <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </ui:DataGrid.CellStyle>
                 <ui:DataGrid.Columns>
                     <DataGridTextColumn Header="{markup:Localize Monitor_ColumnDateTime}" 
                                            Binding="{Binding Timestamp, StringFormat='MM/dd/yyyy HH:mm:ss'}"
@@ -75,7 +103,8 @@
                                          VerticalAlignment="Center"
                                          VerticalContentAlignment="Center"
                                          Padding="5 0"
-                                         Background="Transparent"/>
+                                         FontFamily="Consolas"
+                                         Style="{StaticResource TextBox.Standard}"/>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
