@@ -5,6 +5,7 @@ using OSDPBench.Core.ViewModels.Pages;
 using Wpf.Ui.Abstractions.Controls;
 using Button = Wpf.Ui.Controls.Button;
 using OSDPBench.Core.Resources;
+using Wpf.Ui.Controls;
 
 namespace OSDPBench.Windows.Views.Pages;
 
@@ -34,7 +35,8 @@ public partial class MonitorPage : INavigableView<MonitorViewModel>
                     ? Visibility.Collapsed
                     : Visibility.Visible;
                 
-                button.Content = row.DetailsVisibility == Visibility.Visible ? OSDPBench.Core.Resources.Resources.GetString("Monitor_Collapse") : OSDPBench.Core.Resources.Resources.GetString("Monitor_Expand");
+                button.Icon = new SymbolIcon { Symbol = row.DetailsVisibility == Visibility.Visible ? SymbolRegular.ChevronUp24 : SymbolRegular.ChevronDown24 };
+                button.ToolTip = row.DetailsVisibility == Visibility.Visible ? OSDPBench.Core.Resources.Resources.GetString("Monitor_Collapse") : OSDPBench.Core.Resources.Resources.GetString("Monitor_Expand");
             }
         }
     }
