@@ -212,6 +212,14 @@
     <value>Velocidad</value>
     <comment>Label for baud rate selection</comment>
   </data>
+  <data name="Connect_ConnectionSettings" xml:space="preserve">
+    <value>Connection Settings</value>
+    <comment>Header for connection settings section</comment>
+  </data>
+  <data name="Connect_SecuritySettings" xml:space="preserve">
+    <value>Security Settings</value>
+    <comment>Header for security settings section</comment>
+  </data>
   <data name="Connect_Address" xml:space="preserve">
     <value>Dirección</value>
     <comment>Label for device address input</comment>
@@ -248,6 +256,30 @@
   <data name="Manage_DeviceAction" xml:space="preserve">
     <value>Acción del dispositivo</value>
     <comment>Header for device action section</comment>
+  </data>
+  <data name="Manage_LedColor" xml:space="preserve">
+    <value>LED Color</value>
+    <comment>Label for LED color selection</comment>
+  </data>
+  <data name="Manage_SelectedFile" xml:space="preserve">
+    <value>Selected File</value>
+    <comment>Label for file selection in file transfer</comment>
+  </data>
+  <data name="Manage_Browse" xml:space="preserve">
+    <value>Browse</value>
+    <comment>Button text for file browser</comment>
+  </data>
+  <data name="Manage_Progress" xml:space="preserve">
+    <value>Progress</value>
+    <comment>Label for file transfer progress</comment>
+  </data>
+  <data name="Manage_BytesOf" xml:space="preserve">
+    <value> Bytes/</value>
+    <comment>Text between transferred and total bytes</comment>
+  </data>
+  <data name="Manage_Bytes" xml:space="preserve">
+    <value> Bytes</value>
+    <comment>Text for bytes unit</comment>
   </data>
   <!-- Monitor Page -->
   <data name="Monitor_DeviceNotConnected" xml:space="preserve">
@@ -291,8 +323,36 @@
     <comment>Button text to expand row details</comment>
   </data>
   <data name="Monitor_ConnectionPageDetails" xml:space="preserve">
-    <value>La página de Conexión proporcionará más detalles</value>
+    <value>The Connection page will provide more details</value>
     <comment>Message directing users to connection page for details</comment>
+  </data>
+  <data name="Monitor_LastCardRead" xml:space="preserve">
+    <value>Last Card Read</value>
+    <comment>Label for last card read display</comment>
+  </data>
+  <data name="Monitor_ReadHistory" xml:space="preserve">
+    <value>Read History</value>
+    <comment>Label for card read history section</comment>
+  </data>
+  <data name="Monitor_ClearHistory" xml:space="preserve">
+    <value>Clear History</value>
+    <comment>Button text to clear card read history</comment>
+  </data>
+  <data name="Monitor_ColumnDateTime" xml:space="preserve">
+    <value>Date/Time</value>
+    <comment>Column header for date/time in card read history</comment>
+  </data>
+  <data name="Monitor_ColumnCardNumber" xml:space="preserve">
+    <value>Card Number</value>
+    <comment>Column header for card number in card read history</comment>
+  </data>
+  <data name="Monitor_KeypadEntries" xml:space="preserve">
+    <value>Keypad Entries</value>
+    <comment>Label for keypad entries display</comment>
+  </data>
+  <data name="Monitor_Clear" xml:space="preserve">
+    <value>Clear</value>
+    <comment>Button text to clear keypad entries</comment>
   </data>
   <!-- Info Page -->
   <data name="Info_ApplicationName" xml:space="preserve">
