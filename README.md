@@ -3,8 +3,7 @@
 A professional tool for configuring and troubleshooting OSDP devices.
 
 [![.NET](https://img.shields.io/badge/.NET-8.0-blue)](https://dotnet.microsoft.com/)
-[![License](https://img.shields.io/badge/License-Apache%202.0-green.svg)](LICENSE)
-[![Platform](https://img.shields.io/badge/Platform-Windows-lightgrey)](https://docs.microsoft.com/en-us/windows/)
+[![License](https://img.shields.io/badge/License-Eclipse%202.0-green.svg)](LICENSE)
 
 ## About
 
