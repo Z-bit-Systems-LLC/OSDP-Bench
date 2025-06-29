@@ -213,11 +213,11 @@
     <comment>Label for baud rate selection</comment>
   </data>
   <data name="Connect_ConnectionSettings" xml:space="preserve">
-    <value>Connection Settings</value>
+    <value>连接设置</value>
     <comment>Header for connection settings section</comment>
   </data>
   <data name="Connect_SecuritySettings" xml:space="preserve">
-    <value>Security Settings</value>
+    <value>安全设置</value>
     <comment>Header for security settings section</comment>
   </data>
   <data name="Connect_Address" xml:space="preserve">
@@ -258,27 +258,27 @@
     <comment>Header for device action section</comment>
   </data>
   <data name="Manage_LedColor" xml:space="preserve">
-    <value>LED Color</value>
+    <value>LED 颜色</value>
     <comment>Label for LED color selection</comment>
   </data>
   <data name="Manage_SelectedFile" xml:space="preserve">
-    <value>Selected File</value>
+    <value>所选文件</value>
     <comment>Label for file selection in file transfer</comment>
   </data>
   <data name="Manage_Browse" xml:space="preserve">
-    <value>Browse</value>
+    <value>浏览</value>
     <comment>Button text for file browser</comment>
   </data>
   <data name="Manage_Progress" xml:space="preserve">
-    <value>Progress</value>
+    <value>进展</value>
     <comment>Label for file transfer progress</comment>
   </data>
   <data name="Manage_BytesOf" xml:space="preserve">
-    <value> Bytes/</value>
+    <value> 字节/</value>
     <comment>Text between transferred and total bytes</comment>
   </data>
   <data name="Manage_Bytes" xml:space="preserve">
-    <value> Bytes</value>
+    <value> 字节</value>
     <comment>Text for bytes unit</comment>
   </data>
   <!-- Monitor Page -->
@@ -323,35 +323,35 @@
     <comment>Button text to expand row details</comment>
   </data>
   <data name="Monitor_ConnectionPageDetails" xml:space="preserve">
-    <value>The Connection page will provide more details</value>
+    <value>Connection （连接） 页面将提供更多详细信息</value>
     <comment>Message directing users to connection page for details</comment>
   </data>
   <data name="Monitor_LastCardRead" xml:space="preserve">
-    <value>Last Card Read</value>
+    <value>上次读卡</value>
     <comment>Label for last card read display</comment>
   </data>
   <data name="Monitor_ReadHistory" xml:space="preserve">
-    <value>Read History</value>
+    <value>阅读历史</value>
     <comment>Label for card read history section</comment>
   </data>
   <data name="Monitor_ClearHistory" xml:space="preserve">
-    <value>Clear History</value>
+    <value>清除历史记录</value>
     <comment>Button text to clear card read history</comment>
   </data>
   <data name="Monitor_ColumnDateTime" xml:space="preserve">
-    <value>Date/Time</value>
+    <value>日期/时间</value>
     <comment>Column header for date/time in card read history</comment>
   </data>
   <data name="Monitor_ColumnCardNumber" xml:space="preserve">
-    <value>Card Number</value>
+    <value>卡号</value>
     <comment>Column header for card number in card read history</comment>
   </data>
   <data name="Monitor_KeypadEntries" xml:space="preserve">
-    <value>Keypad Entries</value>
+    <value>键盘入口</value>
     <comment>Label for keypad entries display</comment>
   </data>
   <data name="Monitor_Clear" xml:space="preserve">
-    <value>Clear</value>
+    <value>清楚</value>
     <comment>Button text to clear keypad entries</comment>
   </data>
   <!-- Info Page -->
