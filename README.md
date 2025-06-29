@@ -20,6 +20,20 @@ Core functionality is under an open source license to help increase the adoption
 - **Multi-language Support** - Available in multiple languages
 - **Cross-platform** - Built on .NET 8.0 for modern compatibility
 
+## Get OSDP Bench
+
+### Download the App
+
+OSDP Bench is available for purchase on multiple platforms:
+
+<a href="ms-windows-store://pdp/?productid=9N3W7QR3R5S7&cid=&mode=mini">
+  <img src="https://get.microsoft.com/images/en-us%20dark.svg" width="135" height="40" alt="Get it from Microsoft Store" />
+</a>
+
+<a href="https://play.google.com/store/apps/details?id=com.z_bitco.com.osdpbenchmobile">
+  <img src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" alt="Get it on Google Play" width="150" height="58" />
+</a>
+
 ## Getting Started
 
 ### Prerequisites
@@ -28,7 +42,7 @@ Core functionality is under an open source license to help increase the adoption
 - Windows 10/11 (for WinUI version)
 - Serial port access for device communication
 
-### Installation
+### Building from Source
 
 1. Clone the repository:
    ```bash
