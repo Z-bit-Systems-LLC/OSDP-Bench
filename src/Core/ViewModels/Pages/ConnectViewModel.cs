@@ -5,22 +5,38 @@ using System.Collections.ObjectModel;
 using OSDP.Net.Tracing;
 using OSDPBench.Core.Models;
 using OSDPBench.Core.Services;
+using OSDPBench.Core.Resources;
 
 namespace OSDPBench.Core.ViewModels.Pages;
 
-public partial class ConnectViewModel : ObservableObject
+/// <summary>
+/// ViewModel for the Connect page.
+/// </summary>
+public partial class ConnectViewModel : ObservableObject, IDisposable
 {
+    // Default baud rates available for connection
+    private static readonly IReadOnlyList<int> DefaultBaudRates = [9600, 19200, 38400, 57600, 115200, 230400];
+    
     private readonly IDialogService _dialogService;
     private readonly IDeviceManagementService _deviceManagementService;
+    private readonly IUsbDeviceMonitorService? _usbDeviceMonitorService;
     
     private ISerialPortConnectionService _serialPortConnectionService;
     private PacketTraceEntry? _lastPacketEntry;
+    private bool _isDisposed;
+    private Timer? _usbStatusTimer;
+    private readonly TaskCompletionSource<bool> _initializationComplete = new();
+
+    /// <summary>
+    /// Gets a task that completes when the initial serial port scan is finished.
+    /// </summary>
+    public Task InitializationComplete => _initializationComplete.Task;
 
     /// <summary>
     /// ViewModel for the Connect page.
     /// </summary>
     public ConnectViewModel(IDialogService dialogService, IDeviceManagementService deviceManagementService,
-        ISerialPortConnectionService serialPortConnectionService)
+        ISerialPortConnectionService serialPortConnectionService, IUsbDeviceMonitorService? usbDeviceMonitorService = null)
     {
         _dialogService = dialogService ??
                          throw new ArgumentNullException(nameof(dialogService));
@@ -28,30 +44,51 @@ public partial class ConnectViewModel : ObservableObject
                                    throw new ArgumentNullException(nameof(deviceManagementService));
         _serialPortConnectionService = serialPortConnectionService ??
                                        throw new ArgumentNullException(nameof(serialPortConnectionService));
+        _usbDeviceMonitorService = usbDeviceMonitorService;
         
         _deviceManagementService.ConnectionStatusChange += DeviceManagementServiceOnConnectionStatusChange;
         _deviceManagementService.NakReplyReceived += DeviceManagementServiceOnNakReplyReceived;
         _deviceManagementService.TraceEntryReceived += OnDeviceManagementServiceOnTraceEntryReceived;
+        
+        // Start USB monitoring if available
+        if (_usbDeviceMonitorService != null)
+        {
+            _usbDeviceMonitorService.UsbDeviceChanged += OnUsbDeviceChanged;
+            _usbDeviceMonitorService.StartMonitoring();
+        }
+        
+        // Perform initial port scan
+        Task.Run(async () => await InitializeSerialPorts());
     }
 
     private void OnDeviceManagementServiceOnTraceEntryReceived(object? sender, TraceEntry traceEntry)
     {
-        if (_deviceManagementService.IsUsingSecureChannel) return;
+        // Update activity indicators based on raw trace entry direction (works for encrypted packets too)
+        UpdateActivityIndicators(traceEntry.Direction);
+        
+        PacketTraceEntry? packetTraceEntry = BuildPacketTraceEntry(traceEntry);
+        if (packetTraceEntry == null) return;
+        
+        _lastPacketEntry = packetTraceEntry;
+    }
 
-        var build = new PacketTraceEntryBuilder();
-        PacketTraceEntry packetTraceEntry;
+    private PacketTraceEntry? BuildPacketTraceEntry(TraceEntry traceEntry)
+    {
         try
         {
-            packetTraceEntry = build.FromTraceEntry(traceEntry, _lastPacketEntry).Build();
+            var builder = new PacketTraceEntryBuilder();
+            return builder.FromTraceEntry(traceEntry, _lastPacketEntry).Build();
         }
         catch (Exception)
         {
-            return;
+            return null;
         }
-
-        switch (packetTraceEntry.Direction)
+    }
+    
+    private void UpdateActivityIndicators(TraceDirection direction)
+    {
+        switch (direction)
         {
-            // Flash appropriate LED based on direction
             case TraceDirection.Output:
                 LastTxActiveTime = DateTime.Now;
                 break;
@@ -59,31 +96,29 @@ public partial class ConnectViewModel : ObservableObject
                 LastRxActiveTime = DateTime.Now;
                 break;
         }
-        
-        _lastPacketEntry = packetTraceEntry;
     }
 
     private void DeviceManagementServiceOnConnectionStatusChange(object? sender, ConnectionStatus connectionStatus)
     {
         if (connectionStatus == ConnectionStatus.Connected)
         {
-            StatusText = "Connected";
+            StatusText = OSDPBench.Core.Resources.Resources.GetString("Status_Connected");
             NakText = string.Empty;
             StatusLevel = StatusLevel.Connected;
         }
         else if (StatusLevel == StatusLevel.Discovered)
         {
-            StatusText = "Attempting to connect";
+            StatusText = OSDPBench.Core.Resources.Resources.GetString("Status_AttemptingToConnect");
             StatusLevel = StatusLevel.Connecting;
         }
         else if (connectionStatus == ConnectionStatus.InvalidSecurityKey)
         {
-            StatusText = "Invalid security key";
+            StatusText = OSDPBench.Core.Resources.Resources.GetString("Status_InvalidSecurityKey");
             StatusLevel = StatusLevel.Error;
         }
         else
         {
-            StatusText = "Disconnected";
+            StatusText = OSDPBench.Core.Resources.Resources.GetString("Status_Disconnected");
             StatusLevel = StatusLevel.Disconnected;
         }
     }
@@ -100,17 +135,17 @@ public partial class ConnectViewModel : ObservableObject
 
     [ObservableProperty] private string _nakText = string.Empty;
 
-    [ObservableProperty] private StatusLevel _statusLevel = StatusLevel.Ready;
+    [ObservableProperty] private StatusLevel _statusLevel = StatusLevel.NotReady;
 
     [ObservableProperty] private ObservableCollection<AvailableSerialPort> _availableSerialPorts = [];
 
     [ObservableProperty] private AvailableSerialPort? _selectedSerialPort;
 
-    [ObservableProperty] private IReadOnlyList<int> _availableBaudRates = [9600, 19200, 38400, 57600, 115200, 230400];
+    [ObservableProperty] private IReadOnlyList<int> _availableBaudRates = DefaultBaudRates;
 
-    [ObservableProperty] private int _selectedBaudRate = 9600;
+    [ObservableProperty] private int _selectedBaudRate = DefaultBaudRates[0]; // Default to first baud rate (9600)
 
-    [ObservableProperty] private double _selectedAddress;
+    [ObservableProperty] private byte _selectedAddress;
 
     [ObservableProperty] private byte _connectedAddress;
 
@@ -125,111 +160,51 @@ public partial class ConnectViewModel : ObservableObject
     [ObservableProperty] private DateTime _lastTxActiveTime;
     
     [ObservableProperty] private DateTime _lastRxActiveTime;
+    
+    [ObservableProperty] private string _usbStatusText = string.Empty;
 
-    [RelayCommand]
-    private async Task ScanSerialPorts()
+    private async Task InitializeSerialPorts()
     {
-        if (StatusLevel != StatusLevel.Ready && StatusLevel != StatusLevel.NotReady &&
-            !await _dialogService.ShowConfirmationDialog("Rescan Serial Ports",
-                "This will shutdown existing connection to the PD. Are you sure you want to continue?",
-                MessageIcon.Warning)) return;
-
-        StatusLevel = StatusLevel.NotReady;
-
-        await _deviceManagementService.Shutdown();
-
-        StatusText = string.Empty;
-        NakText = string.Empty;
-
-        AvailableSerialPorts.Clear();
-
-        var serialPortConnectionService = _serialPortConnectionService;
-
-        var foundAvailableSerialPorts = await serialPortConnectionService.FindAvailableSerialPorts();
-
-        bool anyFound = false;
-        foreach (var found in foundAvailableSerialPorts)
+        try
         {
-            anyFound = true;
-            AvailableSerialPorts.Add(found);
+            var foundPorts = await _serialPortConnectionService.FindAvailableSerialPorts();
+            
+            foreach (var port in foundPorts)
+            {
+                AvailableSerialPorts.Add(port);
+            }
+            
+            if (AvailableSerialPorts.Count > 0)
+            {
+                SelectedSerialPort = AvailableSerialPorts.First();
+                StatusLevel = StatusLevel.Ready;
+            }
+            else
+            {
+                StatusLevel = StatusLevel.NotReady;
+            }
+            
+            _initializationComplete.SetResult(true);
         }
-
-        if (anyFound)
+        catch (Exception ex)
         {
-            SelectedSerialPort = AvailableSerialPorts.First();
-            StatusLevel = StatusLevel.Ready;
-        }
-        else
-        {
-            await _dialogService.ShowMessageDialog("Error",
-                "No serial ports are available. Make sure that required drivers are installed.", MessageIcon.Error);
+            Console.WriteLine(OSDPBench.Core.Resources.Resources.GetString("Error_InitializingSerialPorts").Replace("{0}", ex.Message));
             StatusLevel = StatusLevel.NotReady;
+            _initializationComplete.SetException(ex);
         }
     }
 
     [RelayCommand(IncludeCancelCommand = true)]
     private async Task DiscoverDevice(CancellationToken token)
     {
-        var serialPortConnectionService = _serialPortConnectionService;
-
-        string serialPortName = SelectedSerialPort?.Name ?? string.Empty;
-        if (string.IsNullOrWhiteSpace(serialPortName)) return;
-        _deviceManagementService.PortName = serialPortName;
-
+        if (!ValidateSerialPort()) return;
+        
         StatusLevel = StatusLevel.Discovering;
         NakText = string.Empty;
 
-        var progress = new DiscoveryProgress(current =>
-        {
-            switch (current.Status)
-            {
-                case DiscoveryStatus.Started:
-                    StatusText = "Attempting to discover device";
-                    break;
-                case DiscoveryStatus.LookingForDeviceOnConnection:
-                    StatusText = $"Attempting to discover device at {current.Connection.BaudRate}";
-                    break;
-                case DiscoveryStatus.ConnectionWithDeviceFound:
-                    StatusText = $"Found device at {current.Connection.BaudRate}";
-                    break;
-                case DiscoveryStatus.LookingForDeviceAtAddress:
-                    StatusText =
-                        $"Attempting to determine device at {current.Connection.BaudRate} with address {current.Address}";
-                    break;
-                case DiscoveryStatus.DeviceIdentified:
-                    StatusText =
-                        $"Attempting to identify device at {current.Connection.BaudRate} with address {current.Address}";
-                    break;
-                case DiscoveryStatus.CapabilitiesDiscovered:
-                    StatusText =
-                        $"Attempting to get capabilities of device at {current.Connection.BaudRate} with address {current.Address}";
-                    break;
-                case DiscoveryStatus.Succeeded:
-                    StatusText =
-                        $"Successfully discovered device {current.Connection.BaudRate} with address {current.Address}";
-                    StatusLevel = StatusLevel.Discovered;
-                    if (current.Connection is ISerialPortConnectionService service) _serialPortConnectionService = service;
-                    ConnectedAddress = current.Address;
-                    ConnectedBaudRate = current.Connection.BaudRate;
-                    break;
-                case DiscoveryStatus.DeviceNotFound:
-                    StatusText = "Failed to connect to device";
-                    StatusLevel = StatusLevel.Error;
-                    break;
-                case DiscoveryStatus.Error:
-                    StatusText = "Error while discovering device";
-                    StatusLevel = StatusLevel.Error;
-                    break;
-                case DiscoveryStatus.Cancelled:
-                    StatusLevel = StatusLevel.Error;
-                    StatusText = "Cancelled discovery";
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-        });
-
-        var connections = serialPortConnectionService.GetConnectionsForDiscovery(serialPortName);
+        var progress = new DiscoveryProgress(UpdateDiscoveryStatus);
+        var connections = _serialPortConnectionService.GetConnectionsForDiscovery(
+            SelectedSerialPort?.Name ?? string.Empty);
 
         try
         {
@@ -237,59 +212,253 @@ public partial class ConnectViewModel : ObservableObject
         }
         catch
         {
-            // ignored
+            // Exceptions are handled by the discovery progress
         }
+    }
 
-        if (StatusLevel == StatusLevel.Discovered)
+    private bool ValidateSerialPort()
+    {
+        string serialPortName = SelectedSerialPort?.Name ?? string.Empty;
+        if (string.IsNullOrWhiteSpace(serialPortName)) return false;
+        
+        _deviceManagementService.PortName = serialPortName;
+        return true;
+    }
+
+    private void UpdateDiscoveryStatus(DiscoveryResult current)
+    {
+        switch (current.Status)
         {
-
-            /* if (CapabilitiesLookup?.SecureChannel ?? false)
-             {
-                 SecureChannelStatusText = _deviceManagementService.UsesDefaultSecurityKey
-                     ? "Default key is set"
-                     : "*** A non-default key is set, a reset is required to perform actions. ***";
-             }
-             else
-             {
-                 SecureChannelStatusText = string.Empty;
-             }*/
+            case DiscoveryStatus.Started:
+                StatusText = OSDPBench.Core.Resources.Resources.GetString("Status_AttemptingToDiscover");
+                break;
+                
+            case DiscoveryStatus.LookingForDeviceOnConnection:
+                StatusText = OSDPBench.Core.Resources.Resources.GetString("Status_AttemptingToDiscoverAtBaudRate").Replace("{0}", current.Connection.BaudRate.ToString());
+                break;
+                
+            case DiscoveryStatus.ConnectionWithDeviceFound:
+                StatusText = OSDPBench.Core.Resources.Resources.GetString("Status_FoundDeviceAtBaudRate").Replace("{0}", current.Connection.BaudRate.ToString());
+                break;
+                
+            case DiscoveryStatus.LookingForDeviceAtAddress:
+                StatusText = OSDPBench.Core.Resources.Resources.GetString("Status_AttemptingToDetermineDevice").Replace("{0}", current.Connection.BaudRate.ToString()).Replace("{1}", current.Address.ToString());
+                break;
+                
+            case DiscoveryStatus.DeviceIdentified:
+                StatusText = OSDPBench.Core.Resources.Resources.GetString("Status_AttemptingToIdentifyDevice").Replace("{0}", current.Connection.BaudRate.ToString()).Replace("{1}", current.Address.ToString());
+                break;
+                
+            case DiscoveryStatus.CapabilitiesDiscovered:
+                StatusText = OSDPBench.Core.Resources.Resources.GetString("Status_AttemptingToGetCapabilities").Replace("{0}", current.Connection.BaudRate.ToString()).Replace("{1}", current.Address.ToString());
+                break;
+                
+            case DiscoveryStatus.Succeeded:
+                HandleSuccessfulDiscovery(current);
+                break;
+                
+            case DiscoveryStatus.DeviceNotFound:
+                StatusText = OSDPBench.Core.Resources.Resources.GetString("Status_FailedToConnect");
+                StatusLevel = StatusLevel.Error;
+                break;
+                
+            case DiscoveryStatus.Error:
+                StatusText = OSDPBench.Core.Resources.Resources.GetString("Status_ErrorWhileDiscovering");
+                StatusLevel = StatusLevel.Error;
+                break;
+                
+            case DiscoveryStatus.Cancelled:
+                StatusLevel = StatusLevel.Error;
+                StatusText = OSDPBench.Core.Resources.Resources.GetString("Status_CancelledDiscovery");
+                break;
+                
+            default:
+                throw new ArgumentOutOfRangeException();
         }
+    }
+
+    private void HandleSuccessfulDiscovery(DiscoveryResult result)
+    {
+        StatusText = OSDPBench.Core.Resources.Resources.GetString("Status_SuccessfullyDiscovered").Replace("{0}", result.Connection.BaudRate.ToString()).Replace("{1}", result.Address.ToString());
+        StatusLevel = StatusLevel.Discovered;
+        
+        if (result.Connection is ISerialPortConnectionService service)
+        {
+            _serialPortConnectionService = service;
+        }
+        
+        ConnectedAddress = result.Address;
+        ConnectedBaudRate = result.Connection.BaudRate;
     }
 
     [RelayCommand]
     private async Task ConnectDevice()
     {
-        var serialPortConnectionService = _serialPortConnectionService;
-
+        if (!ValidateSerialPort()) return;
+        
         string serialPortName = SelectedSerialPort?.Name ?? string.Empty;
-        if (string.IsNullOrWhiteSpace(serialPortName)) return;
-        _deviceManagementService.PortName = serialPortName;
-
         StatusLevel = StatusLevel.ConnectingManually;
-        StatusText = "Attempting to connect manually";
+        StatusText = OSDPBench.Core.Resources.Resources.GetString("Status_AttemptingToConnectManually");
 
-        byte[]? securityKey = null;
+        byte[]? securityKey = await GetSecurityKey();
+        if (securityKey == null && !UseDefaultKey) return;
 
+        await EstablishConnection(serialPortName, securityKey);
+    }
+
+    private async Task<byte[]?> GetSecurityKey()
+    {
+        if (UseDefaultKey) return null;
+        
         try
         {
-            if (!UseDefaultKey)
-            {
-                securityKey = HexConverter.FromHexString(SecurityKey, 32);
-            }
+            return HexConverter.FromHexString(SecurityKey, 32);
         }
         catch (Exception exception)
         {
-            await _dialogService.ShowMessageDialog("Connect", $"Invalid security key entered. {exception.Message}",
+            await _dialogService.ShowMessageDialog(
+                OSDPBench.Core.Resources.Resources.GetString("Dialog_Connect_Title"), 
+                OSDPBench.Core.Resources.Resources.GetString("Dialog_InvalidSecurityKeyMessage").Replace("{0}", exception.Message),
                 MessageIcon.Error);
-            return;
+            return null;
         }
+    }
 
+    private async Task EstablishConnection(string serialPortName, byte[]? securityKey)
+    {
         await _deviceManagementService.Shutdown();
+        
         await _deviceManagementService.Connect(
-            serialPortConnectionService.GetConnection(serialPortName, SelectedBaudRate), (byte)SelectedAddress,
-            UseSecureChannel, UseDefaultKey, securityKey);
-        ConnectedAddress = (byte)SelectedAddress;
+            _serialPortConnectionService.GetConnection(serialPortName, SelectedBaudRate), 
+            SelectedAddress,
+            UseSecureChannel, 
+            UseDefaultKey, 
+            securityKey);
+            
+        ConnectedAddress = SelectedAddress;
         ConnectedBaudRate = SelectedBaudRate;
+    }
+
+    [RelayCommand]
+    private async Task DisconnectDevice()
+    {
+        await _deviceManagementService.Shutdown();
+        StatusText = OSDPBench.Core.Resources.Resources.GetString("Status_Disconnected");
+        StatusLevel = StatusLevel.Disconnected;
+        NakText = string.Empty;
+        _lastPacketEntry = null;
+        LastTxActiveTime = DateTime.MinValue;
+        LastRxActiveTime = DateTime.MinValue;
+    }
+    
+    private async void OnUsbDeviceChanged(object? sender, UsbDeviceChangedEventArgs e)
+    {
+        try
+        {
+            // Get current port selection
+            var currentlySelectedPort = SelectedSerialPort?.Name;
+            
+            // Clear and repopulate the available ports
+            AvailableSerialPorts.Clear();
+            
+            var availablePorts = await _serialPortConnectionService.FindAvailableSerialPorts();
+            foreach (var port in availablePorts)
+            {
+                AvailableSerialPorts.Add(port);
+            }
+            
+            // Handle port selection based on change type
+            if (AvailableSerialPorts.Count > 0)
+            {
+                // Try to reselect the previously selected port if it still exists
+                var previousPort = AvailableSerialPorts.FirstOrDefault(p => p.Name == currentlySelectedPort);
+                if (previousPort != null)
+                {
+                    SelectedSerialPort = previousPort;
+                }
+                else
+                {
+                    // Select the first available port
+                    SelectedSerialPort = AvailableSerialPorts.First();
+                }
+                
+                if (StatusLevel == StatusLevel.NotReady)
+                {
+                    StatusLevel = StatusLevel.Ready;
+                }
+            }
+            else
+            {
+                SelectedSerialPort = null;
+                if (StatusLevel == StatusLevel.Ready)
+                {
+                    StatusLevel = StatusLevel.NotReady;
+                }
+            }
+            
+            // Show notification based on change type
+            if (e.ChangeType == UsbDeviceChangeType.Connected)
+            {
+                UsbStatusText = OSDPBench.Core.Resources.Resources.GetString("USB_DeviceConnected");
+            }
+            else if (e.ChangeType == UsbDeviceChangeType.Disconnected)
+            {
+                UsbStatusText = OSDPBench.Core.Resources.Resources.GetString("USB_DeviceDisconnected");
+                
+                // If we were connected and the device was removed, update status
+                if (StatusLevel == StatusLevel.Connected && !e.AvailablePorts.Contains(_deviceManagementService.PortName ?? ""))
+                {
+                    await _deviceManagementService.Shutdown();
+                    StatusLevel = StatusLevel.Disconnected;
+                    StatusText = OSDPBench.Core.Resources.Resources.GetString("Status_DeviceDisconnectedUSBRemoved");
+                }
+            }
+            else
+            {
+                UsbStatusText = OSDPBench.Core.Resources.Resources.GetString("USB_PortsChanged");
+            }
+            
+            // Clear USB status after 3 seconds
+            _usbStatusTimer?.Dispose();
+            _usbStatusTimer = new Timer(_ => UsbStatusText = string.Empty, null, TimeSpan.FromSeconds(3), Timeout.InfiniteTimeSpan);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(OSDPBench.Core.Resources.Resources.GetString("Error_HandlingUSBDeviceChange").Replace("{0}", ex.Message));
+        }
+    }
+    
+    /// <inheritdoc />
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+    
+    /// <summary>
+    /// Releases unmanaged and - optionally - managed resources.
+    /// </summary>
+    protected virtual void Dispose(bool disposing)
+    {
+        if (_isDisposed) return;
+        
+        if (disposing)
+        {
+            // Unsubscribe from events
+            _deviceManagementService.ConnectionStatusChange -= DeviceManagementServiceOnConnectionStatusChange;
+            _deviceManagementService.NakReplyReceived -= DeviceManagementServiceOnNakReplyReceived;
+            _deviceManagementService.TraceEntryReceived -= OnDeviceManagementServiceOnTraceEntryReceived;
+            
+            if (_usbDeviceMonitorService != null)
+            {
+                _usbDeviceMonitorService.UsbDeviceChanged -= OnUsbDeviceChanged;
+                _usbDeviceMonitorService.StopMonitoring();
+            }
+            
+            _usbStatusTimer?.Dispose();
+        }
+        
+        _isDisposed = true;
     }
 }
 

@@ -119,7 +119,7 @@ public partial class IdentityLookup : ObservableObject
     /// Provides information and instructions for resetting a device.
     /// </summary>
     // ReSharper disable once UnusedAutoPropertyAccessor.Global
-    public string ResetInstructions { get; } = "No reset instructions are available for this device.";
+    public virtual string ResetInstructions { get; } = "No reset instructions are available for this device.";
 
     /// <summary>
     /// Gets a value indicating whether the device can send a reset command.
@@ -130,5 +130,5 @@ public partial class IdentityLookup : ObservableObject
     /// the value of this property will indicate whether the device can send a reset command.
     /// </remarks>
     // ReSharper disable once UnusedAutoPropertyAccessor.Global
-    public bool CanSendResetCommand { get; }
+    public virtual bool CanSendResetCommand { get; }
 }

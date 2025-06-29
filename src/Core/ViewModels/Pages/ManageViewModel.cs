@@ -1,11 +1,11 @@
 ﻿using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using OSDP.Net.Connections;
 using OSDP.Net.Tracing;
 using OSDPBench.Core.Actions;
 using OSDPBench.Core.Models;
 using OSDPBench.Core.Services;
+using OSDPBench.Core.Resources;
 
 namespace OSDPBench.Core.ViewModels.Pages;
 
@@ -20,16 +20,19 @@ public partial class ManageViewModel : ObservableObject
 {
     private readonly IDialogService _dialogService;
     private readonly IDeviceManagementService _deviceManagementService;
+    private readonly ISerialPortConnectionService _serialPortConnectionService;
     
     private PacketTraceEntry? _lastPacketEntry;
 
     /// <inheritdoc />
-    public ManageViewModel(IDialogService dialogService, IDeviceManagementService deviceManagementService)
+    public ManageViewModel(IDialogService dialogService, IDeviceManagementService deviceManagementService, ISerialPortConnectionService serialPortConnectionService)
     {
         _dialogService = dialogService ??
                          throw new ArgumentNullException(nameof(dialogService));
         _deviceManagementService = deviceManagementService ??
                                    throw new ArgumentNullException(nameof(deviceManagementService));
+        _serialPortConnectionService = serialPortConnectionService ??
+                                       throw new ArgumentNullException(nameof(serialPortConnectionService));
 
         LastCardNumberRead = string.Empty;
         KeypadReadData = string.Empty;
@@ -47,84 +50,115 @@ public partial class ManageViewModel : ObservableObject
     [RelayCommand]
     private async Task ExecuteDeviceAction()
     {
-        object? result = null;
-        if (SelectedDeviceAction != null)
+        if (SelectedDeviceAction == null) return;
+
+        await ExceptionHelper.ExecuteSafelyAsync(_dialogService, OSDPBench.Core.Resources.Resources.GetString("Dialog_PerformingAction_Title"), async () =>
         {
-            if (SelectedDeviceAction is ResetCypressDeviceAction && IdentityLookup != null)
+            if (SelectedDeviceAction is ResetCypressDeviceAction)
             {
-                if (!IdentityLookup.CanSendResetCommand)
-                {
-                    await _dialogService.ShowMessageDialog("Reset Device", IdentityLookup.ResetInstructions,
-                        MessageIcon.Information);
-                    return;
-                }
-
-                await _deviceManagementService.Shutdown();
-                if (!await _dialogService.ShowConfirmationDialog("Reset Device",
-                        "Do you want to reset device, if so power cycle then click yes when the device boots up.",
-                        MessageIcon.Warning))
-                {
-                    await _deviceManagementService.Connect(new SerialPortOsdpConnection(
-                        _deviceManagementService.PortName,
-                        (int)_deviceManagementService.BaudRate), _deviceManagementService.Address);
-                    return;
-                }
-
-                try
-                {
-                    await _deviceManagementService.ExecuteDeviceAction(SelectedDeviceAction,
-                        new SerialPortOsdpConnection(_deviceManagementService.PortName,
-                            (int)_deviceManagementService.BaudRate));
-                    await _dialogService.ShowMessageDialog("Reset Device",
-                        "Successfully sent reset commands. Power cycle device again and then perform a discovery.",
-                        MessageIcon.Information);
-                }
-                catch (Exception exception)
-                {
-                    await _dialogService.ShowMessageDialog("Reset Device",
-                        exception.Message + " Perform a discovery to reconnect to the device.",
-                        MessageIcon.Error);
-                }
-
+                await HandleResetCypressDeviceAction();
                 return;
             }
 
-            try
+            var result = await ExecuteSelectedDeviceAction();
+            if (result != null && SelectedDeviceAction is SetCommunicationAction)
             {
-                result = await _deviceManagementService.ExecuteDeviceAction(SelectedDeviceAction,
-                    DeviceActionParameter);
+                await HandleSetCommunicationAction(result);
             }
-            catch (Exception exception)
-            {
-                await _dialogService.ShowMessageDialog("Performing Action",
-                    $"Issue with performing action. {exception.Message}", MessageIcon.Warning);
-                return;
-            }
+        });
+    }
+
+    private async Task<object?> ExecuteSelectedDeviceAction()
+    {
+        return await ExceptionHelper.ExecuteSafelyAsync(
+            _dialogService,
+            OSDPBench.Core.Resources.Resources.GetString("Dialog_PerformingAction_Title"), 
+            async () => await _deviceManagementService.ExecuteDeviceAction(SelectedDeviceAction!, DeviceActionParameter),
+            null);
+    }
+
+    private async Task HandleSetCommunicationAction(object result)
+    {
+        if (result is not CommunicationParameters connectionParameters) return;
+
+        bool parametersChanged = 
+            _deviceManagementService.BaudRate != connectionParameters.BaudRate ||
+            _deviceManagementService.Address != connectionParameters.Address;
+
+        if (!parametersChanged)
+        {
+            await _dialogService.ShowMessageDialog(OSDPBench.Core.Resources.Resources.GetString("Dialog_UpdateCommunications_Title"),
+                OSDPBench.Core.Resources.Resources.GetString("Dialog_UpdateCommunications_NoChange"), MessageIcon.Warning);
+            return;
         }
 
-        if (SelectedDeviceAction is SetCommunicationAction)
+        await _dialogService.ShowMessageDialog(OSDPBench.Core.Resources.Resources.GetString("Dialog_UpdateCommunications_Title"),
+            OSDPBench.Core.Resources.Resources.GetString("Dialog_UpdateCommunications_Success"), MessageIcon.Information);
+
+        if (_deviceManagementService.PortName != null)
+        {    await _deviceManagementService.Reconnect(_serialPortConnectionService.GetConnection(
+                _deviceManagementService.PortName,
+                (int)connectionParameters.BaudRate), connectionParameters.Address);
+        }
+    }
+
+    private async Task HandleResetCypressDeviceAction()
+    {
+        if (IdentityLookup == null) return;
+
+        if (!IdentityLookup.CanSendResetCommand)
         {
-            if (result is CommunicationParameters connectionParameters)
-            {
-                if (_deviceManagementService.BaudRate == connectionParameters.BaudRate &&
-                    _deviceManagementService.Address == connectionParameters.Address)
-                {
-                    await _dialogService.ShowMessageDialog("Update Communications",
-                        $"Communication parameters didn't change.", MessageIcon.Warning);
-                    return;
-                }
+            await _dialogService.ShowMessageDialog(
+                OSDPBench.Core.Resources.Resources.GetString("Dialog_ResetDevice_Title"), 
+                IdentityLookup.ResetInstructions,
+                MessageIcon.Information);
+            return;
+        }
 
-                await _dialogService.ShowMessageDialog("Update Communications",
-                    "Successfully update communications, reconnecting with new settings.", MessageIcon.Information);
-
-                await _deviceManagementService.Shutdown();
-
-                await Task.Delay(TimeSpan.FromSeconds(1));
-
-                await _deviceManagementService.Connect(
-                    new SerialPortOsdpConnection(_deviceManagementService.PortName,
-                        (int)connectionParameters.BaudRate), connectionParameters.Address);
+        await _deviceManagementService.Shutdown();
+        
+        bool userConfirmed = await _dialogService.ShowConfirmationDialog(
+            OSDPBench.Core.Resources.Resources.GetString("Dialog_ResetDevice_Title"),
+            OSDPBench.Core.Resources.Resources.GetString("Dialog_ResetDevice_Confirmation"),
+            MessageIcon.Warning);
+            
+        if (!userConfirmed)
+        {
+            if (_deviceManagementService.PortName != null)
+            {    
+                await _deviceManagementService.Reconnect(_serialPortConnectionService.GetConnection(
+                        _deviceManagementService.PortName,
+                        (int)_deviceManagementService.BaudRate),
+                    _deviceManagementService.Address);
             }
+            return;
+        }
+
+        bool success = await ExceptionHelper.ExecuteSafelyAsync(_dialogService, OSDPBench.Core.Resources.Resources.GetString("Dialog_ResetDevice_Title"), async () =>
+        {
+            if (_deviceManagementService.PortName != null)
+            {
+                await _deviceManagementService.ExecuteDeviceAction(
+                    SelectedDeviceAction!,
+                    _serialPortConnectionService.GetConnection(
+                        _deviceManagementService.PortName,
+                        (int)_deviceManagementService.BaudRate));
+            }
+        });
+        
+        if (success)
+        {
+            await _dialogService.ShowMessageDialog(
+                OSDPBench.Core.Resources.Resources.GetString("Dialog_ResetDevice_Title"),
+                OSDPBench.Core.Resources.Resources.GetString("Dialog_ResetDevice_Success"),
+                MessageIcon.Information);
+        }
+        else
+        {
+            await _dialogService.ShowMessageDialog(
+                OSDPBench.Core.Resources.Resources.GetString("Dialog_ResetDevice_Title"),
+                OSDPBench.Core.Resources.Resources.GetString("Dialog_ResetDevice_Failed"),
+                MessageIcon.Error);
         }
     }
 
@@ -162,7 +196,17 @@ public partial class ManageViewModel : ObservableObject
     
     private void OnDeviceManagementServiceOnTraceEntryReceived(object? sender, TraceEntry traceEntry)
     {
-        if (_deviceManagementService.IsUsingSecureChannel) return;
+        // Update activity indicators based on raw trace entry direction (works for encrypted packets too)
+        switch (traceEntry.Direction)
+        {
+            // Flash the appropriate LED based on a direction
+            case TraceDirection.Output:
+                LastTxActiveTime = DateTime.Now;
+                break;
+            case TraceDirection.Input or TraceDirection.Trace:
+                LastRxActiveTime = DateTime.Now;
+                break;
+        }
 
         var build = new PacketTraceEntryBuilder();
         PacketTraceEntry packetTraceEntry;
@@ -173,17 +217,6 @@ public partial class ManageViewModel : ObservableObject
         catch (Exception)
         {
             return;
-        }
-
-        switch (packetTraceEntry.Direction)
-        {
-            // Flash appropriate LED based on direction
-            case TraceDirection.Output:
-                LastTxActiveTime = DateTime.Now;
-                break;
-            case TraceDirection.Input or TraceDirection.Trace:
-                LastRxActiveTime = DateTime.Now;
-                break;
         }
         
         _lastPacketEntry = packetTraceEntry;
@@ -230,8 +263,8 @@ public partial class ManageViewModel : ObservableObject
     [
         new ControlBuzzerAction(),
         new FileTransferAction(),
-        new MonitorCardReads(), 
-        new MonitorKeypadReads(),
+        new MonitoringAction(MonitoringType.CardReads),
+        new MonitoringAction(MonitoringType.KeypadReads),
         new ResetCypressDeviceAction(), 
         new SetCommunicationAction(),
         new SetReaderLedAction()

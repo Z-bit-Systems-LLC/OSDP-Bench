@@ -54,7 +54,9 @@ public partial class App
             services.AddSingleton<IDeviceManagementService, DeviceManagementService>();
             services.AddSingleton<IDialogService, WindowsDialogService>();
             services.AddSingleton<ISerialPortConnectionService, WindowsSerialPortConnectionService>();
-            services.AddSingleton<IDialogService, WindowsDialogService>();
+            services.AddSingleton<IUsbDeviceMonitorService, WindowsUsbDeviceMonitorService>();
+            services.AddSingleton<IUserSettingsService, UserSettingsService>();
+            services.AddSingleton<ILocalizationService, LocalizationService>();
         }).Build();
 
     /// <summary>
@@ -71,9 +73,30 @@ public partial class App
     /// <summary>
     /// Occurs when the application is loading.
     /// </summary>
-    private void OnStartup(object sender, StartupEventArgs e)
+    private async void OnStartup(object sender, StartupEventArgs e)
     {
         Host.Start();
+        
+        // Initialize user settings before other services
+        var userSettingsService = Host.Services.GetService<IUserSettingsService>();
+        if (userSettingsService != null)
+        {
+            await userSettingsService.LoadAsync();
+        }
+        
+        // Initialize the localization service to apply saved culture
+        var localizationService = Host.Services.GetService<ILocalizationService>();
+        if (localizationService != null && userSettingsService?.Settings.PreferredCulture != null)
+        {
+            try
+            {
+                localizationService.ChangeCulture(userSettingsService.Settings.PreferredCulture);
+            }
+            catch
+            {
+                // If culture loading fails, continue with system default
+            }
+        }
         
         Host.Services.GetService<ManageViewModel>();
         Host.Services.GetService<MonitorViewModel>();
@@ -84,6 +107,13 @@ public partial class App
     /// </summary>
     private async void OnExit(object sender, ExitEventArgs e)
     {
+        // Dispose of services that need explicit cleanup
+        var connectViewModel = Host.Services.GetService<ConnectViewModel>();
+        connectViewModel?.Dispose();
+        
+        var usbMonitor = Host.Services.GetService<IUsbDeviceMonitorService>();
+        usbMonitor?.Dispose();
+        
         await Host.StopAsync();
 
         Host.Dispose();

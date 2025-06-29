@@ -1,8 +1,11 @@
 # OSDP-Bench Development Guidelines
 
+## References
+- OSDP.Net source code: https://github.com/bytedreamer/OSDP.Net
+
 ## Build Commands
 - Build solution: `dotnet build OSDP-Bench.sln`
-- Build specific project: `dotnet build src/Core/Core.csproj`
+- Build a specific project: `dotnet build src/Core/Core.csproj`
 - Build release version: `dotnet build -c Release OSDP-Bench.sln`
 
 ## Test Commands
@@ -13,11 +16,11 @@
 
 ## Code Style Guidelines
 - Use C# 8.0+ features with async/await patterns for asynchronous operations
-- Follow MVVM design pattern for view models with ObservableObject and RelayCommand
+- Follow the MVVM design pattern for view models with ObservableObject and RelayCommand
 - Use dependency injection for services
 - Include XML documentation for public interfaces and methods
 - Use PascalCase for class, method, and public property names
-- Use _camelCase for private fields with underscore prefix
+- Use _camelCase for private fields with an underscore prefix
 - Implement defensive programming with null checks for constructor parameters
 - Use standard exception handling with try/catch blocks around external operations
 - Prefer async/await over direct Task management
@@ -25,31 +28,12 @@
 - Use meaningful variable names that reflect their purpose
 - Keep methods focused and small with a single responsibility
 
-## Refactoring Opportunities
+## UI Style Guidelines
+- **Always use standard styles** - Apply predefined styles from the design system instead of inline properties
+- **Use design tokens for spacing** - Reference `{StaticResource Margin.Card}` instead of hardcoding values
+- **Apply semantic colors** - Use `{StaticResource Brush.Error}` instead of hardcoded colors like "Red"
+- **Follow the style hierarchy** - Check ComponentStyles.xaml and LayoutTemplates.xaml before creating custom styles
+- **Update existing code** - When modifying files, replace inline styling with standard styles
+- **Create reusable patterns** - If you find yourself repeating XAML structures, consider adding a new style or template
 
-1. DeviceManagementService.cs: 
-   - Extract duplicate event raising patterns into helper methods
-   - Improve error handling in empty catch blocks
-   - Split long class (374 lines) into focused components
-
-2. ConnectViewModel.cs:
-   - Extract large switch statement in DiscoverDevice method
-   - Split ScanSerialPorts method with multiple responsibilities
-   - Simplify nested logic in ConnectDevice
-
-3. ManageViewModel.cs:
-   - Refactor 57-line ExecuteDeviceAction method
-   - Extract special handling for ResetCypressDeviceAction
-
-4. Consolidate nearly identical implementations:
-   - MonitorCardReads.cs and MonitorKeyPadReads.cs
-
-5. Test improvements:
-   - Remove duplicated setup code in ConnectViewModelTests.cs
-   - Increase test coverage beyond just ConnectViewModel
-
-6. Cross-cutting concerns:
-   - Standardize inconsistent error handling approaches
-   - Reduce ViewModels coupling to DeviceManagementService
-   - Fix naming inconsistencies (MonitorKeypadReads vs MonitorKeyPadReads)
-   - Convert hardcoded values (BaudRates, timeouts) to constants
+For detailed UI styling guidelines and examples, see: `src/UI/Windows/Styles/StyleGuide.md`

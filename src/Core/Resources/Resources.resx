@@ -1,0 +1,584 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion. The mimetype is used for serialized objects,
+    and tells the ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  
+  <!-- Connection Status Messages -->
+  <data name="Status_Connected" xml:space="preserve">
+    <value>Connected</value>
+    <comment>Device connection status when successfully connected</comment>
+  </data>
+  <data name="Status_Disconnected" xml:space="preserve">
+    <value>Disconnected</value>
+    <comment>Device connection status when not connected</comment>
+  </data>
+  <data name="Status_Discovering" xml:space="preserve">
+    <value>Discovering</value>
+    <comment>Device connection status during discovery process</comment>
+  </data>
+  <data name="Status_Error" xml:space="preserve">
+    <value>Error</value>
+    <comment>Device connection status when an error occurred</comment>
+  </data>
+  
+  <!-- USB Status Messages -->
+  <data name="USB_DeviceInserted" xml:space="preserve">
+    <value>USB device inserted</value>
+    <comment>Message shown when a USB device is detected</comment>
+  </data>
+  <data name="USB_DeviceRemoved" xml:space="preserve">
+    <value>USB device removed</value>
+    <comment>Message shown when a USB device is disconnected</comment>
+  </data>
+  
+  <!-- Error Messages -->
+  <data name="Error_ConnectionFailed" xml:space="preserve">
+    <value>Connection failed</value>
+    <comment>Generic connection failure message</comment>
+  </data>
+  <data name="Error_DeviceNotFound" xml:space="preserve">
+    <value>Device not found</value>
+    <comment>Error when device cannot be found during discovery</comment>
+  </data>
+  <data name="Error_InvalidAddress" xml:space="preserve">
+    <value>Invalid address</value>
+    <comment>Error when the entered address is invalid</comment>
+  </data>
+  
+  <!-- Device Information -->
+  <data name="Device_SerialNumberPrefix" xml:space="preserve">
+    <value>S/N - </value>
+    <comment>Prefix for device serial number display</comment>
+  </data>
+  
+  <!-- Connection Messages -->
+  <data name="Connection_DeviceConnectedFormat" xml:space="preserve">
+    <value>Device connected at address {0} running at a baud rate of {1}</value>
+    <comment>Format string for displaying connection details. {0} = address, {1} = baud rate</comment>
+  </data>
+  
+  <!-- Page Titles -->
+  <data name="Page_Connect" xml:space="preserve">
+    <value>Connect</value>
+    <comment>Title for the Connect page</comment>
+  </data>
+  <data name="Page_Manage" xml:space="preserve">
+    <value>Manage</value>
+    <comment>Title for the Manage page</comment>
+  </data>
+  <data name="Page_Monitor" xml:space="preserve">
+    <value>Monitor</value>
+    <comment>Title for the Monitor page</comment>
+  </data>
+  <data name="Page_Info" xml:space="preserve">
+    <value>Info</value>
+    <comment>Title for the Info page</comment>
+  </data>
+  
+  <!-- Connect Page -->
+  <data name="Connect_SerialPortSelection" xml:space="preserve">
+    <value>Serial Port Selection</value>
+    <comment>Header for serial port selection section</comment>
+  </data>
+  <data name="Connect_SerialPort" xml:space="preserve">
+    <value>Serial Port</value>
+    <comment>Label for serial port dropdown</comment>
+  </data>
+  <data name="Connect_ConnectToPD" xml:space="preserve">
+    <value>Connect to PD</value>
+    <comment>Header for connection settings section</comment>
+  </data>
+  <data name="Connect_DiscoveryWarning" xml:space="preserve">
+    <value>Discovery will only work properly with a single device connected</value>
+    <comment>Warning message about device discovery</comment>
+  </data>
+  <data name="Connect_StartDiscovery" xml:space="preserve">
+    <value>Start Discovery</value>
+    <comment>Button text to start device discovery</comment>
+  </data>
+  <data name="Connect_CancelDiscovery" xml:space="preserve">
+    <value>Cancel Discovery</value>
+    <comment>Button text to cancel device discovery</comment>
+  </data>
+  <data name="Connect_Disconnect" xml:space="preserve">
+    <value>Disconnect</value>
+    <comment>Button text to disconnect from device</comment>
+  </data>
+  <data name="Connect_BaudRate" xml:space="preserve">
+    <value>Baud Rate</value>
+    <comment>Label for baud rate selection</comment>
+  </data>
+  <data name="Connect_ConnectionSettings" xml:space="preserve">
+    <value>Connection Settings</value>
+    <comment>Header for connection settings section</comment>
+  </data>
+  <data name="Connect_SecuritySettings" xml:space="preserve">
+    <value>Security Settings</value>
+    <comment>Header for security settings section</comment>
+  </data>
+  <data name="Connect_Address" xml:space="preserve">
+    <value>Address</value>
+    <comment>Label for device address input</comment>
+  </data>
+  <data name="Connect_UseSecureChannel" xml:space="preserve">
+    <value>Use Secure Channel</value>
+    <comment>Checkbox text for secure channel option</comment>
+  </data>
+  <data name="Connect_UseDefaultKey" xml:space="preserve">
+    <value>Use Default Key</value>
+    <comment>Checkbox text for default key option</comment>
+  </data>
+  <data name="Connect_SecurityKey" xml:space="preserve">
+    <value>Security Key</value>
+    <comment>Label for security key input</comment>
+  </data>
+  <data name="Connect_Connect" xml:space="preserve">
+    <value>Connect</value>
+    <comment>Button text to connect to device</comment>
+  </data>
+  
+  <!-- Manage Page -->
+  <data name="Manage_DeviceNotIdentified" xml:space="preserve">
+    <value>Device has not been Identified</value>
+    <comment>Message when device is not identified</comment>
+  </data>
+  <data name="Manage_ConnectionPageDetails" xml:space="preserve">
+    <value>The Connection page will provide more details</value>
+    <comment>Message directing user to connection page</comment>
+  </data>
+  <data name="Manage_DeviceInformation" xml:space="preserve">
+    <value>Device Information</value>
+    <comment>Header for device information section</comment>
+  </data>
+  <data name="Manage_DeviceAction" xml:space="preserve">
+    <value>Device Action</value>
+    <comment>Header for device action section</comment>
+  </data>
+  <data name="Manage_LedColor" xml:space="preserve">
+    <value>LED Color</value>
+    <comment>Label for LED color selection</comment>
+  </data>
+  <data name="Manage_SelectedFile" xml:space="preserve">
+    <value>Selected File</value>
+    <comment>Label for file selection in file transfer</comment>
+  </data>
+  <data name="Manage_Browse" xml:space="preserve">
+    <value>Browse</value>
+    <comment>Button text for file browser</comment>
+  </data>
+  <data name="Manage_Progress" xml:space="preserve">
+    <value>Progress</value>
+    <comment>Label for file transfer progress</comment>
+  </data>
+  <data name="Manage_BytesOf" xml:space="preserve">
+    <value> Bytes/</value>
+    <comment>Text between transferred and total bytes</comment>
+  </data>
+  <data name="Manage_Bytes" xml:space="preserve">
+    <value> Bytes</value>
+    <comment>Text for bytes unit</comment>
+  </data>
+  
+  <!-- Monitor Page -->
+  <data name="Monitor_DeviceNotConnected" xml:space="preserve">
+    <value>Device is not connected</value>
+    <comment>Message when device is not connected</comment>
+  </data>
+  <data name="Monitor_MonitoringNotAvailable" xml:space="preserve">
+    <value>Monitoring is not available for secure channel</value>
+    <comment>Message when monitoring is disabled for secure connections</comment>
+  </data>
+  <data name="Monitor_SecureChannelUpdate" xml:space="preserve">
+    <value>An update will be out soon that supports secure channel</value>
+    <comment>Message about future secure channel support</comment>
+  </data>
+  <data name="Monitor_TimeStamp" xml:space="preserve">
+    <value>TimeStamp</value>
+    <comment>Column header for timestamp in monitoring grid</comment>
+  </data>
+  <data name="Monitor_Interval" xml:space="preserve">
+    <value>Interval (ms)</value>
+    <comment>Column header for interval in monitoring grid</comment>
+  </data>
+  <data name="Monitor_Direction" xml:space="preserve">
+    <value>Direction</value>
+    <comment>Column header for direction in monitoring grid</comment>
+  </data>
+  <data name="Monitor_Address" xml:space="preserve">
+    <value>Address</value>
+    <comment>Column header for address in monitoring grid</comment>
+  </data>
+  <data name="Monitor_Type" xml:space="preserve">
+    <value>Type</value>
+    <comment>Column header for type in monitoring grid</comment>
+  </data>
+  <data name="Monitor_Details" xml:space="preserve">
+    <value>Details</value>
+    <comment>Column header for details in monitoring grid</comment>
+  </data>
+  <data name="Monitor_Expand" xml:space="preserve">
+    <value>Expand</value>
+    <comment>Button text to expand row details</comment>
+  </data>
+  <data name="Monitor_ConnectionPageDetails" xml:space="preserve">
+    <value>The Connection page will provide more details</value>
+    <comment>Message directing users to connection page for details</comment>
+  </data>
+  <data name="Monitor_LastCardRead" xml:space="preserve">
+    <value>Last Card Read</value>
+    <comment>Label for last card read display</comment>
+  </data>
+  <data name="Monitor_ReadHistory" xml:space="preserve">
+    <value>Read History</value>
+    <comment>Label for card read history section</comment>
+  </data>
+  <data name="Monitor_ClearHistory" xml:space="preserve">
+    <value>Clear History</value>
+    <comment>Button text to clear card read history</comment>
+  </data>
+  <data name="Monitor_ColumnDateTime" xml:space="preserve">
+    <value>Date/Time</value>
+    <comment>Column header for date/time in card read history</comment>
+  </data>
+  <data name="Monitor_ColumnCardNumber" xml:space="preserve">
+    <value>Card Number</value>
+    <comment>Column header for card number in card read history</comment>
+  </data>
+  <data name="Monitor_KeypadEntries" xml:space="preserve">
+    <value>Keypad Entries</value>
+    <comment>Label for keypad entries display</comment>
+  </data>
+  <data name="Monitor_Clear" xml:space="preserve">
+    <value>Clear</value>
+    <comment>Button text to clear keypad entries</comment>
+  </data>
+  
+  <!-- Info Page -->
+  <data name="Info_ApplicationName" xml:space="preserve">
+    <value>OSDP Bench</value>
+    <comment>Application name</comment>
+  </data>
+  <data name="Info_LicenseInfo" xml:space="preserve">
+    <value>License Info</value>
+    <comment>Header for license information section</comment>
+  </data>
+  <data name="Info_EPLLicense" xml:space="preserve">
+    <value>EPL 2.0</value>
+    <comment>Eclipse Public License 2.0 header</comment>
+  </data>
+  <data name="Info_ApacheLicense" xml:space="preserve">
+    <value>Apache 2.0</value>
+    <comment>Apache License 2.0 header</comment>
+  </data>
+  <data name="Info_MITLicense" xml:space="preserve">
+    <value>MIT</value>
+    <comment>MIT License header</comment>
+  </data>
+  
+  <!-- Activity Indicators -->
+  <data name="Activity_Tx" xml:space="preserve">
+    <value>Tx</value>
+    <comment>Transmission activity indicator</comment>
+  </data>
+  <data name="Activity_Rx" xml:space="preserve">
+    <value>Rx</value>
+    <comment>Reception activity indicator</comment>
+  </data>
+  
+  <!-- Navigation Menu Items -->
+  <data name="Navigation_ConnectToPD" xml:space="preserve">
+    <value>Connect To PD</value>
+    <comment>Navigation menu item for Connect page</comment>
+  </data>
+  <data name="Navigation_ManagePD" xml:space="preserve">
+    <value>Manage PD</value>
+    <comment>Navigation menu item for Manage page</comment>
+  </data>
+  <data name="Navigation_Monitor" xml:space="preserve">
+    <value>Monitor</value>
+    <comment>Navigation menu item for Monitor page</comment>
+  </data>
+  <data name="Navigation_Info" xml:space="preserve">
+    <value>Info</value>
+    <comment>Navigation menu item for Info page</comment>
+  </data>
+  
+  <!-- Window Title -->
+  <data name="Window_Title" xml:space="preserve">
+    <value>OSDP Bench</value>
+    <comment>Main window title</comment>
+  </data>
+  
+  <!-- ViewModel Status Messages -->
+  <data name="Status_AttemptingToConnect" xml:space="preserve">
+    <value>Attempting to connect</value>
+    <comment>Status when attempting to connect to device</comment>
+  </data>
+  <data name="Status_InvalidSecurityKey" xml:space="preserve">
+    <value>Invalid security key</value>
+    <comment>Status when security key is invalid</comment>
+  </data>
+  <data name="Status_AttemptingToDiscover" xml:space="preserve">
+    <value>Attempting to discover device</value>
+    <comment>Status when starting device discovery</comment>
+  </data>
+  <data name="Status_AttemptingToDiscoverAtBaudRate" xml:space="preserve">
+    <value>Attempting to discover device at {0}</value>
+    <comment>Status when discovering at specific baud rate. {0} = baud rate</comment>
+  </data>
+  <data name="Status_FoundDeviceAtBaudRate" xml:space="preserve">
+    <value>Found device at {0}</value>
+    <comment>Status when device found at baud rate. {0} = baud rate</comment>
+  </data>
+  <data name="Status_AttemptingToDetermineDevice" xml:space="preserve">
+    <value>Attempting to determine device at {0} with address {1}</value>
+    <comment>Status when determining device. {0} = baud rate, {1} = address</comment>
+  </data>
+  <data name="Status_AttemptingToIdentifyDevice" xml:space="preserve">
+    <value>Attempting to identify device at {0} with address {1}</value>
+    <comment>Status when identifying device. {0} = baud rate, {1} = address</comment>
+  </data>
+  <data name="Status_AttemptingToGetCapabilities" xml:space="preserve">
+    <value>Attempting to get capabilities of device at {0} with address {1}</value>
+    <comment>Status when getting device capabilities. {0} = baud rate, {1} = address</comment>
+  </data>
+  <data name="Status_SuccessfullyDiscovered" xml:space="preserve">
+    <value>Successfully discovered device {0} with address {1}</value>
+    <comment>Status when device successfully discovered. {0} = baud rate, {1} = address</comment>
+  </data>
+  <data name="Status_FailedToConnect" xml:space="preserve">
+    <value>Failed to connect to device</value>
+    <comment>Status when connection failed</comment>
+  </data>
+  <data name="Status_ErrorWhileDiscovering" xml:space="preserve">
+    <value>Error while discovering device</value>
+    <comment>Status when error occurred during discovery</comment>
+  </data>
+  <data name="Status_CancelledDiscovery" xml:space="preserve">
+    <value>Cancelled discovery</value>
+    <comment>Status when discovery was cancelled</comment>
+  </data>
+  <data name="Status_AttemptingToConnectManually" xml:space="preserve">
+    <value>Attempting to connect manually</value>
+    <comment>Status when attempting manual connection</comment>
+  </data>
+  <data name="Status_DeviceDisconnectedUSBRemoved" xml:space="preserve">
+    <value>Device disconnected - USB removed</value>
+    <comment>Status when device disconnected due to USB removal</comment>
+  </data>
+  
+  <!-- USB Device Change Messages -->
+  <data name="USB_DeviceConnected" xml:space="preserve">
+    <value>USB device connected</value>
+    <comment>Message when USB device is connected</comment>
+  </data>
+  <data name="USB_DeviceDisconnected" xml:space="preserve">
+    <value>USB device disconnected</value>
+    <comment>Message when USB device is disconnected</comment>
+  </data>
+  <data name="USB_PortsChanged" xml:space="preserve">
+    <value>USB ports changed</value>
+    <comment>Message when USB ports have changed</comment>
+  </data>
+  
+  <!-- Dialog Messages -->
+  <data name="Dialog_Connect_Title" xml:space="preserve">
+    <value>Connect</value>
+    <comment>Title for connection dialog</comment>
+  </data>
+  <data name="Dialog_InvalidSecurityKeyMessage" xml:space="preserve">
+    <value>Invalid security key entered. {0}</value>
+    <comment>Error message for invalid security key. {0} = exception message</comment>
+  </data>
+  
+  <!-- Console Error Messages -->
+  <data name="Error_InitializingSerialPorts" xml:space="preserve">
+    <value>Error initializing serial ports: {0}</value>
+    <comment>Console error when serial port initialization fails. {0} = error message</comment>
+  </data>
+  <data name="Error_HandlingUSBDeviceChange" xml:space="preserve">
+    <value>Error handling USB device change: {0}</value>
+    <comment>Console error when USB device change handling fails. {0} = error message</comment>
+  </data>
+  
+  <!-- ManageViewModel Dialog Messages -->
+  <data name="Dialog_PerformingAction_Title" xml:space="preserve">
+    <value>Performing Action</value>
+    <comment>Title for dialog when performing device action</comment>
+  </data>
+  <data name="Dialog_UpdateCommunications_Title" xml:space="preserve">
+    <value>Update Communications</value>
+    <comment>Title for update communications dialog</comment>
+  </data>
+  <data name="Dialog_UpdateCommunications_NoChange" xml:space="preserve">
+    <value>Communication parameters didn't change.</value>
+    <comment>Message when communication parameters haven't changed</comment>
+  </data>
+  <data name="Dialog_UpdateCommunications_Success" xml:space="preserve">
+    <value>Successfully update communications, reconnecting with new settings.</value>
+    <comment>Message when communication parameters updated successfully</comment>
+  </data>
+  <data name="Dialog_ResetDevice_Title" xml:space="preserve">
+    <value>Reset Device</value>
+    <comment>Title for reset device dialog</comment>
+  </data>
+  <data name="Dialog_ResetDevice_Confirmation" xml:space="preserve">
+    <value>Do you want to reset device, if so power cycle then click yes when the device boots up.</value>
+    <comment>Confirmation message for device reset</comment>
+  </data>
+  <data name="Dialog_ResetDevice_Success" xml:space="preserve">
+    <value>Successfully sent reset commands. Power cycle device again and then perform a discovery.</value>
+    <comment>Message when device reset successful</comment>
+  </data>
+  <data name="Dialog_ResetDevice_Failed" xml:space="preserve">
+    <value>Failed to reset the device. Perform a discovery to reconnect to the device.</value>
+    <comment>Message when device reset failed</comment>
+  </data>
+  
+  <!-- Code-behind Messages -->
+  <data name="Dialog_VendorInformation_Title" xml:space="preserve">
+    <value>Vendor Information</value>
+    <comment>Title for vendor information dialog</comment>
+  </data>
+  <data name="Error_OUILookupFailed" xml:space="preserve">
+    <value>Unable to open OUI lookup: {0}</value>
+    <comment>Error message when OUI lookup fails. {0} = exception message</comment>
+  </data>
+  <data name="Monitor_Collapse" xml:space="preserve">
+    <value>Collapse</value>
+    <comment>Button text to collapse row details</comment>
+  </data>
+  <data name="ConnectionType_Discover" xml:space="preserve">
+    <value>Discover</value>
+    <comment>Connection type option for discovery</comment>
+  </data>
+  <data name="ConnectionType_Manual" xml:space="preserve">
+    <value>Manual</value>
+    <comment>Connection type option for manual connection</comment>
+  </data>
+  
+  <!-- Language Selection UI -->
+  <data name="Language_Selection" xml:space="preserve">
+    <value>Language</value>
+    <comment>Label for language selection dropdown</comment>
+  </data>
+  <data name="Language_SelectLanguage" xml:space="preserve">
+    <value>Select Language</value>
+    <comment>Tooltip for language selection</comment>
+  </data>
+  <data name="Language_ChangeConfirmation" xml:space="preserve">
+    <value>Language changed successfully</value>
+    <comment>Confirmation message when language is changed</comment>
+  </data>
+</root>

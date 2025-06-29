@@ -24,6 +24,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Windows", "src\UI\Windows\W
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Core", "src\Core\Core.csproj", "{79C7EB0F-A75B-4DA7-BDDF-12C9714B48DF}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{ED2EC291-3353-442C-AD2C-3D3438798EF0}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+		docs\CLAUDE.md = docs\CLAUDE.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

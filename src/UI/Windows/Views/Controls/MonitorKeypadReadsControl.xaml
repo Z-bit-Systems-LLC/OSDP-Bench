@@ -3,21 +3,30 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+             xmlns:markup="clr-namespace:OSDPBench.Windows.Markup"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid>
         <Grid>
             <StackPanel Orientation="Vertical">
-                <Label Content="Keypad Entries"
+                <Label Content="{markup:Localize Monitor_KeypadEntries}"
+                       Style="{StaticResource Label.Standard}"
                        Target="{Binding ElementName=KeypadTextBox}" />
                 <StackPanel Orientation="Horizontal">
                     <TextBox Name="KeypadTextBox"
                              MinWidth="200"
-                                     IsReadOnly="True"
-                                     Margin="0 0 20 0"/>
-                    <Button Name="ClearButton"
-                            Content="Clear"
-                            Click="ClearButton_OnClick"/>
+                             IsReadOnly="True"
+                             FontFamily="Consolas"
+                             Style="{StaticResource TextBox.Standard}"
+                             MinHeight="0"
+                             Height="Auto"
+                             VerticalAlignment="Center"
+                             Margin="0,0,20,0"/>
+                    <ui:Button Name="ClearButton"
+                               Content="{markup:Localize Monitor_Clear}"
+                               Style="{StaticResource Button.Secondary}"
+                               Click="ClearButton_OnClick"/>
                 </StackPanel>
             </StackPanel>
         </Grid>

@@ -26,6 +26,7 @@ public sealed class DeviceManagementService : IDeviceManagementService
     private Guid _connectionId;
     private bool _isDiscovering;
     private bool _invalidSecurityKey;
+    private byte[]? _securityKey;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DeviceManagementService"/> class.
@@ -116,10 +117,12 @@ public sealed class DeviceManagementService : IDeviceManagementService
         bool useDefaultSecurityKey, byte[]? securityKey)
     {
         await Shutdown();
-
+        
         Address = address;
         BaudRate = (uint)connection.BaudRate;
         IsUsingSecureChannel = useSecureChannel;
+        UsesDefaultSecurityKey = useDefaultSecurityKey;
+        _securityKey = securityKey;
 
         _connectionId = _panel.StartConnection(connection, _defaultPollInterval, Tracer);
         _panel.AddDevice(_connectionId, address, true, useSecureChannel, 
@@ -237,15 +240,31 @@ public sealed class DeviceManagementService : IDeviceManagementService
     
     private async Task WaitUntilDeviceIsOffline()
     {
-        using var cts = new CancellationTokenSource(_defaultShutdownTimeout);
-        while (_panel.IsOnline(_connectionId, Address))
+        // Skip waiting if we never had a valid connection
+        if (_connectionId == Guid.Empty)
         {
-            if (cts.Token.IsCancellationRequested)
+            return;
+        }
+        
+        using var cts = new CancellationTokenSource(_defaultShutdownTimeout);
+        
+        // Check if the connection exists before querying its status
+        try
+        {
+            while (_panel.IsOnline(_connectionId, Address))
             {
-                throw new TimeoutException("The device did not go offline within the specified timeout.");
-            }
+                if (cts.Token.IsCancellationRequested)
+                {
+                    throw new TimeoutException("The device did not go offline within the specified timeout.");
+                }
 
-            await Task.Delay(TimeSpan.FromMilliseconds(100), cts.Token);
+                await Task.Delay(TimeSpan.FromMilliseconds(100), cts.Token);
+            }
+        }
+        catch (KeyNotFoundException)
+        {
+            // Connection was already removed from the panel, which is fine during shutdown
+            return;
         }
         
         await Task.Delay(TimeSpan.FromSeconds(1), cts.Token);
@@ -268,6 +287,12 @@ public sealed class DeviceManagementService : IDeviceManagementService
     
     /// <inheritdoc />
     public event EventHandler<TraceEntry>? TraceEntryReceived;
+
+    /// <inheritdoc />
+    public async Task Reconnect(IOsdpConnection osdpConnection, byte connectionParametersAddress)
+    {
+        await Connect(osdpConnection, connectionParametersAddress, IsUsingSecureChannel, UsesDefaultSecurityKey, _securityKey);
+    }
 
     /// <summary>
     /// Helper method to raise events with proper synchronization context handling
@@ -310,7 +335,7 @@ public sealed class DeviceManagementService : IDeviceManagementService
     /// <summary>
     /// Format keypad data from byte array to string representation
     /// </summary>
-    /// <param name="data">Keypad data as byte array</param>
+    /// <param name="data">Keypad data as a byte array</param>
     /// <returns>Formatted keypad string</returns>
     private static string FormatKeypadData(byte[] data)
     {

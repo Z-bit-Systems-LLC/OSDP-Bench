@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
              xmlns:controls="clr-namespace:OSDPBench.Windows.Views.Controls"
+             xmlns:markup="clr-namespace:OSDPBench.Windows.Markup"
              d:DataContext="{d:DesignInstance Type=controls:SetCommunicationControl}"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
@@ -14,26 +15,29 @@
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
-        <StackPanel Grid.Column="0" Orientation="Vertical">
-            <Label Content="Baud Rate"
+        <StackPanel Grid.Column="0" 
+                    Style="{StaticResource Section.Container}">
+            <Label Content="{markup:Localize Connect_BaudRate}"
+                   Style="{StaticResource Label.Standard}"
                    Target="{Binding ElementName=BaudRateComboBox}" />
             <ComboBox Name="BaudRateComboBox"
                       Margin="0 0 20 0"
                       ItemsSource="{Binding AvailableBaudRates}"
                       SelectedItem="{Binding SelectedBaudRate, Mode=TwoWay}"/>
         </StackPanel>
-        <StackPanel Grid.Column="1" Orientation="Vertical">
-            <Label Content="Address"
-                   Target="{Binding ElementName=BaudRateComboBox}" />
+        <StackPanel Grid.Column="1" 
+                    Style="{StaticResource Section.Container}">
+            <Label Content="{markup:Localize Connect_Address}"
+                   Style="{StaticResource Label.Standard}"
+                   Target="{Binding ElementName=AddressNumberBox}" />
             <ui:NumberBox Name="AddressNumberBox"
                           TextChanged="AddressNumberBox_OnTextChanged"
                           ValueChanged="AddressNumberBox_OnValueChanged"
                           Value="{Binding SelectedAddress, Mode=TwoWay}"
-                          Margin="0 0 20 0"
                           Minimum="0"
                           Maximum="127"
-                          MaxDecimalPlaces="0"
-                          ClearButtonEnabled="False"/>
+                          ClearButtonEnabled="False"
+                          MaxDecimalPlaces="0"/>
         </StackPanel>
     </Grid>
 

@@ -36,3 +36,5 @@ _UpgradeReport_Files/
 AppPackages/
 BundleArtifacts/
 /src/UI/WinUI (Package)/WinUI (Package).assets.cache
+
+.claude

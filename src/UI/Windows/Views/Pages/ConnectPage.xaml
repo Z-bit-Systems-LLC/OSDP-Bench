@@ -6,92 +6,61 @@
 	  xmlns:pages="clr-namespace:OSDPBench.Windows.Views.Pages"
 	  xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
 	  xmlns:converters="clr-namespace:OSDPBench.Windows.Converters"
-	  xmlns:controls="clr-namespace:OSDPBench.Windows.Views.Controls"
+	  xmlns:markup="clr-namespace:OSDPBench.Windows.Markup"
 	  mc:Ignorable="d" 
 	  d:DataContext="{d:DesignInstance pages:ConnectPage,
 									 IsDesignTimeCreatable=False}"
 	  d:DesignHeight="450" d:DesignWidth="800"
-	  Title="Connect">
+	  Title="{markup:Localize Page_Connect}">
 
     <Page.Resources>
         <converters:StatusLevelConverter x:Key="StatusLevelConverter" />
         <converters:StringToVisibilityConverter x:Key="StringToVisibilityConverter" />
+        <converters:IndexToVisibilityConverter x:Key="IndexToVisibilityConverter" />
     </Page.Resources>
 
-    <StackPanel 
-		Orientation="Vertical"
-		Margin="0 5">
-	    <Grid Margin="10 5">
-		    <TextBlock 
-			    Text="{Binding RelativeSource={RelativeSource AncestorType=Page}, Path=Title}"
-			    Style="{StaticResource PageTitleStyle}"/>
-            
-		    <StackPanel Orientation="Horizontal" 
-		                HorizontalAlignment="Right" 
-		                VerticalAlignment="Center">
-			    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0 0 15 0">
-				    <TextBlock Text="Tx" VerticalAlignment="Center" Margin="0 0 5 0"/>
-				    <controls:LedControl 
-					    LastActivityTime="{Binding Path=ViewModel.LastTxActiveTime}" 
-					    LedColor="Red" 
-					    VerticalAlignment="Center"/>
-			    </StackPanel>
-            
-			    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-				    <TextBlock Text="Rx" VerticalAlignment="Center" Margin="0 0 5 0"/>
-				    <controls:LedControl 
-					    LastActivityTime="{Binding Path=ViewModel.LastRxActiveTime}" 
-					    LedColor="Red" 
-					    VerticalAlignment="Center"/>
-			    </StackPanel>
-		    </StackPanel>
-	    </Grid>
-	    <ui:CardExpander IsExpanded="True"
-	                     Margin="10 5"
-	                     ContentPadding="10 5">
-            <ui:CardExpander.Header>
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                    </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="Auto"/>
-                    </Grid.ColumnDefinitions>
-                    <ui:TextBlock
-						Grid.Row="0"
-						Grid.Column="0"
-						VerticalAlignment="Center"
-                        FontTypography="Subtitle"
-						Text="Serial Port Selection" 
-						TextWrapping="Wrap"/>
-                </Grid>
-            </ui:CardExpander.Header>
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition MinWidth="200" />
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
-                <StackPanel Grid.Column="0" 
-						Orientation="Vertical">
-                    <Label Content="Serial Port"
-							   Target="{Binding ElementName=SerialPortComboBox}" />
-                    <ComboBox x:Name="SerialPortComboBox"
-                              ItemsSource="{Binding ViewModel.AvailableSerialPorts }"
-                              DisplayMemberPath="Name"
-                              SelectedItem="{Binding ViewModel.SelectedSerialPort}"/>
+    <StackPanel Style="{StaticResource Page.Container}">
+        <!-- Page Header with Activity Indicators -->
+        <ContentControl Content="{Binding RelativeSource={RelativeSource AncestorType=Page}, Path=Title}"
+                        Template="{StaticResource Template.PageHeader}"/>
+        <Border Style="{StaticResource Card.Bordered}">
+            <StackPanel Style="{StaticResource Card.Content}">
+                <ui:TextBlock FontTypography="Subtitle"
+                              Text="{markup:Localize Connect_SerialPortSelection}"
+                              TextWrapping="Wrap"
+                              Margin="0,0,0,10"/>
+                <StackPanel Orientation="Vertical">
+                    <Label Content="{markup:Localize Connect_SerialPort}"
+                           Style="{StaticResource Label.Standard}"
+                           Target="{Binding ElementName=SerialPortComboBox}" />
+                    <DockPanel>
+                        <ComboBox x:Name="SerialPortComboBox"
+                                  Style="{StaticResource ComboBox.Standard}"
+                                  ItemsSource="{Binding ViewModel.AvailableSerialPorts }"
+                                  DisplayMemberPath="Name"
+                                  SelectedItem="{Binding ViewModel.SelectedSerialPort}"
+                                  MinWidth="200"
+                                  MaxWidth="400"/>
+                        <TextBlock Text="{Binding ViewModel.UsbStatusText}"
+                                   VerticalAlignment="Center"
+                           Margin="10,0,0,0">
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock" BasedOn="{StaticResource Text.Caption}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Text, RelativeSource={RelativeSource Self}}" Value="">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
+                    </DockPanel>
                 </StackPanel>
-                <ui:Button Grid.Column="1"  Content="Rescan Ports"
-						   Margin="5 0"
-						   VerticalAlignment="Bottom"
-						   Command="{Binding ViewModel.ScanSerialPortsCommand}"/>
-            </Grid>
-        </ui:CardExpander>
-        <ui:CardExpander IsExpanded="True"
-						 Margin=" 10 5"
-						 ContentPadding="10 5">
-            <ui:CardExpander.Header>
-                <Grid>
+            </StackPanel>
+        </Border>
+        <Border Style="{StaticResource Card.Bordered}">
+            <StackPanel Style="{StaticResource Card.Content}">
+                <Grid Style="{StaticResource Style.ConnectionSection}">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
@@ -100,145 +69,167 @@
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="Auto" MinWidth="100" />
                     </Grid.ColumnDefinitions>
-                    <ui:TextBlock
-						Grid.Row="0"
-						Grid.Column="0"
-						VerticalAlignment="Center"
-                        FontTypography="Subtitle"
-						Text="Connect to PD" 
-						TextWrapping="Wrap"/>
-                    <ui:TextBlock
-						Grid.Row="1"
-						Grid.Column="0"
-						Visibility="{Binding Path=ViewModel.StatusLevel, Converter={StaticResource StringToVisibilityConverter}, ConverterParameter=Connected, Mode=OneWay}"
-						FontSize="12"
-						Foreground="{ui:ThemeResource TextFillColorSecondaryBrush}"
-						TextWrapping="Wrap">
+                    <ui:TextBlock FontTypography="Subtitle"
+                                  Grid.Row="0"
+                                  Grid.Column="0"
+                                  Text="{markup:Localize Connect_ConnectToPD}"
+                                  TextWrapping="Wrap"
+                                  Margin="0,0,0,10"/>
+                    <ui:TextBlock Style="{StaticResource Text.Caption}"
+                                  Grid.Row="1"
+                                  Grid.Column="0"
+                                  Visibility="{Binding Path=ViewModel.StatusLevel, Converter={StaticResource StringToVisibilityConverter}, ConverterParameter=Connected, Mode=OneWay}"
+                                  TextWrapping="Wrap">
                         <ui:TextBlock.Text>
-                            <MultiBinding StringFormat="Device connected at address {0} running at a baud rate of {1}">
+                            <MultiBinding StringFormat="{markup:Localize Connection_DeviceConnectedFormat}">
                                 <Binding Path="ViewModel.ConnectedAddress" />
                                 <Binding Path="ViewModel.ConnectedBaudRate" />
                             </MultiBinding>
                         </ui:TextBlock.Text>
                     </ui:TextBlock>
 
-                    <ComboBox Name="ConnectionTypeComboBox"
-						Grid.Row="0"
-						Grid.RowSpan="2"
-						Grid.Column="1"
-						Margin="0,0,16,0"
-						ItemsSource="{Binding ConnectionTypes }"
-						SelectedValue="Discover"/>
-                </Grid>
-            </ui:CardExpander.Header>
-            <StackPanel Orientation="Vertical">
-                <Grid 
-					Visibility="{Binding ElementName=ConnectionTypeComboBox, Path=SelectedValue, Converter={StaticResource StringToVisibilityConverter}, ConverterParameter=Discover, Mode=OneWay}">
-                    <StackPanel Orientation="Vertical">
-                        <ui:TextBlock
-							Margin="10 5"
-							HorizontalAlignment="Center"
-							FontSize="16"
-							FontTypography="Body"
-							Text="Discovery will only work properly with a single device connected" 
-							TextWrapping="Wrap"/>
-                        <StackPanel Orientation="Horizontal"
-									HorizontalAlignment="Left">
-                            <ui:Button  Content="Start Discovery"
-										Margin="10 5"
-										HorizontalAlignment="Center"
-										Command="{Binding ViewModel.DiscoverDeviceCommand}"/>
-                            <ui:Button  Content="Cancel Discovery"
-										Margin="10 5"
-										HorizontalAlignment="Center"
-										Command="{Binding ViewModel.DiscoverDeviceCancelCommand}"/>
-                        </StackPanel>
+                    <StackPanel Grid.Row="0"
+                                Grid.RowSpan="2"
+                                Grid.Column="1"
+                                Orientation="Horizontal"
+                                HorizontalAlignment="Right">
+                        
+                        <ui:Button Content="{markup:Localize Connect_Connect}"
+                                   Command="{Binding ViewModel.ConnectDeviceCommand}"
+                                   Margin="0,0,8,0"
+                                   Style="{StaticResource Button.Primary}"
+                                   Visibility="{Binding ConnectVisibility}"/>
+                        
+                        <ui:Button Content="{markup:Localize Connect_StartDiscovery}"
+                                   Command="{Binding ViewModel.DiscoverDeviceCommand}"
+                                   Margin="0,0,8,0"
+                                   Style="{StaticResource Button.Primary}"
+                                   Visibility="{Binding StartDiscoveryVisibility}"/>
+                        
+                        <ui:Button Content="{markup:Localize Connect_CancelDiscovery}"
+                                   Command="{Binding ViewModel.DiscoverDeviceCancelCommand}"
+                                   Margin="0,0,8,0"
+                                   Style="{StaticResource Button.Secondary}"
+                                   Visibility="{Binding CancelDiscoveryVisibility}"/>
+                        
+                        <ui:Button Content="{markup:Localize Connect_Disconnect}"
+                                   Command="{Binding ViewModel.DisconnectDeviceCommand}"
+                                   Margin="0,0,8,0"
+                                   Style="{StaticResource Button.Secondary}"
+                                   Visibility="{Binding DisconnectVisibility}"/>
+
+                        <ComboBox Name="ConnectionTypeComboBox"
+                                  ItemsSource="{Binding ConnectionTypes }"
+                                  SelectedIndex="{Binding SelectedConnectionTypeIndex, Mode=TwoWay}"/>
                     </StackPanel>
                 </Grid>
+                
+                <!-- Discovery Warning (only shown when Discovery mode is selected) -->
+                <ui:TextBlock Style="{StaticResource Text.Body}"
+					  Margin="10 5"
+					  HorizontalAlignment="Center"
+					  Text="{markup:Localize Connect_DiscoveryWarning}" 
+					  TextWrapping="Wrap"
+					  Visibility="{Binding ElementName=ConnectionTypeComboBox, Path=SelectedIndex, Converter={StaticResource IndexToVisibilityConverter}, ConverterParameter=0, Mode=OneWay}"/>
 
-                <Grid
-					Visibility="{Binding ElementName=ConnectionTypeComboBox, Path=SelectedValue, Converter={StaticResource StringToVisibilityConverter}, ConverterParameter=Manual, Mode=OneWay}">
-                    <StackPanel Orientation="Vertical">
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition />
-                                <RowDefinition />
-                            </Grid.RowDefinitions>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="Auto"/>
-                            </Grid.ColumnDefinitions>
-                            <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Vertical">
-                                <Label Content="Baud Rate"
-										   Target="{Binding ElementName=BaudRateComboBox}" />
+                <ScrollViewer VerticalScrollBarVisibility="Auto" 
+                             HorizontalScrollBarVisibility="Disabled"
+                             Visibility="{Binding ElementName=ConnectionTypeComboBox, Path=SelectedIndex, Converter={StaticResource IndexToVisibilityConverter}, ConverterParameter=1, Mode=OneWay}">
+                <StackPanel Orientation="Vertical"
+                           Margin="0,0,16,0">
+                    
+                    <!-- Connection Settings Section -->
+                    <StackPanel Orientation="Vertical" Margin="0,0,0,16">
+                        <ui:TextBlock FontTypography="BodyStrong"
+                                      Text="{markup:Localize Connect_ConnectionSettings}"
+                                      FontSize="16"
+                                      FontWeight="SemiBold"
+                                      Margin="0,0,0,12"/>
+                        
+                        <WrapPanel Orientation="Horizontal">
+                            <StackPanel Orientation="Vertical" Margin="0,0,16,0">
+                                <Label Content="{markup:Localize Connect_BaudRate}"
+                                       Style="{StaticResource Label.Standard}"
+                                       Target="{Binding ElementName=BaudRateComboBox}" />
                                 <ComboBox Name="BaudRateComboBox"
-										  Margin="0 0 20 0"
+                                          Style="{StaticResource ComboBox.Standard}"
+                                          Width="200"
                                           ItemsSource="{Binding ViewModel.AvailableBaudRates}"
-                                          SelectedItem="{Binding  Path=ViewModel.SelectedBaudRate, Mode=TwoWay}"/>
-                            </StackPanel>
-                            <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Vertical">
-                                <Label Content="Address"
-										   Target="{Binding ElementName=AddressNumberBox}" />
-                                <ui:NumberBox Name="AddressNumberBox"
-											  Value="{Binding Path=ViewModel.SelectedAddress, Mode=TwoWay}"
-											  TextChanged="AddressNumberBox_OnTextChanged"
-											  ValueChanged="AddressNumberBox_OnValueChanged"
-											  Margin="0 0 20 0"
-                                              Minimum="0"
-											  Maximum="127"
-                                              ClearButtonEnabled="False"
-											  MaxDecimalPlaces="0"/>
-                            </StackPanel>
-                            <StackPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" 
-                                        Margin="0,5,0,0"
-                                        Orientation="Vertical">
-	                            <StackPanel Orientation="Horizontal">
-		                            <CheckBox Name="UseSecureChannelCheckBox"
-		                                      Content="Use Secure Channel" 
-		                                      IsChecked="{Binding Path=ViewModel.UseSecureChannel,  Mode=TwoWay}"/>
-		                            
-		                            <CheckBox Name="UseDefaultKeyCheckBox"
-		                                      Content="Use Default Key" 
-		                                      Margin="10,0,0,0"
-		                                      IsEnabled="{Binding ElementName=UseSecureChannelCheckBox, Path=IsChecked}"
-		                                      IsChecked="{Binding  Path=ViewModel.UseDefaultKey,  Mode=TwoWay}"/>
-	                            </StackPanel>
-	                           
-	                            <StackPanel Orientation="Vertical">
-		                            <Label Content="Security Key"
-		                                   Target="{Binding ElementName=AddressNumberBox}" />
-                                    <TextBox Text="{Binding Path=ViewModel.SecurityKey,  Mode=TwoWay}">
-                                        <TextBox.Style>
-                                            <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
-                                                <!-- Only add the specific triggers needed -->
-                                                <Setter Property="IsEnabled" Value="False"/>
-                                                <Style.Triggers>
-                                                    <MultiDataTrigger>
-                                                        <MultiDataTrigger.Conditions>
-                                                            <Condition Binding="{Binding ElementName=UseSecureChannelCheckBox, Path=IsChecked}" Value="True"/>
-                                                            <Condition Binding="{Binding ElementName=UseDefaultKeyCheckBox, Path=IsChecked}" Value="False"/>
-                                                        </MultiDataTrigger.Conditions>
-                                                        <Setter Property="IsEnabled" Value="True"/>
-                                                    </MultiDataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </TextBox.Style>
-                                    </TextBox>
-                                </StackPanel>
+                                          SelectedItem="{Binding Path=ViewModel.SelectedBaudRate, Mode=TwoWay}"/>
                             </StackPanel>
                             
-                            <ui:Button Grid.Row="1" Grid.Column="2"  Content="Connect"
-                                       Margin="10 0"
-                                       HorizontalAlignment="Right"
-                                       VerticalAlignment="Bottom"
-                                       Command="{Binding ViewModel.ConnectDeviceCommand}"/>
-                        </Grid>
+                            <StackPanel Orientation="Vertical">
+                                <Label Content="{markup:Localize Connect_Address}"
+                                       Style="{StaticResource Label.Standard}"
+                                       Target="{Binding ElementName=AddressNumberBox}" />
+                                <ui:NumberBox Name="AddressNumberBox"
+                                              Style="{StaticResource NumberBox.Standard}"
+                                              Value="{Binding Path=ViewModel.SelectedAddress, Mode=TwoWay}"
+                                              TextChanged="AddressNumberBox_OnTextChanged"
+                                              ValueChanged="AddressNumberBox_OnValueChanged"
+                                              Minimum="0"
+                                              Maximum="127"
+                                              Width="120"
+                                              HorizontalAlignment="Left"/>
+                            </StackPanel>
+                        </WrapPanel>
                     </StackPanel>
-                </Grid>
+                    
+                    <!-- Security Settings Section -->
+                    <Border Style="{StaticResource Card.Bordered}" 
+                            Padding="16"
+                            Margin="0,0,0,16">
+                        <StackPanel Orientation="Vertical">
+                            <ui:TextBlock FontTypography="BodyStrong"
+                                          Text="{markup:Localize Connect_SecuritySettings}"
+                                          FontSize="16"
+                                          FontWeight="SemiBold"
+                                          Margin="0,0,0,12"/>
+                            
+                            <WrapPanel Orientation="Horizontal" Margin="0,0,0,8">
+                                <CheckBox Name="UseSecureChannelCheckBox"
+                                          Content="{markup:Localize Connect_UseSecureChannel}" 
+                                          IsChecked="{Binding Path=ViewModel.UseSecureChannel, Mode=TwoWay}"
+                                          Margin="0,0,16,4"/>
+                                
+                                <CheckBox Name="UseDefaultKeyCheckBox"
+                                          Content="{markup:Localize Connect_UseDefaultKey}" 
+                                          IsEnabled="{Binding ElementName=UseSecureChannelCheckBox, Path=IsChecked}"
+                                          IsChecked="{Binding Path=ViewModel.UseDefaultKey, Mode=TwoWay}"
+                                          Margin="0,0,0,4"/>
+                            </WrapPanel>
+                            
+                            <StackPanel Orientation="Vertical">
+                                <Label Content="{markup:Localize Connect_SecurityKey}"
+                                       Style="{StaticResource Label.Standard}"
+                                       Target="{Binding ElementName=SecurityKeyTextBox}" />
+                                <TextBox Name="SecurityKeyTextBox"
+                                         Text="{Binding Path=ViewModel.SecurityKey, Mode=TwoWay}"
+                                         MaxWidth="600"
+                                         HorizontalAlignment="Stretch">
+                                    <TextBox.Style>
+                                        <Style TargetType="TextBox" BasedOn="{StaticResource TextBox.Standard}">
+                                            <Setter Property="IsEnabled" Value="False"/>
+                                            <Style.Triggers>
+                                                <MultiDataTrigger>
+                                                    <MultiDataTrigger.Conditions>
+                                                        <Condition Binding="{Binding ElementName=UseSecureChannelCheckBox, Path=IsChecked}" Value="True"/>
+                                                        <Condition Binding="{Binding ElementName=UseDefaultKeyCheckBox, Path=IsChecked}" Value="False"/>
+                                                    </MultiDataTrigger.Conditions>
+                                                    <Setter Property="IsEnabled" Value="True"/>
+                                                </MultiDataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBox.Style>
+                                </TextBox>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+                    
+                </StackPanel>
+                </ScrollViewer>
 
                 <TextBlock 
-					FontSize="24"
 					Margin="10 5"
 					HorizontalAlignment="Center"
 					TextAlignment="Center"
@@ -246,7 +237,7 @@
 					Foreground="{Binding ViewModel.StatusLevel, Converter={StaticResource StatusLevelConverter}}"
 					Text="{Binding ViewModel.StatusText}">
                     <TextBlock.Style>
-                        <Style TargetType="TextBlock">
+                        <Style TargetType="TextBlock" BasedOn="{StaticResource Text.Title}">
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding Text, RelativeSource={RelativeSource Self}}" Value="">
                                     <Setter Property="Visibility" Value="Collapsed" />
@@ -256,16 +247,15 @@
                     </TextBlock.Style>
                 </TextBlock>
                 <TextBlock 
-					FontSize="24"
 					Margin="10 5"
 					HorizontalAlignment="Center"
 					TextAlignment="Center"
 					TextWrapping="Wrap"
-					FontWeight="Bold"
-					Foreground="Red"
 					Text="{Binding ViewModel.NakText}">
                     <TextBlock.Style>
-                        <Style TargetType="TextBlock">
+                        <Style TargetType="TextBlock" BasedOn="{StaticResource Text.Error}">
+                            <Setter Property="FontSize" Value="{StaticResource FontSize.Title}"/>
+                            <Setter Property="FontWeight" Value="Bold"/>
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding Text, RelativeSource={RelativeSource Self}}" Value="">
                                     <Setter Property="Visibility" Value="Collapsed" />
@@ -275,6 +265,6 @@
                     </TextBlock.Style>
                 </TextBlock>
             </StackPanel>
-        </ui:CardExpander>
+        </Border>
     </StackPanel>
 </Page>

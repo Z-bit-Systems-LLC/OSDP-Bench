@@ -5,11 +5,12 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
     xmlns:pages="clr-namespace:OSDPBench.Windows.Views.Pages"
+    xmlns:markup="clr-namespace:OSDPBench.Windows.Markup"
     mc:Ignorable="d"
     d:DesignHeight="450" d:DesignWidth="800"
     d:DataContext="{d:DesignInstance pages:InfoPage,
 									 IsDesignTimeCreatable=False}"
-    Title="Info">
+    Title="{markup:Localize Page_Info}">
 
     <Grid Margin="20 30">
         <Grid.RowDefinitions>
@@ -23,9 +24,24 @@
         </Grid.ColumnDefinitions>
         <StackPanel Grid.Column="0"
                     Grid.Row="0">
-            <TextBlock Text="OSDP Bench" FontWeight="Bold" />
-            <TextBlock Text="{Binding AppVersion}" FontWeight="Bold"  />
-            <TextBlock Text="{Binding CopyWriteNotice}" FontWeight="Bold"  />
+            <TextBlock Text="{markup:Localize Info_ApplicationName}" Style="{StaticResource Text.Title}" />
+            <TextBlock Text="{Binding AppVersion}" Style="{StaticResource Text.Subtitle}" />
+            <TextBlock Text="{Binding CopyWriteNotice}" Style="{StaticResource Text.Body}" />
+            
+            <!-- Language Selection -->
+            <StackPanel Orientation="Horizontal" Margin="0,20,0,0">
+                <TextBlock Text="{markup:Localize Language_Selection}" 
+                           Style="{StaticResource Text.Subtitle}"
+                           VerticalAlignment="Center" 
+                           Margin="0,0,10,0"/>
+                <ComboBox x:Name="LanguageComboBox"
+                          ItemsSource="{Binding ViewModel.LanguageViewModel.AvailableLanguages}"
+                          SelectedItem="{Binding ViewModel.LanguageViewModel.SelectedLanguage, Mode=TwoWay}"
+                          DisplayMemberPath="DisplayName"
+                          ToolTip="{markup:Localize Language_SelectLanguage}"
+                          Width="150"
+                          VerticalAlignment="Center" />
+            </StackPanel>
         </StackPanel>
         
         <Image Grid.Column="1"
@@ -49,11 +65,10 @@
         <StackPanel Grid.Column="0"
                     Grid.Row="2" 
                     Grid.ColumnSpan="2">
-            <TextBlock Text="License Info"
+            <TextBlock Text="{markup:Localize Info_LicenseInfo}"
+                       Style="{StaticResource Text.Headline}"
                        HorizontalAlignment="Center"
-                       Margin="0, 30, 0,10"
-                       FontWeight="DemiBold"
-                       FontSize="32"/>
+                       Margin="0, 30, 0,10"/>
             <ui:CardExpander>
                 <ui:CardExpander.Header>
                     <ui:TextBlock
@@ -61,7 +76,7 @@
                         Grid.Column="0"
                         VerticalAlignment="Center"
                         FontTypography="Subtitle"
-                        Text="EPL 2.0" 
+                        Text="{markup:Localize Info_EPLLicense}" 
                         TextWrapping="Wrap"/>
                 </ui:CardExpander.Header>
                 <ui:CardExpander.Content>
@@ -79,7 +94,7 @@
                             Grid.Column="0"
                             VerticalAlignment="Center"
                             FontTypography="Subtitle"
-                            Text="Apache 2.0" 
+                            Text="{markup:Localize Info_ApacheLicense}" 
                             TextWrapping="Wrap"/>
                     </ui:CardExpander.Header>
                     <ui:CardExpander.Content>
@@ -97,7 +112,7 @@
                         Grid.Column="0"
                         VerticalAlignment="Center"
                         FontTypography="Subtitle"
-                        Text="MIT" 
+                        Text="{markup:Localize Info_MITLicense}" 
                         TextWrapping="Wrap"/>
                 </ui:CardExpander.Header>
                 <ui:CardExpander.Content>

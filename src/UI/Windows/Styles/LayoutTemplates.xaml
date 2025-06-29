@@ -1,0 +1,128 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+                    xmlns:controls="clr-namespace:OSDPBench.Windows.Views.Controls"
+                    xmlns:markup="clr-namespace:OSDPBench.Windows.Markup">
+
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="DesignTokens.xaml"/>
+        <ResourceDictionary Source="ComponentStyles.xaml"/>
+    </ResourceDictionary.MergedDictionaries>
+
+    <!-- Page Header Template -->
+    <ControlTemplate x:Key="Template.PageHeader" TargetType="ContentControl">
+        <Grid Style="{StaticResource Page.Header}">
+            <TextBlock Text="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Content}"
+                       Style="{StaticResource Page.Title}"/>
+            
+            <StackPanel Orientation="Horizontal" 
+                        HorizontalAlignment="Right" 
+                        VerticalAlignment="Center">
+                <!-- TX Activity Indicator -->
+                <StackPanel Style="{StaticResource Activity.Container}">
+                    <TextBlock Text="{markup:Localize Activity_Tx}" 
+                               Style="{StaticResource Activity.Label}"/>
+                    <controls:LedControl LastActivityTime="{Binding Path=ViewModel.LastTxActiveTime}" 
+                                         LedColor="Red" 
+                                         VerticalAlignment="Center"/>
+                </StackPanel>
+                
+                <!-- RX Activity Indicator -->
+                <StackPanel Style="{StaticResource Activity.Container}">
+                    <TextBlock Text="{markup:Localize Activity_Rx}" 
+                               Style="{StaticResource Activity.Label}"/>
+                    <controls:LedControl LastActivityTime="{Binding Path=ViewModel.LastRxActiveTime}" 
+                                         LedColor="Red" 
+                                         VerticalAlignment="Center"/>
+                </StackPanel>
+            </StackPanel>
+        </Grid>
+    </ControlTemplate>
+
+    <!-- Form Field Template -->
+    <ControlTemplate x:Key="Template.FormField" TargetType="ContentControl">
+        <StackPanel Orientation="Vertical" Margin="{StaticResource Margin.Section}">
+            <Label Content="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Tag}"
+                   Style="{StaticResource Label.Standard}"
+                   Target="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Content}"/>
+            <ContentPresenter/>
+        </StackPanel>
+    </ControlTemplate>
+
+    <!-- Status Message Template -->
+    <DataTemplate x:Key="Template.StatusMessage">
+        <TextBlock Text="{Binding StatusText}"
+                   TextAlignment="Center"
+                   TextWrapping="Wrap"
+                   HorizontalAlignment="Center"
+                   Margin="16,0">
+            <TextBlock.Style>
+                <Style TargetType="TextBlock" BasedOn="{StaticResource Text.Headline}">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding StatusLevel}" Value="Connected">
+                            <Setter Property="Foreground" Value="{StaticResource Brush.Success}"/>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding StatusLevel}" Value="Error">
+                            <Setter Property="Foreground" Value="{StaticResource Brush.Error}"/>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding StatusLevel}" Value="Discovering">
+                            <Setter Property="Foreground" Value="{StaticResource Brush.Info}"/>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding StatusLevel}" Value="Disconnected">
+                            <Setter Property="Foreground" Value="{StaticResource Brush.Warning}"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </TextBlock.Style>
+        </TextBlock>
+    </DataTemplate>
+
+    <!-- Card Section Template -->
+    <Style x:Key="Style.CardSection" TargetType="ui:Card" BasedOn="{StaticResource Card.Standard}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ui:Card">
+                    <Border Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="{StaticResource CornerRadius.Medium}"
+                            Padding="{TemplateBinding Padding}"
+                            Margin="{TemplateBinding Margin}">
+                        <ContentPresenter/>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- Data Grid Styles -->
+    <Style x:Key="DataGrid.Standard" TargetType="DataGrid">
+        <Setter Property="AutoGenerateColumns" Value="False"/>
+        <Setter Property="CanUserAddRows" Value="False"/>
+        <Setter Property="IsReadOnly" Value="True"/>
+        <Setter Property="Margin" Value="{StaticResource Margin.Card}"/>
+        <Setter Property="GridLinesVisibility" Value="Horizontal"/>
+        <Setter Property="HeadersVisibility" Value="Column"/>
+        <Setter Property="VerticalScrollBarVisibility" Value="Auto"/>
+    </Style>
+
+    <Style x:Key="DataGrid.Monitor" TargetType="DataGrid" BasedOn="{StaticResource DataGrid.Standard}">
+        <Setter Property="RowDetailsVisibilityMode" Value="Collapsed"/>
+    </Style>
+
+    <!-- Progress Bar Template -->
+    <Style x:Key="ProgressBar.FileTransfer" TargetType="ProgressBar">
+        <Setter Property="Height" Value="{StaticResource Control.Height.Medium}"/>
+        <Setter Property="Maximum" Value="100"/>
+        <Setter Property="Margin" Value="0,0,0,4"/>
+        <Setter Property="Background" Value="{DynamicResource ControlFillColorDefaultBrush}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource ControlElevationBorderBrush}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+    </Style>
+
+    <!-- Connection Type Section Template -->
+    <Style x:Key="Style.ConnectionSection" TargetType="Grid">
+        <Setter Property="Margin" Value="0,0,0,16"/>
+    </Style>
+
+</ResourceDictionary>

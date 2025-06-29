@@ -8,6 +8,7 @@ using OSDPBench.Core.Models;
 using OSDPBench.Core.ViewModels.Pages;
 using OSDPBench.Windows.Views.Controls;
 using Wpf.Ui.Abstractions.Controls;
+using OSDPBench.Core.Resources;
 
 namespace OSDPBench.Windows.Views.Pages;
 
@@ -34,43 +35,47 @@ public partial class ManagePage : INavigableView<ManageViewModel>
     {
         DeviceActionControl.Children.Clear();
             
-        switch (DeviceActionsComboBox.SelectedValue)
+        if (ViewModel.ConnectedPortName == null)
         {
-            case ControlBuzzerAction when ViewModel.ConnectedPortName != null:
-            {
+            return;
+        }
+        
+        var selectedAction = DeviceActionsComboBox.SelectedValue as IDeviceAction;
+
+        switch (selectedAction)
+        {
+            case ControlBuzzerAction:
                 ControlBuzzerControl();
                 break;
-            }
-            case FileTransferAction when ViewModel.ConnectedPortName != null:
-            {
+                
+            case FileTransferAction:
                 FileTransferControl();
                 break;
-            }
-            case MonitorCardReads when ViewModel.ConnectedPortName != null:
-            {
-                MonitorCardReadsControl();
+                
+            case MonitoringAction monitoringAction:
+                switch (monitoringAction.MonitoringType)
+                {
+                    case MonitoringType.CardReads:
+                        MonitorCardReadsControl();
+                        break;
+                        
+                    case MonitoringType.KeypadReads:
+                        MonitorKeypadReadsControl();
+                        break;
+                }
                 break;
-            }
-            case MonitorKeypadReads when ViewModel.ConnectedPortName != null:
-            {
-                MonitorKeypadReadsControl();
-                break;
-            }
-            case ResetCypressDeviceAction when ViewModel.ConnectedPortName != null:
-            {
+                
+            case ResetCypressDeviceAction:
                 ResetControl();
                 break;
-            }
-            case SetCommunicationAction when ViewModel.ConnectedPortName != null:
-            {
+                
+            case SetCommunicationAction:
                 SetCommunicationActionControl();
                 break;
-            }
-            case SetReaderLedAction when ViewModel.ConnectedPortName != null:
-            {
+                
+            case SetReaderLedAction:
                 SetReaderLedActionControl();
                 break;
-            }
         }
     }
 
@@ -173,11 +178,11 @@ public partial class ManagePage : INavigableView<ManageViewModel>
         {
             string result = await client.GetStringAsync(url);
 
-            MessageBox.Show(result, "Vendor Information");
+            MessageBox.Show(result, OSDPBench.Core.Resources.Resources.GetString("Dialog_VendorInformation_Title"));
         }
         catch (Exception exception)
         {
-            MessageBox.Show($"Unable to open OUI lookup: {exception.Message}");
+            MessageBox.Show(OSDPBench.Core.Resources.Resources.GetString("Error_OUILookupFailed").Replace("{0}", exception.Message));
         }
     }
 }

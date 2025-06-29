@@ -22,6 +22,9 @@ public partial class MonitorViewModel : ObservableObject
     {
         _deviceManagementService = deviceManagementService ??
                                    throw new ArgumentNullException(nameof(deviceManagementService));
+        
+        UpdateConnectionInfo();
+        StatusLevel = _deviceManagementService.IsConnected ? StatusLevel.Connected : StatusLevel.Disconnected;
 
         _deviceManagementService.ConnectionStatusChange += OnDeviceManagementServiceOnConnectionStatusChange;
         _deviceManagementService.TraceEntryReceived += OnDeviceManagementServiceOnTraceEntryReceived;
@@ -31,7 +34,14 @@ public partial class MonitorViewModel : ObservableObject
     {
         if (connectionStatus == ConnectionStatus.Connected) InitializePollingMetrics();
         
+        UpdateConnectionInfo();
         StatusLevel = connectionStatus == ConnectionStatus.Connected ? StatusLevel.Connected : StatusLevel.Disconnected;
+    }
+
+    private void UpdateConnectionInfo()
+    {
+        ConnectedAddress = _deviceManagementService.Address;
+        ConnectedBaudRate = _deviceManagementService.BaudRate;
     }
 
     private void InitializePollingMetrics()
@@ -43,8 +53,18 @@ public partial class MonitorViewModel : ObservableObject
     private void OnDeviceManagementServiceOnTraceEntryReceived(object? _, TraceEntry traceEntry)
     {
         UsingSecureChannel = _deviceManagementService.IsUsingSecureChannel;
-        
-        if (UsingSecureChannel) return;
+
+        // Update activity indicators based on raw trace entry direction (works for encrypted packets too)
+        switch (traceEntry.Direction)
+        {
+            // Flash appropriate LED based on direction
+            case Output:
+                LastTxActiveTime = DateTime.Now;
+                break;
+            case Input or Trace:
+                LastRxActiveTime = DateTime.Now;
+                break;
+        }
 
         var build = new PacketTraceEntryBuilder();
         PacketTraceEntry packetTraceEntry;
@@ -55,17 +75,6 @@ public partial class MonitorViewModel : ObservableObject
         catch (Exception)
         {
             return;
-        }
-
-        switch (packetTraceEntry.Direction)
-        {
-            // Flash appropriate LED based on direction
-            case Output:
-                LastTxActiveTime = DateTime.Now;
-                break;
-            case Input or Trace:
-                LastRxActiveTime = DateTime.Now;
-                break;
         }
 
         bool notDisplaying = packetTraceEntry.Packet.CommandType == CommandType.Poll ||
@@ -92,4 +101,8 @@ public partial class MonitorViewModel : ObservableObject
     [ObservableProperty] private DateTime _lastRxActiveTime;
     
     [ObservableProperty] private bool _usingSecureChannel;
+    
+    [ObservableProperty] private byte _connectedAddress;
+
+    [ObservableProperty] private uint _connectedBaudRate;
 }

@@ -8,11 +8,11 @@
       xmlns:models="clr-namespace:OSDPBench.Core.Models;assembly=OSDPBench.Core"
       xmlns:converters="clr-namespace:OSDPBench.Windows.Converters"
       xmlns:controls="clr-namespace:OSDPBench.Windows.Views.Controls"
-      mc:Ignorable="d" 
+      xmlns:markup="clr-namespace:OSDPBench.Windows.Markup"      mc:Ignorable="d" 
       d:DataContext="{d:DesignInstance local:MonitorPage,
 									 IsDesignTimeCreatable=False}"
       d:DesignHeight="450" d:DesignWidth="800"
-      Title="Monitor">
+      Title="{markup:Localize Page_Monitor}">
 	
 	<Page.Resources>
 		<converters:StringToVisibilityConverter x:Key="StringToVisibilityConverter" />
@@ -32,7 +32,7 @@
 			            HorizontalAlignment="Right" 
 			            VerticalAlignment="Center">
 				<StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0 0 15 0">
-					<TextBlock Text="Tx" VerticalAlignment="Center" Margin="0 0 5 0"/>
+					<TextBlock Text="{markup:Localize Activity_Tx}" Style="{StaticResource Activity.Label}"/>
 					<controls:LedControl 
 						LastActivityTime="{Binding Path=ViewModel.LastTxActiveTime}" 
 						LedColor="Red" 
@@ -40,7 +40,7 @@
 				</StackPanel>
             
 				<StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-					<TextBlock Text="Rx" VerticalAlignment="Center" Margin="0 0 5 0"/>
+					<TextBlock Text="{markup:Localize Activity_Rx}" Style="{StaticResource Activity.Label}"/>
 					<controls:LedControl 
 						LastActivityTime="{Binding Path=ViewModel.LastRxActiveTime}" 
 						LedColor="Red" 
@@ -49,69 +49,84 @@
 			</StackPanel>
 		</Grid>
 		
-		<StackPanel  Orientation="Vertical"
-		             Visibility="{Binding Path=ViewModel.StatusLevel, Converter={StaticResource StringToVisibilityConverter}, ConverterParameter=Disconnected, Mode=OneWay}">
-			<TextBlock
-				FontSize="32"
-				Margin="20 10 20 0"
-				HorizontalAlignment="Center"
-				TextAlignment="Center"
-				TextWrapping="Wrap"
-				Foreground="Orange"
-				Text="Device is not connected"/>
-			<TextBlock
-				FontSize="24"
-				Margin="20 10 20 0"
-				HorizontalAlignment="Center"
-				TextAlignment="Center"
-				TextWrapping="Wrap"
-				Text="The Connection page will provide more details"/>
-		</StackPanel>
+		<Border Style="{StaticResource Card.Bordered}"
+		        Visibility="{Binding Path=ViewModel.StatusLevel, Converter={StaticResource StringToVisibilityConverter}, ConverterParameter=Disconnected, Mode=OneWay}">
+			<StackPanel Orientation="Vertical">
+				<TextBlock Style="{StaticResource Text.Warning}"
+					Margin="20 10 20 0"
+					HorizontalAlignment="Center"
+					TextAlignment="Center"
+					TextWrapping="Wrap"
+					FontSize="{StaticResource FontSize.Headline}"
+					Text="{markup:Localize Monitor_DeviceNotConnected}"/>
+				<TextBlock Style="{StaticResource Text.Body}"
+					Margin="20 10 20 0"
+					HorizontalAlignment="Center"
+					TextAlignment="Center"
+					TextWrapping="Wrap"
+					FontSize="{StaticResource FontSize.Title}"
+					Text="{markup:Localize Monitor_ConnectionPageDetails}"/>
+			</StackPanel>
+		</Border>
 		<StackPanel  Orientation="Vertical"
 		             Visibility="{Binding Path=ViewModel.StatusLevel, Converter={StaticResource StringToVisibilityConverter}, ConverterParameter=Connected, Mode=OneWay}">
-			<StackPanel  Orientation="Vertical"
-			             Visibility="{Binding Path=ViewModel.UsingSecureChannel, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}">
-				<TextBlock
-					FontSize="32"
-					Margin="20 10 20 0"
-					HorizontalAlignment="Center"
-					TextAlignment="Center"
-					TextWrapping="Wrap"
-					Foreground="Orange"
-					Text="Monitoring is not available for secure channel"/>
-				<TextBlock
-					FontSize="24"
-					Margin="20 10 20 0"
-					HorizontalAlignment="Center"
-					TextAlignment="Center"
-					TextWrapping="Wrap"
-					Text="An update will be out soon that supports secure channel"/>
-			</StackPanel>
-			<StackPanel  Orientation="Vertical"
-			             Visibility="{Binding Path=ViewModel.UsingSecureChannel, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=Invert, Mode=OneWay}">
-
-				<DataGrid ItemsSource="{Binding ViewModel.TraceEntriesView}" 
-				          AutoGenerateColumns="False" 
-				          CanUserAddRows="False" 
-				          IsReadOnly="True" 
-				          Margin="10 5" 
-				          RowDetailsVisibilityMode="Collapsed">
+			<Border Style="{StaticResource Card.Bordered}"
+			        Visibility="{Binding Path=ViewModel.UsingSecureChannel, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}">
+				<StackPanel Orientation="Vertical">
+					<TextBlock Style="{StaticResource Text.Warning}"
+						Margin="20 10 20 0"
+						HorizontalAlignment="Center"
+						TextAlignment="Center"
+						TextWrapping="Wrap"
+						FontSize="{StaticResource FontSize.Headline}"
+						Text="{markup:Localize Monitor_MonitoringNotAvailable}"/>
+					<TextBlock Style="{StaticResource Text.Body}"
+						Margin="20 10 20 0"
+						HorizontalAlignment="Center"
+						TextAlignment="Center"
+						TextWrapping="Wrap"
+						FontSize="{StaticResource FontSize.Title}"
+						Text="{markup:Localize Monitor_SecureChannelUpdate}"/>
+				</StackPanel>
+			</Border>
+			<Border Style="{StaticResource Card.Bordered}"
+			        Visibility="{Binding Path=ViewModel.UsingSecureChannel, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=Invert, Mode=OneWay}">
+				<StackPanel Orientation="Vertical">
+					<DataGrid ItemsSource="{Binding ViewModel.TraceEntriesView}" 
+					          AutoGenerateColumns="False" 
+					          CanUserAddRows="False" 
+					          IsReadOnly="True" 
+					          Margin="10 5" 
+					          RowDetailsVisibilityMode="Collapsed">
 
 					<!-- DataGrid Columns -->
 					<DataGrid.Columns>
-						<DataGridTextColumn Header="TimeStamp" Binding="{Binding LocalTimestamp, StringFormat={}{0:HH:mm:ss.fff}}" />
-						<DataGridTextColumn Header="Interval (ms)" Binding="{Binding Interval.TotalMilliseconds, StringFormat={}{0:N0}}" />
-						<DataGridTextColumn Header="Direction" Binding="{Binding Direction}" />
-						<DataGridTextColumn Header="Address" Binding="{Binding Packet.Address}" />
-						<DataGridTextColumn Header="Type" Binding="{Binding Type}" />
+						<DataGridTextColumn Header="{markup:Localize Monitor_TimeStamp}" Binding="{Binding LocalTimestamp, StringFormat={}{0:HH:mm:ss.fff}}" />
+						<DataGridTextColumn Header="{markup:Localize Monitor_Interval}" Binding="{Binding Interval.TotalMilliseconds, StringFormat={}{0:N0}}" />
+						<DataGridTextColumn Header="{markup:Localize Monitor_Direction}" Binding="{Binding Direction}" />
+						<DataGridTextColumn Header="{markup:Localize Monitor_Address}" Binding="{Binding Packet.Address}" />
+						<DataGridTextColumn Header="{markup:Localize Monitor_Type}" Binding="{Binding Type}" />
 		        
 						<!-- Button Column -->
-						<DataGridTemplateColumn Header="Details" Width="*">
+						<DataGridTemplateColumn Header="" Width="50">
 							<DataGridTemplateColumn.CellTemplate>
 								<DataTemplate>
-									<ui:Button Content="Expand" DataContext="{Binding Details}"
-									           Margin="5"
-									        Click="ToggleRowDetails" />
+									<Grid HorizontalAlignment="Right">
+										<ui:Button Appearance="Transparent"
+										           BorderThickness="0"
+										           Padding="0"
+										           ToolTip="{markup:Localize Monitor_Expand}"
+										           DataContext="{Binding Details}"
+										           Margin="0,0,5,0"
+										           Width="24"
+										           Height="24"
+										           Cursor="Hand"
+										           Click="ToggleRowDetails">
+											<ui:Button.Icon>
+												<ui:SymbolIcon Symbol="ChevronDown24"/>
+											</ui:Button.Icon>
+										</ui:Button>
+									</Grid>
 								</DataTemplate>
 							</DataGridTemplateColumn.CellTemplate>
 						</DataGridTemplateColumn>
@@ -121,12 +136,14 @@
 					<DataGrid.RowDetailsTemplate>
 						<DataTemplate DataType="{x:Type models:PacketTraceEntry}">
 							<TextBlock Text="{Binding Details}"
+							           Style="{StaticResource Text.Body}"
 							           FontFamily="Consolas"
 							           Margin="10" />
 						</DataTemplate>
-					</DataGrid.RowDetailsTemplate>
-				</DataGrid>
-			</StackPanel>
+						</DataGrid.RowDetailsTemplate>
+					</DataGrid>
+				</StackPanel>
+			</Border>
 		</StackPanel>
     </StackPanel>
 </Page>

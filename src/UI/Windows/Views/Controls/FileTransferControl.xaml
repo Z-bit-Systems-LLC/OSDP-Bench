@@ -3,64 +3,58 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
              xmlns:models="clr-namespace:OSDPBench.Core.Models;assembly=OSDPBench.Core"
              xmlns:converters="clr-namespace:OSDPBench.Windows.Converters"
+             xmlns:markup="clr-namespace:OSDPBench.Windows.Markup"
              d:DataContext="{d:DesignInstance models:FileTransferParameters,
                                             IsDesignTimeCreatable=false}"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
     <UserControl.Resources>
         <converters:InverseBoolConverter x:Key="InverseBoolConverter" />
-        
-        <Style TargetType="ProgressBar">
-            <Setter Property="Background" Value="White"/>
-            <Setter Property="BorderBrush" Value="#E6E6E6"/>
-            <Setter Property="BorderThickness" Value="1"/>
-        </Style>
     </UserControl.Resources>
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="10"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="10"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
+    <StackPanel Orientation="Vertical" 
+                Margin="{StaticResource Margin.Card}">
         
-        <StackPanel Grid.Row="0" 
-                    Orientation="Vertical">
-            <Label Content="Selected File"
+        <StackPanel Orientation="Vertical" >
+            <Label Content="{markup:Localize Manage_SelectedFile}"
+                   Style="{StaticResource Label.Standard}"
                    Target="{Binding ElementName=FilePathTextBox}"/>
             <DockPanel>
-                <Button Content="Browse"
-                        DockPanel.Dock="Right"
-                        Margin="10,0,0,0"
-                        Click="BrowseFileButton_OnClick"
-                        IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBoolConverter}}"/>
+                <ui:Button Content="{markup:Localize Manage_Browse}"
+                           Style="{StaticResource Button.Secondary}"
+                           DockPanel.Dock="Right"
+                           Click="BrowseFileButton_OnClick"
+                           IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBoolConverter}}"/>
                 <TextBox Name="FilePathTextBox"
                          Text="{Binding FilePath}"
-                         IsReadOnly="True"/>
+                         IsReadOnly="True"
+                         Style="{StaticResource TextBox.Standard}"
+                         MinHeight="0"
+                         Height="Auto"
+                         VerticalAlignment="Center"/>
             </DockPanel>
         </StackPanel>
 
-        <StackPanel Grid.Row="2">
-            <Label Content="Progress"/>
+        <StackPanel Orientation="Vertical">
+            <Label Content="{markup:Localize Manage_Progress}"
+                   Style="{StaticResource Label.Standard}"/>
             <ProgressBar Value="{Binding ProgressPercentage, Mode=OneWay}"
-                                  Maximum="100"
-                                  Height="20"
-                                  Margin="0,0,0,5"/>
+                         Style="{StaticResource ProgressBar.FileTransfer}"/>
             <Grid>
-                <TextBlock HorizontalAlignment="Left">
+                <TextBlock Style="{StaticResource Text.Caption}"
+                           HorizontalAlignment="Left">
                     <Run Text="{Binding TransferredBytes, StringFormat={}{0:N0}}"/>
-                    <Run Text=" Bytes/"/>
+                    <Run Text="{markup:Localize Manage_BytesOf}"/>
                     <Run Text="{Binding TotalBytes, StringFormat={}{0:N0}}"/>
-                    <Run Text=" Bytes"/>
+                    <Run Text="{markup:Localize Manage_Bytes}"/>
                 </TextBlock>
             </Grid>
         </StackPanel>
 
-        <TextBlock Grid.Row="4" 
+        <TextBlock Style="{StaticResource Text.Body}"
                    Text="{Binding StatusMessage}"
                    TextWrapping="Wrap"/>
-    </Grid>
+    </StackPanel>
 </UserControl>
