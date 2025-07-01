@@ -56,13 +56,13 @@ public partial class ConnectViewModel : ObservableObject, IDisposable
             _usbDeviceMonitorService.StartMonitoring();
         }
         
-        // Perform initial port scan
+        // Perform an initial port scan
         Task.Run(async () => await InitializeSerialPorts());
     }
 
     private void OnDeviceManagementServiceOnTraceEntryReceived(object? sender, TraceEntry traceEntry)
     {
-        // Update activity indicators based on raw trace entry direction (works for encrypted packets too)
+        // Update activity indicators based on a raw trace entry direction (works for encrypted packets too)
         UpdateActivityIndicators(traceEntry.Direction);
         
         PacketTraceEntry? packetTraceEntry = BuildPacketTraceEntry(traceEntry);
@@ -350,7 +350,7 @@ public partial class ConnectViewModel : ObservableObject, IDisposable
         LastRxActiveTime = DateTime.MinValue;
     }
     
-    private async void OnUsbDeviceChanged(object? sender, UsbDeviceChangedEventArgs e)
+    private async void OnUsbDeviceChanged(object? sender, UsbDeviceChangedEventArgs eventArgs)
     {
         try
         {
@@ -366,20 +366,13 @@ public partial class ConnectViewModel : ObservableObject, IDisposable
                 AvailableSerialPorts.Add(port);
             }
             
-            // Handle port selection based on change type
             if (AvailableSerialPorts.Count > 0)
             {
                 // Try to reselect the previously selected port if it still exists
                 var previousPort = AvailableSerialPorts.FirstOrDefault(p => p.Name == currentlySelectedPort);
-                if (previousPort != null)
-                {
-                    SelectedSerialPort = previousPort;
-                }
-                else
-                {
-                    // Select the first available port
-                    SelectedSerialPort = AvailableSerialPorts.First();
-                }
+                SelectedSerialPort = previousPort ??
+                                     // Select the first available port
+                                     AvailableSerialPorts.First();
                 
                 if (StatusLevel == StatusLevel.NotReady)
                 {
@@ -394,27 +387,27 @@ public partial class ConnectViewModel : ObservableObject, IDisposable
                     StatusLevel = StatusLevel.NotReady;
                 }
             }
-            
-            // Show notification based on change type
-            if (e.ChangeType == UsbDeviceChangeType.Connected)
+
+            switch (eventArgs.ChangeType)
             {
-                UsbStatusText = Resources.Resources.GetString("USB_DeviceConnected");
-            }
-            else if (e.ChangeType == UsbDeviceChangeType.Disconnected)
-            {
-                UsbStatusText = Resources.Resources.GetString("USB_DeviceDisconnected");
-                
-                // If we were connected and the device was removed, update status
-                if (StatusLevel == StatusLevel.Connected && !e.AvailablePorts.Contains(_deviceManagementService.PortName ?? ""))
+                // Show notification based on the change type
+                case UsbDeviceChangeType.Connected:
+                    UsbStatusText = Resources.Resources.GetString("USB_DeviceConnected");
+                    break;
+                case UsbDeviceChangeType.Disconnected:
                 {
-                    await _deviceManagementService.Shutdown();
-                    StatusLevel = StatusLevel.Disconnected;
-                    StatusText = Resources.Resources.GetString("Status_DeviceDisconnectedUSBRemoved");
+                    UsbStatusText = Resources.Resources.GetString("USB_DeviceDisconnected");
+                
+                    // If we were connected and the device was removed, update status
+                    if (StatusLevel == StatusLevel.Connected && !eventArgs.AvailablePorts.Contains(_deviceManagementService.PortName ?? ""))
+                    {
+                        await _deviceManagementService.Shutdown();
+                        StatusLevel = StatusLevel.Disconnected;
+                        StatusText = Resources.Resources.GetString("Status_DeviceDisconnectedUSBRemoved");
+                    }
+
+                    break;
                 }
-            }
-            else
-            {
-                UsbStatusText = Resources.Resources.GetString("USB_PortsChanged");
             }
             
             // Clear USB status after 3 seconds
