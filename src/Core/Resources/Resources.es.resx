@@ -122,36 +122,12 @@
     <value>Desconectar</value>
     <comment>Device connection status when not connected</comment>
   </data>
-  <data name="Status_Discovering" xml:space="preserve">
-    <value>Descubriendo</value>
-    <comment>Device connection status during discovery process</comment>
-  </data>
   <data name="Status_Error" xml:space="preserve">
     <value>Error</value>
     <comment>Device connection status when an error occurred</comment>
   </data>
   <!-- USB Status Messages -->
-  <data name="USB_DeviceInserted" xml:space="preserve">
-    <value>Dispositivo USB conectado</value>
-    <comment>Message shown when a USB device is detected</comment>
-  </data>
-  <data name="USB_DeviceRemoved" xml:space="preserve">
-    <value>Dispositivo USB extraído</value>
-    <comment>Message shown when a USB device is disconnected</comment>
-  </data>
   <!-- Error Messages -->
-  <data name="Error_ConnectionFailed" xml:space="preserve">
-    <value>Error de conexión</value>
-    <comment>Generic connection failure message</comment>
-  </data>
-  <data name="Error_DeviceNotFound" xml:space="preserve">
-    <value>Dispositivo no encontrado</value>
-    <comment>Error when device cannot be found during discovery</comment>
-  </data>
-  <data name="Error_InvalidAddress" xml:space="preserve">
-    <value>Dirección no válida</value>
-    <comment>Error when the entered address is invalid</comment>
-  </data>
   <!-- Device Information -->
   <data name="Device_SerialNumberPrefix" xml:space="preserve">
     <value>S/N - </value>
@@ -314,10 +290,6 @@
     <value>Tipo</value>
     <comment>Column header for type in monitoring grid</comment>
   </data>
-  <data name="Monitor_Details" xml:space="preserve">
-    <value>Detalles</value>
-    <comment>Column header for details in monitoring grid</comment>
-  </data>
   <data name="Monitor_Expand" xml:space="preserve">
     <value>Expandir</value>
     <comment>Button text to expand row details</comment>
@@ -472,10 +444,6 @@
     <value>Dispositivo USB desconectado</value>
     <comment>Message when USB device is disconnected</comment>
   </data>
-  <data name="USB_PortsChanged" xml:space="preserve">
-    <value>Puertos USB cambiados</value>
-    <comment>Message when USB ports have changed</comment>
-  </data>
   <!-- Dialog Messages -->
   <data name="Dialog_Connect_Title" xml:space="preserve">
     <value>Conectar</value>
@@ -556,9 +524,5 @@
   <data name="Language_SelectLanguage" xml:space="preserve">
     <value>Seleccionar idioma</value>
     <comment>Tooltip for language selection</comment>
-  </data>
-  <data name="Language_ChangeConfirmation" xml:space="preserve">
-    <value>El lenguaje cambió con éxito</value>
-    <comment>Confirmation message when language is changed</comment>
   </data>
 </root>

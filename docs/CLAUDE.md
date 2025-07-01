@@ -14,6 +14,13 @@
 - Run specific test: `dotnet test test/Core.Tests/Core.Tests.csproj --filter "Name=ConnectViewModel_InitializedAvailableBaudRates"`
 - Run with code coverage: `dotnet test test/Core.Tests/Core.Tests.csproj --collect:"XPlat Code Coverage"`
 
+## Resource Management
+- Check resource usage: `pwsh ci/check_resource_usage_progress.ps1`
+- The script analyzes unused resource strings and missing definitions across all language files
+- Shows progress indicators for both resource usage checking and missing definition scanning
+- Provides detailed reports with resource values and comments for cleanup decisions
+- Can be integrated into Azure DevOps pipelines using `ci/azure-pipeline-resource-check.yml`
+
 ## Code Style Guidelines
 - Use C# 8.0+ features with async/await patterns for asynchronous operations
 - Follow the MVVM design pattern for view models with ObservableObject and RelayCommand

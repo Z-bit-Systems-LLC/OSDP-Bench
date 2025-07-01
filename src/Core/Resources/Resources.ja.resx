@@ -122,36 +122,12 @@
     <value>途切れ途切れ</value>
     <comment>Device connection status when not connected</comment>
   </data>
-  <data name="Status_Discovering" xml:space="preserve">
-    <value>発見</value>
-    <comment>Device connection status during discovery process</comment>
-  </data>
   <data name="Status_Error" xml:space="preserve">
     <value>エラー</value>
     <comment>Device connection status when an error occurred</comment>
   </data>
   <!-- USB Status Messages -->
-  <data name="USB_DeviceInserted" xml:space="preserve">
-    <value>USBデバイスが挿入されています</value>
-    <comment>Message shown when a USB device is detected</comment>
-  </data>
-  <data name="USB_DeviceRemoved" xml:space="preserve">
-    <value>USBデバイスを取り外しました</value>
-    <comment>Message shown when a USB device is disconnected</comment>
-  </data>
   <!-- Error Messages -->
-  <data name="Error_ConnectionFailed" xml:space="preserve">
-    <value>接続に失敗しました</value>
-    <comment>Generic connection failure message</comment>
-  </data>
-  <data name="Error_DeviceNotFound" xml:space="preserve">
-    <value>デバイスが見つかりません</value>
-    <comment>Error when device cannot be found during discovery</comment>
-  </data>
-  <data name="Error_InvalidAddress" xml:space="preserve">
-    <value>無効なアドレス</value>
-    <comment>Error when the entered address is invalid</comment>
-  </data>
   <!-- Device Information -->
   <data name="Device_SerialNumberPrefix" xml:space="preserve">
     <value>S/N - </value>
@@ -314,10 +290,6 @@
     <value>種類</value>
     <comment>Column header for type in monitoring grid</comment>
   </data>
-  <data name="Monitor_Details" xml:space="preserve">
-    <value>細部</value>
-    <comment>Column header for details in monitoring grid</comment>
-  </data>
   <data name="Monitor_Expand" xml:space="preserve">
     <value>膨らむ</value>
     <comment>Button text to expand row details</comment>
@@ -472,10 +444,6 @@
     <value>USBデバイスが切断されました</value>
     <comment>Message when USB device is disconnected</comment>
   </data>
-  <data name="USB_PortsChanged" xml:space="preserve">
-    <value>USBポートの変更</value>
-    <comment>Message when USB ports have changed</comment>
-  </data>
   <!-- Dialog Messages -->
   <data name="Dialog_Connect_Title" xml:space="preserve">
     <value>繋ぐ</value>
@@ -556,9 +524,5 @@
   <data name="Language_SelectLanguage" xml:space="preserve">
     <value>言語の選択</value>
     <comment>Tooltip for language selection</comment>
-  </data>
-  <data name="Language_ChangeConfirmation" xml:space="preserve">
-    <value>言語が正常に変更されました</value>
-    <comment>Confirmation message when language is changed</comment>
   </data>
 </root>
