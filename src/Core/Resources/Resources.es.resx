@@ -561,4 +561,12 @@
     <value>El lenguaje cambió con éxito</value>
     <comment>Confirmation message when language is changed</comment>
   </data>
+  <data name="Language_SystemMismatchTitle" xml:space="preserve">
+    <value>System Language Detected</value>
+    <comment>Title for system language mismatch dialog</comment>
+  </data>
+  <data name="Language_SystemMismatchMessage" xml:space="preserve">
+    <value>Your system language is {0}. Would you like to switch the application to match your system language?</value>
+    <comment>Message asking user if they want to switch to system language. {0} is the system language name.</comment>
+  </data>
 </root>
