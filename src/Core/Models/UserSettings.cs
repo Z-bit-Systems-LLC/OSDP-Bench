@@ -24,4 +24,9 @@ public class UserSettings
     /// Gets or sets whether the window is maximized
     /// </summary>
     public bool IsMaximized { get; set; } = false;
+    
+    /// <summary>
+    /// Gets or sets whether to skip language mismatch checking
+    /// </summary>
+    public bool SkipLanguageMismatchCheck { get; set; } = false;
 }

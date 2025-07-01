@@ -55,9 +55,9 @@ public partial class App
             services.AddSingleton<IDialogService, WindowsDialogService>();
             services.AddSingleton<ISerialPortConnectionService, WindowsSerialPortConnectionService>();
             services.AddSingleton<IUsbDeviceMonitorService, WindowsUsbDeviceMonitorService>();
-            services.AddSingleton<IUserSettingsService, UserSettingsService>();
+            services.AddSingleton<IUserSettingsService, WindowsUserSettingsService>();
             services.AddSingleton<ILocalizationService, LocalizationService>();
-            services.AddSingleton<ILanguageMismatchService, LanguageMismatchService>();
+            services.AddSingleton<ILanguageMismatchService, WindowsLanguageMismatchService>();
         }).Build();
 
     /// <summary>

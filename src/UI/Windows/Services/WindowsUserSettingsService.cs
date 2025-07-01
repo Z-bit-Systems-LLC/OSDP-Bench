@@ -1,20 +1,22 @@
+using System.IO;
 using System.Text.Json;
 using OSDPBench.Core.Models;
+using OSDPBench.Core.Services;
 
-namespace OSDPBench.Core.Services;
+namespace OSDPBench.Windows.Services;
 
 /// <summary>
-/// Implementation of user settings service using JSON file storage
+/// Windows implementation of a user settings service using JSON file storage
 /// </summary>
-public class UserSettingsService : IUserSettingsService
+public class WindowsUserSettingsService : IUserSettingsService
 {
     private readonly string _settingsFilePath;
     private UserSettings _settings;
     
     /// <summary>
-    /// Initializes a new instance of the UserSettingsService
+    /// Initializes a new instance of the WindowsUserSettingsService
     /// </summary>
-    public UserSettingsService()
+    public WindowsUserSettingsService()
     {
         var appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
         var appFolderPath = Path.Combine(appDataPath, "OSDPBench");

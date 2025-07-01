@@ -1,23 +1,27 @@
 using System.Globalization;
+using System.Windows;
+using OSDPBench.Core.Services;
+using OSDPBench.Core.ViewModels.Dialogs;
+using OSDPBench.Windows.Views.Dialogs;
 
-namespace OSDPBench.Core.Services;
+namespace OSDPBench.Windows.Services;
 
 /// <summary>
-/// Service for handling system language mismatch detection and user prompts
+/// Windows-specific implementation of language mismatch service with custom dialog support
 /// </summary>
-public class LanguageMismatchService : ILanguageMismatchService
+public class WindowsLanguageMismatchService : ILanguageMismatchService
 {
     private readonly ILocalizationService _localizationService;
     private readonly IDialogService _dialogService;
     private readonly IUserSettingsService _userSettingsService;
 
     /// <summary>
-    /// Initializes a new instance of the LanguageMismatchService
+    /// Initializes a new instance of the WindowsLanguageMismatchService
     /// </summary>
     /// <param name="localizationService">The localization service</param>
     /// <param name="dialogService">The dialog service</param>
     /// <param name="userSettingsService">The user settings service</param>
-    public LanguageMismatchService(
+    public WindowsLanguageMismatchService(
         ILocalizationService localizationService,
         IDialogService dialogService,
         IUserSettingsService userSettingsService)
@@ -30,33 +34,46 @@ public class LanguageMismatchService : ILanguageMismatchService
     /// <inheritdoc />
     public async Task CheckAndPromptForLanguageMismatchAsync()
     {
+        System.Diagnostics.Debug.WriteLine("LanguageMismatchService: Starting check...");
+        
         // Only check if this is not the user's first time setting a language
-        // (i.e., they have a saved preference)
         if (string.IsNullOrEmpty(_userSettingsService.Settings.PreferredCulture))
         {
-            // First time user - don't prompt, just use system language
+            System.Diagnostics.Debug.WriteLine("LanguageMismatchService: First time user - skipping");
             return;
         }
+
+        System.Diagnostics.Debug.WriteLine($"LanguageMismatchService: User has preferred culture: {_userSettingsService.Settings.PreferredCulture}");
 
         // Check if user has disabled language mismatch checking
         if (_userSettingsService.Settings.SkipLanguageMismatchCheck)
         {
-            // User has opted out of language mismatch checks
+            System.Diagnostics.Debug.WriteLine("LanguageMismatchService: User has disabled checks - skipping");
             return;
         }
 
         // Check if there's a mismatch
-        if (_localizationService.IsSystemLanguageMatch())
+        var systemCulture = _localizationService.GetSystemCulture();
+        var currentCulture = _localizationService.CurrentCulture;
+        var isMatch = _localizationService.IsSystemLanguageMatch();
+        
+        System.Diagnostics.Debug.WriteLine($"LanguageMismatchService: System culture: {systemCulture.Name} ({systemCulture.NativeName})");
+        System.Diagnostics.Debug.WriteLine($"LanguageMismatchService: Current culture: {currentCulture.Name}");
+        System.Diagnostics.Debug.WriteLine($"LanguageMismatchService: Is match: {isMatch}");
+        
+        if (isMatch)
         {
-            // Languages match or system language not supported - no action needed
+            System.Diagnostics.Debug.WriteLine("LanguageMismatchService: Languages match - no action needed");
             return;
         }
 
-        var systemCulture = _localizationService.GetSystemCulture();
+        System.Diagnostics.Debug.WriteLine("LanguageMismatchService: Language mismatch detected - showing dialog");
         var systemLanguageName = systemCulture.NativeName;
         
         // Show custom dialog
         var (userWantsToSwitch, dontAskAgain) = await ShowLanguageMismatchDialogAsync(systemLanguageName);
+        
+        System.Diagnostics.Debug.WriteLine($"LanguageMismatchService: Dialog result - Switch: {userWantsToSwitch}, DontAsk: {dontAskAgain}");
         
         // Save the "don't ask again" preference
         if (dontAskAgain)
@@ -79,17 +96,41 @@ public class LanguageMismatchService : ILanguageMismatchService
     /// <inheritdoc />
     public async Task<(bool userWantsToSwitch, bool dontAskAgain)> ShowLanguageMismatchDialogAsync(string systemLanguageName)
     {
-        // This method will be implemented in the Windows-specific service
-        // For now, fall back to the simple dialog
-        var title = _localizationService.GetString("Language_SystemMismatchTitle");
-        var message = _localizationService.GetString("Language_SystemMismatchMessage", systemLanguageName);
+        var tcs = new TaskCompletionSource<(bool, bool)>();
         
-        var userWantsToSwitch = await _dialogService.ShowConfirmationDialog(
-            title, 
-            message, 
-            MessageIcon.Information);
+        await Application.Current.Dispatcher.InvokeAsync(() =>
+        {
+            // Create the dialog content
+            var message = _localizationService.GetString("Language_SystemMismatchMessage", systemLanguageName);
             
-        return (userWantsToSwitch, false); // No "don't ask again" option in fallback
+            Window? dialogWindow = null;
+            var viewModel = new LanguageMismatchDialogViewModel(message, (userChoice, dontAsk) =>
+            {
+                tcs.SetResult((userChoice, dontAsk));
+                dialogWindow?.Close();
+            });
+            
+            var dialogContent = new LanguageMismatchDialog
+            {
+                DataContext = viewModel
+            };
+            
+            // Create and show the dialog window
+            dialogWindow = new Window
+            {
+                Title = _localizationService.GetString("Language_SystemMismatchTitle"),
+                Content = dialogContent,
+                SizeToContent = SizeToContent.WidthAndHeight,
+                ResizeMode = ResizeMode.NoResize,
+                WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                Owner = Application.Current.MainWindow,
+                ShowInTaskbar = false
+            };
+            
+            dialogWindow.ShowDialog();
+        });
+        
+        return await tcs.Task;
     }
     
     /// <summary>
