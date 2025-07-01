@@ -45,8 +45,6 @@ internal class WindowsDialogService : IDialogService
     
     private static string FormatExceptionMessage(Exception exception)
     {
-        if (exception == null) return "Unknown error occurred.";
-        
         return $"{exception.Message}\n\nDetails: {exception.GetType().Name}";
     }
 }

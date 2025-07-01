@@ -28,6 +28,6 @@ AQAAAgAICIAAAP+A//8AAA==";
     }
 
     public static readonly DependencyProperty InputProperty =
-        ShaderEffect.RegisterPixelShaderSamplerProperty("Input", typeof(InvertEffect), 0);
+        RegisterPixelShaderSamplerProperty("Input", typeof(InvertEffect), 0);
 
 }

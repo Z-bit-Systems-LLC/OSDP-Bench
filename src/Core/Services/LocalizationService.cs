@@ -1,6 +1,4 @@
 using System.Globalization;
-using System.Resources;
-using OSDPBench.Core.Resources;
 
 namespace OSDPBench.Core.Services;
 
@@ -9,7 +7,6 @@ namespace OSDPBench.Core.Services;
 /// </summary>
 public class LocalizationService : ILocalizationService
 {
-    private readonly ResourceManager _resourceManager;
     private readonly IUserSettingsService? _userSettingsService;
     private CultureInfo _currentCulture;
     
@@ -19,7 +16,6 @@ public class LocalizationService : ILocalizationService
     /// <param name="userSettingsService">Optional user settings service for persistence</param>
     public LocalizationService(IUserSettingsService? userSettingsService)
     {
-        _resourceManager = new ResourceManager("OSDPBench.Core.Resources.Resources", typeof(LocalizationService).Assembly);
         _userSettingsService = userSettingsService;
         
         // Initialize culture from settings or system default
@@ -72,7 +68,7 @@ public class LocalizationService : ILocalizationService
     /// <inheritdoc />
     public string GetString(string key)
     {
-        return OSDPBench.Core.Resources.Resources.GetString(key);
+        return Resources.Resources.GetString(key);
     }
     
     /// <inheritdoc />
@@ -101,7 +97,7 @@ public class LocalizationService : ILocalizationService
         CultureInfo.CurrentCulture = culture;
         
         // Update the Resources class culture (this will trigger PropertyChanged)
-        OSDPBench.Core.Resources.Resources.ChangeCulture(culture);
+        Resources.Resources.ChangeCulture(culture);
         
         // Save preference to settings
         if (_userSettingsService != null)

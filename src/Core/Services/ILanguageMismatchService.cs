@@ -1,5 +1,3 @@
-using System.Globalization;
-
 namespace OSDPBench.Core.Services;
 
 /// <summary>

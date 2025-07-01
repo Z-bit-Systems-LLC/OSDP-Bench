@@ -2,7 +2,9 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
                     xmlns:controls="clr-namespace:OSDPBench.Windows.Views.Controls"
-                    xmlns:markup="clr-namespace:OSDPBench.Windows.Markup">
+                    xmlns:markup="clr-namespace:OSDPBench.Windows.Markup"
+                    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d">
 
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="DesignTokens.xaml"/>
@@ -55,7 +57,7 @@
                    TextAlignment="Center"
                    TextWrapping="Wrap"
                    HorizontalAlignment="Center"
-                   Margin="16,0">
+                   Margin="16,0" d:DataContext="{d:DesignInstance }">
             <TextBlock.Style>
                 <Style TargetType="TextBlock" BasedOn="{StaticResource Text.Headline}">
                     <Style.Triggers>

@@ -21,7 +21,7 @@ public class ResetCypressDeviceAction : IDeviceAction
         await panel.Shutdown();
         
         var connectionService = parameter as IOsdpConnection ??
-                                throw new ArgumentException("Invalid type", nameof(parameter));
+                                throw new ArgumentException(@"Invalid type", nameof(parameter));
         
         connectionId = panel.StartConnection(connectionService, TimeSpan.Zero);
 

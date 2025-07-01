@@ -20,7 +20,7 @@ public class SetCommunicationAction : IDeviceAction
         object? parameter)
     {
         var communicationParameters = parameter as CommunicationParameters ??
-                                      throw new ArgumentException("Invalid type", nameof(parameter));
+                                      throw new ArgumentException(@"Invalid type", nameof(parameter));
         
         var result = await panel.CommunicationConfiguration(connectionId, address,
             new CommunicationConfiguration(communicationParameters.Address,

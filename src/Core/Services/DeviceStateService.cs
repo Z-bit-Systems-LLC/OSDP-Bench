@@ -22,22 +22,22 @@ public class DeviceStateService : IDeviceStateService
                                  throw new ArgumentNullException(nameof(deviceManagementService));
         
         // Forward events from the device management service
-        _deviceManagementService.ConnectionStatusChange += (sender, args) => 
+        _deviceManagementService.ConnectionStatusChange += (_, args) => 
             ConnectionStatusChange?.Invoke(this, args);
         
-        _deviceManagementService.KeypadReadReceived += (sender, args) => 
+        _deviceManagementService.KeypadReadReceived += (_, args) => 
             KeypadReadReceived?.Invoke(this, args);
         
-        _deviceManagementService.CardReadReceived += (sender, args) => 
+        _deviceManagementService.CardReadReceived += (_, args) => 
             CardReadReceived?.Invoke(this, args);
         
-        _deviceManagementService.TraceEntryReceived += (sender, args) => 
+        _deviceManagementService.TraceEntryReceived += (_, args) => 
             TraceEntryReceived?.Invoke(this, args);
         
-        _deviceManagementService.NakReplyReceived += (sender, args) => 
+        _deviceManagementService.NakReplyReceived += (_, args) => 
             NakReplyReceived?.Invoke(this, args);
         
-        _deviceManagementService.DeviceLookupsChanged += (sender, args) => 
+        _deviceManagementService.DeviceLookupsChanged += (_, args) => 
             DeviceLookupsChanged?.Invoke(this, args);
     }
 

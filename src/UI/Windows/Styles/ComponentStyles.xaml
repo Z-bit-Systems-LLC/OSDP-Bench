@@ -165,6 +165,7 @@
         <Setter Property="MinWidth" Value="{StaticResource Control.Width.Medium}"/>
     </Style>
     
+    <!-- ReSharper disable once Xaml.StaticResourceNotResolved -->
     <Style x:Key="NumberBox.Standard" TargetType="ui:NumberBox" BasedOn="{StaticResource {x:Type ui:NumberBox}}">
         <Setter Property="MinHeight" Value="{StaticResource Control.Height.Medium}"/>
         <Setter Property="Margin" Value="{StaticResource Margin.Control}"/>
@@ -174,6 +175,7 @@
     </Style>
     
     <!-- Button Styles -->
+    <!-- ReSharper disable once Xaml.StaticResourceNotResolved -->
     <Style x:Key="Button.Primary" TargetType="ui:Button" BasedOn="{StaticResource {x:Type ui:Button}}">
         <Setter Property="Margin" Value="{StaticResource Margin.Button}"/>
         <Setter Property="Padding" Value="{StaticResource Padding.Button}"/>

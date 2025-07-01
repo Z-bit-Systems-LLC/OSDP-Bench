@@ -7,27 +7,23 @@ using OSDPBench.Windows.Views.Dialogs;
 namespace OSDPBench.Windows.Services;
 
 /// <summary>
-/// Windows-specific implementation of language mismatch service with custom dialog support
+/// Windows-specific implementation of the language mismatch service with custom dialog support
 /// </summary>
 public class WindowsLanguageMismatchService : ILanguageMismatchService
 {
     private readonly ILocalizationService _localizationService;
-    private readonly IDialogService _dialogService;
     private readonly IUserSettingsService _userSettingsService;
 
     /// <summary>
     /// Initializes a new instance of the WindowsLanguageMismatchService
     /// </summary>
     /// <param name="localizationService">The localization service</param>
-    /// <param name="dialogService">The dialog service</param>
     /// <param name="userSettingsService">The user settings service</param>
     public WindowsLanguageMismatchService(
         ILocalizationService localizationService,
-        IDialogService dialogService,
         IUserSettingsService userSettingsService)
     {
         _localizationService = localizationService ?? throw new ArgumentNullException(nameof(localizationService));
-        _dialogService = dialogService ?? throw new ArgumentNullException(nameof(dialogService));
         _userSettingsService = userSettingsService ?? throw new ArgumentNullException(nameof(userSettingsService));
     }
 
@@ -43,38 +39,26 @@ public class WindowsLanguageMismatchService : ILanguageMismatchService
             return;
         }
 
-        System.Diagnostics.Debug.WriteLine($"LanguageMismatchService: User has preferred culture: {_userSettingsService.Settings.PreferredCulture}");
-
-        // Check if user has disabled language mismatch checking
+        // Check if the user has disabled language mismatch checking
         if (_userSettingsService.Settings.SkipLanguageMismatchCheck)
         {
-            System.Diagnostics.Debug.WriteLine("LanguageMismatchService: User has disabled checks - skipping");
             return;
         }
 
         // Check if there's a mismatch
         var systemCulture = _localizationService.GetSystemCulture();
-        var currentCulture = _localizationService.CurrentCulture;
         var isMatch = _localizationService.IsSystemLanguageMatch();
-        
-        System.Diagnostics.Debug.WriteLine($"LanguageMismatchService: System culture: {systemCulture.Name} ({systemCulture.NativeName})");
-        System.Diagnostics.Debug.WriteLine($"LanguageMismatchService: Current culture: {currentCulture.Name}");
-        System.Diagnostics.Debug.WriteLine($"LanguageMismatchService: Is match: {isMatch}");
         
         if (isMatch)
         {
-            System.Diagnostics.Debug.WriteLine("LanguageMismatchService: Languages match - no action needed");
             return;
         }
 
-        System.Diagnostics.Debug.WriteLine("LanguageMismatchService: Language mismatch detected - showing dialog");
         var systemLanguageName = systemCulture.NativeName;
         
         // Show custom dialog
         var (userWantsToSwitch, dontAskAgain) = await ShowLanguageMismatchDialogAsync(systemLanguageName);
-        
-        System.Diagnostics.Debug.WriteLine($"LanguageMismatchService: Dialog result - Switch: {userWantsToSwitch}, DontAsk: {dontAskAgain}");
-        
+
         // Save the "don't ask again" preference
         if (dontAskAgain)
         {
@@ -104,10 +88,11 @@ public class WindowsLanguageMismatchService : ILanguageMismatchService
             var message = _localizationService.GetString("Language_SystemMismatchMessage", systemLanguageName);
             
             Window? dialogWindow = null;
+            var window = dialogWindow;
             var viewModel = new LanguageMismatchDialogViewModel(message, (userChoice, dontAsk) =>
             {
                 tcs.SetResult((userChoice, dontAsk));
-                dialogWindow?.Close();
+                window?.Close();
             });
             
             var dialogContent = new LanguageMismatchDialog
@@ -142,7 +127,7 @@ public class WindowsLanguageMismatchService : ILanguageMismatchService
     {
         var supportedCultures = _localizationService.SupportedCultures;
         
-        // First try exact match
+        // First try the exact match
         var exactMatch = supportedCultures.FirstOrDefault(c => c.Name == systemCulture.Name);
         if (exactMatch != null)
             return exactMatch;
