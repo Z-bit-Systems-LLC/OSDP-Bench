@@ -138,4 +138,40 @@ public class LocalizationService : ILocalizationService
         // Return the native name of the culture
         return culture.NativeName;
     }
+    
+    /// <inheritdoc />
+    public bool IsSystemLanguageMatch()
+    {
+        var systemCulture = GetSystemCulture();
+        
+        // If system language is not supported, consider it a match (no need to prompt)
+        if (!IsCultureSupported(systemCulture))
+            return true;
+        
+        // Check if cultures are exactly the same
+        if (_currentCulture.Name == systemCulture.Name)
+            return true;
+            
+        // Check if the base languages match (e.g., "en-US" matches "en-GB")
+        if (_currentCulture.TwoLetterISOLanguageName == systemCulture.TwoLetterISOLanguageName)
+            return true;
+            
+        return false;
+    }
+    
+    /// <inheritdoc />
+    public CultureInfo GetSystemCulture()
+    {
+        // Get the current system UI culture
+        // This represents the OS display language
+        return CultureInfo.InstalledUICulture;
+    }
+    
+    /// <inheritdoc />
+    public bool IsCultureSupported(CultureInfo culture)
+    {
+        return SupportedCultures.Any(c => 
+            c.Name == culture.Name || 
+            c.TwoLetterISOLanguageName == culture.TwoLetterISOLanguageName);
+    }
 }
