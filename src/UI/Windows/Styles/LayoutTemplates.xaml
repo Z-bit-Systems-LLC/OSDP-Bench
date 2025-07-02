@@ -11,34 +11,78 @@
         <ResourceDictionary Source="ComponentStyles.xaml"/>
     </ResourceDictionary.MergedDictionaries>
 
+    <!-- Connection Status Style -->
+    <Style x:Key="ConnectionStatusText" TargetType="TextBlock" BasedOn="{StaticResource Text.Body}">
+        <Setter Property="FontWeight" Value="Bold"/>
+        <Setter Property="Visibility" Value="Collapsed"/>
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding Path=ViewModel.StatusLevel}" Value="Connected">
+                <Setter Property="Visibility" Value="Visible"/>
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
+
     <!-- Page Header Template -->
     <ControlTemplate x:Key="Template.PageHeader" TargetType="ContentControl">
-        <Grid Style="{StaticResource Page.Header}">
-            <TextBlock Text="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Content}"
-                       Style="{StaticResource Page.Title}"/>
-            
-            <StackPanel Orientation="Horizontal" 
-                        HorizontalAlignment="Right" 
-                        VerticalAlignment="Center">
-                <!-- TX Activity Indicator -->
-                <StackPanel Style="{StaticResource Activity.Container}">
-                    <TextBlock Text="{markup:Localize Activity_Tx}" 
-                               Style="{StaticResource Activity.Label}"/>
-                    <controls:LedControl LastActivityTime="{Binding Path=ViewModel.LastTxActiveTime}" 
-                                         LedColor="Red" 
-                                         VerticalAlignment="Center"/>
-                </StackPanel>
+        <StackPanel Margin="{StaticResource Margin.Card}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
                 
-                <!-- RX Activity Indicator -->
-                <StackPanel Style="{StaticResource Activity.Container}">
-                    <TextBlock Text="{markup:Localize Activity_Rx}" 
-                               Style="{StaticResource Activity.Label}"/>
-                    <controls:LedControl LastActivityTime="{Binding Path=ViewModel.LastRxActiveTime}" 
-                                         LedColor="Red" 
-                                         VerticalAlignment="Center"/>
-                </StackPanel>
-            </StackPanel>
-        </Grid>
+                <!-- Page Title -->
+                <TextBlock Grid.Column="0"
+                           Text="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Content}"
+                           Style="{StaticResource Page.Title}"
+                           VerticalAlignment="Center"/>
+                
+                <!-- Status Container -->
+                <Border Grid.Column="1"
+                        Background="{DynamicResource ControlFillColorDefaultBrush}"
+                        BorderBrush="{DynamicResource ControlElevationBorderBrush}"
+                        BorderThickness="1"
+                        CornerRadius="{StaticResource CornerRadius.Small}"
+                        Padding="12,6"
+                        VerticalAlignment="Center"
+                        HorizontalAlignment="Right">
+                    <WrapPanel Orientation="Horizontal">
+                        <!-- Connection Status -->
+                        <TextBlock Style="{StaticResource ConnectionStatusText}"
+                                   VerticalAlignment="Center"
+                                   Margin="0,0,16,0">
+                            <TextBlock.Text>
+                                <MultiBinding StringFormat="{markup:Localize Status_ConnectionFormat}">
+                                    <Binding Path="ViewModel.ConnectedAddress" />
+                                    <Binding Path="ViewModel.ConnectedBaudRate" />
+                                </MultiBinding>
+                            </TextBlock.Text>
+                        </TextBlock>
+                        
+                        <!-- TX Activity Indicator -->
+                        <StackPanel Style="{StaticResource Activity.Container}">
+                            <TextBlock Text="{markup:Localize Activity_Tx}" 
+                                       Style="{StaticResource Activity.Label}"
+                                       FontWeight="Bold"/>
+                            <controls:LedControl LastActivityTime="{Binding Path=ViewModel.LastTxActiveTime}" 
+                                                 LedColor="Red" 
+                                                 VerticalAlignment="Center"/>
+                        </StackPanel>
+                        
+                        <!-- RX Activity Indicator -->
+                        <StackPanel Style="{StaticResource Activity.Container}"
+                                    Margin="0">
+                            <TextBlock Text="{markup:Localize Activity_Rx}" 
+                                       Style="{StaticResource Activity.Label}"
+                                       FontWeight="Bold"/>
+                            <controls:LedControl LastActivityTime="{Binding Path=ViewModel.LastRxActiveTime}" 
+                                                 LedColor="Red" 
+                                                 VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </WrapPanel>
+                </Border>
+            </Grid>
+        </StackPanel>
     </ControlTemplate>
 
     <!-- Form Field Template -->

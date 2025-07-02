@@ -115,19 +115,6 @@
                                   ItemsSource="{Binding ConnectionTypes}"
                                   SelectedIndex="{Binding SelectedConnectionTypeIndex, Mode=TwoWay}"/>
                         </StackPanel>
-                    
-                    <!-- Connected status -->
-                    <ui:TextBlock Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"
-                                  Style="{StaticResource Text.Caption}"
-                                  Visibility="{Binding Path=ViewModel.StatusLevel, Converter={StaticResource StringToVisibilityConverter}, ConverterParameter=Connected, Mode=OneWay}"
-                                  TextWrapping="Wrap">
-                        <ui:TextBlock.Text>
-                            <MultiBinding StringFormat="{markup:Localize Connection_DeviceConnectedFormat}">
-                                <Binding Path="ViewModel.ConnectedAddress" />
-                                <Binding Path="ViewModel.ConnectedBaudRate" />
-                            </MultiBinding>
-                        </ui:TextBlock.Text>
-                    </ui:TextBlock>
                 </Grid>
                 
                 <!-- Discovery Warning (only shown when Discovery mode is selected) -->
