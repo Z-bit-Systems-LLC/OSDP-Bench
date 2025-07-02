@@ -122,36 +122,12 @@
     <value>断开</value>
     <comment>Device connection status when not connected</comment>
   </data>
-  <data name="Status_Discovering" xml:space="preserve">
-    <value>发现</value>
-    <comment>Device connection status during discovery process</comment>
-  </data>
   <data name="Status_Error" xml:space="preserve">
     <value>错误</value>
     <comment>Device connection status when an error occurred</comment>
   </data>
   <!-- USB Status Messages -->
-  <data name="USB_DeviceInserted" xml:space="preserve">
-    <value>已插入 USB 设备</value>
-    <comment>Message shown when a USB device is detected</comment>
-  </data>
-  <data name="USB_DeviceRemoved" xml:space="preserve">
-    <value>已删除 USB 设备</value>
-    <comment>Message shown when a USB device is disconnected</comment>
-  </data>
   <!-- Error Messages -->
-  <data name="Error_ConnectionFailed" xml:space="preserve">
-    <value>连接失败</value>
-    <comment>Generic connection failure message</comment>
-  </data>
-  <data name="Error_DeviceNotFound" xml:space="preserve">
-    <value>未找到设备</value>
-    <comment>Error when device cannot be found during discovery</comment>
-  </data>
-  <data name="Error_InvalidAddress" xml:space="preserve">
-    <value>地址无效</value>
-    <comment>Error when the entered address is invalid</comment>
-  </data>
   <!-- Device Information -->
   <data name="Device_SerialNumberPrefix" xml:space="preserve">
     <value>序列号 - </value>
@@ -314,10 +290,6 @@
     <value>类型</value>
     <comment>Column header for type in monitoring grid</comment>
   </data>
-  <data name="Monitor_Details" xml:space="preserve">
-    <value>详</value>
-    <comment>Column header for details in monitoring grid</comment>
-  </data>
   <data name="Monitor_Expand" xml:space="preserve">
     <value>扩大</value>
     <comment>Button text to expand row details</comment>
@@ -472,10 +444,6 @@
     <value>USB 设备已断开连接</value>
     <comment>Message when USB device is disconnected</comment>
   </data>
-  <data name="USB_PortsChanged" xml:space="preserve">
-    <value>USB 端口已更改</value>
-    <comment>Message when USB ports have changed</comment>
-  </data>
   <!-- Dialog Messages -->
   <data name="Dialog_Connect_Title" xml:space="preserve">
     <value>连接</value>
@@ -556,10 +524,6 @@
   <data name="Language_SelectLanguage" xml:space="preserve">
     <value>选择语言</value>
     <comment>Tooltip for language selection</comment>
-  </data>
-  <data name="Language_ChangeConfirmation" xml:space="preserve">
-    <value>语言更改成功</value>
-    <comment>Confirmation message when language is changed</comment>
   </data>
   <data name="Language_SystemMismatchTitle" xml:space="preserve">
     <value>System Language Detected</value>
