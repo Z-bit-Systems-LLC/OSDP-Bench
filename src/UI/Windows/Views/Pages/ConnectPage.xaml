@@ -25,7 +25,7 @@
                         Template="{StaticResource Template.PageHeader}"/>
         <Border Style="{StaticResource Card.Bordered}">
             <StackPanel Style="{StaticResource Card.Content}">
-                <ui:TextBlock FontTypography="Subtitle"
+                <ui:TextBlock Style="{StaticResource Text.Subtitle}" 
                               Text="{markup:Localize Connect_SerialPortSelection}"
                               TextWrapping="Wrap"
                               Margin="0,0,0,10"/>
@@ -73,7 +73,7 @@
                     
                     <!-- Title always in top-left -->
                     <ui:TextBlock Grid.Row="0" Grid.Column="0"
-                                  FontTypography="Subtitle"
+                                  Style="{StaticResource Text.Subtitle}" 
                                   Text="{markup:Localize Connect_ConnectToPD}"
                                   TextWrapping="Wrap"
                                   VerticalAlignment="Center"
@@ -146,11 +146,8 @@
                     
                     <!-- Connection Settings Section -->
                     <StackPanel Orientation="Vertical" Margin="0,0,0,16">
-                        <ui:TextBlock FontTypography="BodyStrong"
-                                      Text="{markup:Localize Connect_ConnectionSettings}"
-                                      FontSize="16"
-                                      FontWeight="SemiBold"
-                                      Margin="0,0,0,12"/>
+                        <ui:TextBlock Style="{StaticResource Section.Header}"
+                                      Text="{markup:Localize Connect_ConnectionSettings}"/>
                         
                         <WrapPanel Orientation="Horizontal">
                             <StackPanel Orientation="Vertical" Margin="0,0,16,0">
@@ -186,11 +183,8 @@
                             Padding="16"
                             Margin="0,0,0,16">
                         <StackPanel Orientation="Vertical">
-                            <ui:TextBlock FontTypography="BodyStrong"
-                                          Text="{markup:Localize Connect_SecuritySettings}"
-                                          FontSize="16"
-                                          FontWeight="SemiBold"
-                                          Margin="0,0,0,12"/>
+                            <ui:TextBlock Style="{StaticResource Section.Header}"
+                                          Text="{markup:Localize Connect_SecuritySettings}"/>
                             
                             <WrapPanel Orientation="Horizontal" Margin="0,0,0,8">
                                 <CheckBox Name="UseSecureChannelCheckBox"

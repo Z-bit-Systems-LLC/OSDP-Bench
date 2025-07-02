@@ -38,10 +38,11 @@
 ## UI Style Guidelines
 - **Always use standard styles** - Apply predefined styles from the design system instead of inline properties
 - **Use design tokens for spacing** - Reference `{StaticResource Margin.Card}` instead of hardcoding values
-- **Apply semantic colors** - Use `{StaticResource Brush.Error}` instead of hardcoded colors like "Red"
+- **Apply theme-aware semantic colors** - Use `{DynamicResource SemanticSuccessBrush}` for automatic light/dark theme support
 - **Follow the style hierarchy** - Check ComponentStyles.xaml and LayoutTemplates.xaml before creating custom styles
 - **Update existing code** - When modifying files, replace inline styling with standard styles
 - **Create reusable patterns** - If you find yourself repeating XAML structures, consider adding a new style or template
 - **Use WrapPanel for responsive layouts** - When controls should be horizontal on wide screens but wrap to vertical on narrow screens, use WrapPanel instead of fixed Grid layouts
+- **Prefer dynamic resources for colors** - Use `{DynamicResource}` instead of `{StaticResource}` for colors to ensure theme compatibility
 
 For detailed UI styling guidelines and examples, see: `src/UI/Windows/Styles/StyleGuide.md`

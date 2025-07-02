@@ -62,16 +62,16 @@
                 <Style TargetType="TextBlock" BasedOn="{StaticResource Text.Headline}">
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding StatusLevel}" Value="Connected">
-                            <Setter Property="Foreground" Value="{StaticResource Brush.Success}"/>
+                            <Setter Property="Foreground" Value="{DynamicResource SemanticSuccessBrush}"/>
                         </DataTrigger>
                         <DataTrigger Binding="{Binding StatusLevel}" Value="Error">
-                            <Setter Property="Foreground" Value="{StaticResource Brush.Error}"/>
+                            <Setter Property="Foreground" Value="{DynamicResource SemanticErrorBrush}"/>
                         </DataTrigger>
                         <DataTrigger Binding="{Binding StatusLevel}" Value="Discovering">
-                            <Setter Property="Foreground" Value="{StaticResource Brush.Info}"/>
+                            <Setter Property="Foreground" Value="{DynamicResource SemanticInfoBrush}"/>
                         </DataTrigger>
                         <DataTrigger Binding="{Binding StatusLevel}" Value="Disconnected">
-                            <Setter Property="Foreground" Value="{StaticResource Brush.Warning}"/>
+                            <Setter Property="Foreground" Value="{DynamicResource SemanticWarningBrush}"/>
                         </DataTrigger>
                     </Style.Triggers>
                 </Style>

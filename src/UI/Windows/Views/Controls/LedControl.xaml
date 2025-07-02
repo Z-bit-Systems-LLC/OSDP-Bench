@@ -9,9 +9,9 @@
         <Ellipse x:Name="Led" 
                  Width="16" 
                  Height="16" 
-                 Fill="DarkRed">
+                 Fill="{DynamicResource SemanticErrorBrush}">
             <Ellipse.Effect>
-                <DropShadowEffect Color="Red" ShadowDepth="0" BlurRadius="10" Opacity="0.5"/>
+                <DropShadowEffect Color="Red" ShadowDepth="0" BlurRadius="10" Opacity="0.3"/>
             </Ellipse.Effect>
         </Ellipse>
     </Grid>
