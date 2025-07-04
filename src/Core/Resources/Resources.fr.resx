@@ -134,9 +134,9 @@
     <comment>Prefix for device serial number display</comment>
   </data>
   <!-- Connection Messages -->
-  <data name="Connection_DeviceConnectedFormat" xml:space="preserve">
-    <value>Appareil connecté à l’adresse {0} fonctionnant à une vitesse de transmission de {1}</value>
-    <comment>Format string for displaying connection details. {0} = address, {1} = baud rate</comment>
+  <data name="Status_ConnectionFormat" xml:space="preserve">
+    <value>Address {0} at {1}</value>
+    <comment>Brief connection status format. {0} = address, {1} = baud rate</comment>
   </data>
   <!-- Page Titles -->
   <data name="Page_Connect" xml:space="preserve">
