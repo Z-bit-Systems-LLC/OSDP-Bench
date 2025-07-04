@@ -139,9 +139,9 @@
   </data>
   
   <!-- Connection Messages -->
-  <data name="Connection_DeviceConnectedFormat" xml:space="preserve">
-    <value>Device connected at address {0} running at a baud rate of {1}</value>
-    <comment>Format string for displaying connection details. {0} = address, {1} = baud rate</comment>
+  <data name="Status_ConnectionFormat" xml:space="preserve">
+    <value>Address {0} at {1}</value>
+    <comment>Brief connection status format. {0} = address, {1} = baud rate</comment>
   </data>
   
   <!-- Page Titles -->
