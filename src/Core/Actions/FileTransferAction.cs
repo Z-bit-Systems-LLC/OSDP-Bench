@@ -20,7 +20,7 @@ public class FileTransferAction : IDeviceAction
     {
         if (parameter is not FileTransferParameters transferParams)
         {
-            throw new ArgumentException("Invalid parameter type for file transfer", nameof(parameter));
+            throw new ArgumentException(@"Invalid parameter type for file transfer", nameof(parameter));
         }
 
         if (string.IsNullOrEmpty(transferParams.FilePath))

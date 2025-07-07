@@ -1,0 +1,19 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- Semantic Colors that work with WPF UI's automatic theme switching -->
+    <!-- These colors are automatically adjusted by WPF UI's theme system -->
+    
+    <!-- Success State -->
+    <SolidColorBrush x:Key="SemanticSuccessBrush" Color="#107C10"/>
+    
+    <!-- Warning State -->
+    <SolidColorBrush x:Key="SemanticWarningBrush" Color="#FF8C00"/>
+    
+    <!-- Error State -->
+    <SolidColorBrush x:Key="SemanticErrorBrush" Color="#D13438"/>
+    
+    <!-- Info State -->
+    <SolidColorBrush x:Key="SemanticInfoBrush" Color="#0078D4"/>
+    
+</ResourceDictionary>

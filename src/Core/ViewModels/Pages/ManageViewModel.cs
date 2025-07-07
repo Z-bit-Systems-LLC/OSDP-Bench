@@ -5,7 +5,6 @@ using OSDP.Net.Tracing;
 using OSDPBench.Core.Actions;
 using OSDPBench.Core.Models;
 using OSDPBench.Core.Services;
-using OSDPBench.Core.Resources;
 
 namespace OSDPBench.Core.ViewModels.Pages;
 
@@ -52,7 +51,7 @@ public partial class ManageViewModel : ObservableObject
     {
         if (SelectedDeviceAction == null) return;
 
-        await ExceptionHelper.ExecuteSafelyAsync(_dialogService, OSDPBench.Core.Resources.Resources.GetString("Dialog_PerformingAction_Title"), async () =>
+        await ExceptionHelper.ExecuteSafelyAsync(_dialogService, Resources.Resources.GetString("Dialog_PerformingAction_Title"), async () =>
         {
             if (SelectedDeviceAction is ResetCypressDeviceAction)
             {
@@ -72,7 +71,7 @@ public partial class ManageViewModel : ObservableObject
     {
         return await ExceptionHelper.ExecuteSafelyAsync(
             _dialogService,
-            OSDPBench.Core.Resources.Resources.GetString("Dialog_PerformingAction_Title"), 
+            Resources.Resources.GetString("Dialog_PerformingAction_Title"), 
             async () => await _deviceManagementService.ExecuteDeviceAction(SelectedDeviceAction!, DeviceActionParameter),
             null);
     }
@@ -87,13 +86,13 @@ public partial class ManageViewModel : ObservableObject
 
         if (!parametersChanged)
         {
-            await _dialogService.ShowMessageDialog(OSDPBench.Core.Resources.Resources.GetString("Dialog_UpdateCommunications_Title"),
-                OSDPBench.Core.Resources.Resources.GetString("Dialog_UpdateCommunications_NoChange"), MessageIcon.Warning);
+            await _dialogService.ShowMessageDialog(Resources.Resources.GetString("Dialog_UpdateCommunications_Title"),
+                Resources.Resources.GetString("Dialog_UpdateCommunications_NoChange"), MessageIcon.Warning);
             return;
         }
 
-        await _dialogService.ShowMessageDialog(OSDPBench.Core.Resources.Resources.GetString("Dialog_UpdateCommunications_Title"),
-            OSDPBench.Core.Resources.Resources.GetString("Dialog_UpdateCommunications_Success"), MessageIcon.Information);
+        await _dialogService.ShowMessageDialog(Resources.Resources.GetString("Dialog_UpdateCommunications_Title"),
+            Resources.Resources.GetString("Dialog_UpdateCommunications_Success"), MessageIcon.Information);
 
         if (_deviceManagementService.PortName != null)
         {    await _deviceManagementService.Reconnect(_serialPortConnectionService.GetConnection(
@@ -109,7 +108,7 @@ public partial class ManageViewModel : ObservableObject
         if (!IdentityLookup.CanSendResetCommand)
         {
             await _dialogService.ShowMessageDialog(
-                OSDPBench.Core.Resources.Resources.GetString("Dialog_ResetDevice_Title"), 
+                Resources.Resources.GetString("Dialog_ResetDevice_Title"), 
                 IdentityLookup.ResetInstructions,
                 MessageIcon.Information);
             return;
@@ -118,8 +117,8 @@ public partial class ManageViewModel : ObservableObject
         await _deviceManagementService.Shutdown();
         
         bool userConfirmed = await _dialogService.ShowConfirmationDialog(
-            OSDPBench.Core.Resources.Resources.GetString("Dialog_ResetDevice_Title"),
-            OSDPBench.Core.Resources.Resources.GetString("Dialog_ResetDevice_Confirmation"),
+            Resources.Resources.GetString("Dialog_ResetDevice_Title"),
+            Resources.Resources.GetString("Dialog_ResetDevice_Confirmation"),
             MessageIcon.Warning);
             
         if (!userConfirmed)
@@ -134,7 +133,7 @@ public partial class ManageViewModel : ObservableObject
             return;
         }
 
-        bool success = await ExceptionHelper.ExecuteSafelyAsync(_dialogService, OSDPBench.Core.Resources.Resources.GetString("Dialog_ResetDevice_Title"), async () =>
+        bool success = await ExceptionHelper.ExecuteSafelyAsync(_dialogService, Resources.Resources.GetString("Dialog_ResetDevice_Title"), async () =>
         {
             if (_deviceManagementService.PortName != null)
             {
@@ -149,15 +148,15 @@ public partial class ManageViewModel : ObservableObject
         if (success)
         {
             await _dialogService.ShowMessageDialog(
-                OSDPBench.Core.Resources.Resources.GetString("Dialog_ResetDevice_Title"),
-                OSDPBench.Core.Resources.Resources.GetString("Dialog_ResetDevice_Success"),
+                Resources.Resources.GetString("Dialog_ResetDevice_Title"),
+                Resources.Resources.GetString("Dialog_ResetDevice_Success"),
                 MessageIcon.Information);
         }
         else
         {
             await _dialogService.ShowMessageDialog(
-                OSDPBench.Core.Resources.Resources.GetString("Dialog_ResetDevice_Title"),
-                OSDPBench.Core.Resources.Resources.GetString("Dialog_ResetDevice_Failed"),
+                Resources.Resources.GetString("Dialog_ResetDevice_Title"),
+                Resources.Resources.GetString("Dialog_ResetDevice_Failed"),
                 MessageIcon.Error);
         }
     }

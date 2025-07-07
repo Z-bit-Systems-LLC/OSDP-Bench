@@ -1,0 +1,65 @@
+# Azure DevOps Pipeline for Resource Usage Analysis
+# This pipeline runs the PowerShell resource usage checker
+
+trigger:
+  branches:
+    include:
+    - main
+    - develop
+  paths:
+    include:
+    - 'src/Core/Resources/*'
+    - 'src/**/*.cs'
+    - 'src/**/*.xaml'
+
+pr:
+  branches:
+    include:
+    - main
+    - develop
+  paths:
+    include:
+    - 'src/Core/Resources/*'
+    - 'src/**/*.cs'
+    - 'src/**/*.xaml'
+
+pool:
+  vmImage: 'windows-latest'
+
+variables:
+  buildConfiguration: 'Release'
+
+steps:
+- checkout: self
+  displayName: 'Checkout source code'
+
+- task: PowerShell@2
+  displayName: 'Check Resource Usage'
+  inputs:
+    filePath: 'check_resource_usage.ps1'
+    arguments: '-Verbose'
+    pwsh: true
+    workingDirectory: '$(Build.SourcesDirectory)'
+  continueOnError: true
+
+- task: PowerShell@2
+  displayName: 'Resource Check Summary'
+  inputs:
+    targetType: 'inline'
+    script: |
+      Write-Host "##[section]Resource Usage Analysis Complete"
+      Write-Host "##[command]Review the output above for any unused resources or missing definitions"
+      Write-Host "##[command]Consider cleaning up unused resources to maintain code quality"
+    pwsh: true
+  condition: always()
+
+# Optional: Fail the build if critical issues are found
+# Uncomment the following task if you want the pipeline to fail on resource issues
+# - task: PowerShell@2
+#   displayName: 'Fail on Critical Resource Issues'
+#   inputs:
+#     filePath: 'check_resource_usage.ps1'
+#     arguments: '-Verbose'
+#     pwsh: true
+#     workingDirectory: '$(Build.SourcesDirectory)'
+#   condition: always()

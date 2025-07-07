@@ -72,17 +72,17 @@
             <ui:CardExpander>
                 <ui:CardExpander.Header>
                     <ui:TextBlock
+                        Style="{StaticResource Text.Subtitle}"
                         Grid.Row="0"
                         Grid.Column="0"
                         VerticalAlignment="Center"
-                        FontTypography="Subtitle"
                         Text="{markup:Localize Info_EPLLicense}" 
                         TextWrapping="Wrap"/>
                 </ui:CardExpander.Header>
                 <ui:CardExpander.Content>
                     <ScrollViewer HorizontalScrollBarVisibility="Auto">
                         <ui:TextBlock Name="EplLicenseTextBlock" 
-                                      FontTypography="Body"
+                                      Style="{StaticResource Text.Body}"
                                       FontFamily="Courier New"/>
                     </ScrollViewer>
                 </ui:CardExpander.Content>
@@ -90,17 +90,17 @@
             <ui:CardExpander Margin="0, 10, 0, 0">
                     <ui:CardExpander.Header>
                         <ui:TextBlock
+                            Style="{StaticResource Text.Subtitle}"
                             Grid.Row="0"
                             Grid.Column="0"
                             VerticalAlignment="Center"
-                            FontTypography="Subtitle"
                             Text="{markup:Localize Info_ApacheLicense}" 
                             TextWrapping="Wrap"/>
                     </ui:CardExpander.Header>
                     <ui:CardExpander.Content>
                         <ScrollViewer HorizontalScrollBarVisibility="Auto">
                             <ui:TextBlock Name="ApacheLicenseTextBlock" 
-                                          FontTypography="Body"
+                                          Style="{StaticResource Text.Body}"
                                           FontFamily="Courier New"/>
                         </ScrollViewer>
                     </ui:CardExpander.Content>
@@ -108,16 +108,16 @@
             <ui:CardExpander Margin="0, 10, 0, 0">
                 <ui:CardExpander.Header>
                     <ui:TextBlock
+                        Style="{StaticResource Text.Subtitle}"
                         Grid.Row="0"
                         Grid.Column="0"
                         VerticalAlignment="Center"
-                        FontTypography="Subtitle"
                         Text="{markup:Localize Info_MITLicense}" 
                         TextWrapping="Wrap"/>
                 </ui:CardExpander.Header>
                 <ui:CardExpander.Content>
                     <ui:TextBlock Name="MitLicenseTextBlock" 
-                                  FontTypography="Body"
+                                  Style="{StaticResource Text.Body}"
                                   FontFamily="Courier New"
                                   TextWrapping="Wrap"/>
                 </ui:CardExpander.Content>

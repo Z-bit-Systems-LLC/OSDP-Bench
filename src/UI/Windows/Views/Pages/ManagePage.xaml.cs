@@ -8,7 +8,6 @@ using OSDPBench.Core.Models;
 using OSDPBench.Core.ViewModels.Pages;
 using OSDPBench.Windows.Views.Controls;
 using Wpf.Ui.Abstractions.Controls;
-using OSDPBench.Core.Resources;
 
 namespace OSDPBench.Windows.Views.Pages;
 
@@ -178,11 +177,11 @@ public partial class ManagePage : INavigableView<ManageViewModel>
         {
             string result = await client.GetStringAsync(url);
 
-            MessageBox.Show(result, OSDPBench.Core.Resources.Resources.GetString("Dialog_VendorInformation_Title"));
+            MessageBox.Show(result, Core.Resources.Resources.GetString("Dialog_VendorInformation_Title"));
         }
         catch (Exception exception)
         {
-            MessageBox.Show(OSDPBench.Core.Resources.Resources.GetString("Error_OUILookupFailed").Replace("{0}", exception.Message));
+            MessageBox.Show(Core.Resources.Resources.GetString("Error_OUILookupFailed").Replace("{0}", exception.Message));
         }
     }
 }

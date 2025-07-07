@@ -13,6 +13,7 @@
                 <ui:ControlsDictionary />
                 <!-- OSDP Bench Design System -->
                 <ResourceDictionary Source="Styles/DesignTokens.xaml"/>
+                <ResourceDictionary Source="Styles/ThemeSemanticColors.xaml"/>
                 <ResourceDictionary Source="Styles/ComponentStyles.xaml"/>
                 <ResourceDictionary Source="Styles/LayoutTemplates.xaml"/>
             </ResourceDictionary.MergedDictionaries>

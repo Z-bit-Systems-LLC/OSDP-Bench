@@ -1,8 +1,6 @@
 ﻿using System.Windows.Controls;
 using System.ComponentModel;
 using System.Windows;
-using System.Windows.Data;
-using System.Windows.Media;
 using OSDPBench.Core.ViewModels.Pages;
 using Wpf.Ui.Abstractions.Controls;
 using Wpf.Ui.Controls;
@@ -32,7 +30,7 @@ public partial class ConnectPage : INavigableView<ConnectViewModel>, INotifyProp
         InitializeComponent();
 
         // Set up loaded event to ensure proper initialization
-        this.Loaded += OnPageLoaded;
+        Loaded += OnPageLoaded;
     }
 
     public ConnectViewModel ViewModel { get; }
@@ -108,7 +106,7 @@ public partial class ConnectPage : INavigableView<ConnectViewModel>, INotifyProp
     private void OnResourcesPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
         // When culture changes, update the connection types with new localized strings
-        // Since we're updating in place, the selection should be maintained
+        // Since we're updating in place. The selection should be maintained
         UpdateConnectionTypes();
         
         // Ensure the UI updates properly
@@ -156,13 +154,13 @@ public partial class ConnectPage : INavigableView<ConnectViewModel>, INotifyProp
     {
         // Check if we have enough width for side-by-side layout
         // Threshold of 500 pixels seems reasonable for this layout
-        const double WidthThreshold = 500;
+        const double widthThreshold = 500;
         
         if (ButtonPanel != null)
         {
-            if (e.NewSize.Width < WidthThreshold)
+            if (e.NewSize.Width < widthThreshold)
             {
-                // Narrow: Move buttons to second row, left aligned
+                // Narrow: Move buttons to the second row, left aligned
                 Grid.SetRow(ButtonPanel, 1);
                 Grid.SetColumn(ButtonPanel, 0);
                 Grid.SetColumnSpan(ButtonPanel, 2);

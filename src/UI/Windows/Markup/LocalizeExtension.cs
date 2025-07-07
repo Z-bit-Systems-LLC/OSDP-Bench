@@ -1,4 +1,3 @@
-using System.Globalization;
 using System.Windows.Markup;
 using System.Windows.Data;
 using OSDPBench.Core.Resources;
