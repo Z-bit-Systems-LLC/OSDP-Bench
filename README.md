@@ -92,6 +92,24 @@ For documentation contributions:
 3. Update this README to include the new file
 4. Follow the existing documentation style and structure
 
+### Release Process
+
+To create a new release:
+
+1. Ensure you're on the `develop` branch with all changes committed
+2. Run the release script:
+   ```powershell
+   ./ci/release.ps1
+   ```
+3. The script will:
+   - Verify no uncommitted changes exist
+   - Check that develop is ahead of main
+   - Display changes to be released
+   - Merge develop into main (with confirmation)
+   - Push to trigger automated CI/CD pipeline
+
+The CI pipeline will automatically handle version bumping and release creation.
+
 ## License
 
 This project is licensed under the Eclipse Public License 2.0 - see the [LICENSE](LICENSE) file for details.
