@@ -525,4 +525,24 @@
     <value>Sprache auswählen</value>
     <comment>Tooltip for language selection</comment>
   </data>
+  <data name="Language_SystemMismatchTitle" xml:space="preserve">
+    <value>Systemsprache erkannt</value>
+    <comment>Title for system language mismatch dialog</comment>
+  </data>
+  <data name="Language_SystemMismatchMessage" xml:space="preserve">
+    <value>Ihre Systemsprache ist {0}. Möchten Sie die Anwendung an Ihre Systemsprache anpassen?</value>
+    <comment>Message asking user if they want to switch to system language. {0} is the system language name.</comment>
+  </data>
+  <data name="Language_DontAskAgain" xml:space="preserve">
+    <value>Frag mich nicht noch einmal</value>
+    <comment>Checkbox label to prevent future language mismatch prompts</comment>
+  </data>
+  <data name="Common_Yes" xml:space="preserve">
+    <value>Ja</value>
+    <comment>Common Yes button text</comment>
+  </data>
+  <data name="Common_No" xml:space="preserve">
+    <value>Nein</value>
+    <comment>Common No button text</comment>
+  </data>
 </root>

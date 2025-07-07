@@ -135,7 +135,7 @@
   </data>
   <!-- Connection Messages -->
   <data name="Status_ConnectionFormat" xml:space="preserve">
-    <value>アドレス {0} - {1}</value>
+    <value>住所 {0} で {1}</value>
     <comment>Brief connection status format. {0} = address, {1} = baud rate</comment>
   </data>
   <!-- Page Titles -->
@@ -524,5 +524,25 @@
   <data name="Language_SelectLanguage" xml:space="preserve">
     <value>言語の選択</value>
     <comment>Tooltip for language selection</comment>
+  </data>
+  <data name="Language_SystemMismatchTitle" xml:space="preserve">
+    <value>システム言語が検出されました</value>
+    <comment>Title for system language mismatch dialog</comment>
+  </data>
+  <data name="Language_SystemMismatchMessage" xml:space="preserve">
+    <value>システム言語は次のとおりです。 {0}.システム言語に合わせてアプリケーションを切り替えますか?</value>
+    <comment>Message asking user if they want to switch to system language. {0} is the system language name.</comment>
+  </data>
+  <data name="Language_DontAskAgain" xml:space="preserve">
+    <value>二度と聞かないで</value>
+    <comment>Checkbox label to prevent future language mismatch prompts</comment>
+  </data>
+  <data name="Common_Yes" xml:space="preserve">
+    <value>はい</value>
+    <comment>Common Yes button text</comment>
+  </data>
+  <data name="Common_No" xml:space="preserve">
+    <value>いいえ</value>
+    <comment>Common No button text</comment>
   </data>
 </root>

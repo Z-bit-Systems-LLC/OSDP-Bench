@@ -135,7 +135,7 @@
   </data>
   <!-- Connection Messages -->
   <data name="Status_ConnectionFormat" xml:space="preserve">
-    <value>Dirección {0} a {1}</value>
+    <value>Dirección {0} en {1}</value>
     <comment>Brief connection status format. {0} = address, {1} = baud rate</comment>
   </data>
   <!-- Page Titles -->
@@ -524,5 +524,25 @@
   <data name="Language_SelectLanguage" xml:space="preserve">
     <value>Seleccionar idioma</value>
     <comment>Tooltip for language selection</comment>
+  </data>
+  <data name="Language_SystemMismatchTitle" xml:space="preserve">
+    <value>Idioma del sistema detectado</value>
+    <comment>Title for system language mismatch dialog</comment>
+  </data>
+  <data name="Language_SystemMismatchMessage" xml:space="preserve">
+    <value>El idioma de su sistema es {0}. ¿Le gustaría cambiar la aplicación para que coincida con el idioma de su sistema?</value>
+    <comment>Message asking user if they want to switch to system language. {0} is the system language name.</comment>
+  </data>
+  <data name="Language_DontAskAgain" xml:space="preserve">
+    <value>No me vuelvas a preguntar</value>
+    <comment>Checkbox label to prevent future language mismatch prompts</comment>
+  </data>
+  <data name="Common_Yes" xml:space="preserve">
+    <value>Sí</value>
+    <comment>Common Yes button text</comment>
+  </data>
+  <data name="Common_No" xml:space="preserve">
+    <value>No</value>
+    <comment>Common No button text</comment>
   </data>
 </root>
