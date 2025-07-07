@@ -135,7 +135,7 @@
   </data>
   <!-- Connection Messages -->
   <data name="Status_ConnectionFormat" xml:space="preserve">
-    <value>Address {0} at {1}</value>
+    <value>地址 {0} 在 {1}</value>
     <comment>Brief connection status format. {0} = address, {1} = baud rate</comment>
   </data>
   <!-- Page Titles -->
@@ -526,23 +526,23 @@
     <comment>Tooltip for language selection</comment>
   </data>
   <data name="Language_SystemMismatchTitle" xml:space="preserve">
-    <value>System Language Detected</value>
+    <value>检测到系统语言</value>
     <comment>Title for system language mismatch dialog</comment>
   </data>
   <data name="Language_SystemMismatchMessage" xml:space="preserve">
-    <value>Your system language is {0}. Would you like to switch the application to match your system language?</value>
+    <value>您的系统语言是 {0}.是否要切换应用程序以匹配您的系统语言？</value>
     <comment>Message asking user if they want to switch to system language. {0} is the system language name.</comment>
   </data>
   <data name="Language_DontAskAgain" xml:space="preserve">
-    <value>Don't ask me again</value>
+    <value>不要再问我了</value>
     <comment>Checkbox label to prevent future language mismatch prompts</comment>
   </data>
   <data name="Common_Yes" xml:space="preserve">
-    <value>Yes</value>
+    <value>是的</value>
     <comment>Common Yes button text</comment>
   </data>
   <data name="Common_No" xml:space="preserve">
-    <value>No</value>
+    <value>不</value>
     <comment>Common No button text</comment>
   </data>
 </root>
