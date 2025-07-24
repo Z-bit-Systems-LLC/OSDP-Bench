@@ -55,4 +55,23 @@ public interface ILocalizationService
     /// <param name="culture">The culture to get the display name for</param>
     /// <returns>The localized display name</returns>
     string GetCultureDisplayName(CultureInfo culture);
+    
+    /// <summary>
+    /// Checks if the current application language matches the system language
+    /// </summary>
+    /// <returns>True if the languages match, false otherwise</returns>
+    bool IsSystemLanguageMatch();
+    
+    /// <summary>
+    /// Gets the current system language
+    /// </summary>
+    /// <returns>The system's current UI culture</returns>
+    CultureInfo GetSystemCulture();
+    
+    /// <summary>
+    /// Checks if a specific culture is supported by the application
+    /// </summary>
+    /// <param name="culture">The culture to check</param>
+    /// <returns>True if the culture or its base language is supported</returns>
+    bool IsCultureSupported(CultureInfo culture);
 }

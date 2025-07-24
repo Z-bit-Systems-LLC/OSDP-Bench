@@ -1,4 +1,3 @@
-using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -42,30 +41,24 @@ public static class CopyTextBoxHelper
         });
 }
 
-public class RelayCommand : ICommand
+public class RelayCommand(Action<object> execute, Func<object, bool>? canExecute = null)
+    : ICommand
 {
-    private readonly Action<object> _execute;
-    private readonly Func<object, bool> _canExecute;
+    private readonly Action<object> _execute = execute ?? throw new ArgumentNullException(nameof(execute));
 
-    public RelayCommand(Action<object> execute, Func<object, bool> canExecute = null)
+    public event EventHandler? CanExecuteChanged
     {
-        _execute = execute ?? throw new ArgumentNullException(nameof(execute));
-        _canExecute = canExecute;
+        add => CommandManager.RequerySuggested += value;
+        remove => CommandManager.RequerySuggested -= value;
     }
 
-    public event EventHandler CanExecuteChanged
+    public bool CanExecute(object? parameter)
     {
-        add { CommandManager.RequerySuggested += value; }
-        remove { CommandManager.RequerySuggested -= value; }
+        return parameter != null && (canExecute?.Invoke(parameter) ?? true);
     }
 
-    public bool CanExecute(object parameter)
+    public void Execute(object? parameter)
     {
-        return _canExecute?.Invoke(parameter) ?? true;
-    }
-
-    public void Execute(object parameter)
-    {
-        _execute(parameter);
+        if (parameter != null) _execute(parameter);
     }
 }

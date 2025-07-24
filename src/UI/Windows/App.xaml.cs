@@ -55,8 +55,9 @@ public partial class App
             services.AddSingleton<IDialogService, WindowsDialogService>();
             services.AddSingleton<ISerialPortConnectionService, WindowsSerialPortConnectionService>();
             services.AddSingleton<IUsbDeviceMonitorService, WindowsUsbDeviceMonitorService>();
-            services.AddSingleton<IUserSettingsService, UserSettingsService>();
+            services.AddSingleton<IUserSettingsService, WindowsUserSettingsService>();
             services.AddSingleton<ILocalizationService, LocalizationService>();
+            services.AddSingleton<ILanguageMismatchService, WindowsLanguageMismatchService>();
         }).Build();
 
     /// <summary>
@@ -100,6 +101,23 @@ public partial class App
         
         Host.Services.GetService<ManageViewModel>();
         Host.Services.GetService<MonitorViewModel>();
+        
+        // Check for language mismatch after UI is initialized
+        _ = Task.Run(async () =>
+        {
+            // Small delay to ensure UI is fully loaded
+            await Task.Delay(500);
+            
+            // Run on UI thread to ensure proper dialog display and culture updates
+            await Current.Dispatcher.InvokeAsync(async () =>
+            {
+                var languageMismatchService = Host.Services.GetService<ILanguageMismatchService>();
+                if (languageMismatchService != null)
+                {
+                    await languageMismatchService.CheckAndPromptForLanguageMismatchAsync();
+                }
+            });
+        });
     }
 
     /// <summary>

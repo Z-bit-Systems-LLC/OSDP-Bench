@@ -3,8 +3,7 @@
 A professional tool for configuring and troubleshooting OSDP devices.
 
 [![.NET](https://img.shields.io/badge/.NET-8.0-blue)](https://dotnet.microsoft.com/)
-[![License](https://img.shields.io/badge/License-Apache%202.0-green.svg)](LICENSE)
-[![Platform](https://img.shields.io/badge/Platform-Windows-lightgrey)](https://docs.microsoft.com/en-us/windows/)
+[![License](https://img.shields.io/badge/License-Eclipse%202.0-green.svg)](LICENSE)
 
 ## About
 
@@ -21,6 +20,15 @@ Core functionality is under an open source license to help increase the adoption
 - **Multi-language Support** - Available in multiple languages
 - **Cross-platform** - Built on .NET 8.0 for modern compatibility
 
+## Get OSDP Bench
+
+### Download the App
+
+OSDP Bench is available for purchase on multiple platforms:
+
+[![Microsoft Store](https://get.microsoft.com/images/en-us%20dark.svg)](ms-windows-store://pdp/?productid=9N3W7QR3R5S7&cid=&mode=mini)
+[![Google Play](src/Assets/google-play.svg)](https://play.google.com/store/apps/details?id=com.z_bitco.com.osdpbenchmobile)
+
 ## Getting Started
 
 ### Prerequisites
@@ -29,7 +37,7 @@ Core functionality is under an open source license to help increase the adoption
 - Windows 10/11 (for WinUI version)
 - Serial port access for device communication
 
-### Installation
+### Building from Source
 
 1. Clone the repository:
    ```bash
@@ -84,9 +92,27 @@ For documentation contributions:
 3. Update this README to include the new file
 4. Follow the existing documentation style and structure
 
+### Release Process
+
+To create a new release:
+
+1. Ensure you're on the `develop` branch with all changes committed
+2. Run the release script:
+   ```powershell
+   ./ci/release.ps1
+   ```
+3. The script will:
+   - Verify no uncommitted changes exist
+   - Check that develop is ahead of main
+   - Display changes to be released
+   - Merge develop into main (with confirmation)
+   - Push to trigger automated CI/CD pipeline
+
+The CI pipeline will automatically handle version bumping and release creation.
+
 ## License
 
-This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the Eclipse Public License 2.0 - see the [LICENSE](LICENSE) file for details.
 
 ## Contact
 

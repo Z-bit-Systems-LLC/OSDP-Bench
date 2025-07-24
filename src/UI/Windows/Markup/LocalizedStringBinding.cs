@@ -1,6 +1,4 @@
 using System.ComponentModel;
-using System.Windows;
-using System.Windows.Data;
 
 namespace OSDPBench.Windows.Markup;
 
@@ -16,10 +14,10 @@ public class LocalizedStringBinding : INotifyPropertyChanged
         _key = key;
         
         // Subscribe to culture changes
-        OSDPBench.Core.Resources.Resources.PropertyChanged += OnResourcesPropertyChanged;
+        Core.Resources.Resources.PropertyChanged += OnResourcesPropertyChanged;
     }
     
-    public string Value => OSDPBench.Core.Resources.Resources.GetString(_key);
+    public string Value => Core.Resources.Resources.GetString(_key);
     
     private void OnResourcesPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
@@ -31,6 +29,6 @@ public class LocalizedStringBinding : INotifyPropertyChanged
     
     ~LocalizedStringBinding()
     {
-        OSDPBench.Core.Resources.Resources.PropertyChanged -= OnResourcesPropertyChanged;
+        Core.Resources.Resources.PropertyChanged -= OnResourcesPropertyChanged;
     }
 }

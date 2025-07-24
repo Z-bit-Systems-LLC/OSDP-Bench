@@ -6,7 +6,7 @@ namespace OSDPBench.Core.ViewModels.Windows;
 /// <summary>
 /// Represents the view model for the main window of the application.
 /// </summary>
-public partial class MainWindowViewModel : ObservableObject
+public class MainWindowViewModel : ObservableObject
 {
     /// <summary>
     /// Gets the language selection view model

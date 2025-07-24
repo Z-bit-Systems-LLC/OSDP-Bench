@@ -26,7 +26,7 @@ public class UsbMonitoringTests
     public void ConnectViewModel_WithUsbMonitorService_StartsMonitoring()
     {
         // Act
-        var viewModel = new ConnectViewModel(
+        using var viewModel = new ConnectViewModel(
             _mockDialogService.Object,
             _mockDeviceManagementService.Object,
             _mockSerialPortConnectionService.Object,
@@ -40,11 +40,14 @@ public class UsbMonitoringTests
     public void ConnectViewModel_WithoutUsbMonitorService_DoesNotThrow()
     {
         // Act & Assert
-        Assert.DoesNotThrow(() => new ConnectViewModel(
-            _mockDialogService.Object,
-            _mockDeviceManagementService.Object,
-            _mockSerialPortConnectionService.Object,
-            null));
+        // ReSharper disable once ObjectCreationAsStatement
+        Assert.DoesNotThrow(() =>
+        {
+            using var viewModel = new ConnectViewModel(
+                _mockDialogService.Object,
+                _mockDeviceManagementService.Object,
+                _mockSerialPortConnectionService.Object);
+        });
     }
     
     [Test]

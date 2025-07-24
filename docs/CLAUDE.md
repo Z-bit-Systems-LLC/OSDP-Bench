@@ -14,6 +14,32 @@
 - Run specific test: `dotnet test test/Core.Tests/Core.Tests.csproj --filter "Name=ConnectViewModel_InitializedAvailableBaudRates"`
 - Run with code coverage: `dotnet test test/Core.Tests/Core.Tests.csproj --collect:"XPlat Code Coverage"`
 
+## Resource Management
+- Check resource usage: `pwsh ci/check_resource_usage_progress.ps1`
+- The script analyzes unused resource strings and missing definitions across all language files
+- Shows progress indicators for both resource usage checking and missing definition scanning
+- Provides detailed reports with resource values and comments for cleanup decisions
+- Can be integrated into Azure DevOps pipelines using `ci/azure-pipeline-resource-check.yml`
+
+## Release Process
+- Create a release: `pwsh ci/release.ps1`
+- The script automates the release workflow:
+  - Validates working directory state (no uncommitted changes)
+  - Ensures you're on the develop branch
+  - Fetches latest changes from remote
+  - Verifies develop is ahead of main
+  - Shows commits to be released
+  - Merges develop into main with no-fast-forward
+  - Pushes to trigger CI/CD pipeline
+- The Azure DevOps pipeline will automatically:
+  - Run tests
+  - Bump version number
+  - Create a tagged release
+- Requirements:
+  - Must be on develop branch
+  - No uncommitted changes
+  - Develop must be ahead of main
+
 ## Code Style Guidelines
 - Use C# 8.0+ features with async/await patterns for asynchronous operations
 - Follow the MVVM design pattern for view models with ObservableObject and RelayCommand
@@ -31,9 +57,11 @@
 ## UI Style Guidelines
 - **Always use standard styles** - Apply predefined styles from the design system instead of inline properties
 - **Use design tokens for spacing** - Reference `{StaticResource Margin.Card}` instead of hardcoding values
-- **Apply semantic colors** - Use `{StaticResource Brush.Error}` instead of hardcoded colors like "Red"
+- **Apply theme-aware semantic colors** - Use `{DynamicResource SemanticSuccessBrush}` for automatic light/dark theme support
 - **Follow the style hierarchy** - Check ComponentStyles.xaml and LayoutTemplates.xaml before creating custom styles
 - **Update existing code** - When modifying files, replace inline styling with standard styles
 - **Create reusable patterns** - If you find yourself repeating XAML structures, consider adding a new style or template
+- **Use WrapPanel for responsive layouts** - When controls should be horizontal on wide screens but wrap to vertical on narrow screens, use WrapPanel instead of fixed Grid layouts
+- **Prefer dynamic resources for colors** - Use `{DynamicResource}` instead of `{StaticResource}` for colors to ensure theme compatibility
 
 For detailed UI styling guidelines and examples, see: `src/UI/Windows/Styles/StyleGuide.md`

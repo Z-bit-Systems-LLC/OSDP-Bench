@@ -18,34 +18,11 @@
         <converters:StringToVisibilityConverter x:Key="StringToVisibilityConverter" />
     </Page.Resources>
 
-    <StackPanel 
-        Orientation="Vertical"
-        Margin="0 5">
-        <Grid Margin="10 5">
-            <TextBlock 
-                Text="{Binding RelativeSource={RelativeSource AncestorType=Page}, Path=Title}"
-                Style="{StaticResource PageTitleStyle}"/>
-            
-            <StackPanel Orientation="Horizontal" 
-                        HorizontalAlignment="Right" 
-                        VerticalAlignment="Center">
-                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0 0 15 0">
-                    <TextBlock Text="{markup:Localize Activity_Tx}" Style="{StaticResource Activity.Label}"/>
-                    <controls:LedControl 
-                        LastActivityTime="{Binding Path=ViewModel.LastTxActiveTime}" 
-                        LedColor="Red" 
-                        VerticalAlignment="Center"/>
-                </StackPanel>
-            
-                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                    <TextBlock Text="{markup:Localize Activity_Rx}" Style="{StaticResource Activity.Label}"/>
-                    <controls:LedControl 
-                        LastActivityTime="{Binding Path=ViewModel.LastRxActiveTime}" 
-                        LedColor="Red" 
-                        VerticalAlignment="Center"/>
-                </StackPanel>
-            </StackPanel>
-        </Grid>
+    <StackPanel Style="{StaticResource Page.Container}">
+        
+        <!-- Page Header with Activity Indicators -->
+        <ContentControl Content="{Binding RelativeSource={RelativeSource AncestorType=Page}, Path=Title}"
+                        Template="{StaticResource Template.PageHeader}"/>
         <StackPanel  Orientation="Vertical"
                      Visibility="{Binding Path=ViewModel.StatusLevel, Converter={StaticResource StringToVisibilityConverter}, ConverterParameter=Disconnected, Mode=OneWay}">
             <TextBlock Style="{StaticResource Text.Warning}"
@@ -68,8 +45,8 @@
             <ui:Card Margin="10 5" Padding="10">
                 <StackPanel Orientation="Vertical">
                     <ui:TextBlock
+                        Style="{StaticResource Text.Subtitle}"
                         VerticalAlignment="Center"
-                        FontTypography="Subtitle"
                         Text="{markup:Localize Manage_DeviceInformation}" 
                         TextWrapping="Wrap"
                         Margin="0,0,0,10"/>
@@ -141,23 +118,12 @@
                             <ColumnDefinition Width="Auto" MinWidth="100" />
                         </Grid.ColumnDefinitions>
                         <ui:TextBlock
+                            Style="{StaticResource Text.Subtitle}"
                             Grid.Row="0"
                             Grid.Column="0"
                             VerticalAlignment="Center"
-                            FontTypography="Subtitle"
                             Text="{markup:Localize Manage_DeviceAction}" 
                             TextWrapping="Wrap"/>
-                        <ui:TextBlock Style="{StaticResource Text.Caption}"
-                            Grid.Row="1"
-                            Grid.Column="0"
-                            TextWrapping="Wrap">
-                            <ui:TextBlock.Text>
-                                <MultiBinding StringFormat="{markup:Localize Connection_DeviceConnectedFormat}">
-                                    <Binding Path="ViewModel.ConnectedAddress" />
-                                    <Binding Path="ViewModel.ConnectedBaudRate" />
-                                </MultiBinding>
-                            </ui:TextBlock.Text>
-                        </ui:TextBlock>
 
                         <ComboBox Name="DeviceActionsComboBox"
                                   Grid.Row="0"

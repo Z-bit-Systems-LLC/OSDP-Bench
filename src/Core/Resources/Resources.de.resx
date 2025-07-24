@@ -122,45 +122,21 @@
     <value>Entfernt</value>
     <comment>Device connection status when not connected</comment>
   </data>
-  <data name="Status_Discovering" xml:space="preserve">
-    <value>Entdeckend</value>
-    <comment>Device connection status during discovery process</comment>
-  </data>
   <data name="Status_Error" xml:space="preserve">
     <value>Fehler</value>
     <comment>Device connection status when an error occurred</comment>
   </data>
   <!-- USB Status Messages -->
-  <data name="USB_DeviceInserted" xml:space="preserve">
-    <value>USB-Gerät eingesteckt</value>
-    <comment>Message shown when a USB device is detected</comment>
-  </data>
-  <data name="USB_DeviceRemoved" xml:space="preserve">
-    <value>USB-Gerät entfernt</value>
-    <comment>Message shown when a USB device is disconnected</comment>
-  </data>
   <!-- Error Messages -->
-  <data name="Error_ConnectionFailed" xml:space="preserve">
-    <value>Verbindung fehlgeschlagen</value>
-    <comment>Generic connection failure message</comment>
-  </data>
-  <data name="Error_DeviceNotFound" xml:space="preserve">
-    <value>Gerät nicht gefunden</value>
-    <comment>Error when device cannot be found during discovery</comment>
-  </data>
-  <data name="Error_InvalidAddress" xml:space="preserve">
-    <value>Ungültige Adresse</value>
-    <comment>Error when the entered address is invalid</comment>
-  </data>
   <!-- Device Information -->
   <data name="Device_SerialNumberPrefix" xml:space="preserve">
     <value>S/N - </value>
     <comment>Prefix for device serial number display</comment>
   </data>
   <!-- Connection Messages -->
-  <data name="Connection_DeviceConnectedFormat" xml:space="preserve">
-    <value>Gerät, das an der Adresse verbunden ist {0} mit einer Baudrate von {1}</value>
-    <comment>Format string for displaying connection details. {0} = address, {1} = baud rate</comment>
+  <data name="Status_ConnectionFormat" xml:space="preserve">
+    <value>Adresse {0} bei {1}</value>
+    <comment>Brief connection status format. {0} = address, {1} = baud rate</comment>
   </data>
   <!-- Page Titles -->
   <data name="Page_Connect" xml:space="preserve">
@@ -313,10 +289,6 @@
   <data name="Monitor_Type" xml:space="preserve">
     <value>Art</value>
     <comment>Column header for type in monitoring grid</comment>
-  </data>
-  <data name="Monitor_Details" xml:space="preserve">
-    <value>Details</value>
-    <comment>Column header for details in monitoring grid</comment>
   </data>
   <data name="Monitor_Expand" xml:space="preserve">
     <value>Erweitern</value>
@@ -472,10 +444,6 @@
     <value>USB-Gerät getrennt</value>
     <comment>Message when USB device is disconnected</comment>
   </data>
-  <data name="USB_PortsChanged" xml:space="preserve">
-    <value>USB-Anschlüsse geändert</value>
-    <comment>Message when USB ports have changed</comment>
-  </data>
   <!-- Dialog Messages -->
   <data name="Dialog_Connect_Title" xml:space="preserve">
     <value>Verbinden</value>
@@ -557,8 +525,24 @@
     <value>Sprache auswählen</value>
     <comment>Tooltip for language selection</comment>
   </data>
-  <data name="Language_ChangeConfirmation" xml:space="preserve">
-    <value>Sprache erfolgreich geändert</value>
-    <comment>Confirmation message when language is changed</comment>
+  <data name="Language_SystemMismatchTitle" xml:space="preserve">
+    <value>Systemsprache erkannt</value>
+    <comment>Title for system language mismatch dialog</comment>
+  </data>
+  <data name="Language_SystemMismatchMessage" xml:space="preserve">
+    <value>Ihre Systemsprache ist {0}. Möchten Sie die Anwendung an Ihre Systemsprache anpassen?</value>
+    <comment>Message asking user if they want to switch to system language. {0} is the system language name.</comment>
+  </data>
+  <data name="Language_DontAskAgain" xml:space="preserve">
+    <value>Frag mich nicht noch einmal</value>
+    <comment>Checkbox label to prevent future language mismatch prompts</comment>
+  </data>
+  <data name="Common_Yes" xml:space="preserve">
+    <value>Ja</value>
+    <comment>Common Yes button text</comment>
+  </data>
+  <data name="Common_No" xml:space="preserve">
+    <value>Nein</value>
+    <comment>Common No button text</comment>
   </data>
 </root>

@@ -19,35 +19,11 @@
 		<converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
 	</Page.Resources>
 	
-	<StackPanel 
-		Orientation="Vertical"
-		Margin="0 5">
+	<StackPanel Style="{StaticResource Page.Container}">
 		
-		<Grid Margin="10 5">
-			<TextBlock 
-				Text="{Binding RelativeSource={RelativeSource AncestorType=Page}, Path=Title}"
-				Style="{StaticResource PageTitleStyle}"/>
-            
-			<StackPanel Orientation="Horizontal" 
-			            HorizontalAlignment="Right" 
-			            VerticalAlignment="Center">
-				<StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0 0 15 0">
-					<TextBlock Text="{markup:Localize Activity_Tx}" Style="{StaticResource Activity.Label}"/>
-					<controls:LedControl 
-						LastActivityTime="{Binding Path=ViewModel.LastTxActiveTime}" 
-						LedColor="Red" 
-						VerticalAlignment="Center"/>
-				</StackPanel>
-            
-				<StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-					<TextBlock Text="{markup:Localize Activity_Rx}" Style="{StaticResource Activity.Label}"/>
-					<controls:LedControl 
-						LastActivityTime="{Binding Path=ViewModel.LastRxActiveTime}" 
-						LedColor="Red" 
-						VerticalAlignment="Center"/>
-				</StackPanel>
-			</StackPanel>
-		</Grid>
+		<!-- Page Header with Activity Indicators -->
+		<ContentControl Content="{Binding RelativeSource={RelativeSource AncestorType=Page}, Path=Title}"
+		                Template="{StaticResource Template.PageHeader}"/>
 		
 		<Border Style="{StaticResource Card.Bordered}"
 		        Visibility="{Binding Path=ViewModel.StatusLevel, Converter={StaticResource StringToVisibilityConverter}, ConverterParameter=Disconnected, Mode=OneWay}">

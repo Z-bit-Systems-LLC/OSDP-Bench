@@ -222,20 +222,7 @@ public sealed class DeviceManagementService : IDeviceManagementService
 
         await _panel.Shutdown();
 
-        try
-        {
-            await WaitUntilDeviceIsOffline();
-        }
-        catch (TimeoutException ex)
-        {
-            // Log or handle the timeout exception
-            Console.WriteLine($"Warning: {ex.Message}");
-        }
-        catch (Exception ex)
-        {
-            // Log unexpected exceptions during shutdown
-            Console.WriteLine($"Error during device shutdown: {ex.Message}");
-        }
+        await WaitUntilDeviceIsOffline();
     }
     
     private async Task WaitUntilDeviceIsOffline()
