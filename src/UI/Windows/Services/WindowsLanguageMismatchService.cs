@@ -81,25 +81,24 @@ public class WindowsLanguageMismatchService : ILanguageMismatchService
     public async Task<(bool userWantsToSwitch, bool dontAskAgain)> ShowLanguageMismatchDialogAsync(string systemLanguageName)
     {
         var tcs = new TaskCompletionSource<(bool, bool)>();
-        
+
         await Application.Current.Dispatcher.InvokeAsync(() =>
         {
             // Create the dialog content
             var message = _localizationService.GetString("Language_SystemMismatchMessage", systemLanguageName);
-            
+
             Window? dialogWindow = null;
-            var window = dialogWindow;
             var viewModel = new LanguageMismatchDialogViewModel(message, (userChoice, dontAsk) =>
             {
-                tcs.SetResult((userChoice, dontAsk));
-                window?.Close();
+                tcs.TrySetResult((userChoice, dontAsk));
+                dialogWindow?.Close();
             });
-            
+
             var dialogContent = new LanguageMismatchDialog
             {
                 DataContext = viewModel
             };
-            
+
             // Create and show the dialog window
             dialogWindow = new Window
             {
@@ -111,10 +110,10 @@ public class WindowsLanguageMismatchService : ILanguageMismatchService
                 Owner = Application.Current.MainWindow,
                 ShowInTaskbar = false
             };
-            
+
             dialogWindow.ShowDialog();
         });
-        
+
         return await tcs.Task;
     }
     
