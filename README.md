@@ -26,7 +26,7 @@ Core functionality is under an open source license to help increase the adoption
 
 OSDP Bench is available for purchase on multiple platforms:
 
-[![Microsoft Store](https://get.microsoft.com/images/en-us%20dark.svg)](ms-windows-store://pdp/?productid=9N3W7QR3R5S7&cid=&mode=mini)
+[![Microsoft Store](https://get.microsoft.com/images/en-us%20dark.svg)](https://apps.microsoft.com/detail/9n3w7qr3r5s7?hl=en-US&gl=US)
 [![Google Play](src/Assets/google-play.svg)](https://play.google.com/store/apps/details?id=com.z_bitco.com.osdpbenchmobile)
 
 ## Getting Started
