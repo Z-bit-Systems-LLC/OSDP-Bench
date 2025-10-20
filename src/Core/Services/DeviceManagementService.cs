@@ -149,31 +149,32 @@ public sealed class DeviceManagementService : IDeviceManagementService
         try
         {
             results = await DiscoveryRoutines(connections, progress, cancellationToken);
+
+            if (results == null)
+            {
+                throw new Exception("Unable to discover device");
+            }
+
+            if (results.Status != DiscoveryStatus.Succeeded) return results;
+
+            Address = results.Address;
+            BaudRate = (uint)results.Connection.BaudRate;
+            IdentityLookup = new IdentityLookup(results.Id);
+            CapabilitiesLookup = new CapabilitiesLookup(results.Capabilities);
+            UsesDefaultSecurityKey = results.UsesDefaultSecurityKey;
+            IsUsingSecureChannel = UsesDefaultSecurityKey;
+
+            RaiseEvent(DeviceLookupsChanged);
+
+            _connectionId = _panel.StartConnection(results.Connection, _defaultPollInterval, Tracer);
+            _panel.AddDevice(_connectionId, Address, CapabilitiesLookup.CRC, UsesDefaultSecurityKey);
+
+            return results;
         }
         finally
         {
             _isDiscovering = false;
         }
-
-        if (results == null)
-        {
-            throw new Exception("Unable to discover device");
-        }
-
-        if (results.Status != DiscoveryStatus.Succeeded) return results;
-
-        Address = results.Address;
-        BaudRate = (uint)results.Connection.BaudRate;
-        IdentityLookup = new IdentityLookup(results.Id);
-        CapabilitiesLookup = new CapabilitiesLookup(results.Capabilities);
-        UsesDefaultSecurityKey = results.UsesDefaultSecurityKey;
-
-        RaiseEvent(DeviceLookupsChanged);
-
-        _connectionId = _panel.StartConnection(results.Connection, _defaultPollInterval, Tracer);
-        _panel.AddDevice(_connectionId, Address, CapabilitiesLookup.CRC, false);
-
-        return results;
     }
 
     private async Task<DiscoveryResult> DiscoveryRoutines(IEnumerable<IOsdpConnection> connections,
