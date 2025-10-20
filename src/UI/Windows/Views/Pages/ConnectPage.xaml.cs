@@ -75,7 +75,9 @@ public partial class ConnectPage : INavigableView<ConnectViewModel>, INotifyProp
     private Visibility CalculateConnectVisibility()
     {
         // Show the Connect button when Manual mode is selected and not connected
-        bool isConnected = ViewModel.StatusLevel == StatusLevel.Connected;
+        // Error status means connected with problems (InvalidSecurityKey, timeout, etc.)
+        bool isConnected = ViewModel.StatusLevel == StatusLevel.Connected ||
+                          ViewModel.StatusLevel == StatusLevel.Error;
 
         return SelectedConnectionTypeIndex == 1 && !isConnected
             ? Visibility.Visible
@@ -84,8 +86,10 @@ public partial class ConnectPage : INavigableView<ConnectViewModel>, INotifyProp
 
     private Visibility CalculateDisconnectVisibility()
     {
-        // Show the Disconnect button when connected
-        bool isConnected = ViewModel.StatusLevel == StatusLevel.Connected;
+        // Show the Disconnect button when connected or when there's an error (still physically connected)
+        // Error status includes InvalidSecurityKey, timeouts, and other connection problems
+        bool isConnected = ViewModel.StatusLevel == StatusLevel.Connected ||
+                          ViewModel.StatusLevel == StatusLevel.Error;
 
         return isConnected
             ? Visibility.Visible
@@ -94,8 +98,9 @@ public partial class ConnectPage : INavigableView<ConnectViewModel>, INotifyProp
 
     private Visibility CalculateStartDiscoveryVisibility()
     {
-        // Only hide when actually connected
-        bool isConnected = ViewModel.StatusLevel == StatusLevel.Connected;
+        // Error status means connected with problems, so hide Start Discovery button
+        bool isConnected = ViewModel.StatusLevel == StatusLevel.Connected ||
+                          ViewModel.StatusLevel == StatusLevel.Error;
 
         return SelectedConnectionTypeIndex == 0 && ViewModel.StatusLevel is not StatusLevel.Discovering
             and not StatusLevel.Discovered && !isConnected
