@@ -104,6 +104,12 @@ public partial class ConnectViewModel : ObservableObject, IDisposable
             StatusText = Resources.Resources.GetString("Status_Connected");
             NakText = string.Empty;
             StatusLevel = StatusLevel.Connected;
+
+            // Sync communication settings from service to keep UI in sync
+            ConnectedAddress = _deviceManagementService.Address;
+            ConnectedBaudRate = (int)_deviceManagementService.BaudRate;
+            UseSecureChannel = _deviceManagementService.IsUsingSecureChannel;
+            UseDefaultKey = _deviceManagementService.UsesDefaultSecurityKey;
         }
         else if (StatusLevel == StatusLevel.Discovered)
         {

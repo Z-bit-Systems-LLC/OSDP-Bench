@@ -80,6 +80,16 @@ public interface IDeviceManagementService
     Task Reconnect(IOsdpConnection osdpConnection, byte address);
 
     /// <summary>
+    /// Reestablishes a connection with a device after communication settings have been changed.
+    /// This method does not wait for the device to go offline on the old connection settings
+    /// since the device has already switched to new communication parameters.
+    /// </summary>
+    /// <param name="osdpConnection">The connection instance to use for communication.</param>
+    /// <param name="address">The address of the device to reconnect with.</param>
+    /// <returns>A task representing the asynchronous reconnect operation.</returns>
+    Task ReconnectAfterCommunicationChange(IOsdpConnection osdpConnection, byte address);
+
+    /// <summary>
     /// Discovers a device asynchronously over the provided connections.
     /// </summary>
     /// <param name="connections">The connections to use for device discovery.</param>
