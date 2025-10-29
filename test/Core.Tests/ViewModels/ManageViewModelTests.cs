@@ -155,7 +155,7 @@ namespace OSDPBench.Core.Tests.ViewModels
                 Times.Once);
             
             _deviceManagementServiceMock.Verify(
-                x => x.Reconnect(
+                x => x.ReconnectAfterCommunicationChange(
                     It.IsAny<SerialPortOsdpConnection>(),
                     newAddress),
                 Times.Once);

@@ -162,12 +162,14 @@ public sealed class DeviceManagementService : IDeviceManagementService
             IdentityLookup = new IdentityLookup(results.Id);
             CapabilitiesLookup = new CapabilitiesLookup(results.Capabilities);
             UsesDefaultSecurityKey = results.UsesDefaultSecurityKey;
-            IsUsingSecureChannel = UsesDefaultSecurityKey;
+            // Don't auto-enable secure channel after discovery - let user choose
+            IsUsingSecureChannel = false;
 
             RaiseEvent(DeviceLookupsChanged);
 
             _connectionId = _panel.StartConnection(results.Connection, _defaultPollInterval, Tracer);
-            _panel.AddDevice(_connectionId, Address, CapabilitiesLookup.CRC, UsesDefaultSecurityKey);
+            // Use 5-parameter overload to explicitly disable secure channel after discovery
+            _panel.AddDevice(_connectionId, Address, CapabilitiesLookup.CRC, false, null);
 
             return results;
         }
