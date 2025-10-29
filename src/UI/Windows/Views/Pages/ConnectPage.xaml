@@ -17,6 +17,7 @@
         <converters:StatusLevelConverter x:Key="StatusLevelConverter" />
         <converters:StringToVisibilityConverter x:Key="StringToVisibilityConverter" />
         <converters:IndexToVisibilityConverter x:Key="IndexToVisibilityConverter" />
+        <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
     </Page.Resources>
 
     <StackPanel Style="{StaticResource Page.Container}">
@@ -90,30 +91,43 @@
                         <ui:Button Content="{markup:Localize Connect_Connect}"
                                    Command="{Binding ViewModel.ConnectDeviceCommand}"
                                    Margin="0,0,8,0"
-                                   Style="{StaticResource Button.Primary}"
-                                   Visibility="{Binding ConnectVisibility}"/>
-                        
+                                   Style="{StaticResource Button.Primary}">
+                            <ui:Button.Visibility>
+                                <Binding Path="ViewModel.ConnectVisible" Converter="{StaticResource BooleanToVisibilityConverter}"/>
+                            </ui:Button.Visibility>
+                        </ui:Button>
+
                         <ui:Button Content="{markup:Localize Connect_StartDiscovery}"
                                    Command="{Binding ViewModel.DiscoverDeviceCommand}"
                                    Margin="0,0,8,0"
-                                   Style="{StaticResource Button.Primary}"
-                                   Visibility="{Binding StartDiscoveryVisibility}"/>
-                        
+                                   Style="{StaticResource Button.Primary}">
+                            <ui:Button.Visibility>
+                                <Binding Path="ViewModel.StartDiscoveryVisible" Converter="{StaticResource BooleanToVisibilityConverter}"/>
+                            </ui:Button.Visibility>
+                        </ui:Button>
+
                         <ui:Button Content="{markup:Localize Connect_CancelDiscovery}"
                                    Command="{Binding ViewModel.DiscoverDeviceCancelCommand}"
                                    Margin="0,0,8,0"
-                                   Style="{StaticResource Button.Secondary}"
-                                   Visibility="{Binding CancelDiscoveryVisibility}"/>
-                        
+                                   Style="{StaticResource Button.Secondary}">
+                            <ui:Button.Visibility>
+                                <Binding Path="ViewModel.CancelDiscoveryVisible" Converter="{StaticResource BooleanToVisibilityConverter}"/>
+                            </ui:Button.Visibility>
+                        </ui:Button>
+
                         <ui:Button Content="{markup:Localize Connect_Disconnect}"
                                    Command="{Binding ViewModel.DisconnectDeviceCommand}"
                                    Margin="0,0,8,0"
-                                   Style="{StaticResource Button.Secondary}"
-                                   Visibility="{Binding DisconnectVisibility}"/>
+                                   Style="{StaticResource Button.Secondary}">
+                            <ui:Button.Visibility>
+                                <Binding Path="ViewModel.DisconnectVisible" Converter="{StaticResource BooleanToVisibilityConverter}"/>
+                            </ui:Button.Visibility>
+                        </ui:Button>
 
                         <ComboBox Name="ConnectionTypeComboBox"
-                                  ItemsSource="{Binding ConnectionTypes}"
-                                  SelectedIndex="{Binding SelectedConnectionTypeIndex, Mode=TwoWay}"/>
+                                  ItemsSource="{Binding ViewModel.ConnectionTypes}"
+                                  SelectedIndex="{Binding ViewModel.SelectedConnectionTypeIndex, Mode=TwoWay}"
+                                  IsEnabled="{Binding ViewModel.IsConnectionTypeEnabled}"/>
                         </StackPanel>
                 </Grid>
                 
