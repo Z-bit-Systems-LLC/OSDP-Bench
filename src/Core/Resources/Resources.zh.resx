@@ -509,15 +509,15 @@
     <comment>Button text to collapse row details</comment>
   </data>
   <data name="Monitor_CommandsSent" xml:space="preserve">
-    <value>Commands Sent</value>
+    <value>发送的命令</value>
     <comment>Label for commands sent statistic</comment>
   </data>
   <data name="Monitor_RepliesReceived" xml:space="preserve">
-    <value>Replies Received</value>
+    <value>收到的回复</value>
     <comment>Label for replies received statistic</comment>
   </data>
   <data name="Monitor_Polls" xml:space="preserve">
-    <value>Polls</value>
+    <value>民意调查</value>
     <comment>Label for poll packets statistic</comment>
   </data>
   <data name="Monitor_Naks" xml:space="preserve">
@@ -525,7 +525,7 @@
     <comment>Label for NAK replies statistic</comment>
   </data>
   <data name="Monitor_LineQuality" xml:space="preserve">
-    <value>Line Quality</value>
+    <value>生产线质量</value>
     <comment>Label for line quality percentage statistic</comment>
   </data>
   <data name="ConnectionType_Discover" xml:space="preserve">
