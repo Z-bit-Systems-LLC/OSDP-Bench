@@ -60,6 +60,12 @@ public partial class MonitorViewModel : ObservableObject
     {
         TraceEntriesView.Clear();
         _lastPacketEntry = null;
+
+        // Reset statistics
+        CommandsSent = 0;
+        RepliesReceived = 0;
+        Polls = 0;
+        Naks = 0;
     }
 
     private void OnDeviceManagementServiceOnTraceEntryReceived(object? _, TraceEntry traceEntry)
@@ -87,6 +93,24 @@ public partial class MonitorViewModel : ObservableObject
         catch (Exception)
         {
             return;
+        }
+
+        // Update statistics
+        if (traceEntry.Direction == Output)
+        {
+            CommandsSent++;
+            if (packetTraceEntry.Packet.CommandType == CommandType.Poll)
+            {
+                Polls++;
+            }
+        }
+        else if (traceEntry.Direction == Input)
+        {
+            RepliesReceived++;
+            if (packetTraceEntry.Packet.ReplyType == ReplyType.Nak)
+            {
+                Naks++;
+            }
         }
 
         bool notDisplaying = packetTraceEntry.Packet.CommandType == CommandType.Poll ||
@@ -117,4 +141,47 @@ public partial class MonitorViewModel : ObservableObject
     [ObservableProperty] private byte _connectedAddress;
 
     [ObservableProperty] private uint _connectedBaudRate;
+
+    // Packet Statistics
+    [ObservableProperty] private int _commandsSent;
+
+    [ObservableProperty] private int _repliesReceived;
+
+    [ObservableProperty] private int _polls;
+
+    [ObservableProperty] private int _naks;
+
+    /// <summary>
+    /// Line quality percentage based on commands sent vs replies received
+    /// Accounts for 2 in-flight commands to prevent jumping during normal operation
+    /// </summary>
+    public double LineQualityPercentage
+    {
+        get
+        {
+            if (CommandsSent == 0) return 100.0;
+
+            // Allow for 2 commands to be in-flight without penalizing quality
+            int inFlight = CommandsSent - RepliesReceived;
+
+            // If we have more than 2 commands without a reply, count the excess as failures
+            int missedReplies = Math.Max(0, inFlight - 2);
+            int effectiveCommandsSent = CommandsSent - Math.Min(inFlight, 2);
+
+            if (effectiveCommandsSent == 0) return 100.0;
+
+            int successfulCommands = RepliesReceived;
+            return (successfulCommands / (double)(successfulCommands + missedReplies)) * 100.0;
+        }
+    }
+
+    partial void OnCommandsSentChanged(int value)
+    {
+        OnPropertyChanged(nameof(LineQualityPercentage));
+    }
+
+    partial void OnRepliesReceivedChanged(int value)
+    {
+        OnPropertyChanged(nameof(LineQualityPercentage));
+    }
 }
