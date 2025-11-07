@@ -180,7 +180,7 @@ public partial class ConnectViewModel : ObservableObject, IDisposable
 
     [ObservableProperty] private int _connectedBaudRate;
 
-    [ObservableProperty] private bool _useSecureChannel = false;
+    [ObservableProperty] private bool _useSecureChannel;
 
     [ObservableProperty] private bool _useDefaultKey = true;
 
@@ -230,11 +230,13 @@ public partial class ConnectViewModel : ObservableObject, IDisposable
     // Partial methods to notify when properties change
     partial void OnStatusLevelChanged(StatusLevel value)
     {
+        _ = value; // Intentionally unused - only triggering dependent property notification
         NotifyButtonVisibilityChanged();
     }
 
     partial void OnSelectedConnectionTypeIndexChanged(int value)
     {
+        _ = value; // Intentionally unused - only triggering dependent property notification
         NotifyButtonVisibilityChanged();
     }
 
@@ -523,10 +525,12 @@ public partial class ConnectViewModel : ObservableObject, IDisposable
         // Bug #2 Fix: Don't show Disconnect for cancelled discovery (Error state when not actually connected)
         // Bug #3 Fix: Include Connecting and ConnectingManually states
         // Include Discovered state so user can cancel before auto-connection
+        // Include Error state for invalid security key errors where user needs to disconnect
         bool isConnectedOrConnecting = StatusLevel == StatusLevel.Connected ||
                                        StatusLevel == StatusLevel.Connecting ||
                                        StatusLevel == StatusLevel.ConnectingManually ||
-                                       StatusLevel == StatusLevel.Discovered;
+                                       StatusLevel == StatusLevel.Discovered ||
+                                       StatusLevel == StatusLevel.Error;
 
         return isConnectedOrConnecting;
     }
