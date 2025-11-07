@@ -20,32 +20,12 @@
 	</Page.Resources>
 	
 	<StackPanel Style="{StaticResource Page.Container}">
-		
+
 		<!-- Page Header with Activity Indicators -->
 		<ContentControl Content="{Binding RelativeSource={RelativeSource AncestorType=Page}, Path=Title}"
 		                Template="{StaticResource Template.PageHeader}"/>
-		
-		<Border Style="{StaticResource Card.Bordered}"
-		        Visibility="{Binding Path=ViewModel.StatusLevel, Converter={StaticResource StringToVisibilityConverter}, ConverterParameter=Disconnected, Mode=OneWay}">
-			<StackPanel Orientation="Vertical">
-				<TextBlock Style="{StaticResource Text.Warning}"
-					Margin="20 10 20 0"
-					HorizontalAlignment="Center"
-					TextAlignment="Center"
-					TextWrapping="Wrap"
-					FontSize="{StaticResource FontSize.Headline}"
-					Text="{markup:Localize Monitor_DeviceNotConnected}"/>
-				<TextBlock Style="{StaticResource Text.Body}"
-					Margin="20 10 20 0"
-					HorizontalAlignment="Center"
-					TextAlignment="Center"
-					TextWrapping="Wrap"
-					FontSize="{StaticResource FontSize.Title}"
-					Text="{markup:Localize Monitor_ConnectionPageDetails}"/>
-			</StackPanel>
-		</Border>
-		<StackPanel  Orientation="Vertical"
-		             Visibility="{Binding Path=ViewModel.StatusLevel, Converter={StaticResource StringToVisibilityConverter}, ConverterParameter=Connected;Error, Mode=OneWay}">
+
+		<StackPanel  Orientation="Vertical">
 			<Border Style="{StaticResource Card.Bordered}"
 			        Visibility="{Binding Path=ViewModel.UsingSecureChannel, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}">
 				<StackPanel Orientation="Vertical">
