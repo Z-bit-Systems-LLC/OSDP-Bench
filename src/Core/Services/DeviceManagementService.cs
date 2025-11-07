@@ -149,31 +149,34 @@ public sealed class DeviceManagementService : IDeviceManagementService
         try
         {
             results = await DiscoveryRoutines(connections, progress, cancellationToken);
+
+            if (results == null)
+            {
+                throw new Exception("Unable to discover device");
+            }
+
+            if (results.Status != DiscoveryStatus.Succeeded) return results;
+
+            Address = results.Address;
+            BaudRate = (uint)results.Connection.BaudRate;
+            IdentityLookup = new IdentityLookup(results.Id);
+            CapabilitiesLookup = new CapabilitiesLookup(results.Capabilities);
+            UsesDefaultSecurityKey = results.UsesDefaultSecurityKey;
+            // Don't auto-enable secure channel after discovery - let user choose
+            IsUsingSecureChannel = false;
+
+            RaiseEvent(DeviceLookupsChanged);
+
+            _connectionId = _panel.StartConnection(results.Connection, _defaultPollInterval, Tracer);
+            // Use 5-parameter overload to explicitly disable secure channel after discovery
+            _panel.AddDevice(_connectionId, Address, CapabilitiesLookup.CRC, false, null);
+
+            return results;
         }
         finally
         {
             _isDiscovering = false;
         }
-
-        if (results == null)
-        {
-            throw new Exception("Unable to discover device");
-        }
-
-        if (results.Status != DiscoveryStatus.Succeeded) return results;
-
-        Address = results.Address;
-        BaudRate = (uint)results.Connection.BaudRate;
-        IdentityLookup = new IdentityLookup(results.Id);
-        CapabilitiesLookup = new CapabilitiesLookup(results.Capabilities);
-        UsesDefaultSecurityKey = results.UsesDefaultSecurityKey;
-
-        RaiseEvent(DeviceLookupsChanged);
-
-        _connectionId = _panel.StartConnection(results.Connection, _defaultPollInterval, Tracer);
-        _panel.AddDevice(_connectionId, Address, CapabilitiesLookup.CRC, false);
-
-        return results;
     }
 
     private async Task<DiscoveryResult> DiscoveryRoutines(IEnumerable<IOsdpConnection> connections,
@@ -217,14 +220,22 @@ public sealed class DeviceManagementService : IDeviceManagementService
     /// <inheritdoc />
     public async Task Shutdown()
     {
+        await Shutdown(waitForOffline: true);
+    }
+
+    private async Task Shutdown(bool waitForOffline)
+    {
         IdentityLookup = null;
         CapabilitiesLookup = null;
 
         await _panel.Shutdown();
 
-        await WaitUntilDeviceIsOffline();
+        if (waitForOffline)
+        {
+            await WaitUntilDeviceIsOffline();
+        }
     }
-    
+
     private async Task WaitUntilDeviceIsOffline()
     {
         // Skip waiting if we never had a valid connection
@@ -279,6 +290,20 @@ public sealed class DeviceManagementService : IDeviceManagementService
     public async Task Reconnect(IOsdpConnection osdpConnection, byte connectionParametersAddress)
     {
         await Connect(osdpConnection, connectionParametersAddress, IsUsingSecureChannel, UsesDefaultSecurityKey, _securityKey);
+    }
+
+    /// <inheritdoc />
+    public async Task ReconnectAfterCommunicationChange(IOsdpConnection osdpConnection, byte connectionParametersAddress)
+    {
+        // Don't wait for device to go offline since it has already switched to new communication settings
+        await Shutdown(waitForOffline: false);
+
+        Address = connectionParametersAddress;
+        BaudRate = (uint)osdpConnection.BaudRate;
+
+        _connectionId = _panel.StartConnection(osdpConnection, _defaultPollInterval, Tracer);
+        _panel.AddDevice(_connectionId, Address, true, IsUsingSecureChannel,
+            UsesDefaultSecurityKey ? null : _securityKey);
     }
 
     /// <summary>

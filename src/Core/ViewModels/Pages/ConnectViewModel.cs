@@ -55,9 +55,33 @@ public partial class ConnectViewModel : ObservableObject, IDisposable
             _usbDeviceMonitorService.UsbDeviceChanged += OnUsbDeviceChanged;
             _usbDeviceMonitorService.StartMonitoring();
         }
-        
+
+        // Initialize connection types with localized strings
+        UpdateConnectionTypes();
+
+        // Subscribe to culture changes to update localized strings
+        Resources.Resources.PropertyChanged += OnResourcesPropertyChanged;
+
         // Perform an initial port scan
         Task.Run(async () => await InitializeSerialPorts());
+    }
+
+    private void OnResourcesPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        // When culture changes, update the connection types with new localized strings
+        UpdateConnectionTypes();
+    }
+
+    private void UpdateConnectionTypes()
+    {
+        int previousSelectedIndex = SelectedConnectionTypeIndex;
+
+        ConnectionTypes.Clear();
+        ConnectionTypes.Add(Resources.Resources.GetString("ConnectionType_Discover"));
+        ConnectionTypes.Add(Resources.Resources.GetString("ConnectionType_Manual"));
+
+        // Restore selection after update
+        SelectedConnectionTypeIndex = previousSelectedIndex;
     }
 
     private void OnDeviceManagementServiceOnTraceEntryReceived(object? sender, TraceEntry traceEntry)
@@ -104,6 +128,12 @@ public partial class ConnectViewModel : ObservableObject, IDisposable
             StatusText = Resources.Resources.GetString("Status_Connected");
             NakText = string.Empty;
             StatusLevel = StatusLevel.Connected;
+
+            // Sync communication settings from service to keep UI in sync
+            ConnectedAddress = _deviceManagementService.Address;
+            ConnectedBaudRate = (int)_deviceManagementService.BaudRate;
+            UseSecureChannel = _deviceManagementService.IsUsingSecureChannel;
+            UseDefaultKey = _deviceManagementService.UsesDefaultSecurityKey;
         }
         else if (StatusLevel == StatusLevel.Discovered)
         {
@@ -150,7 +180,7 @@ public partial class ConnectViewModel : ObservableObject, IDisposable
 
     [ObservableProperty] private int _connectedBaudRate;
 
-    [ObservableProperty] private bool _useSecureChannel;
+    [ObservableProperty] private bool _useSecureChannel = false;
 
     [ObservableProperty] private bool _useDefaultKey = true;
 
@@ -161,6 +191,52 @@ public partial class ConnectViewModel : ObservableObject, IDisposable
     [ObservableProperty] private DateTime _lastRxActiveTime;
     
     [ObservableProperty] private string _usbStatusText = string.Empty;
+
+    /// <summary>
+    /// Gets the available connection types (localized).
+    /// </summary>
+    [ObservableProperty] private ObservableCollection<string> _connectionTypes = [];
+
+    /// <summary>
+    /// Gets or sets the selected connection type index (0 = Discovery, 1 = Manual).
+    /// </summary>
+    [ObservableProperty] private int _selectedConnectionTypeIndex;
+
+    /// <summary>
+    /// Gets a value indicating whether the Connect button should be visible.
+    /// </summary>
+    public bool ConnectVisible => CalculateConnectVisibility();
+
+    /// <summary>
+    /// Gets a value indicating whether the Disconnect button should be visible.
+    /// </summary>
+    public bool DisconnectVisible => CalculateDisconnectVisibility();
+
+    /// <summary>
+    /// Gets a value indicating whether the Start Discovery button should be visible.
+    /// </summary>
+    public bool StartDiscoveryVisible => CalculateStartDiscoveryVisibility();
+
+    /// <summary>
+    /// Gets a value indicating whether the Cancel Discovery button should be visible.
+    /// </summary>
+    public bool CancelDiscoveryVisible => CalculateCancelDiscoveryVisibility();
+
+    /// <summary>
+    /// Gets a value indicating whether the ConnectionTypeComboBox should be enabled.
+    /// </summary>
+    public bool IsConnectionTypeEnabled => CalculateConnectionTypeEnabled();
+
+    // Partial methods to notify when properties change
+    partial void OnStatusLevelChanged(StatusLevel value)
+    {
+        NotifyButtonVisibilityChanged();
+    }
+
+    partial void OnSelectedConnectionTypeIndexChanged(int value)
+    {
+        NotifyButtonVisibilityChanged();
+    }
 
     private async Task InitializeSerialPorts()
     {
@@ -258,16 +334,16 @@ public partial class ConnectViewModel : ObservableObject, IDisposable
                 
             case DiscoveryStatus.DeviceNotFound:
                 StatusText = Resources.Resources.GetString("Status_FailedToConnect");
-                StatusLevel = StatusLevel.Error;
+                StatusLevel = StatusLevel.Disconnected;
                 break;
-                
+
             case DiscoveryStatus.Error:
                 StatusText = Resources.Resources.GetString("Status_ErrorWhileDiscovering");
-                StatusLevel = StatusLevel.Error;
+                StatusLevel = StatusLevel.Disconnected;
                 break;
-                
+
             case DiscoveryStatus.Cancelled:
-                StatusLevel = StatusLevel.Error;
+                StatusLevel = StatusLevel.Disconnected;
                 StatusText = Resources.Resources.GetString("Status_CancelledDiscovery");
                 break;
                 
@@ -427,6 +503,81 @@ public partial class ConnectViewModel : ObservableObject, IDisposable
         GC.SuppressFinalize(this);
     }
     
+    #region Button Visibility Calculation Methods
+
+    private bool CalculateConnectVisibility()
+    {
+        // Show the Connect button when Manual mode is selected and not connected/connecting
+        // Bug #3 Fix: Include Connecting and ConnectingManually in the connected check
+        bool isConnected = StatusLevel == StatusLevel.Connected ||
+                          StatusLevel == StatusLevel.Error ||
+                          StatusLevel == StatusLevel.Connecting ||
+                          StatusLevel == StatusLevel.ConnectingManually;
+
+        return SelectedConnectionTypeIndex == 1 && !isConnected;
+    }
+
+    private bool CalculateDisconnectVisibility()
+    {
+        // Show the Disconnect button when connected or connecting
+        // Bug #2 Fix: Don't show Disconnect for cancelled discovery (Error state when not actually connected)
+        // Bug #3 Fix: Include Connecting and ConnectingManually states
+        // Include Discovered state so user can cancel before auto-connection
+        // Include Error state for invalid security key errors where user needs to disconnect
+        bool isConnectedOrConnecting = StatusLevel == StatusLevel.Connected ||
+                                       StatusLevel == StatusLevel.Connecting ||
+                                       StatusLevel == StatusLevel.ConnectingManually ||
+                                       StatusLevel == StatusLevel.Discovered ||
+                                       StatusLevel == StatusLevel.Error;
+
+        return isConnectedOrConnecting;
+    }
+
+    private bool CalculateStartDiscoveryVisibility()
+    {
+        // Show Start Discovery button when in Discovery mode and not discovering, discovered, connected, or connecting
+        // Bug #4 Fix: Include Connecting state check
+        bool isConnectedOrConnecting = StatusLevel == StatusLevel.Connected ||
+                                       StatusLevel == StatusLevel.Error ||
+                                       StatusLevel == StatusLevel.Connecting ||
+                                       StatusLevel == StatusLevel.ConnectingManually;
+
+        return SelectedConnectionTypeIndex == 0 &&
+               StatusLevel is not StatusLevel.Discovering and not StatusLevel.Discovered &&
+               !isConnectedOrConnecting;
+    }
+
+    private bool CalculateCancelDiscoveryVisibility()
+    {
+        // Show Cancel button only when actively discovering
+        return SelectedConnectionTypeIndex == 0 && StatusLevel == StatusLevel.Discovering;
+    }
+
+    private bool CalculateConnectionTypeEnabled()
+    {
+        // Bug #1 Fix: Disable ConnectionTypeComboBox during active operations
+        return StatusLevel != StatusLevel.Discovering &&
+               StatusLevel != StatusLevel.Discovered &&
+               StatusLevel != StatusLevel.Connecting &&
+               StatusLevel != StatusLevel.ConnectingManually &&
+               StatusLevel != StatusLevel.Connected;
+    }
+
+    /// <summary>
+    /// Notifies UI that button visibility properties may have changed.
+    /// Should be called whenever StatusLevel or SelectedConnectionTypeIndex changes.
+    /// </summary>
+    private void NotifyButtonVisibilityChanged()
+    {
+        OnPropertyChanged(nameof(ConnectVisible));
+        OnPropertyChanged(nameof(DisconnectVisible));
+        OnPropertyChanged(nameof(StartDiscoveryVisible));
+        OnPropertyChanged(nameof(CancelDiscoveryVisible));
+        OnPropertyChanged(nameof(IsConnectionTypeEnabled));
+    }
+
+    #endregion
+
     /// <summary>
     /// Releases unmanaged and - optionally - managed resources.
     /// </summary>
@@ -440,13 +591,14 @@ public partial class ConnectViewModel : ObservableObject, IDisposable
             _deviceManagementService.ConnectionStatusChange -= DeviceManagementServiceOnConnectionStatusChange;
             _deviceManagementService.NakReplyReceived -= DeviceManagementServiceOnNakReplyReceived;
             _deviceManagementService.TraceEntryReceived -= OnDeviceManagementServiceOnTraceEntryReceived;
-            
+            Resources.Resources.PropertyChanged -= OnResourcesPropertyChanged;
+
             if (_usbDeviceMonitorService != null)
             {
                 _usbDeviceMonitorService.UsbDeviceChanged -= OnUsbDeviceChanged;
                 _usbDeviceMonitorService.StopMonitoring();
             }
-            
+
             _usbStatusTimer?.Dispose();
         }
         

@@ -50,18 +50,31 @@ public class MonitorViewModelTests
     {
         // Arrange - First set status to connected
         _deviceManagementServiceMock.Raise(
-            d => d.ConnectionStatusChange += null!, 
-            EventArgs.Empty, 
+            d => d.ConnectionStatusChange += null!,
+            EventArgs.Empty,
             ConnectionStatus.Connected);
-        
+
         // Act
         _deviceManagementServiceMock.Raise(
-            d => d.ConnectionStatusChange += null!, 
-            EventArgs.Empty, 
+            d => d.ConnectionStatusChange += null!,
+            EventArgs.Empty,
             ConnectionStatus.Disconnected);
-        
+
         // Assert
         Assert.That(_viewModel.StatusLevel, Is.EqualTo(StatusLevel.Disconnected));
+    }
+
+    [Test]
+    public void MonitorViewModel_DeviceManagementServiceOnConnectionStatusChange_InvalidSecurityKey()
+    {
+        // Act
+        _deviceManagementServiceMock.Raise(
+            d => d.ConnectionStatusChange += null!,
+            EventArgs.Empty,
+            ConnectionStatus.InvalidSecurityKey);
+
+        // Assert
+        Assert.That(_viewModel.StatusLevel, Is.EqualTo(StatusLevel.Error));
     }
     
     [Test]

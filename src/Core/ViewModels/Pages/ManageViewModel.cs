@@ -62,7 +62,15 @@ public partial class ManageViewModel : ObservableObject
             var result = await ExecuteSelectedDeviceAction();
             if (result != null && SelectedDeviceAction is SetCommunicationAction)
             {
-                await HandleSetCommunicationAction(result);
+                await ExceptionHelper.ExecuteSafelyAsync(
+                    _dialogService,
+                    Resources.Resources.GetString("Dialog_UpdateCommunications_Title"),
+                    async () =>
+                    {
+                        await HandleSetCommunicationAction(result);
+                        return true;
+                    },
+                    false);
             }
         });
     }
@@ -80,7 +88,7 @@ public partial class ManageViewModel : ObservableObject
     {
         if (result is not CommunicationParameters connectionParameters) return;
 
-        bool parametersChanged = 
+        bool parametersChanged =
             _deviceManagementService.BaudRate != connectionParameters.BaudRate ||
             _deviceManagementService.Address != connectionParameters.Address;
 
@@ -91,14 +99,22 @@ public partial class ManageViewModel : ObservableObject
             return;
         }
 
+        // Reconnect with new settings before showing success
+        if (_deviceManagementService.PortName != null)
+        {
+            // Give device time to switch to new settings
+            await Task.Delay(500);
+
+            // Use ReconnectAfterCommunicationChange to avoid waiting for device to go offline on old connection
+            await _deviceManagementService.ReconnectAfterCommunicationChange(
+                _serialPortConnectionService.GetConnection(
+                    _deviceManagementService.PortName,
+                    (int)connectionParameters.BaudRate),
+                connectionParameters.Address);
+        }
+
         await _dialogService.ShowMessageDialog(Resources.Resources.GetString("Dialog_UpdateCommunications_Title"),
             Resources.Resources.GetString("Dialog_UpdateCommunications_Success"), MessageIcon.Information);
-
-        if (_deviceManagementService.PortName != null)
-        {    await _deviceManagementService.Reconnect(_serialPortConnectionService.GetConnection(
-                _deviceManagementService.PortName,
-                (int)connectionParameters.BaudRate), connectionParameters.Address);
-        }
     }
 
     private async Task HandleResetCypressDeviceAction()

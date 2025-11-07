@@ -20,32 +20,12 @@
 	</Page.Resources>
 	
 	<StackPanel Style="{StaticResource Page.Container}">
-		
+
 		<!-- Page Header with Activity Indicators -->
 		<ContentControl Content="{Binding RelativeSource={RelativeSource AncestorType=Page}, Path=Title}"
 		                Template="{StaticResource Template.PageHeader}"/>
-		
-		<Border Style="{StaticResource Card.Bordered}"
-		        Visibility="{Binding Path=ViewModel.StatusLevel, Converter={StaticResource StringToVisibilityConverter}, ConverterParameter=Disconnected, Mode=OneWay}">
-			<StackPanel Orientation="Vertical">
-				<TextBlock Style="{StaticResource Text.Warning}"
-					Margin="20 10 20 0"
-					HorizontalAlignment="Center"
-					TextAlignment="Center"
-					TextWrapping="Wrap"
-					FontSize="{StaticResource FontSize.Headline}"
-					Text="{markup:Localize Monitor_DeviceNotConnected}"/>
-				<TextBlock Style="{StaticResource Text.Body}"
-					Margin="20 10 20 0"
-					HorizontalAlignment="Center"
-					TextAlignment="Center"
-					TextWrapping="Wrap"
-					FontSize="{StaticResource FontSize.Title}"
-					Text="{markup:Localize Monitor_ConnectionPageDetails}"/>
-			</StackPanel>
-		</Border>
-		<StackPanel  Orientation="Vertical"
-		             Visibility="{Binding Path=ViewModel.StatusLevel, Converter={StaticResource StringToVisibilityConverter}, ConverterParameter=Connected, Mode=OneWay}">
+
+		<StackPanel  Orientation="Vertical">
 			<Border Style="{StaticResource Card.Bordered}"
 			        Visibility="{Binding Path=ViewModel.UsingSecureChannel, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}">
 				<StackPanel Orientation="Vertical">
@@ -68,6 +48,100 @@
 			<Border Style="{StaticResource Card.Bordered}"
 			        Visibility="{Binding Path=ViewModel.UsingSecureChannel, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=Invert, Mode=OneWay}">
 				<StackPanel Orientation="Vertical">
+					<!-- Statistics Panel -->
+					<Border Style="{StaticResource Card.Bordered}" Margin="10 5">
+						<StackPanel Orientation="Vertical" Margin="15 10">
+							<!-- Line Quality Display -->
+							<StackPanel Orientation="Vertical" HorizontalAlignment="Center" Margin="0 5 0 15">
+								<TextBlock Text="{markup:Localize Monitor_LineQuality}"
+								           Style="{StaticResource Text.Body}"
+								           HorizontalAlignment="Center"
+								           FontSize="{StaticResource FontSize.Body}"/>
+								<TextBlock HorizontalAlignment="Center" Margin="0 5 0 0">
+									<Run Text="{Binding ViewModel.LineQualityPercentage, StringFormat={}{0:F1}, Mode=OneWay}"
+									     FontSize="28"
+									     FontWeight="Bold"/>
+									<Run Text="%"
+									     FontSize="20"
+									     FontWeight="Bold"/>
+								</TextBlock>
+							</StackPanel>
+
+							<!-- Statistics Grid -->
+							<Grid>
+								<Grid.ColumnDefinitions>
+									<ColumnDefinition Width="*"/>
+									<ColumnDefinition Width="*"/>
+									<ColumnDefinition Width="*"/>
+									<ColumnDefinition Width="*"/>
+								</Grid.ColumnDefinitions>
+
+								<!-- Commands Sent -->
+								<StackPanel Grid.Column="0" Orientation="Vertical" Margin="5 0">
+									<TextBlock Text="{markup:Localize Monitor_CommandsSent}"
+									           Style="{StaticResource Text.Body}"
+									           HorizontalAlignment="Center"
+									           FontSize="{StaticResource FontSize.Caption}"
+									           TextWrapping="Wrap"
+									           TextAlignment="Center"/>
+									<TextBlock Text="{Binding ViewModel.CommandsSent}"
+									           Style="{StaticResource Text.Body}"
+									           HorizontalAlignment="Center"
+									           FontSize="{StaticResource FontSize.Headline}"
+									           FontWeight="Bold"
+									           Margin="0 5 0 0"/>
+								</StackPanel>
+
+								<!-- Replies Received -->
+								<StackPanel Grid.Column="1" Orientation="Vertical" Margin="5 0">
+									<TextBlock Text="{markup:Localize Monitor_RepliesReceived}"
+									           Style="{StaticResource Text.Body}"
+									           HorizontalAlignment="Center"
+									           FontSize="{StaticResource FontSize.Caption}"
+									           TextWrapping="Wrap"
+									           TextAlignment="Center"/>
+									<TextBlock Text="{Binding ViewModel.RepliesReceived}"
+									           Style="{StaticResource Text.Body}"
+									           HorizontalAlignment="Center"
+									           FontSize="{StaticResource FontSize.Headline}"
+									           FontWeight="Bold"
+									           Margin="0 5 0 0"/>
+								</StackPanel>
+
+								<!-- Polls -->
+								<StackPanel Grid.Column="2" Orientation="Vertical" Margin="5 0">
+									<TextBlock Text="{markup:Localize Monitor_Polls}"
+									           Style="{StaticResource Text.Body}"
+									           HorizontalAlignment="Center"
+									           FontSize="{StaticResource FontSize.Caption}"
+									           TextWrapping="Wrap"
+									           TextAlignment="Center"/>
+									<TextBlock Text="{Binding ViewModel.Polls}"
+									           Style="{StaticResource Text.Body}"
+									           HorizontalAlignment="Center"
+									           FontSize="{StaticResource FontSize.Headline}"
+									           FontWeight="Bold"
+									           Margin="0 5 0 0"/>
+								</StackPanel>
+
+								<!-- NAKs -->
+								<StackPanel Grid.Column="3" Orientation="Vertical" Margin="5 0">
+									<TextBlock Text="{markup:Localize Monitor_Naks}"
+									           Style="{StaticResource Text.Body}"
+									           HorizontalAlignment="Center"
+									           FontSize="{StaticResource FontSize.Caption}"
+									           TextWrapping="Wrap"
+									           TextAlignment="Center"/>
+									<TextBlock Text="{Binding ViewModel.Naks}"
+									           Style="{StaticResource Text.Body}"
+									           HorizontalAlignment="Center"
+									           FontSize="{StaticResource FontSize.Headline}"
+									           FontWeight="Bold"
+									           Margin="0 5 0 0"/>
+								</StackPanel>
+							</Grid>
+						</StackPanel>
+					</Border>
 					<DataGrid ItemsSource="{Binding ViewModel.TraceEntriesView}" 
 					          AutoGenerateColumns="False" 
 					          CanUserAddRows="False" 

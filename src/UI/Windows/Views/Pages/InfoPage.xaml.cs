@@ -1,4 +1,5 @@
 ﻿using OSDPBench.Core.ViewModels.Windows;
+using System.ComponentModel;
 using System.IO;
 using System.Windows;
 using Wpf.Ui.Abstractions.Controls;
@@ -8,7 +9,7 @@ namespace OSDPBench.Windows.Views.Pages;
 /// <summary>
 /// Interaction logic for InfoPage.xaml
 /// </summary>
-public sealed partial class InfoPage : INavigableView<MainWindowViewModel>
+public sealed partial class InfoPage : INavigableView<MainWindowViewModel>, INotifyPropertyChanged, IDisposable
 {
     const string EplFilePath = "pack://application:,,,/Assets/EPL.txt";
     const string ApacheFilePath = "pack://application:,,,/Assets/Apache.txt";
@@ -20,6 +21,9 @@ public sealed partial class InfoPage : INavigableView<MainWindowViewModel>
         DataContext = this;
             
         InitializeComponent();
+
+        // Subscribe to theme change events
+        Wpf.Ui.Appearance.ApplicationThemeManager.Changed += OnThemeChanged;
             
         Loaded += (_, _) =>
         {
@@ -61,4 +65,21 @@ public sealed partial class InfoPage : INavigableView<MainWindowViewModel>
     
     public bool IsDarkMode => 
         Wpf.Ui.Appearance.ApplicationThemeManager.GetAppTheme() == Wpf.Ui.Appearance.ApplicationTheme.Dark;
+
+    public event PropertyChangedEventHandler? PropertyChanged;
+
+    private void OnPropertyChanged([System.Runtime.CompilerServices.CallerMemberName] string? propertyName = null)
+    {
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+    }
+
+    private void OnThemeChanged(Wpf.Ui.Appearance.ApplicationTheme currentApplicationTheme, System.Windows.Media.Color systemAccent)
+    {
+        OnPropertyChanged(nameof(IsDarkMode));
+    }
+
+    public void Dispose()
+    {
+        Wpf.Ui.Appearance.ApplicationThemeManager.Changed -= OnThemeChanged;
+    }
 }
