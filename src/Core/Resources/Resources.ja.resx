@@ -508,6 +508,26 @@
     <value>倒れる</value>
     <comment>Button text to collapse row details</comment>
   </data>
+  <data name="Monitor_CommandsSent" xml:space="preserve">
+    <value>Commands Sent</value>
+    <comment>Label for commands sent statistic</comment>
+  </data>
+  <data name="Monitor_RepliesReceived" xml:space="preserve">
+    <value>Replies Received</value>
+    <comment>Label for replies received statistic</comment>
+  </data>
+  <data name="Monitor_Polls" xml:space="preserve">
+    <value>Polls</value>
+    <comment>Label for poll packets statistic</comment>
+  </data>
+  <data name="Monitor_Naks" xml:space="preserve">
+    <value>NAKs</value>
+    <comment>Label for NAK replies statistic</comment>
+  </data>
+  <data name="Monitor_LineQuality" xml:space="preserve">
+    <value>Line Quality</value>
+    <comment>Label for line quality percentage statistic</comment>
+  </data>
   <data name="ConnectionType_Discover" xml:space="preserve">
     <value>ディスカバー</value>
     <comment>Connection type option for discovery</comment>
