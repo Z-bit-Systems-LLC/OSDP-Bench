@@ -6,7 +6,6 @@
       xmlns:local="clr-namespace:OSDPBench.Windows.Views.Pages"
       xmlns:converters="clr-namespace:OSDPBench.Windows.Converters"
       xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
-      xmlns:controls="clr-namespace:OSDPBench.Windows.Views.Controls"
       xmlns:markup="clr-namespace:OSDPBench.Windows.Markup"
       mc:Ignorable="d" 
       d:DataContext="{d:DesignInstance local:ManagePage,

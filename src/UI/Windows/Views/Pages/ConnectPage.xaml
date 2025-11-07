@@ -15,7 +15,6 @@
 
     <Page.Resources>
         <converters:StatusLevelConverter x:Key="StatusLevelConverter" />
-        <converters:StringToVisibilityConverter x:Key="StringToVisibilityConverter" />
         <converters:IndexToVisibilityConverter x:Key="IndexToVisibilityConverter" />
         <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
     </Page.Resources>

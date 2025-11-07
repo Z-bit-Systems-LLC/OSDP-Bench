@@ -88,10 +88,11 @@ public class WindowsLanguageMismatchService : ILanguageMismatchService
             var message = _localizationService.GetString("Language_SystemMismatchMessage", systemLanguageName);
 
             Window? dialogWindow = null;
+            var window = dialogWindow;
             var viewModel = new LanguageMismatchDialogViewModel(message, (userChoice, dontAsk) =>
             {
                 tcs.TrySetResult((userChoice, dontAsk));
-                dialogWindow?.Close();
+                window?.Close();
             });
 
             var dialogContent = new LanguageMismatchDialog

@@ -7,7 +7,6 @@
       xmlns:local="clr-namespace:OSDPBench.Windows.Views.Pages"
       xmlns:models="clr-namespace:OSDPBench.Core.Models;assembly=OSDPBench.Core"
       xmlns:converters="clr-namespace:OSDPBench.Windows.Converters"
-      xmlns:controls="clr-namespace:OSDPBench.Windows.Views.Controls"
       xmlns:markup="clr-namespace:OSDPBench.Windows.Markup"      mc:Ignorable="d" 
       d:DataContext="{d:DesignInstance local:MonitorPage,
 									 IsDesignTimeCreatable=False}"
@@ -15,7 +14,6 @@
       Title="{markup:Localize Page_Monitor}">
 	
 	<Page.Resources>
-		<converters:StringToVisibilityConverter x:Key="StringToVisibilityConverter" />
 		<converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
 	</Page.Resources>
 	
@@ -55,8 +53,7 @@
 							<StackPanel Orientation="Vertical" HorizontalAlignment="Center" Margin="0 5 0 15">
 								<TextBlock Text="{markup:Localize Monitor_LineQuality}"
 								           Style="{StaticResource Text.Body}"
-								           HorizontalAlignment="Center"
-								           FontSize="{StaticResource FontSize.Body}"/>
+								           HorizontalAlignment="Center"/>
 								<TextBlock HorizontalAlignment="Center" Margin="0 5 0 0">
 									<Run Text="{Binding ViewModel.LineQualityPercentage, StringFormat={}{0:F1}, Mode=OneWay}"
 									     FontSize="28"

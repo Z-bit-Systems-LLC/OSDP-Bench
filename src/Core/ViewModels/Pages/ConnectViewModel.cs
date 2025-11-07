@@ -180,7 +180,7 @@ public partial class ConnectViewModel : ObservableObject, IDisposable
 
     [ObservableProperty] private int _connectedBaudRate;
 
-    [ObservableProperty] private bool _useSecureChannel = false;
+    [ObservableProperty] private bool _useSecureChannel;
 
     [ObservableProperty] private bool _useDefaultKey = true;
 
@@ -230,11 +230,13 @@ public partial class ConnectViewModel : ObservableObject, IDisposable
     // Partial methods to notify when properties change
     partial void OnStatusLevelChanged(StatusLevel value)
     {
+        _ = value; // Intentionally unused - only triggering dependent property notification
         NotifyButtonVisibilityChanged();
     }
 
     partial void OnSelectedConnectionTypeIndexChanged(int value)
     {
+        _ = value; // Intentionally unused - only triggering dependent property notification
         NotifyButtonVisibilityChanged();
     }
 

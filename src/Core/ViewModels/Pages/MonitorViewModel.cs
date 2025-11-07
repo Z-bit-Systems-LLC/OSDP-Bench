@@ -177,11 +177,13 @@ public partial class MonitorViewModel : ObservableObject
 
     partial void OnCommandsSentChanged(int value)
     {
+        _ = value; // Intentionally unused - only triggering dependent property notification
         OnPropertyChanged(nameof(LineQualityPercentage));
     }
 
     partial void OnRepliesReceivedChanged(int value)
     {
+        _ = value; // Intentionally unused - only triggering dependent property notification
         OnPropertyChanged(nameof(LineQualityPercentage));
     }
 }

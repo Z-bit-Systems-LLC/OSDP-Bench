@@ -169,7 +169,7 @@ public sealed class DeviceManagementService : IDeviceManagementService
 
             _connectionId = _panel.StartConnection(results.Connection, _defaultPollInterval, Tracer);
             // Use 5-parameter overload to explicitly disable secure channel after discovery
-            _panel.AddDevice(_connectionId, Address, CapabilitiesLookup.CRC, false, null);
+            _panel.AddDevice(_connectionId, Address, CapabilitiesLookup.CRC, false);
 
             return results;
         }

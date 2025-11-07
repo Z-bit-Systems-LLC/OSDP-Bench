@@ -28,7 +28,7 @@ namespace OSDPBench.Core.Tests.Services
         private void UpdateStatus(DiscoveryResult result)
         {
             // This method is just used to satisfy the DiscoveryProgress delegate requirement
-            Console.WriteLine($"Status: {result.Status}, Connection: {result.Connection?.BaudRate}");
+            Console.WriteLine($@"Status: {result.Status}, Connection: {result.Connection?.BaudRate}");
         }
 
         [SetUp]
