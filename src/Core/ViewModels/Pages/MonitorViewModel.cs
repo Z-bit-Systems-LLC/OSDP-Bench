@@ -33,9 +33,21 @@ public partial class MonitorViewModel : ObservableObject
     private void OnDeviceManagementServiceOnConnectionStatusChange(object? _, ConnectionStatus connectionStatus)
     {
         if (connectionStatus == ConnectionStatus.Connected) InitializePollingMetrics();
-        
+
         UpdateConnectionInfo();
-        StatusLevel = connectionStatus == ConnectionStatus.Connected ? StatusLevel.Connected : StatusLevel.Disconnected;
+
+        switch (connectionStatus)
+        {
+            case ConnectionStatus.Connected:
+                StatusLevel = StatusLevel.Connected;
+                break;
+            case ConnectionStatus.InvalidSecurityKey:
+                StatusLevel = StatusLevel.Error;
+                break;
+            default:
+                StatusLevel = StatusLevel.Disconnected;
+                break;
+        }
     }
 
     private void UpdateConnectionInfo()

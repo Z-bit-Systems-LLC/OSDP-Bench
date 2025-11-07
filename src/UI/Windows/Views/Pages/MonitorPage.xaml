@@ -45,7 +45,7 @@
 			</StackPanel>
 		</Border>
 		<StackPanel  Orientation="Vertical"
-		             Visibility="{Binding Path=ViewModel.StatusLevel, Converter={StaticResource StringToVisibilityConverter}, ConverterParameter=Connected, Mode=OneWay}">
+		             Visibility="{Binding Path=ViewModel.StatusLevel, Converter={StaticResource StringToVisibilityConverter}, ConverterParameter=Connected;Error, Mode=OneWay}">
 			<Border Style="{StaticResource Card.Bordered}"
 			        Visibility="{Binding Path=ViewModel.UsingSecureChannel, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}">
 				<StackPanel Orientation="Vertical">
