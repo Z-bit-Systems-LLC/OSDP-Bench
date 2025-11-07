@@ -10,6 +10,7 @@
 | **Discovered**          | Hidden           | Hidden         | Visible           | Hidden        | Disabled               | ✓ Correct     |
 | **Connecting**          | Hidden           | Hidden         | Visible           | Hidden        | Disabled               | ✓ Correct     |
 | **Connected**           | Hidden           | Hidden         | Visible           | Hidden        | Disabled               | ✓ Correct     |
+| **Error**               | Hidden           | Hidden         | Visible           | Hidden        | Enabled                | ✓ Correct     |
 
 ### Manual Mode (ConnectionTypeComboBox Index = 1)
 
@@ -18,6 +19,7 @@
 | **Disconnected** | Hidden           | Visible        | Hidden            | Hidden        | Enabled                | ✓ Correct |
 | **Connecting**   | Hidden           | Hidden         | Visible           | Hidden        | Disabled               | ✓ Correct |
 | **Connected**    | Hidden           | Hidden         | Visible           | Hidden        | Disabled               | ✓ Correct |
+| **Error**        | Hidden           | Hidden         | Visible           | Hidden        | Enabled                | ✓ Correct |
 
 ### Fixed Bugs
 
@@ -40,3 +42,10 @@
 - Updated StartDiscovery visibility check to account for all connecting states
 - Discovery button no longer appears during connection attempts
 - Location: `ConnectViewModel.cs:503-515`
+
+**Bug #5: Disconnect Button Not Visible for Invalid Security Key Error** ✓ FIXED
+- Added `StatusLevel.Error` to disconnect button visibility check
+- When an invalid security key error occurs, the disconnect button is now shown
+- This allows users to properly disconnect and clean up the connection state
+- Location: `ConnectViewModel.cs:520-534`
+- Test: `ConnectViewModelTests.cs:292-304`

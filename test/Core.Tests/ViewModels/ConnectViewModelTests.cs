@@ -279,13 +279,28 @@ public class ConnectViewModelTests
     {
         // Arrange
         await _viewModel.InitializationComplete;
-        
+
         // Act
         RaiseConnectionStatusEvent(ConnectionStatus.InvalidSecurityKey);
-        
+
         // Assert
         Assert.That(_viewModel.StatusText, Is.EqualTo("Invalid security key"));
         Assert.That(_viewModel.StatusLevel, Is.EqualTo(StatusLevel.Error));
+    }
+
+    [Test]
+    public async Task ConnectViewModel_DisconnectButtonVisible_WhenInvalidSecurityKeyError()
+    {
+        // Arrange
+        await _viewModel.InitializationComplete;
+
+        // Act
+        RaiseConnectionStatusEvent(ConnectionStatus.InvalidSecurityKey);
+
+        // Assert - Disconnect button should be visible to allow user to clean up connection state
+        Assert.That(_viewModel.DisconnectVisible, Is.True);
+        Assert.That(_viewModel.ConnectVisible, Is.False);
+        Assert.That(_viewModel.StartDiscoveryVisible, Is.False);
     }
     
     [Test]

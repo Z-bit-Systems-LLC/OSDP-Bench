@@ -523,10 +523,12 @@ public partial class ConnectViewModel : ObservableObject, IDisposable
         // Bug #2 Fix: Don't show Disconnect for cancelled discovery (Error state when not actually connected)
         // Bug #3 Fix: Include Connecting and ConnectingManually states
         // Include Discovered state so user can cancel before auto-connection
+        // Include Error state for invalid security key errors where user needs to disconnect
         bool isConnectedOrConnecting = StatusLevel == StatusLevel.Connected ||
                                        StatusLevel == StatusLevel.Connecting ||
                                        StatusLevel == StatusLevel.ConnectingManually ||
-                                       StatusLevel == StatusLevel.Discovered;
+                                       StatusLevel == StatusLevel.Discovered ||
+                                       StatusLevel == StatusLevel.Error;
 
         return isConnectedOrConnecting;
     }
