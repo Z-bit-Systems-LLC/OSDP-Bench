@@ -385,8 +385,11 @@ public partial class ConnectViewModel : ObservableObject, IDisposable
 
     private async Task<byte[]?> GetSecurityKey()
     {
+        // If secure channel is not being used, no key validation is needed
+        if (!UseSecureChannel) return null;
+
         if (UseDefaultKey) return null;
-        
+
         try
         {
             return HexConverter.FromHexString(SecurityKey, 32);
@@ -394,7 +397,7 @@ public partial class ConnectViewModel : ObservableObject, IDisposable
         catch (Exception exception)
         {
             await _dialogService.ShowMessageDialog(
-                Resources.Resources.GetString("Dialog_Connect_Title"), 
+                Resources.Resources.GetString("Dialog_Connect_Title"),
                 Resources.Resources.GetString("Dialog_InvalidSecurityKeyMessage").Replace("{0}", exception.Message),
                 MessageIcon.Error);
             return null;
