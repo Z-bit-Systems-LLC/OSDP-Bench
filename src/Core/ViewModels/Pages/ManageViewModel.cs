@@ -102,10 +102,8 @@ public partial class ManageViewModel : ObservableObject
         // Reconnect with new settings before showing success
         if (_deviceManagementService.PortName != null)
         {
-            // Give device time to switch to new settings
-            await Task.Delay(500);
-
             // Use ReconnectAfterCommunicationChange to avoid waiting for device to go offline on old connection
+            // This method will wait for the connection to fully establish before returning
             await _deviceManagementService.ReconnectAfterCommunicationChange(
                 _serialPortConnectionService.GetConnection(
                     _deviceManagementService.PortName,

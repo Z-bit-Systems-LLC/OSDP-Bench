@@ -211,6 +211,140 @@ namespace OSDPBench.Core.Tests.Services
 
         #endregion
 
+        #region ReconnectAfterCommunicationChange Tests
+
+        [Test]
+        public async Task ReconnectAfterCommunicationChange_UpdatesAddressAndBaudRate()
+        {
+            // Arrange
+            const byte newAddress = 0x01;
+            const int newBaudRate = 115200;
+            var newConnectionMock = new Mock<IOsdpConnection>();
+            newConnectionMock.Setup(x => x.BaudRate).Returns(newBaudRate);
+
+            // Act - This will attempt to reconnect and wait for device online
+            // Since there's no real device, it will timeout after 10 seconds
+            // We'll use a try-catch to avoid waiting for the full timeout
+            try
+            {
+                await Task.WhenAny(
+                    _deviceManagementService.ReconnectAfterCommunicationChange(newConnectionMock.Object, newAddress),
+                    Task.Delay(100) // Give it a small window to set properties
+                );
+            }
+            catch (TimeoutException)
+            {
+                // Expected - no real device to connect to
+            }
+
+            // Assert - Properties should be updated even if connection times out
+            Assert.That(_deviceManagementService.Address, Is.EqualTo(newAddress));
+            Assert.That(_deviceManagementService.BaudRate, Is.EqualTo(newBaudRate));
+        }
+
+        [Test]
+        public async Task ReconnectAfterCommunicationChange_PreservesSecuritySettings()
+        {
+            // Arrange
+            const byte initialAddress = 0x7F;
+            const bool useSecureChannel = true;
+            const bool useDefaultSecurityKey = false;
+            byte[] customKey = [0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08];
+
+            // First connect with security settings
+            await _deviceManagementService.Connect(_connectionMock.Object, initialAddress, useSecureChannel, useDefaultSecurityKey, customKey);
+
+            // Verify initial security settings
+            Assert.That(_deviceManagementService.IsUsingSecureChannel, Is.True);
+            Assert.That(_deviceManagementService.UsesDefaultSecurityKey, Is.False);
+
+            // Arrange for reconnection
+            const byte newAddress = 0x01;
+            const int newBaudRate = 115200;
+            var newConnectionMock = new Mock<IOsdpConnection>();
+            newConnectionMock.Setup(x => x.BaudRate).Returns(newBaudRate);
+
+            // Act - Reconnect with new communication parameters
+            try
+            {
+                await Task.WhenAny(
+                    _deviceManagementService.ReconnectAfterCommunicationChange(newConnectionMock.Object, newAddress),
+                    Task.Delay(100)
+                );
+            }
+            catch (TimeoutException)
+            {
+                // Expected - no real device to connect to
+            }
+
+            // Assert - Security settings should be preserved
+            Assert.That(_deviceManagementService.Address, Is.EqualTo(newAddress));
+            Assert.That(_deviceManagementService.BaudRate, Is.EqualTo(newBaudRate));
+            Assert.That(_deviceManagementService.IsUsingSecureChannel, Is.True,
+                "Secure channel setting should be preserved after reconnection");
+            Assert.That(_deviceManagementService.UsesDefaultSecurityKey, Is.False,
+                "Custom security key setting should be preserved after reconnection");
+        }
+
+        [Test]
+        public async Task ReconnectAfterCommunicationChange_WaitsForDeviceOnline()
+        {
+            // Arrange
+            const byte newAddress = 0x01;
+            const int newBaudRate = 115200;
+            var newConnectionMock = new Mock<IOsdpConnection>();
+            newConnectionMock.Setup(x => x.BaudRate).Returns(newBaudRate);
+
+            // Act & Assert - Verify that the method doesn't return immediately
+            // Start the reconnection task
+            var startTime = DateTime.Now;
+            var reconnectTask = _deviceManagementService.ReconnectAfterCommunicationChange(newConnectionMock.Object, newAddress);
+
+            // Wait a short time and verify the task is still running (not completed immediately)
+            await Task.Delay(500);
+            Assert.That(reconnectTask.IsCompleted, Is.False,
+                "ReconnectAfterCommunicationChange should wait for device to come online, not return immediately");
+
+            // Wait for the task to complete (or timeout)
+            try
+            {
+                await reconnectTask;
+            }
+            catch (TimeoutException)
+            {
+                // Expected - no real device to connect to
+            }
+
+            var elapsed = DateTime.Now - startTime;
+
+            // The method should have waited for a significant amount of time (approaching the 10-second timeout)
+            Assert.That(elapsed.TotalSeconds, Is.GreaterThan(9.5),
+                "Method should wait for approximately 10 seconds before timing out");
+        }
+
+        #endregion
+
+        #region Reconnect Tests
+
+        [Test]
+        public async Task Reconnect_UpdatesAddressAndBaudRate()
+        {
+            // Arrange
+            const byte newAddress = 0x02;
+            const int newBaudRate = 57600;
+            var newConnectionMock = new Mock<IOsdpConnection>();
+            newConnectionMock.Setup(x => x.BaudRate).Returns(newBaudRate);
+
+            // Act
+            await _deviceManagementService.Reconnect(newConnectionMock.Object, newAddress);
+
+            // Assert
+            Assert.That(_deviceManagementService.Address, Is.EqualTo(newAddress));
+            Assert.That(_deviceManagementService.BaudRate, Is.EqualTo(newBaudRate));
+        }
+
+        #endregion
+
         #region Event Tests
 
         [Test]
