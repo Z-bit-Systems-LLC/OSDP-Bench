@@ -212,6 +212,9 @@ public partial class ManageViewModel : ObservableObject
     
     private void OnDeviceManagementServiceOnTraceEntryReceived(object? sender, TraceEntry traceEntry)
     {
+        UsingSecureChannel = _deviceManagementService.IsUsingSecureChannel;
+        UsesDefaultSecurityKey = _deviceManagementService.UsesDefaultSecurityKey;
+
         // Configure security key on first trace entry or when key changes
         // This must happen before processing any packets so MessageSpy can track secure channel state
         EnsureSecurityKeyConfigured();
@@ -316,6 +319,10 @@ public partial class ManageViewModel : ObservableObject
     [ObservableProperty] private object? _deviceActionParameter;
     
     [ObservableProperty] private DateTime _lastTxActiveTime;
-    
+
     [ObservableProperty] private DateTime _lastRxActiveTime;
+
+    [ObservableProperty] private bool _usingSecureChannel;
+
+    [ObservableProperty] private bool _usesDefaultSecurityKey;
 }

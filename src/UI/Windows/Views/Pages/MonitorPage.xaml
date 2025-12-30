@@ -26,21 +26,6 @@
 		<StackPanel Orientation="Vertical">
 			<Border Style="{StaticResource Card.Bordered}">
 				<StackPanel Orientation="Vertical">
-					<!-- Secure Channel Indicator -->
-					<Border Visibility="{Binding Path=ViewModel.UsingSecureChannel, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}"
-					        Background="#10000000"
-					        CornerRadius="4"
-					        Padding="12 6"
-					        HorizontalAlignment="Center"
-					        Margin="0 10 0 5">
-						<StackPanel Orientation="Horizontal">
-							<ui:SymbolIcon Symbol="ShieldCheckmark24" Foreground="Green" Margin="0 0 8 0"/>
-							<TextBlock Text="{markup:Localize Monitor_SecureChannelActive}"
-							           Style="{StaticResource Text.Body}"
-							           Foreground="Green"
-							           VerticalAlignment="Center"/>
-						</StackPanel>
-					</Border>
 					<!-- Statistics Panel -->
 					<Border Style="{StaticResource Card.Bordered}" Margin="10 5">
 						<StackPanel Orientation="Vertical" Margin="15 10">
