@@ -1,4 +1,4 @@
-using System.Text.RegularExpressions;
+using OSDP.Net.Messages;
 using OSDP.Net.Model;
 using OSDP.Net.Tracing;
 
@@ -44,10 +44,10 @@ public class PacketTraceEntry
         {
             if (Packet.CommandType != null)
             {
-                return ToSpacedString(Packet.CommandType);
+                return Packet.CommandType.Value.GetDisplayName();
             }
 
-            return Packet.ReplyType != null ? ToSpacedString(Packet.ReplyType) : "Unknown";
+            return Packet.ReplyType != null ? Packet.ReplyType.Value.GetDisplayName() : "Unknown";
         }
     }
     
@@ -80,12 +80,6 @@ public class PacketTraceEntry
 
             return payload.ToString() ?? "Empty";
         }
-    }
-    
-    private static string ToSpacedString(Enum enumValue)
-    {
-        // Use Regex to insert spaces before any capital letter followed by a lowercase letter, ignoring the first capital.
-        return Regex.Replace(enumValue.ToString(), "(?<!^)([A-Z](?=[a-z]))", " $1");
     }
 
     // Private constructor
