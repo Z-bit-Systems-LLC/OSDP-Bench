@@ -270,6 +270,10 @@
     <value>支持安全通道的更新即将推出</value>
     <comment>Message about future secure channel support</comment>
   </data>
+  <data name="Monitor_SecureChannelActive" xml:space="preserve">
+    <value>安全通道已激活</value>
+    <comment>Indicator shown when secure channel is being used for communication</comment>
+  </data>
   <data name="Monitor_TimeStamp" xml:space="preserve">
     <value>时间戳</value>
     <comment>Column header for timestamp in monitoring grid</comment>

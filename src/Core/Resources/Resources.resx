@@ -279,6 +279,10 @@
     <value>An update will be out soon that supports secure channel</value>
     <comment>Message about future secure channel support</comment>
   </data>
+  <data name="Monitor_SecureChannelActive" xml:space="preserve">
+    <value>Secure Channel Active</value>
+    <comment>Indicator shown when secure channel is being used for communication</comment>
+  </data>
   <data name="Monitor_TimeStamp" xml:space="preserve">
     <value>TimeStamp</value>
     <comment>Column header for timestamp in monitoring grid</comment>

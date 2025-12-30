@@ -110,6 +110,9 @@ public sealed class DeviceManagementService : IDeviceManagementService
     public bool UsesDefaultSecurityKey { get; private set; }
 
     /// <inheritdoc />
+    public byte[]? SecurityKey => _securityKey;
+
+    /// <inheritdoc />
     public bool IsConnected { get; private set; }
 
     /// <inheritdoc />

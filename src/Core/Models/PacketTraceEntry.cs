@@ -63,7 +63,24 @@ public class PacketTraceEntry
     /// This property parses and formats the payload data of the packet,
     /// or returns "Empty" if no data is available.
     /// </summary>
-    public string Details => Packet.ParsePayloadData()?.ToString() ?? "Empty";
+    public string Details
+    {
+        get
+        {
+            var payload = Packet.ParsePayloadData();
+            if (payload == null) return "Empty";
+
+            // Format byte arrays as hex strings instead of "System.Byte[]"
+            if (payload is byte[] bytes)
+            {
+                return bytes.Length > 0
+                    ? BitConverter.ToString(bytes).Replace("-", " ")
+                    : "Empty";
+            }
+
+            return payload.ToString() ?? "Empty";
+        }
+    }
     
     private static string ToSpacedString(Enum enumValue)
     {
