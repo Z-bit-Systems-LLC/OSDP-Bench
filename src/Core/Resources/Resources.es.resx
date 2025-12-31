@@ -271,15 +271,15 @@
     <comment>Message about future secure channel support</comment>
   </data>
   <data name="Monitor_ClearText" xml:space="preserve">
-    <value>Clear Text</value>
+    <value>Texto claro</value>
     <comment>Badge shown when communication is not encrypted</comment>
   </data>
   <data name="Monitor_EncryptedDefaultKey" xml:space="preserve">
-    <value>Encrypted - Default Key</value>
+    <value>Cifrado - Clave por defecto</value>
     <comment>Badge shown when using secure channel with the default security key</comment>
   </data>
   <data name="Monitor_Encrypted" xml:space="preserve">
-    <value>Encrypted</value>
+    <value>Cifrado</value>
     <comment>Badge shown when using secure channel with a custom security key</comment>
   </data>
   <data name="Monitor_TimeStamp" xml:space="preserve">
