@@ -1,4 +1,4 @@
-using System.Text.RegularExpressions;
+using OSDP.Net.Messages;
 using OSDP.Net.Model;
 using OSDP.Net.Tracing;
 
@@ -44,10 +44,10 @@ public class PacketTraceEntry
         {
             if (Packet.CommandType != null)
             {
-                return ToSpacedString(Packet.CommandType);
+                return Packet.CommandType.Value.GetDisplayName();
             }
 
-            return Packet.ReplyType != null ? ToSpacedString(Packet.ReplyType) : "Unknown";
+            return Packet.ReplyType != null ? Packet.ReplyType.Value.GetDisplayName() : "Unknown";
         }
     }
     
@@ -63,12 +63,23 @@ public class PacketTraceEntry
     /// This property parses and formats the payload data of the packet,
     /// or returns "Empty" if no data is available.
     /// </summary>
-    public string Details => Packet.ParsePayloadData()?.ToString() ?? "Empty";
-    
-    private static string ToSpacedString(Enum enumValue)
+    public string Details
     {
-        // Use Regex to insert spaces before any capital letter followed by a lowercase letter, ignoring the first capital.
-        return Regex.Replace(enumValue.ToString(), "(?<!^)([A-Z](?=[a-z]))", " $1");
+        get
+        {
+            var payload = Packet.ParsePayloadData();
+            if (payload == null) return "Empty";
+
+            // Format byte arrays as hex strings instead of "System.Byte[]"
+            if (payload is byte[] bytes)
+            {
+                return bytes.Length > 0
+                    ? BitConverter.ToString(bytes).Replace("-", " ")
+                    : "Empty";
+            }
+
+            return payload.ToString() ?? "Empty";
+        }
     }
 
     // Private constructor

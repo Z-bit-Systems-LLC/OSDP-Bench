@@ -3,7 +3,7 @@
   displayName: 'Install .NET Core SDK'
   inputs:
     packageType: 'sdk'
-    version: '8.x'
+    version: '10.x'
 
 - task: DotNetCoreCLI@2
   displayName: 'Unit Test Core'

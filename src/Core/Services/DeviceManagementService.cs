@@ -110,6 +110,9 @@ public sealed class DeviceManagementService : IDeviceManagementService
     public bool UsesDefaultSecurityKey { get; private set; }
 
     /// <inheritdoc />
+    public byte[]? SecurityKey => _securityKey;
+
+    /// <inheritdoc />
     public bool IsConnected { get; private set; }
 
     /// <inheritdoc />
@@ -243,9 +246,9 @@ public sealed class DeviceManagementService : IDeviceManagementService
         {
             return;
         }
-        
+
         using var cts = new CancellationTokenSource(_defaultShutdownTimeout);
-        
+
         // Check if the connection exists before querying its status
         try
         {
@@ -264,8 +267,45 @@ public sealed class DeviceManagementService : IDeviceManagementService
             // Connection was already removed from the panel, which is fine during shutdown
             return;
         }
-        
+
         await Task.Delay(TimeSpan.FromSeconds(1), cts.Token);
+    }
+
+    private async Task WaitUntilDeviceIsOnline()
+    {
+        // Skip waiting if we don't have a valid connection
+        if (_connectionId == Guid.Empty)
+        {
+            return;
+        }
+
+        using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+
+        try
+        {
+            while (!cts.Token.IsCancellationRequested)
+            {
+                try
+                {
+                    if (_panel.IsOnline(_connectionId, Address))
+                    {
+                        return;
+                    }
+                }
+                catch (KeyNotFoundException)
+                {
+                    // Connection doesn't exist yet, keep waiting
+                }
+
+                await Task.Delay(TimeSpan.FromMilliseconds(100), cts.Token);
+            }
+        }
+        catch (OperationCanceledException)
+        {
+            // Timeout occurred
+        }
+
+        throw new TimeoutException("The device did not come online within the specified timeout.");
     }
 
     /// <inheritdoc />
@@ -304,6 +344,9 @@ public sealed class DeviceManagementService : IDeviceManagementService
         _connectionId = _panel.StartConnection(osdpConnection, _defaultPollInterval, Tracer);
         _panel.AddDevice(_connectionId, Address, true, IsUsingSecureChannel,
             UsesDefaultSecurityKey ? null : _securityKey);
+
+        // Wait for the connection to fully establish before returning
+        await WaitUntilDeviceIsOnline();
     }
 
     /// <summary>

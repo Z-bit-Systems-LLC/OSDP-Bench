@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <Version>1.0.2</Version>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <AssemblyName>OSDPBench.Core</AssemblyName>
@@ -24,8 +24,7 @@
 
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
-    <PackageReference Include="OSDP.Net" Version="4.1.7" />
-    <PackageReference Include="System.Text.Json" Version="9.0.6" />
+    <PackageReference Include="OSDP.Net" Version="5.0.37" />
   </ItemGroup>
 
   <ItemGroup>

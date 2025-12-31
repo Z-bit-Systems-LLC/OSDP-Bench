@@ -21,6 +21,11 @@
 - Provides detailed reports with resource values and comments for cleanup decisions
 - Can be integrated into Azure DevOps pipelines using `ci/azure-pipeline-resource-check.yml`
 
+## Localization
+- **Do not manually translate resource strings** - Translations are handled by a separate automated service
+- Only add new resource strings to the main `Resources.resx` file with English values
+- The automated translation service will populate the language-specific `.resx` files (de, es, fr, ja, zh)
+
 ## Release Process
 - Create a release: `pwsh ci/release.ps1`
 - The script automates the release workflow:

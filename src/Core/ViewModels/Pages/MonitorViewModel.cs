@@ -14,8 +14,12 @@ namespace OSDPBench.Core.ViewModels.Pages;
 public partial class MonitorViewModel : ObservableObject
 {
     private readonly IDeviceManagementService _deviceManagementService;
-    
+    private readonly PacketTraceEntryBuilder _traceEntryBuilder = new();
+
     private PacketTraceEntry? _lastPacketEntry;
+    private byte[]? _lastConfiguredSecurityKey;
+    private bool _securityKeyConfigured;
+    private bool _wasConnected;
 
     /// <inheritdoc />
     public MonitorViewModel(IDeviceManagementService deviceManagementService)
@@ -32,7 +36,16 @@ public partial class MonitorViewModel : ObservableObject
 
     private void OnDeviceManagementServiceOnConnectionStatusChange(object? _, ConnectionStatus connectionStatus)
     {
-        if (connectionStatus == ConnectionStatus.Connected) InitializePollingMetrics();
+        // Only clear trace when transitioning from connected to disconnected (session ended)
+        if (connectionStatus == ConnectionStatus.Disconnected && _wasConnected)
+        {
+            InitializePollingMetrics();
+            _wasConnected = false;
+        }
+        else if (connectionStatus == ConnectionStatus.Connected)
+        {
+            _wasConnected = true;
+        }
 
         UpdateConnectionInfo();
 
@@ -71,6 +84,17 @@ public partial class MonitorViewModel : ObservableObject
     private void OnDeviceManagementServiceOnTraceEntryReceived(object? _, TraceEntry traceEntry)
     {
         UsingSecureChannel = _deviceManagementService.IsUsingSecureChannel;
+        UsesDefaultSecurityKey = _deviceManagementService.UsesDefaultSecurityKey;
+
+        // Configure security key on first trace entry or when key changes
+        // This must happen before processing any packets so MessageSpy can track secure channel state
+        var currentKey = _deviceManagementService.SecurityKey;
+        if (!_securityKeyConfigured || !SecurityKeysEqual(_lastConfiguredSecurityKey, currentKey))
+        {
+            _traceEntryBuilder.WithSecurityKey(currentKey);
+            _lastConfiguredSecurityKey = currentKey;
+            _securityKeyConfigured = true;
+        }
 
         // Update activity indicators based on raw trace entry direction (works for encrypted packets too)
         switch (traceEntry.Direction)
@@ -84,14 +108,27 @@ public partial class MonitorViewModel : ObservableObject
                 break;
         }
 
-        var build = new PacketTraceEntryBuilder();
-        PacketTraceEntry packetTraceEntry;
+        PacketTraceEntry? packetTraceEntry;
         try
         {
-            packetTraceEntry = build.FromTraceEntry(traceEntry, _lastPacketEntry).Build();
+            packetTraceEntry = _traceEntryBuilder.FromTraceEntry(traceEntry, _lastPacketEntry).Build();
         }
         catch (Exception)
         {
+            return;
+        }
+
+        // If parsing failed, skip this packet but still count it for statistics
+        if (packetTraceEntry == null)
+        {
+            if (traceEntry.Direction == Output)
+            {
+                CommandsSent++;
+            }
+            else if (traceEntry.Direction == Input)
+            {
+                RepliesReceived++;
+            }
             return;
         }
 
@@ -121,6 +158,18 @@ public partial class MonitorViewModel : ObservableObject
 
         if (notDisplaying) return;
 
+        // Filter out duplicate NAK messages
+        if (packetTraceEntry.Packet.ReplyType == ReplyType.Nak && TraceEntriesView.Count > 0)
+        {
+            var lastDisplayedEntry = TraceEntriesView[0];
+            if (lastDisplayedEntry.Packet.ReplyType == ReplyType.Nak &&
+                lastDisplayedEntry.Details == packetTraceEntry.Details)
+            {
+                // Skip adding duplicate NAK message
+                return;
+            }
+        }
+
         TraceEntriesView.Insert(0, packetTraceEntry);
         if (TraceEntriesView.Count > 20)
         {
@@ -137,6 +186,8 @@ public partial class MonitorViewModel : ObservableObject
     [ObservableProperty] private DateTime _lastRxActiveTime;
     
     [ObservableProperty] private bool _usingSecureChannel;
+
+    [ObservableProperty] private bool _usesDefaultSecurityKey;
     
     [ObservableProperty] private byte _connectedAddress;
 
@@ -185,5 +236,13 @@ public partial class MonitorViewModel : ObservableObject
     {
         _ = value; // Intentionally unused - only triggering dependent property notification
         OnPropertyChanged(nameof(LineQualityPercentage));
+    }
+
+    private static bool SecurityKeysEqual(byte[]? key1, byte[]? key2)
+    {
+        if (key1 == null && key2 == null) return true;
+        if (key1 == null || key2 == null) return false;
+        if (key1.Length != key2.Length) return false;
+        return key1.AsSpan().SequenceEqual(key2);
     }
 }

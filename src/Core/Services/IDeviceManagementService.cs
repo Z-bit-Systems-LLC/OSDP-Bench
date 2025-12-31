@@ -53,6 +53,15 @@ public interface IDeviceManagementService
     bool UsesDefaultSecurityKey { get; }
 
     /// <summary>
+    /// Gets the security key used for secure channel communication.
+    /// </summary>
+    /// <remarks>
+    /// Returns the custom security key if one was provided, or null if using the default key or not using secure channel.
+    /// Used by the tracing system to decrypt secure channel traffic.
+    /// </remarks>
+    byte[]? SecurityKey { get; }
+
+    /// <summary>
     /// Gets the connection status of the device.
     /// </summary>
     /// <remarks>

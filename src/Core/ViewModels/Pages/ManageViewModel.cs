@@ -20,8 +20,11 @@ public partial class ManageViewModel : ObservableObject
     private readonly IDialogService _dialogService;
     private readonly IDeviceManagementService _deviceManagementService;
     private readonly ISerialPortConnectionService _serialPortConnectionService;
-    
+    private readonly PacketTraceEntryBuilder _traceEntryBuilder = new();
+
     private PacketTraceEntry? _lastPacketEntry;
+    private byte[]? _lastConfiguredSecurityKey;
+    private bool _securityKeyConfigured;
 
     /// <inheritdoc />
     public ManageViewModel(IDialogService dialogService, IDeviceManagementService deviceManagementService, ISerialPortConnectionService serialPortConnectionService)
@@ -102,10 +105,8 @@ public partial class ManageViewModel : ObservableObject
         // Reconnect with new settings before showing success
         if (_deviceManagementService.PortName != null)
         {
-            // Give device time to switch to new settings
-            await Task.Delay(500);
-
             // Use ReconnectAfterCommunicationChange to avoid waiting for device to go offline on old connection
+            // This method will wait for the connection to fully establish before returning
             await _deviceManagementService.ReconnectAfterCommunicationChange(
                 _serialPortConnectionService.GetConnection(
                     _deviceManagementService.PortName,
@@ -211,6 +212,13 @@ public partial class ManageViewModel : ObservableObject
     
     private void OnDeviceManagementServiceOnTraceEntryReceived(object? sender, TraceEntry traceEntry)
     {
+        UsingSecureChannel = _deviceManagementService.IsUsingSecureChannel;
+        UsesDefaultSecurityKey = _deviceManagementService.UsesDefaultSecurityKey;
+
+        // Configure security key on first trace entry or when key changes
+        // This must happen before processing any packets so MessageSpy can track secure channel state
+        EnsureSecurityKeyConfigured();
+
         // Update activity indicators based on raw trace entry direction (works for encrypted packets too)
         switch (traceEntry.Direction)
         {
@@ -223,18 +231,37 @@ public partial class ManageViewModel : ObservableObject
                 break;
         }
 
-        var build = new PacketTraceEntryBuilder();
-        PacketTraceEntry packetTraceEntry;
+        PacketTraceEntry? packetTraceEntry;
         try
         {
-            packetTraceEntry = build.FromTraceEntry(traceEntry, _lastPacketEntry).Build();
+            packetTraceEntry = _traceEntryBuilder.FromTraceEntry(traceEntry, _lastPacketEntry).Build();
         }
         catch (Exception)
         {
             return;
         }
-        
+
+        // Build() can return null if packet parsing failed
         _lastPacketEntry = packetTraceEntry;
+    }
+
+    private void EnsureSecurityKeyConfigured()
+    {
+        var currentKey = _deviceManagementService.SecurityKey;
+        if (!_securityKeyConfigured || !SecurityKeysEqual(_lastConfiguredSecurityKey, currentKey))
+        {
+            _traceEntryBuilder.WithSecurityKey(currentKey);
+            _lastConfiguredSecurityKey = currentKey;
+            _securityKeyConfigured = true;
+        }
+    }
+
+    private static bool SecurityKeysEqual(byte[]? key1, byte[]? key2)
+    {
+        if (key1 == null && key2 == null) return true;
+        if (key1 == null || key2 == null) return false;
+        if (key1.Length != key2.Length) return false;
+        return key1.AsSpan().SequenceEqual(key2);
     }
 
     private void UpdateFields()
@@ -292,6 +319,10 @@ public partial class ManageViewModel : ObservableObject
     [ObservableProperty] private object? _deviceActionParameter;
     
     [ObservableProperty] private DateTime _lastTxActiveTime;
-    
+
     [ObservableProperty] private DateTime _lastRxActiveTime;
+
+    [ObservableProperty] private bool _usingSecureChannel;
+
+    [ObservableProperty] private bool _usesDefaultSecurityKey;
 }

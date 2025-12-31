@@ -21,7 +21,10 @@ public partial class ConnectViewModel : ObservableObject, IDisposable
     private readonly IUsbDeviceMonitorService? _usbDeviceMonitorService;
     
     private ISerialPortConnectionService _serialPortConnectionService;
+    private readonly PacketTraceEntryBuilder _traceEntryBuilder = new();
     private PacketTraceEntry? _lastPacketEntry;
+    private byte[]? _lastConfiguredSecurityKey;
+    private bool _securityKeyConfigured;
     private bool _isDisposed;
     private Timer? _usbStatusTimer;
     private readonly TaskCompletionSource<bool> _initializationComplete = new();
@@ -86,28 +89,53 @@ public partial class ConnectViewModel : ObservableObject, IDisposable
 
     private void OnDeviceManagementServiceOnTraceEntryReceived(object? sender, TraceEntry traceEntry)
     {
+        UsingSecureChannel = _deviceManagementService.IsUsingSecureChannel;
+        UsesDefaultSecurityKey = _deviceManagementService.UsesDefaultSecurityKey;
+
+        // Configure security key on first trace entry or when key changes
+        // This must happen before processing any packets so MessageSpy can track secure channel state
+        EnsureSecurityKeyConfigured();
+
         // Update activity indicators based on a raw trace entry direction (works for encrypted packets too)
         UpdateActivityIndicators(traceEntry.Direction);
-        
+
         PacketTraceEntry? packetTraceEntry = BuildPacketTraceEntry(traceEntry);
         if (packetTraceEntry == null) return;
-        
+
         _lastPacketEntry = packetTraceEntry;
+    }
+
+    private void EnsureSecurityKeyConfigured()
+    {
+        var currentKey = _deviceManagementService.SecurityKey;
+        if (!_securityKeyConfigured || !SecurityKeysEqual(_lastConfiguredSecurityKey, currentKey))
+        {
+            _traceEntryBuilder.WithSecurityKey(currentKey);
+            _lastConfiguredSecurityKey = currentKey;
+            _securityKeyConfigured = true;
+        }
+    }
+
+    private static bool SecurityKeysEqual(byte[]? key1, byte[]? key2)
+    {
+        if (key1 == null && key2 == null) return true;
+        if (key1 == null || key2 == null) return false;
+        if (key1.Length != key2.Length) return false;
+        return key1.AsSpan().SequenceEqual(key2);
     }
 
     private PacketTraceEntry? BuildPacketTraceEntry(TraceEntry traceEntry)
     {
         try
         {
-            var builder = new PacketTraceEntryBuilder();
-            return builder.FromTraceEntry(traceEntry, _lastPacketEntry).Build();
+            return _traceEntryBuilder.FromTraceEntry(traceEntry, _lastPacketEntry).Build();
         }
         catch (Exception)
         {
             return null;
         }
     }
-    
+
     private void UpdateActivityIndicators(TraceDirection direction)
     {
         switch (direction)
@@ -187,9 +215,13 @@ public partial class ConnectViewModel : ObservableObject, IDisposable
     [ObservableProperty] private string _securityKey = string.Empty;
     
     [ObservableProperty] private DateTime _lastTxActiveTime;
-    
+
     [ObservableProperty] private DateTime _lastRxActiveTime;
-    
+
+    [ObservableProperty] private bool _usingSecureChannel;
+
+    [ObservableProperty] private bool _usesDefaultSecurityKey;
+
     [ObservableProperty] private string _usbStatusText = string.Empty;
 
     /// <summary>
@@ -385,8 +417,11 @@ public partial class ConnectViewModel : ObservableObject, IDisposable
 
     private async Task<byte[]?> GetSecurityKey()
     {
+        // If secure channel is not being used, no key validation is needed
+        if (!UseSecureChannel) return null;
+
         if (UseDefaultKey) return null;
-        
+
         try
         {
             return HexConverter.FromHexString(SecurityKey, 32);
@@ -394,7 +429,7 @@ public partial class ConnectViewModel : ObservableObject, IDisposable
         catch (Exception exception)
         {
             await _dialogService.ShowMessageDialog(
-                Resources.Resources.GetString("Dialog_Connect_Title"), 
+                Resources.Resources.GetString("Dialog_Connect_Title"),
                 Resources.Resources.GetString("Dialog_InvalidSecurityKeyMessage").Replace("{0}", exception.Message),
                 MessageIcon.Error);
             return null;
