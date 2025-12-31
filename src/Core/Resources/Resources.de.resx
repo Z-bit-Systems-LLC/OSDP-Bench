@@ -270,6 +270,18 @@
     <value>In Kürze wird ein Update veröffentlicht, das Secure Channel unterstützt</value>
     <comment>Message about future secure channel support</comment>
   </data>
+  <data name="Monitor_ClearText" xml:space="preserve">
+    <value>Klartext</value>
+    <comment>Badge shown when communication is not encrypted</comment>
+  </data>
+  <data name="Monitor_EncryptedDefaultKey" xml:space="preserve">
+    <value>Verschlüsselt – Standardschlüssel</value>
+    <comment>Badge shown when using secure channel with the default security key</comment>
+  </data>
+  <data name="Monitor_Encrypted" xml:space="preserve">
+    <value>Verschlüsselt</value>
+    <comment>Badge shown when using secure channel with a custom security key</comment>
+  </data>
   <data name="Monitor_TimeStamp" xml:space="preserve">
     <value>Zeitstempel</value>
     <comment>Column header for timestamp in monitoring grid</comment>
