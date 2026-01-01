@@ -28,7 +28,7 @@ public partial class MonitorViewModel : ObservableObject
     private PacketTraceEntry? _lastPacketEntry;
     private byte[]? _lastConfiguredSecurityKey;
     private bool _securityKeyConfigured;
-    private bool _wasConnected;
+    private bool _sessionActive;
     private long _currentBufferSizeBytes;
 
     /// <inheritdoc />
@@ -53,15 +53,10 @@ public partial class MonitorViewModel : ObservableObject
 
     private void OnDeviceManagementServiceOnConnectionStatusChange(object? _, ConnectionStatus connectionStatus)
     {
-        // Only clear trace when transitioning from connected to disconnected (session ended)
-        if (connectionStatus == ConnectionStatus.Disconnected && _wasConnected)
+        // Mark session as ended on disconnect so buffer clears on next connection attempt
+        if (connectionStatus == ConnectionStatus.Disconnected)
         {
-            InitializePollingMetrics();
-            _wasConnected = false;
-        }
-        else if (connectionStatus == ConnectionStatus.Connected)
-        {
-            _wasConnected = true;
+            _sessionActive = false;
         }
 
         UpdateConnectionInfo();
@@ -107,6 +102,13 @@ public partial class MonitorViewModel : ObservableObject
 
     private void OnDeviceManagementServiceOnTraceEntryReceived(object? _, TraceEntry traceEntry)
     {
+        // Clear buffer on first trace entry of a new session (new connection attempt)
+        if (!_sessionActive)
+        {
+            InitializePollingMetrics();
+            _sessionActive = true;
+        }
+
         UsingSecureChannel = _deviceManagementService.IsUsingSecureChannel;
         UsesDefaultSecurityKey = _deviceManagementService.UsesDefaultSecurityKey;
 
