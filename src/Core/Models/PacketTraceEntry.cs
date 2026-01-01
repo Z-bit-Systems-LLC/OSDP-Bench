@@ -59,6 +59,13 @@ public class PacketTraceEntry
     public Packet Packet { get; }
 
     /// <summary>
+    /// Gets the raw packet data bytes.
+    /// This property contains the original bytes from the trace entry,
+    /// used for export functionality.
+    /// </summary>
+    public byte[] RawData { get; }
+
+    /// <summary>
     /// Gets the detailed information of the packet payload in the trace entry.
     /// This property parses and formats the payload data of the packet,
     /// or returns "Empty" if no data is available.
@@ -83,17 +90,18 @@ public class PacketTraceEntry
     }
 
     // Private constructor
-    private PacketTraceEntry(TraceDirection direction, DateTime timestamp, TimeSpan interval, Packet packet)
+    private PacketTraceEntry(TraceDirection direction, DateTime timestamp, TimeSpan interval, Packet packet, byte[] rawData)
     {
         Direction = direction;
         Timestamp = timestamp;
         Interval = interval;
         Packet = packet;
+        RawData = rawData;
     }
 
     // Factory method
-    internal static PacketTraceEntry Create(TraceDirection direction, DateTime timestamp, TimeSpan interval, Packet packet)
+    internal static PacketTraceEntry Create(TraceDirection direction, DateTime timestamp, TimeSpan interval, Packet packet, byte[] rawData)
     {
-        return new PacketTraceEntry(direction, timestamp, interval, packet);
+        return new PacketTraceEntry(direction, timestamp, interval, packet, rawData);
     }
 }

@@ -11,6 +11,7 @@ namespace OSDPBench.Core.Tests.ViewModels;
 public class MonitorViewModelTests
 {
     private Mock<IDeviceManagementService> _deviceManagementServiceMock;
+    private Mock<IDialogService> _dialogServiceMock;
     private MonitorViewModel _viewModel;
 
     [SetUp]
@@ -18,7 +19,8 @@ public class MonitorViewModelTests
     {
         _deviceManagementServiceMock = new Mock<IDeviceManagementService>();
         _deviceManagementServiceMock.Setup(x => x.IsUsingSecureChannel).Returns(false);
-        _viewModel = new MonitorViewModel(_deviceManagementServiceMock.Object);
+        _dialogServiceMock = new Mock<IDialogService>();
+        _viewModel = new MonitorViewModel(_deviceManagementServiceMock.Object, _dialogServiceMock.Object);
     }
 
     [Test]

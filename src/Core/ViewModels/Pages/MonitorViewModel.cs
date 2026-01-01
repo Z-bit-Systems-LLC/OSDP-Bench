@@ -1,9 +1,12 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using OSDP.Net.Messages;
 using OSDP.Net.Tracing;
 using OSDPBench.Core.Models;
+using OSDPBench.Core.Resources;
 using OSDPBench.Core.Services;
+using OSDPBench.Core.Services.Export;
 using static OSDP.Net.Tracing.TraceDirection;
 
 namespace OSDPBench.Core.ViewModels.Pages;
@@ -13,20 +16,34 @@ namespace OSDPBench.Core.ViewModels.Pages;
 /// </summary>
 public partial class MonitorViewModel : ObservableObject
 {
+    private const int MaxBufferSizeBytes = 10 * 1024 * 1024; // 10 MB
+    private const int EstimatedOverheadPerEntry = 200; // Estimated overhead per PacketTraceEntry object
+
     private readonly IDeviceManagementService _deviceManagementService;
+    private readonly IDialogService _dialogService;
     private readonly PacketTraceEntryBuilder _traceEntryBuilder = new();
+    private readonly IPacketExporter[] _exporters;
+    private readonly List<PacketTraceEntry> _allTraceEntries = [];
 
     private PacketTraceEntry? _lastPacketEntry;
     private byte[]? _lastConfiguredSecurityKey;
     private bool _securityKeyConfigured;
     private bool _wasConnected;
+    private long _currentBufferSizeBytes;
 
     /// <inheritdoc />
-    public MonitorViewModel(IDeviceManagementService deviceManagementService)
+    public MonitorViewModel(IDeviceManagementService deviceManagementService, IDialogService dialogService)
     {
         _deviceManagementService = deviceManagementService ??
                                    throw new ArgumentNullException(nameof(deviceManagementService));
-        
+        _dialogService = dialogService ?? throw new ArgumentNullException(nameof(dialogService));
+
+        _exporters =
+        [
+            new OsdpCaptureExporter(),
+            new ParsedPacketExporter()
+        ];
+
         UpdateConnectionInfo();
         StatusLevel = _deviceManagementService.IsConnected ? StatusLevel.Connected : StatusLevel.Disconnected;
 
@@ -72,6 +89,8 @@ public partial class MonitorViewModel : ObservableObject
     private void InitializePollingMetrics()
     {
         TraceEntriesView.Clear();
+        _allTraceEntries.Clear();
+        _currentBufferSizeBytes = 0;
         _lastPacketEntry = null;
 
         // Reset statistics
@@ -79,6 +98,11 @@ public partial class MonitorViewModel : ObservableObject
         RepliesReceived = 0;
         Polls = 0;
         Naks = 0;
+
+        // Notify buffer and export changes
+        OnPropertyChanged(nameof(BufferUsagePercentage));
+        OnPropertyChanged(nameof(TotalPacketsCaptured));
+        ExportTraceCommand.NotifyCanExecuteChanged();
     }
 
     private void OnDeviceManagementServiceOnTraceEntryReceived(object? _, TraceEntry traceEntry)
@@ -149,6 +173,9 @@ public partial class MonitorViewModel : ObservableObject
                 Naks++;
             }
         }
+
+        // Store all packets for export (before display filtering)
+        AddToTraceBuffer(packetTraceEntry);
 
         bool notDisplaying = packetTraceEntry.Packet.CommandType == CommandType.Poll ||
                              _lastPacketEntry?.Packet.CommandType == CommandType.Poll &&
@@ -244,5 +271,116 @@ public partial class MonitorViewModel : ObservableObject
         if (key1 == null || key2 == null) return false;
         if (key1.Length != key2.Length) return false;
         return key1.AsSpan().SequenceEqual(key2);
+    }
+
+    private static int GetEntrySize(PacketTraceEntry entry)
+    {
+        return EstimatedOverheadPerEntry + (entry.RawData?.Length ?? 0);
+    }
+
+    private void AddToTraceBuffer(PacketTraceEntry entry)
+    {
+        var entrySize = GetEntrySize(entry);
+        _currentBufferSizeBytes += entrySize;
+        _allTraceEntries.Add(entry);
+
+        // Trim oldest entries if buffer exceeds limit
+        while (_currentBufferSizeBytes > MaxBufferSizeBytes && _allTraceEntries.Count > 1)
+        {
+            var oldest = _allTraceEntries[0];
+            _currentBufferSizeBytes -= GetEntrySize(oldest);
+            _allTraceEntries.RemoveAt(0);
+        }
+
+        // Notify UI of changes
+        if (_allTraceEntries.Count == 1)
+        {
+            ExportTraceCommand.NotifyCanExecuteChanged();
+        }
+        OnPropertyChanged(nameof(BufferUsagePercentage));
+        OnPropertyChanged(nameof(TotalPacketsCaptured));
+    }
+
+    /// <summary>
+    /// Gets the total number of packets captured for export.
+    /// </summary>
+    public int TotalPacketsCaptured => _allTraceEntries.Count;
+
+    /// <summary>
+    /// Gets the buffer usage as a percentage (0-100).
+    /// </summary>
+    public double BufferUsagePercentage => (_currentBufferSizeBytes / (double)MaxBufferSizeBytes) * 100.0;
+
+    /// <summary>
+    /// Gets the maximum buffer size in bytes.
+    /// </summary>
+    public static int MaxBufferSize => MaxBufferSizeBytes;
+
+    /// <summary>
+    /// Gets a value indicating whether there is trace data available for export.
+    /// </summary>
+    public bool CanExport => _allTraceEntries.Count > 0;
+
+    /// <summary>
+    /// Exports the current trace data to a file.
+    /// </summary>
+    [RelayCommand(CanExecute = nameof(CanExport))]
+    private async Task ExportTraceAsync()
+    {
+        if (_allTraceEntries.Count == 0)
+        {
+            await _dialogService.ShowMessageDialog(
+                Resources.Resources.GetString("Monitor_Export"),
+                Resources.Resources.GetString("Export_NoData"),
+                MessageIcon.Information);
+            return;
+        }
+
+        // Create filter list from exporters
+        var filters = _exporters.Select(e => (e.DisplayName, e.FileExtension)).ToList();
+
+        // Show save file dialog
+        var defaultFileName = $"osdp-trace-{DateTime.Now:yyyyMMdd-HHmmss}";
+        var filePath = await _dialogService.ShowSaveFileDialogAsync(
+            Resources.Resources.GetString("Export_SelectFormat"),
+            defaultFileName,
+            filters);
+
+        if (string.IsNullOrEmpty(filePath))
+        {
+            return; // User cancelled
+        }
+
+        // Find the appropriate exporter based on file extension
+        var extension = Path.GetExtension(filePath);
+        var exporter = _exporters.FirstOrDefault(e =>
+            e.FileExtension.Equals(extension, StringComparison.OrdinalIgnoreCase));
+
+        if (exporter == null)
+        {
+            // Default to first exporter if extension doesn't match
+            exporter = _exporters[0];
+        }
+
+        try
+        {
+            // Export all captured trace data (not just displayed entries)
+            var data = await exporter.ExportAsync(_allTraceEntries);
+            await File.WriteAllBytesAsync(filePath, data);
+
+            await _dialogService.ShowMessageDialog(
+                Resources.Resources.GetString("Monitor_Export"),
+                Resources.Resources.GetString("Export_Success"),
+                MessageIcon.Information);
+        }
+        catch (Exception ex)
+        {
+            await _dialogService.ShowExceptionDialog(Resources.Resources.GetString("Monitor_Export"), ex);
+        }
+    }
+
+    partial void OnTraceEntriesViewChanged(ObservableCollection<PacketTraceEntry> value)
+    {
+        ExportTraceCommand.NotifyCanExecuteChanged();
     }
 }

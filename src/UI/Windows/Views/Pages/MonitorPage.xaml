@@ -117,6 +117,44 @@
 									           Margin="0 5 0 0"/>
 								</StackPanel>
 							</Grid>
+
+							<!-- Buffer Status Row -->
+							<Grid Margin="0 15 0 0">
+								<Grid.ColumnDefinitions>
+									<ColumnDefinition Width="*"/>
+									<ColumnDefinition Width="Auto"/>
+								</Grid.ColumnDefinitions>
+
+								<!-- Buffer Info -->
+								<StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+									<TextBlock Style="{StaticResource Text.Body}"
+									           VerticalAlignment="Center">
+										<Run Text="{Binding ViewModel.TotalPacketsCaptured, Mode=OneWay}"/>
+										<Run Text=" "/>
+										<Run Text="{markup:Localize Monitor_PacketsCaptured}"/>
+									</TextBlock>
+									<ProgressBar Value="{Binding ViewModel.BufferUsagePercentage, Mode=OneWay}"
+									             Minimum="0"
+									             Maximum="100"
+									             Width="100"
+									             Height="8"
+									             Margin="10 0 0 0"
+									             VerticalAlignment="Center"/>
+									<TextBlock Style="{StaticResource Text.Body}"
+									           VerticalAlignment="Center"
+									           Margin="5 0 0 0"
+									           Text="{Binding ViewModel.BufferUsagePercentage, StringFormat={}{0:F0}%, Mode=OneWay}"/>
+								</StackPanel>
+
+								<!-- Export Button -->
+								<ui:Button Grid.Column="1"
+								           Content="{markup:Localize Monitor_Export}"
+								           Command="{Binding ViewModel.ExportTraceCommand}">
+									<ui:Button.Icon>
+										<ui:SymbolIcon Symbol="ArrowDownload24"/>
+									</ui:Button.Icon>
+								</ui:Button>
+							</Grid>
 						</StackPanel>
 					</Border>
 					<DataGrid ItemsSource="{Binding ViewModel.TraceEntriesView}" 

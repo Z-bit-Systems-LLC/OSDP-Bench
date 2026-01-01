@@ -79,6 +79,6 @@ public class PacketTraceEntryBuilder
 
         return PacketTraceEntry.Create(_traceEntry.Direction, _timestamp,
             _lastTraceEntry != null ? _timestamp - _lastTraceEntry.Timestamp : TimeSpan.Zero,
-            packet);
+            packet, _traceEntry.Data);
     }
 }
