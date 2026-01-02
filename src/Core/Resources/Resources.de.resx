@@ -577,4 +577,33 @@
     <value>Nein</value>
     <comment>Common No button text</comment>
   </data>
+  <!-- Export Feature -->
+  <data name="Monitor_PacketsCaptured" xml:space="preserve">
+    <value>packets captured</value>
+    <comment>Label showing number of packets in export buffer</comment>
+  </data>
+  <data name="Monitor_Export" xml:space="preserve">
+    <value>Export</value>
+    <comment>Export button text</comment>
+  </data>
+  <data name="Export_SelectFormat" xml:space="preserve">
+    <value>Select Export Format</value>
+    <comment>Dialog title for export format selection</comment>
+  </data>
+  <data name="Export_OsdpCapture" xml:space="preserve">
+    <value>OSDP Capture (.osdpcap)</value>
+    <comment>Format option for OSDP capture file</comment>
+  </data>
+  <data name="Export_ParsedText" xml:space="preserve">
+    <value>Parsed Text (.txt)</value>
+    <comment>Format option for parsed text file</comment>
+  </data>
+  <data name="Export_Success" xml:space="preserve">
+    <value>Trace exported successfully</value>
+    <comment>Success message after export</comment>
+  </data>
+  <data name="Export_NoData" xml:space="preserve">
+    <value>No trace data to export</value>
+    <comment>Message when there is no data to export</comment>
+  </data>
 </root>
