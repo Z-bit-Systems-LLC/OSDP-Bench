@@ -153,4 +153,28 @@ public interface IDeviceManagementService
     /// Event that is triggered when a trace entry is received.
     /// </summary>
     event EventHandler<TraceEntry>? TraceEntryReceived;
+
+    /// <summary>
+    /// Gets a value indicating whether passive monitoring is currently active.
+    /// </summary>
+    bool IsPassiveMonitoring { get; }
+
+    /// <summary>
+    /// Starts passive monitoring on the specified connection.
+    /// Passive monitoring listens to OSDP traffic without sending any commands,
+    /// allowing debugging of third-party systems.
+    /// </summary>
+    /// <param name="connection">The connection to use for passive monitoring.</param>
+    /// <param name="useSecureChannel">Whether to decrypt secure channel traffic.</param>
+    /// <param name="useDefaultSecurityKey">Whether using the default security key for decryption.</param>
+    /// <param name="securityKey">Optional security key for decrypting secure channel traffic.</param>
+    /// <returns>A task representing the asynchronous operation.</returns>
+    Task StartPassiveMonitoring(IOsdpConnection connection, bool useSecureChannel = false,
+        bool useDefaultSecurityKey = true, byte[]? securityKey = null);
+
+    /// <summary>
+    /// Stops passive monitoring if it is currently active.
+    /// </summary>
+    /// <returns>A task representing the asynchronous operation.</returns>
+    Task StopPassiveMonitoring();
 }

@@ -123,6 +123,24 @@
                             </ui:Button.Visibility>
                         </ui:Button>
 
+                        <ui:Button Content="{markup:Localize Connect_StartPassiveMonitoring}"
+                                   Command="{Binding ViewModel.StartPassiveMonitoringCommand}"
+                                   Margin="0,0,8,0"
+                                   Style="{StaticResource Button.Primary}">
+                            <ui:Button.Visibility>
+                                <Binding Path="ViewModel.StartPassiveMonitoringVisible" Converter="{StaticResource BooleanToVisibilityConverter}"/>
+                            </ui:Button.Visibility>
+                        </ui:Button>
+
+                        <ui:Button Content="{markup:Localize Connect_StopPassiveMonitoring}"
+                                   Command="{Binding ViewModel.StopPassiveMonitoringCommand}"
+                                   Margin="0,0,8,0"
+                                   Style="{StaticResource Button.Secondary}">
+                            <ui:Button.Visibility>
+                                <Binding Path="ViewModel.StopPassiveMonitoringVisible" Converter="{StaticResource BooleanToVisibilityConverter}"/>
+                            </ui:Button.Visibility>
+                        </ui:Button>
+
                         <ComboBox Name="ConnectionTypeComboBox"
                                   ItemsSource="{Binding ViewModel.ConnectionTypes}"
                                   SelectedIndex="{Binding ViewModel.SelectedConnectionTypeIndex, Mode=TwoWay}"
@@ -134,13 +152,21 @@
                 <ui:TextBlock Style="{StaticResource Text.Body}"
 					  Margin="10 5"
 					  HorizontalAlignment="Center"
-					  Text="{markup:Localize Connect_DiscoveryWarning}" 
+					  Text="{markup:Localize Connect_DiscoveryWarning}"
 					  TextWrapping="Wrap"
 					  Visibility="{Binding ElementName=ConnectionTypeComboBox, Path=SelectedIndex, Converter={StaticResource IndexToVisibilityConverter}, ConverterParameter=0, Mode=OneWay}"/>
 
-                <ScrollViewer VerticalScrollBarVisibility="Auto" 
+                <!-- Passive Monitor Info (only shown when Passive Monitor mode is selected) -->
+                <ui:TextBlock Style="{StaticResource Text.Body}"
+					  Margin="10 5"
+					  HorizontalAlignment="Center"
+					  Text="{markup:Localize Connect_PassiveMonitorInfo}"
+					  TextWrapping="Wrap"
+					  Visibility="{Binding ElementName=ConnectionTypeComboBox, Path=SelectedIndex, Converter={StaticResource IndexToVisibilityConverter}, ConverterParameter=2, Mode=OneWay}"/>
+
+                <ScrollViewer VerticalScrollBarVisibility="Auto"
                              HorizontalScrollBarVisibility="Disabled"
-                             Visibility="{Binding ElementName=ConnectionTypeComboBox, Path=SelectedIndex, Converter={StaticResource IndexToVisibilityConverter}, ConverterParameter=1, Mode=OneWay}">
+                             Visibility="{Binding ElementName=ConnectionTypeComboBox, Path=SelectedIndex, Converter={StaticResource IndexToVisibilityConverter}, ConverterParameter=1|2, Mode=OneWay}">
                 <StackPanel Orientation="Vertical"
                            Margin="0,0,16,0">
                     
@@ -161,7 +187,9 @@
                                           SelectedItem="{Binding Path=ViewModel.SelectedBaudRate, Mode=TwoWay}"/>
                             </StackPanel>
                             
-                            <StackPanel Orientation="Vertical">
+                            <!-- Address field - only visible in Manual mode (not in Passive Monitor) -->
+                            <StackPanel Orientation="Vertical"
+                                        Visibility="{Binding ElementName=ConnectionTypeComboBox, Path=SelectedIndex, Converter={StaticResource IndexToVisibilityConverter}, ConverterParameter=1, Mode=OneWay}">
                                 <Label Content="{markup:Localize Connect_Address}"
                                        Style="{StaticResource Label.Standard}"
                                        Target="{Binding ElementName=AddressNumberBox}" />
@@ -178,27 +206,28 @@
                         </WrapPanel>
                     </StackPanel>
                     
-                    <!-- Security Settings Section -->
-                    <Border Style="{StaticResource Card.Bordered}" 
+                    <!-- Security Settings Section - Active Connection Mode (Manual) -->
+                    <Border Style="{StaticResource Card.Bordered}"
                             Padding="16"
-                            Margin="0,0,0,16">
+                            Margin="0,0,0,16"
+                            Visibility="{Binding ElementName=ConnectionTypeComboBox, Path=SelectedIndex, Converter={StaticResource IndexToVisibilityConverter}, ConverterParameter=1, Mode=OneWay}">
                         <StackPanel Orientation="Vertical">
                             <ui:TextBlock Style="{StaticResource Section.Header}"
                                           Text="{markup:Localize Connect_SecuritySettings}"/>
-                            
+
                             <WrapPanel Orientation="Horizontal" Margin="0,0,0,8">
                                 <CheckBox Name="UseSecureChannelCheckBox"
-                                          Content="{markup:Localize Connect_UseSecureChannel}" 
+                                          Content="{markup:Localize Connect_UseSecureChannel}"
                                           IsChecked="{Binding Path=ViewModel.UseSecureChannel, Mode=TwoWay}"
                                           Margin="0,0,16,4"/>
-                                
+
                                 <CheckBox Name="UseDefaultKeyCheckBox"
-                                          Content="{markup:Localize Connect_UseDefaultKey}" 
+                                          Content="{markup:Localize Connect_UseDefaultKey}"
                                           IsEnabled="{Binding ElementName=UseSecureChannelCheckBox, Path=IsChecked}"
                                           IsChecked="{Binding Path=ViewModel.UseDefaultKey, Mode=TwoWay}"
                                           Margin="0,0,0,4"/>
                             </WrapPanel>
-                            
+
                             <StackPanel Orientation="Vertical">
                                 <Label Content="{markup:Localize Connect_SecurityKey}"
                                        Style="{StaticResource Label.Standard}"
@@ -222,6 +251,33 @@
                                         </Style>
                                     </TextBox.Style>
                                 </TextBox>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Security Settings Section - Passive Monitoring Mode -->
+                    <Border Style="{StaticResource Card.Bordered}"
+                            Padding="16"
+                            Margin="0,0,0,16"
+                            Visibility="{Binding ElementName=ConnectionTypeComboBox, Path=SelectedIndex, Converter={StaticResource IndexToVisibilityConverter}, ConverterParameter=2, Mode=OneWay}">
+                        <StackPanel Orientation="Vertical">
+                            <ui:TextBlock Style="{StaticResource Section.Header}"
+                                          Text="{markup:Localize Connect_DecryptionSettings}"/>
+
+                            <CheckBox Name="PassiveUseDefaultKeyCheckBox"
+                                      Content="{markup:Localize Connect_UseDefaultSecureKey}"
+                                      IsChecked="{Binding Path=ViewModel.UseDefaultKey, Mode=TwoWay}"
+                                      Margin="0,0,0,8"/>
+
+                            <StackPanel Orientation="Vertical">
+                                <Label Content="{markup:Localize Connect_CustomKey}"
+                                       Style="{StaticResource Label.Standard}"
+                                       Target="{Binding ElementName=PassiveSecurityKeyTextBox}" />
+                                <TextBox Name="PassiveSecurityKeyTextBox"
+                                         Style="{StaticResource TextBox.Standard}"
+                                         Text="{Binding Path=ViewModel.SecurityKey, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                         MaxWidth="600"
+                                         HorizontalAlignment="Stretch"/>
                             </StackPanel>
                         </StackPanel>
                     </Border>

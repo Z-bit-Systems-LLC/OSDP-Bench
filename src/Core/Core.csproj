@@ -24,7 +24,7 @@
 
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
-    <PackageReference Include="OSDP.Net" Version="5.0.37" />
+    <PackageReference Include="OSDP.Net" Version="5.0.38" />
   </ItemGroup>
 
   <ItemGroup>

@@ -82,6 +82,7 @@ public partial class ConnectViewModel : ObservableObject, IDisposable
         ConnectionTypes.Clear();
         ConnectionTypes.Add(Resources.Resources.GetString("ConnectionType_Discover"));
         ConnectionTypes.Add(Resources.Resources.GetString("ConnectionType_Manual"));
+        ConnectionTypes.Add(Resources.Resources.GetString("ConnectionType_PassiveMonitor"));
 
         // Restore selection after update
         SelectedConnectionTypeIndex = previousSelectedIndex;
@@ -163,6 +164,13 @@ public partial class ConnectViewModel : ObservableObject, IDisposable
             UseSecureChannel = _deviceManagementService.IsUsingSecureChannel;
             UseDefaultKey = _deviceManagementService.UsesDefaultSecurityKey;
         }
+        else if (connectionStatus == ConnectionStatus.PassiveMonitoring)
+        {
+            StatusText = Resources.Resources.GetString("Status_PassiveMonitoring");
+            NakText = string.Empty;
+            StatusLevel = StatusLevel.PassiveMonitoring;
+            ConnectedBaudRate = (int)_deviceManagementService.BaudRate;
+        }
         else if (StatusLevel == StatusLevel.Discovered)
         {
             StatusText = Resources.Resources.GetString("Status_AttemptingToConnect");
@@ -213,6 +221,32 @@ public partial class ConnectViewModel : ObservableObject, IDisposable
     [ObservableProperty] private bool _useDefaultKey = true;
 
     [ObservableProperty] private string _securityKey = string.Empty;
+
+    /// <summary>
+    /// Called when UseDefaultKey property changes. In passive mode, prevents unchecking
+    /// unless a custom key is provided.
+    /// </summary>
+    partial void OnUseDefaultKeyChanged(bool value)
+    {
+        // In passive mode, don't allow unchecking default key without a custom key
+        if (!value && IsPassiveMode && string.IsNullOrWhiteSpace(SecurityKey))
+        {
+            UseDefaultKey = true;
+        }
+    }
+
+    /// <summary>
+    /// Called when SecurityKey property changes. In passive mode, if a custom key is cleared,
+    /// automatically re-enable the default key.
+    /// </summary>
+    partial void OnSecurityKeyChanged(string value)
+    {
+        // In passive mode, if custom key is cleared, re-enable default key
+        if (IsPassiveMode && string.IsNullOrWhiteSpace(value) && !UseDefaultKey)
+        {
+            UseDefaultKey = true;
+        }
+    }
     
     [ObservableProperty] private DateTime _lastTxActiveTime;
 
@@ -230,9 +264,14 @@ public partial class ConnectViewModel : ObservableObject, IDisposable
     [ObservableProperty] private ObservableCollection<string> _connectionTypes = [];
 
     /// <summary>
-    /// Gets or sets the selected connection type index (0 = Discovery, 1 = Manual).
+    /// Gets or sets the selected connection type index (0 = Discovery, 1 = Manual, 2 = Passive Monitor).
     /// </summary>
     [ObservableProperty] private int _selectedConnectionTypeIndex;
+
+    /// <summary>
+    /// Gets a value indicating whether Passive Monitor mode is selected.
+    /// </summary>
+    public bool IsPassiveMode => SelectedConnectionTypeIndex == 2;
 
     /// <summary>
     /// Gets a value indicating whether the Connect button should be visible.
@@ -253,6 +292,16 @@ public partial class ConnectViewModel : ObservableObject, IDisposable
     /// Gets a value indicating whether the Cancel Discovery button should be visible.
     /// </summary>
     public bool CancelDiscoveryVisible => CalculateCancelDiscoveryVisibility();
+
+    /// <summary>
+    /// Gets a value indicating whether the Start Passive Monitoring button should be visible.
+    /// </summary>
+    public bool StartPassiveMonitoringVisible => CalculateStartPassiveMonitoringVisibility();
+
+    /// <summary>
+    /// Gets a value indicating whether the Stop Passive Monitoring button should be visible.
+    /// </summary>
+    public bool StopPassiveMonitoringVisible => CalculateStopPassiveMonitoringVisibility();
 
     /// <summary>
     /// Gets a value indicating whether the ConnectionTypeComboBox should be enabled.
@@ -462,7 +511,63 @@ public partial class ConnectViewModel : ObservableObject, IDisposable
         LastTxActiveTime = DateTime.MinValue;
         LastRxActiveTime = DateTime.MinValue;
     }
-    
+
+    [RelayCommand]
+    private async Task StartPassiveMonitoring()
+    {
+        if (!ValidateSerialPort()) return;
+
+        string serialPortName = SelectedSerialPort?.Name ?? string.Empty;
+        StatusLevel = StatusLevel.PassiveMonitoring;
+        StatusText = Resources.Resources.GetString("Status_PassiveMonitoring");
+
+        // For passive monitoring, always decrypt:
+        // - UseDefaultKey checked → decrypt with default key
+        // - UseDefaultKey unchecked → must have custom key (enforced by OnUseDefaultKeyChanged)
+        byte[]? securityKey = null;
+
+        if (!UseDefaultKey)
+        {
+            // Use custom key for decryption
+            securityKey = await GetSecurityKeyForPassiveMonitoring();
+            if (securityKey == null) return; // Invalid key format
+        }
+
+        var connection = _serialPortConnectionService.GetConnection(serialPortName, SelectedBaudRate);
+        await _deviceManagementService.StartPassiveMonitoring(connection, true, UseDefaultKey, securityKey);
+
+        ConnectedBaudRate = SelectedBaudRate;
+    }
+
+    private async Task<byte[]?> GetSecurityKeyForPassiveMonitoring()
+    {
+        try
+        {
+            return HexConverter.FromHexString(SecurityKey, 32);
+        }
+        catch (Exception exception)
+        {
+            await _dialogService.ShowMessageDialog(
+                Resources.Resources.GetString("Dialog_Connect_Title"),
+                Resources.Resources.GetString("Dialog_InvalidSecurityKeyMessage").Replace("{0}", exception.Message),
+                MessageIcon.Error);
+            StatusLevel = StatusLevel.Ready;
+            return null;
+        }
+    }
+
+    [RelayCommand]
+    private async Task StopPassiveMonitoring()
+    {
+        await _deviceManagementService.StopPassiveMonitoring();
+        StatusText = Resources.Resources.GetString("Status_Disconnected");
+        StatusLevel = StatusLevel.Disconnected;
+        NakText = string.Empty;
+        _lastPacketEntry = null;
+        LastTxActiveTime = DateTime.MinValue;
+        LastRxActiveTime = DateTime.MinValue;
+    }
+
     private async void OnUsbDeviceChanged(object? sender, UsbDeviceChangedEventArgs eventArgs)
     {
         try
@@ -597,7 +702,20 @@ public partial class ConnectViewModel : ObservableObject, IDisposable
                StatusLevel != StatusLevel.Discovered &&
                StatusLevel != StatusLevel.Connecting &&
                StatusLevel != StatusLevel.ConnectingManually &&
-               StatusLevel != StatusLevel.Connected;
+               StatusLevel != StatusLevel.Connected &&
+               StatusLevel != StatusLevel.PassiveMonitoring;
+    }
+
+    private bool CalculateStartPassiveMonitoringVisibility()
+    {
+        // Show Start Passive Monitoring when in Passive mode and not actively monitoring
+        return SelectedConnectionTypeIndex == 2 && StatusLevel != StatusLevel.PassiveMonitoring;
+    }
+
+    private bool CalculateStopPassiveMonitoringVisibility()
+    {
+        // Show Stop Passive Monitoring when actively monitoring
+        return StatusLevel == StatusLevel.PassiveMonitoring;
     }
 
     /// <summary>
@@ -610,7 +728,10 @@ public partial class ConnectViewModel : ObservableObject, IDisposable
         OnPropertyChanged(nameof(DisconnectVisible));
         OnPropertyChanged(nameof(StartDiscoveryVisible));
         OnPropertyChanged(nameof(CancelDiscoveryVisible));
+        OnPropertyChanged(nameof(StartPassiveMonitoringVisible));
+        OnPropertyChanged(nameof(StopPassiveMonitoringVisible));
         OnPropertyChanged(nameof(IsConnectionTypeEnabled));
+        OnPropertyChanged(nameof(IsPassiveMode));
     }
 
     #endregion
@@ -658,6 +779,7 @@ public enum StatusLevel
     Discovered,
     Error,
     Disconnected,
-    ConnectingManually
+    ConnectingManually,
+    PassiveMonitoring
 #pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
 }

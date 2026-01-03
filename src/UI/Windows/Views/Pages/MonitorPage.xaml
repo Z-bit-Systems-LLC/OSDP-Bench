@@ -171,6 +171,104 @@
 						<DataGridTextColumn Header="{markup:Localize Monitor_Direction}" Binding="{Binding Direction}" />
 						<DataGridTextColumn Header="{markup:Localize Monitor_Address}" Binding="{Binding Packet.Address}" />
 						<DataGridTextColumn Header="{markup:Localize Monitor_Type}" Binding="{Binding Type}" />
+
+						<!-- Security Status Column -->
+						<DataGridTemplateColumn Header="{markup:Localize Monitor_Security}">
+							<DataGridTemplateColumn.CellTemplate>
+								<DataTemplate>
+									<Grid>
+										<!-- Clear Text (Red) - not using secure channel -->
+										<Border Background="{DynamicResource SemanticErrorBrush}"
+										        CornerRadius="3"
+										        Padding="6,2"
+										        HorizontalAlignment="Left"
+										        Visibility="{Binding IsSecureMessage, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=Inverted}">
+											<TextBlock Text="{markup:Localize Monitor_ClearText}"
+											           Foreground="White"
+											           FontWeight="SemiBold"
+											           FontSize="10"/>
+										</Border>
+
+										<!-- Encrypted with Default Key (Red) -->
+										<Border Background="{DynamicResource SemanticErrorBrush}"
+										        CornerRadius="3"
+										        Padding="6,2"
+										        HorizontalAlignment="Left">
+											<Border.Style>
+												<Style TargetType="Border">
+													<Setter Property="Visibility" Value="Collapsed"/>
+													<Style.Triggers>
+														<MultiDataTrigger>
+															<MultiDataTrigger.Conditions>
+																<Condition Binding="{Binding IsSecureMessage}" Value="True"/>
+																<Condition Binding="{Binding IsUsingDefaultKey}" Value="True"/>
+															</MultiDataTrigger.Conditions>
+															<Setter Property="Visibility" Value="Visible"/>
+														</MultiDataTrigger>
+													</Style.Triggers>
+												</Style>
+											</Border.Style>
+											<TextBlock Text="{markup:Localize Monitor_EncryptedDefaultKey}"
+											           Foreground="White"
+											           FontWeight="SemiBold"
+											           FontSize="10"/>
+										</Border>
+
+										<!-- No Decryption (Orange) - secure but couldn't decrypt -->
+										<Border Background="{DynamicResource SemanticWarningBrush}"
+										        CornerRadius="3"
+										        Padding="6,2"
+										        HorizontalAlignment="Left">
+											<Border.Style>
+												<Style TargetType="Border">
+													<Setter Property="Visibility" Value="Collapsed"/>
+													<Style.Triggers>
+														<MultiDataTrigger>
+															<MultiDataTrigger.Conditions>
+																<Condition Binding="{Binding IsSecureMessage}" Value="True"/>
+																<Condition Binding="{Binding IsPayloadDecrypted}" Value="False"/>
+																<Condition Binding="{Binding IsUsingDefaultKey}" Value="False"/>
+															</MultiDataTrigger.Conditions>
+															<Setter Property="Visibility" Value="Visible"/>
+														</MultiDataTrigger>
+													</Style.Triggers>
+												</Style>
+											</Border.Style>
+											<TextBlock Text="{markup:Localize Monitor_NoDecryption}"
+											           Foreground="White"
+											           FontWeight="SemiBold"
+											           FontSize="10"/>
+										</Border>
+
+										<!-- Encrypted (Green) - secure with custom key and decrypted -->
+										<Border Background="{DynamicResource SemanticSuccessBrush}"
+										        CornerRadius="3"
+										        Padding="6,2"
+										        HorizontalAlignment="Left">
+											<Border.Style>
+												<Style TargetType="Border">
+													<Setter Property="Visibility" Value="Collapsed"/>
+													<Style.Triggers>
+														<MultiDataTrigger>
+															<MultiDataTrigger.Conditions>
+																<Condition Binding="{Binding IsSecureMessage}" Value="True"/>
+																<Condition Binding="{Binding IsPayloadDecrypted}" Value="True"/>
+																<Condition Binding="{Binding IsUsingDefaultKey}" Value="False"/>
+															</MultiDataTrigger.Conditions>
+															<Setter Property="Visibility" Value="Visible"/>
+														</MultiDataTrigger>
+													</Style.Triggers>
+												</Style>
+											</Border.Style>
+											<TextBlock Text="{markup:Localize Monitor_Encrypted}"
+											           Foreground="White"
+											           FontWeight="SemiBold"
+											           FontSize="10"/>
+										</Border>
+									</Grid>
+								</DataTemplate>
+							</DataGridTemplateColumn.CellTemplate>
+						</DataGridTemplateColumn>
 		        
 						<!-- Button Column -->
 						<DataGridTemplateColumn Header="" Width="50">

@@ -59,6 +59,22 @@ public class PacketTraceEntry
     public Packet Packet { get; }
 
     /// <summary>
+    /// Indicates if the message was sent via an established secure channel.
+    /// </summary>
+    public bool IsSecureMessage => Packet.IsSecureMessage;
+
+    /// <summary>
+    /// Indicates whether the payload was successfully decrypted.
+    /// When false and IsSecureMessage is true, the packet is encrypted but could not be decrypted.
+    /// </summary>
+    public bool IsPayloadDecrypted => Packet.IsPayloadDecrypted;
+
+    /// <summary>
+    /// Indicates if the secure channel is using the default key.
+    /// </summary>
+    public bool IsUsingDefaultKey => Packet.IsUsingDefaultKey;
+
+    /// <summary>
     /// Gets the raw packet data bytes.
     /// This property contains the original bytes from the trace entry,
     /// used for export functionality.

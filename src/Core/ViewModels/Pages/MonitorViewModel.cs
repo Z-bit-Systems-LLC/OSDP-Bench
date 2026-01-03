@@ -66,6 +66,9 @@ public partial class MonitorViewModel : ObservableObject
             case ConnectionStatus.Connected:
                 StatusLevel = StatusLevel.Connected;
                 break;
+            case ConnectionStatus.PassiveMonitoring:
+                StatusLevel = StatusLevel.PassiveMonitoring;
+                break;
             case ConnectionStatus.InvalidSecurityKey:
                 StatusLevel = StatusLevel.Error;
                 break;

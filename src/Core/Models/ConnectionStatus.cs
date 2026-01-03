@@ -18,5 +18,10 @@ public enum ConnectionStatus
     /// <summary>
     /// Indicates that the provided security key is invalid, preventing the connection from being established.
     /// </summary>
-    InvalidSecurityKey
+    InvalidSecurityKey,
+
+    /// <summary>
+    /// Indicates that passive monitoring mode is active, listening to bus traffic without sending commands.
+    /// </summary>
+    PassiveMonitoring
 }

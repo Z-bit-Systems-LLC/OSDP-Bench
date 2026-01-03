@@ -1,5 +1,13 @@
 # OSDP-Bench Development Guidelines
 
+## Language Server
+- **csharp-ls** is configured for this project - use the LSP tool for code intelligence features:
+  - `goToDefinition` - Find where a symbol is defined
+  - `findReferences` - Find all references to a symbol
+  - `hover` - Get type info and documentation
+  - `documentSymbol` - Get all symbols in a file
+  - `workspaceSymbol` - Search for symbols across the workspace
+
 ## References
 - OSDP.Net source code: https://github.com/bytedreamer/OSDP.Net
 
