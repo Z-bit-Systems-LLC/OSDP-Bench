@@ -126,6 +126,14 @@
     <value>Error</value>
     <comment>Device connection status when an error occurred</comment>
   </data>
+  <data name="Status_PassiveMonitoring" xml:space="preserve">
+    <value>Monitoring</value>
+    <comment>Device connection status when passively monitoring bus traffic</comment>
+  </data>
+  <data name="Status_PassiveMonitoringFormat" xml:space="preserve">
+    <value>{0} baud</value>
+    <comment>Brief status format for passive monitoring. {0} = baud rate</comment>
+  </data>
   <!-- USB Status Messages -->
   <!-- Error Messages -->
   <!-- Device Information -->
@@ -172,6 +180,18 @@
     <value>Discovery solo funcionará correctamente con un solo dispositivo conectado</value>
     <comment>Warning message about device discovery</comment>
   </data>
+  <data name="Connect_PassiveMonitorInfo" xml:space="preserve">
+    <value>Passive monitoring allows debugging third-party OSDP systems by listening to bus traffic without sending commands</value>
+    <comment>Information about passive monitoring mode</comment>
+  </data>
+  <data name="Connect_StartPassiveMonitoring" xml:space="preserve">
+    <value>Start Monitoring</value>
+    <comment>Button text to start passive monitoring</comment>
+  </data>
+  <data name="Connect_StopPassiveMonitoring" xml:space="preserve">
+    <value>Stop Monitoring</value>
+    <comment>Button text to stop passive monitoring</comment>
+  </data>
   <data name="Connect_StartDiscovery" xml:space="preserve">
     <value>Iniciar descubrimiento</value>
     <comment>Button text to start device discovery</comment>
@@ -211,6 +231,18 @@
   <data name="Connect_SecurityKey" xml:space="preserve">
     <value>Clave de seguridad</value>
     <comment>Label for security key input</comment>
+  </data>
+  <data name="Connect_DecryptionSettings" xml:space="preserve">
+    <value>Decryption Settings</value>
+    <comment>Section header for decryption settings in passive monitoring mode</comment>
+  </data>
+  <data name="Connect_UseDefaultSecureKey" xml:space="preserve">
+    <value>Use Default Secure Key</value>
+    <comment>Checkbox text to enable decryption with default OSDP key</comment>
+  </data>
+  <data name="Connect_CustomKey" xml:space="preserve">
+    <value>Custom Key</value>
+    <comment>Label for custom security key input in passive monitoring mode</comment>
   </data>
   <data name="Connect_Connect" xml:space="preserve">
     <value>Conectar</value>
@@ -281,6 +313,22 @@
   <data name="Monitor_Encrypted" xml:space="preserve">
     <value>Cifrado</value>
     <comment>Badge shown when using secure channel with a custom security key</comment>
+  </data>
+  <data name="Monitor_NoDecryption" xml:space="preserve">
+    <value>No Decryption</value>
+    <comment>Badge shown when passive monitoring without a security key configured</comment>
+  </data>
+  <data name="Monitor_DefaultKey" xml:space="preserve">
+    <value>Default Key</value>
+    <comment>Badge shown when passive monitoring with default key decryption</comment>
+  </data>
+  <data name="Monitor_CustomKey" xml:space="preserve">
+    <value>Custom Key</value>
+    <comment>Badge shown when passive monitoring with custom key decryption</comment>
+  </data>
+  <data name="Monitor_Security" xml:space="preserve">
+    <value>Security</value>
+    <comment>Column header for security status in monitoring grid</comment>
   </data>
   <data name="Monitor_TimeStamp" xml:space="preserve">
     <value>Timestamp</value>
@@ -547,6 +595,10 @@
   <data name="ConnectionType_Manual" xml:space="preserve">
     <value>Manual</value>
     <comment>Connection type option for manual connection</comment>
+  </data>
+  <data name="ConnectionType_PassiveMonitor" xml:space="preserve">
+    <value>Passive Monitor</value>
+    <comment>Connection type option for passive bus monitoring</comment>
   </data>
   <!-- Language Selection UI -->
   <data name="Language_Selection" xml:space="preserve">
