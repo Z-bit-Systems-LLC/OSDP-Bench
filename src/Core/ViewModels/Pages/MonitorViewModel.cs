@@ -161,8 +161,12 @@ public partial class MonitorViewModel : ObservableObject
             return;
         }
 
-        // Update statistics
-        if (traceEntry.Direction == Output)
+        // Update statistics based on packet type
+        // For passive monitoring (TraceDirection.Trace), determine direction from packet content
+        bool isCommand = packetTraceEntry.Packet.CommandType != null;
+        bool isReply = packetTraceEntry.Packet.ReplyType != null;
+
+        if (traceEntry.Direction == Output || (traceEntry.Direction == Trace && isCommand))
         {
             CommandsSent++;
             if (packetTraceEntry.Packet.CommandType == CommandType.Poll)
@@ -170,7 +174,7 @@ public partial class MonitorViewModel : ObservableObject
                 Polls++;
             }
         }
-        else if (traceEntry.Direction == Input)
+        else if (traceEntry.Direction == Input || (traceEntry.Direction == Trace && isReply))
         {
             RepliesReceived++;
             if (packetTraceEntry.Packet.ReplyType == ReplyType.Nak)

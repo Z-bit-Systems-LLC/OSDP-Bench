@@ -182,7 +182,7 @@
 										        CornerRadius="3"
 										        Padding="6,2"
 										        HorizontalAlignment="Left"
-										        Visibility="{Binding IsSecureMessage, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=Inverted}">
+										        Visibility="{Binding IsSecureMessage, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=Invert}">
 											<TextBlock Text="{markup:Localize Monitor_ClearText}"
 											           Foreground="White"
 											           FontWeight="SemiBold"
