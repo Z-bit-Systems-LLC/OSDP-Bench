@@ -146,13 +146,22 @@
 									           Text="{Binding ViewModel.BufferUsagePercentage, StringFormat={}{0:F0}%, Mode=OneWay}"/>
 								</StackPanel>
 
-								<!-- Export Button -->
+								<!-- Export Button with Dropdown -->
 								<ui:Button Grid.Column="1"
+								           x:Name="ExportButton"
 								           Content="{markup:Localize Monitor_Export}"
-								           Command="{Binding ViewModel.ExportTraceCommand}">
+								           Click="ExportButton_Click">
 									<ui:Button.Icon>
 										<ui:SymbolIcon Symbol="ArrowDownload24"/>
 									</ui:Button.Icon>
+									<ui:Button.ContextMenu>
+										<ContextMenu>
+											<MenuItem Header="{markup:Localize Export_OsdpCapture}"
+											          Command="{Binding ViewModel.ExportOsdpCaptureCommand}"/>
+											<MenuItem Header="{markup:Localize Export_ParsedText}"
+											          Command="{Binding ViewModel.ExportParsedTextCommand}"/>
+										</ContextMenu>
+									</ui:Button.ContextMenu>
 								</ui:Button>
 							</Grid>
 						</StackPanel>

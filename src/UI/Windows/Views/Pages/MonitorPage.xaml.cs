@@ -20,6 +20,15 @@ public partial class MonitorPage : INavigableView<MonitorViewModel>
 
     public MonitorViewModel ViewModel { get; }
 
+    private void ExportButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is Button button && button.ContextMenu != null)
+        {
+            button.ContextMenu.PlacementTarget = button;
+            button.ContextMenu.IsOpen = true;
+        }
+    }
+
     private void ToggleRowDetails(object sender, RoutedEventArgs e)
     {
         if (sender is Button { DataContext: not null } button)
