@@ -289,6 +289,14 @@
     <value> Octets</value>
     <comment>Text for bytes unit</comment>
   </data>
+  <data name="Manage_PassiveMonitoringNotice" xml:space="preserve">
+    <value>Device operations are not available during passive monitoring</value>
+    <comment>Notice shown on Manage page when passive monitoring is active</comment>
+  </data>
+  <data name="Manage_PassiveMonitoringDetails" xml:space="preserve">
+    <value>Disconnect from passive monitoring to perform device operations</value>
+    <comment>Details for passive monitoring notice on Manage page</comment>
+  </data>
   <!-- Monitor Page -->
   <data name="Monitor_DeviceNotConnected" xml:space="preserve">
     <value>L’appareil n’est pas connecté</value>
@@ -316,7 +324,10 @@
   </data>
   <data name="Monitor_NoDecryption" xml:space="preserve">
     <value>No Decryption</value>
-    <comment>Badge shown when passive monitoring without a security key configured</comment>
+  </data>
+  <data name="Monitor_UnableToDecrypt" xml:space="preserve">
+    <value>Unable to decrypt</value>
+    <comment>Message shown in packet details when decryption fails</comment>
   </data>
   <data name="Monitor_DefaultKey" xml:space="preserve">
     <value>Default Key</value>
