@@ -13,10 +13,7 @@ public class PacketTraceEntryBuilderTests
 
     // Valid OSDP Poll command packet: SOM, Addr, Len_LSB, Len_MSB, CTRL, CMD, CRC_LSB, CRC_MSB
     private static readonly byte[] ValidPollPacket = [0x53, 0x00, 0x08, 0x00, 0x04, 0x60, 0x03, 0x1D];
-
-    // Valid OSDP ACK reply packet
-    private static readonly byte[] ValidAckPacket = [0x53, 0x00, 0x08, 0x00, 0x04, 0x40, 0x53, 0x4D];
-
+    
     // Invalid packet data (too short, wrong checksum)
     private static readonly byte[] InvalidPacket = [0x53, 0x00, 0x05];
 
@@ -172,7 +169,6 @@ public class PacketTraceEntryBuilderTests
     public void Build_ValidPacket_SetsTimestamp()
     {
         // Arrange
-        var timestamp = DateTime.UtcNow;
         var traceEntry = CreateTraceEntry(TraceDirection.Output, ValidPollPacket);
         var beforeBuild = DateTime.UtcNow;
 
@@ -180,7 +176,7 @@ public class PacketTraceEntryBuilderTests
         var result = _builder.FromTraceEntry(traceEntry, null).Build();
         var afterBuild = DateTime.UtcNow;
 
-        // Assert - Timestamp should be set to current time during Build
+        // Assert - Timestamp should be set to the current time during Build
         Assert.That(result!.Timestamp, Is.GreaterThanOrEqualTo(beforeBuild));
         Assert.That(result.Timestamp, Is.LessThanOrEqualTo(afterBuild));
     }

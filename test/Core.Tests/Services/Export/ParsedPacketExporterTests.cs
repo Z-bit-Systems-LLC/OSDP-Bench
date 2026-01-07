@@ -106,11 +106,9 @@ public class ParsedPacketExporterTests
     {
         // Arrange
         var packets = new[] { CreateTestPacketTraceEntry(TraceDirection.Output) };
-        var beforeExport = DateTime.Now;
 
         // Act
         var result = await _exporter.ExportAsync(packets);
-        var afterExport = DateTime.Now;
 
         // Assert
         var content = Encoding.UTF8.GetString(result);

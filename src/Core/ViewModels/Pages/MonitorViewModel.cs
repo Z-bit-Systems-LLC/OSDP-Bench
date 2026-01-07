@@ -4,7 +4,6 @@ using CommunityToolkit.Mvvm.Input;
 using OSDP.Net.Messages;
 using OSDP.Net.Tracing;
 using OSDPBench.Core.Models;
-using OSDPBench.Core.Resources;
 using OSDPBench.Core.Services;
 using OSDPBench.Core.Services.Export;
 using static OSDP.Net.Tracing.TraceDirection;
@@ -285,7 +284,7 @@ public partial class MonitorViewModel : ObservableObject
 
     private static int GetEntrySize(PacketTraceEntry entry)
     {
-        return EstimatedOverheadPerEntry + (entry.RawData?.Length ?? 0);
+        return EstimatedOverheadPerEntry + entry.RawData.Length;
     }
 
     private void AddToTraceBuffer(PacketTraceEntry entry)

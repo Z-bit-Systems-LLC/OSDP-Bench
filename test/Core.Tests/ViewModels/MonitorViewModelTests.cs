@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Moq;
 using NUnit.Framework;
 using OSDPBench.Core.Models;
@@ -81,7 +79,7 @@ public class MonitorViewModelTests
     }
 
     [Test]
-    public async Task ExportOsdpCaptureCommand_WhenNoData_ShowsNoDataMessage()
+    public void ExportOsdpCaptureCommand_WhenNoData_ShowsNoDataMessage()
     {
         // Arrange - Use reflection to test the command even when CanExecute is false
         // This simulates what would happen if the command somehow executed with no data

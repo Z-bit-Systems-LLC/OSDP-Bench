@@ -81,9 +81,9 @@ public class OsdpCaptureExporterTests
         // Arrange
         var packets = new[]
         {
-            CreateTestPacketTraceEntry(TraceDirection.Output, DateTime.UtcNow),
-            CreateTestPacketTraceEntry(TraceDirection.Input, DateTime.UtcNow.AddMilliseconds(100)),
-            CreateTestPacketTraceEntry(TraceDirection.Output, DateTime.UtcNow.AddMilliseconds(200))
+            CreateTestPacketTraceEntry(TraceDirection.Output),
+            CreateTestPacketTraceEntry(TraceDirection.Input),
+            CreateTestPacketTraceEntry(TraceDirection.Output)
         };
 
         // Act
@@ -109,8 +109,8 @@ public class OsdpCaptureExporterTests
         var later = earlier.AddSeconds(10);
         var packets = new[]
         {
-            CreateTestPacketTraceEntry(TraceDirection.Output, later),
-            CreateTestPacketTraceEntry(TraceDirection.Input, earlier)
+            CreateTestPacketTraceEntry(TraceDirection.Output),
+            CreateTestPacketTraceEntry(TraceDirection.Input)
         };
 
         // Act
@@ -240,7 +240,7 @@ public class OsdpCaptureExporterTests
     /// Creates a test PacketTraceEntry using the PacketTraceEntryBuilder.
     /// This mimics how real packets are created in the application.
     /// </summary>
-    private static PacketTraceEntry CreateTestPacketTraceEntry(TraceDirection direction, DateTime? timestamp = null)
+    private static PacketTraceEntry CreateTestPacketTraceEntry(TraceDirection direction)
     {
         // Create a valid OSDP Poll command packet
         // Format: SOM (0x53), Addr, Len_LSB, Len_MSB, CTRL, CMD, CRC_LSB, CRC_MSB
