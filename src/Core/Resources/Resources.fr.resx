@@ -126,6 +126,14 @@
     <value>Erreur</value>
     <comment>Device connection status when an error occurred</comment>
   </data>
+  <data name="Status_PassiveMonitoring" xml:space="preserve">
+    <value>Surveillance</value>
+    <comment>Device connection status when passively monitoring bus traffic</comment>
+  </data>
+  <data name="Status_PassiveMonitoringFormat" xml:space="preserve">
+    <value>{0} Baud</value>
+    <comment>Brief status format for passive monitoring. {0} = baud rate</comment>
+  </data>
   <!-- USB Status Messages -->
   <!-- Error Messages -->
   <!-- Device Information -->
@@ -152,7 +160,7 @@
     <comment>Title for the Monitor page</comment>
   </data>
   <data name="Page_Info" xml:space="preserve">
-    <value>Info</value>
+    <value>Infos</value>
     <comment>Title for the Info page</comment>
   </data>
   <!-- Connect Page -->
@@ -171,6 +179,18 @@
   <data name="Connect_DiscoveryWarning" xml:space="preserve">
     <value>Discovery ne fonctionnera correctement qu’avec un seul appareil connecté</value>
     <comment>Warning message about device discovery</comment>
+  </data>
+  <data name="Connect_PassiveMonitorInfo" xml:space="preserve">
+    <value>La surveillance passive permet de déboguer des systèmes OSDP tiers en écoutant le trafic du bus sans envoyer de commandes</value>
+    <comment>Information about passive monitoring mode</comment>
+  </data>
+  <data name="Connect_StartPassiveMonitoring" xml:space="preserve">
+    <value>Commencez à surveiller</value>
+    <comment>Button text to start passive monitoring</comment>
+  </data>
+  <data name="Connect_StopPassiveMonitoring" xml:space="preserve">
+    <value>Arrêtez la surveillance</value>
+    <comment>Button text to stop passive monitoring</comment>
   </data>
   <data name="Connect_StartDiscovery" xml:space="preserve">
     <value>Démarrer la découverte</value>
@@ -211,6 +231,18 @@
   <data name="Connect_SecurityKey" xml:space="preserve">
     <value>Clé de sécurité</value>
     <comment>Label for security key input</comment>
+  </data>
+  <data name="Connect_DecryptionSettings" xml:space="preserve">
+    <value>Paramètres de déchiffrement</value>
+    <comment>Section header for decryption settings in passive monitoring mode</comment>
+  </data>
+  <data name="Connect_UseDefaultSecureKey" xml:space="preserve">
+    <value>Utiliser la clé de sécurité par défaut</value>
+    <comment>Checkbox text to enable decryption with default OSDP key</comment>
+  </data>
+  <data name="Connect_CustomKey" xml:space="preserve">
+    <value>Clé personnalisée</value>
+    <comment>Label for custom security key input in passive monitoring mode</comment>
   </data>
   <data name="Connect_Connect" xml:space="preserve">
     <value>Relier</value>
@@ -257,6 +289,14 @@
     <value> Octets</value>
     <comment>Text for bytes unit</comment>
   </data>
+  <data name="Manage_PassiveMonitoringNotice" xml:space="preserve">
+    <value>Les opérations de l’appareil ne sont pas disponibles lors de la surveillance passive</value>
+    <comment>Notice shown on Manage page when passive monitoring is active</comment>
+  </data>
+  <data name="Manage_PassiveMonitoringDetails" xml:space="preserve">
+    <value>Déconnectez-vous de la surveillance passive pour effectuer des opérations de dispositif</value>
+    <comment>Details for passive monitoring notice on Manage page</comment>
+  </data>
   <!-- Monitor Page -->
   <data name="Monitor_DeviceNotConnected" xml:space="preserve">
     <value>L’appareil n’est pas connecté</value>
@@ -282,6 +322,25 @@
     <value>Crypté</value>
     <comment>Badge shown when using secure channel with a custom security key</comment>
   </data>
+  <data name="Monitor_NoDecryption" xml:space="preserve">
+    <value>Pas de déchiffrement</value>
+  </data>
+  <data name="Monitor_UnableToDecrypt" xml:space="preserve">
+    <value>Impossible de déchiffrer</value>
+    <comment>Message shown in packet details when decryption fails</comment>
+  </data>
+  <data name="Monitor_DefaultKey" xml:space="preserve">
+    <value>Tonalité par défaut</value>
+    <comment>Badge shown when passive monitoring with default key decryption</comment>
+  </data>
+  <data name="Monitor_CustomKey" xml:space="preserve">
+    <value>Clé personnalisée</value>
+    <comment>Badge shown when passive monitoring with custom key decryption</comment>
+  </data>
+  <data name="Monitor_Security" xml:space="preserve">
+    <value>Sécurité</value>
+    <comment>Column header for security status in monitoring grid</comment>
+  </data>
   <data name="Monitor_TimeStamp" xml:space="preserve">
     <value>Horodatage</value>
     <comment>Column header for timestamp in monitoring grid</comment>
@@ -291,7 +350,7 @@
     <comment>Column header for interval in monitoring grid</comment>
   </data>
   <data name="Monitor_Direction" xml:space="preserve">
-    <value>Direction</value>
+    <value>Réalisation</value>
     <comment>Column header for direction in monitoring grid</comment>
   </data>
   <data name="Monitor_Address" xml:space="preserve">
@@ -382,7 +441,7 @@
     <comment>Navigation menu item for Monitor page</comment>
   </data>
   <data name="Navigation_Info" xml:space="preserve">
-    <value>Info</value>
+    <value>Infos</value>
     <comment>Navigation menu item for Info page</comment>
   </data>
   <!-- Window Title -->
@@ -504,7 +563,7 @@
     <comment>Message when device reset successful</comment>
   </data>
   <data name="Dialog_ResetDevice_Failed" xml:space="preserve">
-    <value>Echec de la réinitialisation de l’appareil. Effectuez une détection pour vous reconnecter à l’appareil.</value>
+    <value>Échec de la réinitialisation de l'appareil. Effectuez une recherche pour vous reconnecter à l'appareil.</value>
     <comment>Message when device reset failed</comment>
   </data>
   <!-- Code-behind Messages -->
@@ -548,6 +607,10 @@
     <value>Manuelle</value>
     <comment>Connection type option for manual connection</comment>
   </data>
+  <data name="ConnectionType_PassiveMonitor" xml:space="preserve">
+    <value>Moniteur passif</value>
+    <comment>Connection type option for passive bus monitoring</comment>
+  </data>
   <!-- Language Selection UI -->
   <data name="Language_Selection" xml:space="preserve">
     <value>Langue</value>
@@ -576,5 +639,34 @@
   <data name="Common_No" xml:space="preserve">
     <value>Non</value>
     <comment>Common No button text</comment>
+  </data>
+  <!-- Export Feature -->
+  <data name="Monitor_PacketsCaptured" xml:space="preserve">
+    <value>Paquets capturés</value>
+    <comment>Label showing number of packets in export buffer</comment>
+  </data>
+  <data name="Monitor_Export" xml:space="preserve">
+    <value>Exportation</value>
+    <comment>Export button text</comment>
+  </data>
+  <data name="Export_SelectFormat" xml:space="preserve">
+    <value>Sélectionner le format d’exportation</value>
+    <comment>Dialog title for export format selection</comment>
+  </data>
+  <data name="Export_OsdpCapture" xml:space="preserve">
+    <value>Capture OSDP (.osdpcap)</value>
+    <comment>Format option for OSDP capture file</comment>
+  </data>
+  <data name="Export_ParsedText" xml:space="preserve">
+    <value>Texte analysé (.txt)</value>
+    <comment>Format option for parsed text file</comment>
+  </data>
+  <data name="Export_Success" xml:space="preserve">
+    <value>Trace exportée avec succès</value>
+    <comment>Success message after export</comment>
+  </data>
+  <data name="Export_NoData" xml:space="preserve">
+    <value>Aucune trace à exporter</value>
+    <comment>Message when there is no data to export</comment>
   </data>
 </root>
