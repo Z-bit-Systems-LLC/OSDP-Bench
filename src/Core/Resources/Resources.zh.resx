@@ -126,6 +126,14 @@
     <value>错误</value>
     <comment>Device connection status when an error occurred</comment>
   </data>
+  <data name="Status_PassiveMonitoring" xml:space="preserve">
+    <value>监测</value>
+    <comment>Device connection status when passively monitoring bus traffic</comment>
+  </data>
+  <data name="Status_PassiveMonitoringFormat" xml:space="preserve">
+    <value>{0} 波特</value>
+    <comment>Brief status format for passive monitoring. {0} = baud rate</comment>
+  </data>
   <!-- USB Status Messages -->
   <!-- Error Messages -->
   <!-- Device Information -->
@@ -172,6 +180,18 @@
     <value>发现功能仅在连接单个设备时才能正常工作</value>
     <comment>Warning message about device discovery</comment>
   </data>
+  <data name="Connect_PassiveMonitorInfo" xml:space="preserve">
+    <value>被动监控允许通过监听总线流量而非发送命令，调试第三方OSDP系统</value>
+    <comment>Information about passive monitoring mode</comment>
+  </data>
+  <data name="Connect_StartPassiveMonitoring" xml:space="preserve">
+    <value>开始监控</value>
+    <comment>Button text to start passive monitoring</comment>
+  </data>
+  <data name="Connect_StopPassiveMonitoring" xml:space="preserve">
+    <value>停止监控</value>
+    <comment>Button text to stop passive monitoring</comment>
+  </data>
   <data name="Connect_StartDiscovery" xml:space="preserve">
     <value>开始发现</value>
     <comment>Button text to start device discovery</comment>
@@ -211,6 +231,18 @@
   <data name="Connect_SecurityKey" xml:space="preserve">
     <value>安全密钥</value>
     <comment>Label for security key input</comment>
+  </data>
+  <data name="Connect_DecryptionSettings" xml:space="preserve">
+    <value>解密设置</value>
+    <comment>Section header for decryption settings in passive monitoring mode</comment>
+  </data>
+  <data name="Connect_UseDefaultSecureKey" xml:space="preserve">
+    <value>使用默认安全密钥</value>
+    <comment>Checkbox text to enable decryption with default OSDP key</comment>
+  </data>
+  <data name="Connect_CustomKey" xml:space="preserve">
+    <value>自定义密钥</value>
+    <comment>Label for custom security key input in passive monitoring mode</comment>
   </data>
   <data name="Connect_Connect" xml:space="preserve">
     <value>连接</value>
@@ -257,6 +289,14 @@
     <value> 字节</value>
     <comment>Text for bytes unit</comment>
   </data>
+  <data name="Manage_PassiveMonitoringNotice" xml:space="preserve">
+    <value>设备作在被动监测期间不可用</value>
+    <comment>Notice shown on Manage page when passive monitoring is active</comment>
+  </data>
+  <data name="Manage_PassiveMonitoringDetails" xml:space="preserve">
+    <value>断开被动监控以执行设备作</value>
+    <comment>Details for passive monitoring notice on Manage page</comment>
+  </data>
   <!-- Monitor Page -->
   <data name="Monitor_DeviceNotConnected" xml:space="preserve">
     <value>设备未连接</value>
@@ -281,6 +321,25 @@
   <data name="Monitor_Encrypted" xml:space="preserve">
     <value>加密</value>
     <comment>Badge shown when using secure channel with a custom security key</comment>
+  </data>
+  <data name="Monitor_NoDecryption" xml:space="preserve">
+    <value>无解密</value>
+  </data>
+  <data name="Monitor_UnableToDecrypt" xml:space="preserve">
+    <value>无法解密</value>
+    <comment>Message shown in packet details when decryption fails</comment>
+  </data>
+  <data name="Monitor_DefaultKey" xml:space="preserve">
+    <value>默认密钥</value>
+    <comment>Badge shown when passive monitoring with default key decryption</comment>
+  </data>
+  <data name="Monitor_CustomKey" xml:space="preserve">
+    <value>自定义密钥</value>
+    <comment>Badge shown when passive monitoring with custom key decryption</comment>
+  </data>
+  <data name="Monitor_Security" xml:space="preserve">
+    <value>安全性</value>
+    <comment>Column header for security status in monitoring grid</comment>
   </data>
   <data name="Monitor_TimeStamp" xml:space="preserve">
     <value>时间戳</value>
@@ -307,7 +366,7 @@
     <comment>Button text to expand row details</comment>
   </data>
   <data name="Monitor_ConnectionPageDetails" xml:space="preserve">
-    <value>Connection （连接） 页面将提供更多详细信息</value>
+    <value>连接”页面将提供更多详细信息</value>
     <comment>Message directing users to connection page for details</comment>
   </data>
   <data name="Monitor_LastCardRead" xml:space="preserve">
@@ -533,7 +592,7 @@
     <comment>Label for poll packets statistic</comment>
   </data>
   <data name="Monitor_Naks" xml:space="preserve">
-    <value>NAKs</value>
+    <value>NAKs（国家级建筑）</value>
     <comment>Label for NAK replies statistic</comment>
   </data>
   <data name="Monitor_LineQuality" xml:space="preserve">
@@ -547,6 +606,10 @@
   <data name="ConnectionType_Manual" xml:space="preserve">
     <value>手动</value>
     <comment>Connection type option for manual connection</comment>
+  </data>
+  <data name="ConnectionType_PassiveMonitor" xml:space="preserve">
+    <value>被动监视器</value>
+    <comment>Connection type option for passive bus monitoring</comment>
   </data>
   <!-- Language Selection UI -->
   <data name="Language_Selection" xml:space="preserve">
@@ -576,5 +639,34 @@
   <data name="Common_No" xml:space="preserve">
     <value>不</value>
     <comment>Common No button text</comment>
+  </data>
+  <!-- Export Feature -->
+  <data name="Monitor_PacketsCaptured" xml:space="preserve">
+    <value>捕获的数据包</value>
+    <comment>Label showing number of packets in export buffer</comment>
+  </data>
+  <data name="Monitor_Export" xml:space="preserve">
+    <value>出口</value>
+    <comment>Export button text</comment>
+  </data>
+  <data name="Export_SelectFormat" xml:space="preserve">
+    <value>选择导出格式</value>
+    <comment>Dialog title for export format selection</comment>
+  </data>
+  <data name="Export_OsdpCapture" xml:space="preserve">
+    <value>OSDP 捕获（.osdpcap）</value>
+    <comment>Format option for OSDP capture file</comment>
+  </data>
+  <data name="Export_ParsedText" xml:space="preserve">
+    <value>解析文本（.txt）</value>
+    <comment>Format option for parsed text file</comment>
+  </data>
+  <data name="Export_Success" xml:space="preserve">
+    <value>追踪成功导出</value>
+    <comment>Success message after export</comment>
+  </data>
+  <data name="Export_NoData" xml:space="preserve">
+    <value>没有可导出的痕迹数据</value>
+    <comment>Message when there is no data to export</comment>
   </data>
 </root>
