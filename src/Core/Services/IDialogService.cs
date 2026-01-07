@@ -29,6 +29,16 @@ public interface IDialogService
     /// <param name="exception">The exception to display information about.</param>
     /// <returns>A task representing the asynchronous operation.</returns>
     Task ShowExceptionDialog(string title, Exception exception);
+
+    /// <summary>
+    /// Shows a save file dialog to allow the user to select a file path for saving.
+    /// </summary>
+    /// <param name="title">The title of the save file dialog.</param>
+    /// <param name="defaultFileName">The default file name to suggest.</param>
+    /// <param name="filters">The file type filters to display (DisplayName and Extension pairs).</param>
+    /// <returns>The selected file path, or null if the user cancelled.</returns>
+    Task<string?> ShowSaveFileDialogAsync(string title, string defaultFileName,
+        IEnumerable<(string DisplayName, string Extension)> filters);
 }
 
 /// <summary>

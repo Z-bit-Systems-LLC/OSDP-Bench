@@ -1,4 +1,5 @@
 ﻿using System.Windows;
+using Microsoft.Win32;
 using OSDPBench.Core.Services;
 
 namespace OSDPBench.Windows.Services;
@@ -42,7 +43,25 @@ internal class WindowsDialogService : IDialogService
         string message = FormatExceptionMessage(exception);
         return ShowMessageDialog(title, message, MessageIcon.Error);
     }
-    
+
+    /// <inheritdoc/>
+    public Task<string?> ShowSaveFileDialogAsync(string title, string defaultFileName,
+        IEnumerable<(string DisplayName, string Extension)> filters)
+    {
+        var filterList = filters.ToList();
+        var filterString = string.Join("|", filterList.Select(f => $"{f.DisplayName}|*{f.Extension}"));
+
+        var dialog = new SaveFileDialog
+        {
+            Title = title,
+            FileName = defaultFileName,
+            Filter = filterString,
+            DefaultExt = filterList.FirstOrDefault().Extension ?? ".txt"
+        };
+
+        return Task.FromResult(dialog.ShowDialog() == true ? dialog.FileName : null);
+    }
+
     private static string FormatExceptionMessage(Exception exception)
     {
         return $"{exception.Message}\n\nDetails: {exception.GetType().Name}";

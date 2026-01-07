@@ -1,16 +1,32 @@
 <Project>
-    <PropertyGroup>
-        <AssemblyVersion>3.0.20.0</AssemblyVersion>
-        <FileVersion>3.0.20.0</FileVersion>
-    </PropertyGroup>
+  <PropertyGroup>
+    <!-- Version management - single source of truth -->
+    <VersionPrefix>3.0.20</VersionPrefix>
+
+    <!-- Package metadata -->
+    <Authors>Jonathan Horvath</Authors>
+    <Company>Z-bit Systems LLC</Company>
+    <Copyright>Copyright © Z-bit Systems LLC $([System.DateTime]::Now.Year)</Copyright>
+    <Product>OSDP Bench</Product>
+    <PackageLicenseExpression>EPL-2.0</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/Z-bit-Systems-LLC/OSDP-Bench</PackageProjectUrl>
+
+    <!-- Repository information -->
+    <RepositoryUrl>https://github.com/Z-bit-Systems-LLC/OSDP-Bench.git</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+
+    <!-- Enable Source Link for debugging NuGet packages -->
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+
+    <!-- CI build detection -->
+    <ContinuousIntegrationBuild Condition="'$(TF_BUILD)' == 'true'">true</ContinuousIntegrationBuild>
+  </PropertyGroup>
+
+  <!-- Source Link for GitHub -->
+  <ItemGroup>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
+  </ItemGroup>
 </Project>
-
-
-
-
-
-
-
-
-
-

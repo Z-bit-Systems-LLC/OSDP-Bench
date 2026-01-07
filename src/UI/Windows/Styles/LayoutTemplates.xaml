@@ -47,7 +47,7 @@
                         VerticalAlignment="Center"
                         HorizontalAlignment="Right">
                     <WrapPanel Orientation="Horizontal">
-                        <!-- Connection Status -->
+                        <!-- Connection Status - Active Mode (Address at BaudRate) -->
                         <TextBlock Style="{StaticResource ConnectionStatusText}"
                                    VerticalAlignment="Center"
                                    Margin="0,0,16,0">
@@ -59,8 +59,25 @@
                             </TextBlock.Text>
                         </TextBlock>
 
+                        <!-- Connection Status - Passive Monitoring (BaudRate only) -->
+                        <TextBlock VerticalAlignment="Center"
+                                   Margin="0,0,16,0"
+                                   FontWeight="Bold"
+                                   Text="{Binding Path=ViewModel.ConnectedBaudRate, StringFormat={markup:Localize Status_PassiveMonitoringFormat}}">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock" BasedOn="{StaticResource Text.Body}">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding Path=ViewModel.StatusLevel}" Value="PassiveMonitoring">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+
                         <!-- Security Status Badges -->
-                        <!-- Clear Text (Red) - shown when not using secure channel -->
+                        <!-- Clear Text (Red) - shown when connected and not using secure channel -->
                         <Border Background="{DynamicResource SemanticErrorBrush}"
                                 CornerRadius="4"
                                 Padding="8,4"
@@ -86,7 +103,7 @@
                                        FontSize="11"/>
                         </Border>
 
-                        <!-- Encrypted - Default Key (Red) - shown when using secure channel with default key -->
+                        <!-- Encrypted - Default Key (Red) - shown when connected with secure channel using default key -->
                         <Border Background="{DynamicResource SemanticErrorBrush}"
                                 CornerRadius="4"
                                 Padding="8,4"
@@ -98,6 +115,7 @@
                                     <Style.Triggers>
                                         <MultiDataTrigger>
                                             <MultiDataTrigger.Conditions>
+                                                <Condition Binding="{Binding Path=ViewModel.StatusLevel}" Value="Connected"/>
                                                 <Condition Binding="{Binding Path=ViewModel.UsingSecureChannel}" Value="True"/>
                                                 <Condition Binding="{Binding Path=ViewModel.UsesDefaultSecurityKey}" Value="True"/>
                                             </MultiDataTrigger.Conditions>
@@ -112,7 +130,7 @@
                                        FontSize="11"/>
                         </Border>
 
-                        <!-- Encrypted (Green) - shown when using secure channel with custom key -->
+                        <!-- Encrypted (Green) - shown when connected with secure channel using custom key -->
                         <Border Background="{DynamicResource SemanticSuccessBrush}"
                                 CornerRadius="4"
                                 Padding="8,4"
@@ -124,6 +142,7 @@
                                     <Style.Triggers>
                                         <MultiDataTrigger>
                                             <MultiDataTrigger.Conditions>
+                                                <Condition Binding="{Binding Path=ViewModel.StatusLevel}" Value="Connected"/>
                                                 <Condition Binding="{Binding Path=ViewModel.UsingSecureChannel}" Value="True"/>
                                                 <Condition Binding="{Binding Path=ViewModel.UsesDefaultSecurityKey}" Value="False"/>
                                             </MultiDataTrigger.Conditions>
@@ -133,6 +152,60 @@
                                 </Style>
                             </Border.Style>
                             <TextBlock Text="{markup:Localize Monitor_Encrypted}"
+                                       Foreground="White"
+                                       FontWeight="SemiBold"
+                                       FontSize="11"/>
+                        </Border>
+
+                        <!-- Default Key (Red) - shown when passive monitoring with default key decryption -->
+                        <Border Background="{DynamicResource SemanticErrorBrush}"
+                                CornerRadius="4"
+                                Padding="8,4"
+                                Margin="0,0,16,0"
+                                VerticalAlignment="Center">
+                            <Border.Style>
+                                <Style TargetType="Border">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                    <Style.Triggers>
+                                        <MultiDataTrigger>
+                                            <MultiDataTrigger.Conditions>
+                                                <Condition Binding="{Binding Path=ViewModel.StatusLevel}" Value="PassiveMonitoring"/>
+                                                <Condition Binding="{Binding Path=ViewModel.UsingSecureChannel}" Value="True"/>
+                                                <Condition Binding="{Binding Path=ViewModel.UsesDefaultSecurityKey}" Value="True"/>
+                                            </MultiDataTrigger.Conditions>
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </MultiDataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Border.Style>
+                            <TextBlock Text="{markup:Localize Monitor_DefaultKey}"
+                                       Foreground="White"
+                                       FontWeight="SemiBold"
+                                       FontSize="11"/>
+                        </Border>
+
+                        <!-- Custom Key (Green) - shown when passive monitoring with custom key decryption -->
+                        <Border Background="{DynamicResource SemanticSuccessBrush}"
+                                CornerRadius="4"
+                                Padding="8,4"
+                                Margin="0,0,16,0"
+                                VerticalAlignment="Center">
+                            <Border.Style>
+                                <Style TargetType="Border">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                    <Style.Triggers>
+                                        <MultiDataTrigger>
+                                            <MultiDataTrigger.Conditions>
+                                                <Condition Binding="{Binding Path=ViewModel.StatusLevel}" Value="PassiveMonitoring"/>
+                                                <Condition Binding="{Binding Path=ViewModel.UsingSecureChannel}" Value="True"/>
+                                                <Condition Binding="{Binding Path=ViewModel.UsesDefaultSecurityKey}" Value="False"/>
+                                            </MultiDataTrigger.Conditions>
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </MultiDataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Border.Style>
+                            <TextBlock Text="{markup:Localize Monitor_CustomKey}"
                                        Foreground="White"
                                        FontWeight="SemiBold"
                                        FontSize="11"/>

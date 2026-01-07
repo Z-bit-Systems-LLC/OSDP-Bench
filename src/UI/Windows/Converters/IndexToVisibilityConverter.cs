@@ -8,11 +8,19 @@ public class IndexToVisibilityConverter : IValueConverter
 {
     public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
-        if (value is int index && parameter is string paramString && int.TryParse(paramString, out int targetIndex))
+        if (value is int index && parameter is string paramString)
         {
-            return index == targetIndex ? Visibility.Visible : Visibility.Collapsed;
+            // Support pipe-separated indices like "1|2"
+            var targetIndices = paramString.Split('|');
+            foreach (var targetStr in targetIndices)
+            {
+                if (int.TryParse(targetStr.Trim(), out int targetIndex) && index == targetIndex)
+                {
+                    return Visibility.Visible;
+                }
+            }
         }
-        
+
         return Visibility.Collapsed;
     }
 

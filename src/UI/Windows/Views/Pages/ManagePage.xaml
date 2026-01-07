@@ -40,6 +40,23 @@
                 Text="{markup:Localize Manage_ConnectionPageDetails}"/>
         </StackPanel>
         <StackPanel  Orientation="Vertical"
+                     Visibility="{Binding Path=ViewModel.StatusLevel, Converter={StaticResource StringToVisibilityConverter}, ConverterParameter=PassiveMonitoring, Mode=OneWay}">
+            <TextBlock Style="{StaticResource Text.Warning}"
+                Margin="20 10 20 0"
+                HorizontalAlignment="Center"
+                TextAlignment="Center"
+                TextWrapping="Wrap"
+                FontSize="{StaticResource FontSize.Headline}"
+                Text="{markup:Localize Manage_PassiveMonitoringNotice}"/>
+            <TextBlock Style="{StaticResource Text.Body}"
+                Margin="20 10 20 0"
+                HorizontalAlignment="Center"
+                TextAlignment="Center"
+                TextWrapping="Wrap"
+                FontSize="{StaticResource FontSize.Title}"
+                Text="{markup:Localize Manage_PassiveMonitoringDetails}"/>
+        </StackPanel>
+        <StackPanel  Orientation="Vertical"
                      Visibility="{Binding Path=ViewModel.StatusLevel, Converter={StaticResource StringToVisibilityConverter}, ConverterParameter=Connected;Error, Mode=OneWay}">
             <ui:Card Margin="10 5" Padding="10">
                 <StackPanel Orientation="Vertical">

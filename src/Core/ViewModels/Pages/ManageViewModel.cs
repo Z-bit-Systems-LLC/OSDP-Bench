@@ -281,6 +281,13 @@ public partial class ManageViewModel : ObservableObject
                 break;
             case ConnectionStatus.Connected:
                 StatusLevel = StatusLevel.Connected;
+                UpdateFields();
+                break;
+            case ConnectionStatus.PassiveMonitoring:
+                StatusLevel = StatusLevel.PassiveMonitoring;
+                ConnectedBaudRate = _deviceManagementService.BaudRate;
+                UsingSecureChannel = _deviceManagementService.IsUsingSecureChannel;
+                UsesDefaultSecurityKey = _deviceManagementService.UsesDefaultSecurityKey;
                 break;
             case ConnectionStatus.InvalidSecurityKey:
                 StatusLevel = StatusLevel.Error;

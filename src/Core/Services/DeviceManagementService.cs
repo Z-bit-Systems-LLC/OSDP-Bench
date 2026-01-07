@@ -22,11 +22,16 @@ public sealed class DeviceManagementService : IDeviceManagementService
     private readonly TimeSpan _defaultPollInterval = TimeSpan.FromMilliseconds(20);
     private readonly TimeSpan _defaultShutdownTimeout = TimeSpan.FromSeconds(5);
     private readonly TimeSpan _defaultResponseTimeout = TimeSpan.FromSeconds(1);
-    
+
     private Guid _connectionId;
     private bool _isDiscovering;
     private bool _invalidSecurityKey;
     private byte[]? _securityKey;
+
+    // Passive monitoring state
+    private CancellationTokenSource? _passiveMonitoringCts;
+    private IOsdpConnection? _passiveConnection;
+    private Task? _passiveMonitoringTask;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DeviceManagementService"/> class.
@@ -114,6 +119,9 @@ public sealed class DeviceManagementService : IDeviceManagementService
 
     /// <inheritdoc />
     public bool IsConnected { get; private set; }
+
+    /// <inheritdoc />
+    public bool IsPassiveMonitoring => _passiveMonitoringTask != null && !_passiveMonitoringTask.IsCompleted;
 
     /// <inheritdoc />
     public async Task Connect(IOsdpConnection connection, byte address, bool useSecureChannel,
@@ -347,6 +355,143 @@ public sealed class DeviceManagementService : IDeviceManagementService
 
         // Wait for the connection to fully establish before returning
         await WaitUntilDeviceIsOnline();
+    }
+
+    /// <inheritdoc />
+    public async Task StartPassiveMonitoring(IOsdpConnection connection, bool useSecureChannel = false,
+        bool useDefaultSecurityKey = true, byte[]? securityKey = null)
+    {
+        // Stop any active connection or monitoring
+        await Shutdown();
+        await StopPassiveMonitoring();
+
+        _securityKey = securityKey;
+        _passiveConnection = connection;
+        _passiveMonitoringCts = new CancellationTokenSource();
+
+        BaudRate = (uint)connection.BaudRate;
+        IsUsingSecureChannel = useSecureChannel;
+        UsesDefaultSecurityKey = useDefaultSecurityKey;
+
+        // Notify that passive monitoring is starting
+        RaiseEvent(ConnectionStatusChange, ConnectionStatus.PassiveMonitoring);
+
+        // Start the background monitoring task
+        _passiveMonitoringTask = Task.Run(() => PassiveMonitoringLoop(_passiveMonitoringCts.Token));
+    }
+
+    /// <inheritdoc />
+    public async Task StopPassiveMonitoring()
+    {
+        if (_passiveMonitoringCts != null)
+        {
+            await _passiveMonitoringCts.CancelAsync();
+
+            if (_passiveMonitoringTask != null)
+            {
+                try
+                {
+                    await _passiveMonitoringTask;
+                }
+                catch (OperationCanceledException)
+                {
+                    // Expected when cancellation is requested
+                }
+            }
+
+            _passiveMonitoringCts.Dispose();
+            _passiveMonitoringCts = null;
+        }
+
+        if (_passiveConnection != null)
+        {
+            try
+            {
+                await _passiveConnection.Close();
+            }
+            catch
+            {
+                // Ignore errors when closing connection
+            }
+            _passiveConnection = null;
+        }
+
+        _passiveMonitoringTask = null;
+        RaiseEvent(ConnectionStatusChange, ConnectionStatus.Disconnected);
+    }
+
+    private async Task PassiveMonitoringLoop(CancellationToken cancellationToken)
+    {
+        const int bufferSize = 1024;
+        var readBuffer = new byte[bufferSize];
+        var packetBuffer = new PacketBuffer();
+
+        try
+        {
+            await _passiveConnection!.Open();
+
+            while (!cancellationToken.IsCancellationRequested)
+            {
+                int bytesRead;
+                try
+                {
+                    bytesRead = await _passiveConnection.ReadAsync(readBuffer, cancellationToken);
+                }
+                catch (OperationCanceledException)
+                {
+                    break;
+                }
+                catch (TimeoutException)
+                {
+                    // Normal timeout - no data available, continue
+                    continue;
+                }
+                catch (Exception)
+                {
+                    // Connection error - stop monitoring
+                    break;
+                }
+
+                if (bytesRead > 0)
+                {
+                    // Add received bytes to the packet buffer
+                    packetBuffer.Append(readBuffer, bytesRead);
+
+                    // Extract all complete packets from buffer
+                    while (packetBuffer.TryExtractPacket(out byte[]? packet) && packet != null)
+                    {
+                        EmitPacketTraceEntry(packet);
+                    }
+                }
+            }
+        }
+        catch (OperationCanceledException)
+        {
+            // Normal cancellation
+        }
+        catch (Exception)
+        {
+            // Unexpected error during monitoring
+        }
+        finally
+        {
+            try
+            {
+                await _passiveConnection!.Close();
+            }
+            catch
+            {
+                // Ignore close errors
+            }
+        }
+    }
+
+    private void EmitPacketTraceEntry(byte[] packetData)
+    {
+        // For passive monitoring, use TraceDirection.Trace since we're observing the bus
+        // The existing packet parsing in PacketTraceEntryBuilder will determine actual direction
+        var traceEntry = new TraceEntry(TraceDirection.Trace, Guid.Empty, packetData);
+        RaiseEvent(TraceEntryReceived, traceEntry);
     }
 
     /// <summary>

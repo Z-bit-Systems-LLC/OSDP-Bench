@@ -59,8 +59,32 @@ public class PacketTraceEntry
     public Packet Packet { get; }
 
     /// <summary>
+    /// Indicates if the message was sent via an established secure channel.
+    /// </summary>
+    public bool IsSecureMessage => Packet.IsSecureMessage;
+
+    /// <summary>
+    /// Indicates whether the payload was successfully decrypted.
+    /// When false and IsSecureMessage is true, the packet is encrypted but could not be decrypted.
+    /// </summary>
+    public bool IsPayloadDecrypted => Packet.IsPayloadDecrypted;
+
+    /// <summary>
+    /// Indicates if the secure channel is using the default key.
+    /// </summary>
+    public bool IsUsingDefaultKey => Packet.IsUsingDefaultKey;
+
+    /// <summary>
+    /// Gets the raw packet data bytes.
+    /// This property contains the original bytes from the trace entry,
+    /// used for export functionality.
+    /// </summary>
+    public byte[] RawData { get; }
+
+    /// <summary>
     /// Gets the detailed information of the packet payload in the trace entry.
     /// This property parses and formats the payload data of the packet,
+    /// returns "Unable to decrypt" if the packet is encrypted but could not be decrypted,
     /// or returns "Empty" if no data is available.
     /// </summary>
     public string Details
@@ -68,14 +92,28 @@ public class PacketTraceEntry
         get
         {
             var payload = Packet.ParsePayloadData();
+
+            // Check if this is an encrypted packet that couldn't be decrypted
+            if (payload == null && IsSecureMessage && !IsPayloadDecrypted)
+            {
+                return Resources.Resources.GetString("Monitor_UnableToDecrypt");
+            }
+
             if (payload == null) return "Empty";
 
             // Format byte arrays as hex strings instead of "System.Byte[]"
             if (payload is byte[] bytes)
             {
-                return bytes.Length > 0
-                    ? BitConverter.ToString(bytes).Replace("-", " ")
-                    : "Empty";
+                if (bytes.Length == 0)
+                {
+                    // Empty byte array on an encrypted message that wasn't decrypted
+                    if (IsSecureMessage && !IsPayloadDecrypted)
+                    {
+                        return Resources.Resources.GetString("Monitor_UnableToDecrypt");
+                    }
+                    return "Empty";
+                }
+                return BitConverter.ToString(bytes).Replace("-", " ");
             }
 
             return payload.ToString() ?? "Empty";
@@ -83,17 +121,18 @@ public class PacketTraceEntry
     }
 
     // Private constructor
-    private PacketTraceEntry(TraceDirection direction, DateTime timestamp, TimeSpan interval, Packet packet)
+    private PacketTraceEntry(TraceDirection direction, DateTime timestamp, TimeSpan interval, Packet packet, byte[] rawData)
     {
         Direction = direction;
         Timestamp = timestamp;
         Interval = interval;
         Packet = packet;
+        RawData = rawData;
     }
 
     // Factory method
-    internal static PacketTraceEntry Create(TraceDirection direction, DateTime timestamp, TimeSpan interval, Packet packet)
+    internal static PacketTraceEntry Create(TraceDirection direction, DateTime timestamp, TimeSpan interval, Packet packet, byte[] rawData)
     {
-        return new PacketTraceEntry(direction, timestamp, interval, packet);
+        return new PacketTraceEntry(direction, timestamp, interval, packet, rawData);
     }
 }

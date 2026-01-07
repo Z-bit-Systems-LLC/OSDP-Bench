@@ -1,30 +1,22 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <Version>1.0.2</Version>
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <AssemblyName>OSDPBench.Core</AssemblyName>
     <RootNamespace>OSDPBench.Core</RootNamespace>
     <Title>OSDP Bench Core</Title>
-    <Authors>Jonathan Horvath</Authors>
     <Description>Core functionality for OSDP Bench.</Description>
-    <PackageLicenseExpression>EPL-2.0</PackageLicenseExpression>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <LangVersion>default</LangVersion>
-    <IncludeSymbols>true</IncludeSymbols>
-    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-    <RepositoryUrl>https://github.com/Z-bit-Systems-LLC/OSDP-Bench</RepositoryUrl>
-    <RepositoryType>git</RepositoryType>
-    <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Platforms>AnyCPU;ARM64;x64</Platforms>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
-    <PackageReference Include="OSDP.Net" Version="5.0.37" />
+    <PackageReference Include="OSDP.Net" Version="5.0.38" />
   </ItemGroup>
 
   <ItemGroup>
