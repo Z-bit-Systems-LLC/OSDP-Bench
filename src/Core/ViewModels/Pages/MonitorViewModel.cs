@@ -398,6 +398,7 @@ public partial class MonitorViewModel : ObservableObject
 
     partial void OnTraceEntriesViewChanged(ObservableCollection<PacketTraceEntry> value)
     {
+        _ = value; // Required by source generator signature
         ExportOsdpCaptureCommand.NotifyCanExecuteChanged();
         ExportParsedTextCommand.NotifyCanExecuteChanged();
     }

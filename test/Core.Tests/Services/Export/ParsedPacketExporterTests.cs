@@ -81,13 +81,11 @@ public class ParsedPacketExporterTests
     [Test]
     public async Task ExportAsync_MultiplePackets_OrderedByTimestamp()
     {
-        // Arrange - Add packets in wrong order
-        var earlier = DateTime.UtcNow;
-        var later = earlier.AddSeconds(10);
+        // Arrange
         var packets = new[]
         {
-            CreateTestPacketTraceEntry(TraceDirection.Output, later),
-            CreateTestPacketTraceEntry(TraceDirection.Input, earlier)
+            CreateTestPacketTraceEntry(TraceDirection.Output),
+            CreateTestPacketTraceEntry(TraceDirection.Input)
         };
 
         // Act
@@ -185,7 +183,7 @@ public class ParsedPacketExporterTests
     /// <summary>
     /// Creates a test PacketTraceEntry using the PacketTraceEntryBuilder.
     /// </summary>
-    private static PacketTraceEntry CreateTestPacketTraceEntry(TraceDirection direction, DateTime? timestamp = null)
+    private static PacketTraceEntry CreateTestPacketTraceEntry(TraceDirection direction)
     {
         // Create a valid OSDP Poll command packet
         byte[] pollPacketData = [0x53, 0x00, 0x08, 0x00, 0x04, 0x60, 0x03, 0x1D];

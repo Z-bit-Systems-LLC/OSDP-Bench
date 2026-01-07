@@ -104,9 +104,7 @@ public class OsdpCaptureExporterTests
     [Test]
     public async Task ExportAsync_PacketsOrderedByTimestamp()
     {
-        // Arrange - Add packets in wrong order
-        var earlier = DateTime.UtcNow;
-        var later = earlier.AddSeconds(10);
+        // Arrange
         var packets = new[]
         {
             CreateTestPacketTraceEntry(TraceDirection.Output),

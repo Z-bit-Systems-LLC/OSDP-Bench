@@ -39,7 +39,7 @@
 - Short-lived feature branches are acceptable for multi-day work
 
 ## Code Inspection
-The CI pipeline uses JetBrains ReSharper command-line tools to enforce code quality. Builds fail on any errors or warnings.
+The CI pipeline uses JetBrains ReSharper command-line tools to enforce code quality. Builds fail on any warnings.
 
 ### Setup
 ```bash
@@ -58,18 +58,34 @@ $sarif = Get-Content results.sarif | ConvertFrom-Json
 foreach ($result in $sarif.runs[0].results) {
     $level = $result.level
     $message = $result.message.text
-    $file = $result.locations[0].physicalLocation.artifactLocation.uri
+    $file = $result.locations[0].physicalLocation.artifactLocation.uri -replace 'file:///', ''
     $line = $result.locations[0].physicalLocation.region.startLine
-    Write-Host "$level : $file`:$line - $message"
+    Write-Host "$level : $($file):$line - $message"
+}
+```
+
+To run this from bash, save the script to a file and execute with PowerShell:
+```bash
+pwsh -File scripts/parse-sarif.ps1
+```
+
+### Filter by Severity
+```powershell
+# Show only warnings (build-blocking issues)
+$sarif = Get-Content results.sarif | ConvertFrom-Json
+$sarif.runs[0].results | Where-Object { $_.level -eq 'warning' } | ForEach-Object {
+    $file = $_.locations[0].physicalLocation.artifactLocation.uri -replace 'file:///', ''
+    $line = $_.locations[0].physicalLocation.region.startLine
+    Write-Host "warning : $($file):$line - $($_.message.text)"
 }
 ```
 
 ### Common Issues
-- Unused variables or parameters
+- Unused variables or parameters - use discards (`_`) or remove
+- Redundant default parameter values - omit parameters that match defaults
 - Missing null checks
 - Inconsistent naming conventions
 - Redundant code or casts
-- Possible null reference exceptions
 
 ## Release Process
 - Create a release: `pwsh scripts/release.ps1`

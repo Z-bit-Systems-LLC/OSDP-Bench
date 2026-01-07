@@ -415,19 +415,10 @@ namespace OSDPBench.Core.Tests.Services
             // Arrange
             var connectionMock = new Mock<IOsdpConnection>();
             connectionMock.Setup(x => x.BaudRate).Returns(9600);
-
-            // We need to provide an implementation for Open that won't throw
             connectionMock.Setup(x => x.Open());
 
             // Act
-            var startTask = _deviceManagementService.StartPassiveMonitoring(
-                connectionMock.Object,
-                false,
-                true,
-                null);
-
-            // Give it a moment to start
-            await Task.Delay(100);
+            await _deviceManagementService.StartPassiveMonitoring(connectionMock.Object);
 
             // Assert
             Assert.That(_deviceManagementService.IsPassiveMonitoring, Is.True);
@@ -444,14 +435,7 @@ namespace OSDPBench.Core.Tests.Services
             connectionMock.Setup(x => x.BaudRate).Returns(9600);
             connectionMock.Setup(x => x.Open());
 
-            // Start passive monitoring first
-            var startTask = _deviceManagementService.StartPassiveMonitoring(
-                connectionMock.Object,
-                false,
-                true,
-                null);
-
-            await Task.Delay(100);
+            await _deviceManagementService.StartPassiveMonitoring(connectionMock.Object);
 
             // Act
             await _deviceManagementService.StopPassiveMonitoring();
@@ -470,13 +454,7 @@ namespace OSDPBench.Core.Tests.Services
             connectionMock.Setup(x => x.Open());
 
             // Act
-            var startTask = _deviceManagementService.StartPassiveMonitoring(
-                connectionMock.Object,
-                false,
-                true,
-                null);
-
-            await Task.Delay(100);
+            await _deviceManagementService.StartPassiveMonitoring(connectionMock.Object);
 
             // Assert
             Assert.That(_deviceManagementService.BaudRate, Is.EqualTo(expectedBaudRate));
@@ -500,13 +478,7 @@ namespace OSDPBench.Core.Tests.Services
             };
 
             // Act
-            var startTask = _deviceManagementService.StartPassiveMonitoring(
-                connectionMock.Object,
-                false,
-                true,
-                null);
-
-            await Task.Delay(100);
+            await _deviceManagementService.StartPassiveMonitoring(connectionMock.Object);
 
             // Assert
             Assert.That(receivedStatus, Is.EqualTo(ConnectionStatus.PassiveMonitoring));
@@ -523,14 +495,7 @@ namespace OSDPBench.Core.Tests.Services
             connectionMock.Setup(x => x.BaudRate).Returns(9600);
             connectionMock.Setup(x => x.Open());
 
-            // Start first
-            var startTask = _deviceManagementService.StartPassiveMonitoring(
-                connectionMock.Object,
-                false,
-                true,
-                null);
-
-            await Task.Delay(100);
+            await _deviceManagementService.StartPassiveMonitoring(connectionMock.Object);
 
             ConnectionStatus? receivedStatus = null;
             _deviceManagementService.ConnectionStatusChange += (_, status) =>
@@ -554,13 +519,7 @@ namespace OSDPBench.Core.Tests.Services
             connectionMock.Setup(x => x.Open());
 
             // Act
-            var startTask = _deviceManagementService.StartPassiveMonitoring(
-                connectionMock.Object,
-                true,
-                true,
-                null);
-
-            await Task.Delay(100);
+            await _deviceManagementService.StartPassiveMonitoring(connectionMock.Object, useSecureChannel: true);
 
             // Assert
             Assert.That(_deviceManagementService.UsesDefaultSecurityKey, Is.True);
@@ -581,13 +540,11 @@ namespace OSDPBench.Core.Tests.Services
                                0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F, 0x10];
 
             // Act
-            var startTask = _deviceManagementService.StartPassiveMonitoring(
+            await _deviceManagementService.StartPassiveMonitoring(
                 connectionMock.Object,
                 true,
                 false,
                 customKey);
-
-            await Task.Delay(100);
 
             // Assert
             Assert.That(_deviceManagementService.UsesDefaultSecurityKey, Is.False);
