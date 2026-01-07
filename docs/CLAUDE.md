@@ -23,35 +23,73 @@
 - Run with code coverage: `dotnet test test/Core.Tests/Core.Tests.csproj --collect:"XPlat Code Coverage"`
 
 ## Resource Management
-- Check resource usage: `pwsh ci/check_resource_usage_progress.ps1`
+- Check resource usage: `pwsh scripts/check_resource_usage.ps1`
 - The script analyzes unused resource strings and missing definitions across all language files
-- Shows progress indicators for both resource usage checking and missing definition scanning
 - Provides detailed reports with resource values and comments for cleanup decisions
-- Can be integrated into Azure DevOps pipelines using `ci/azure-pipeline-resource-check.yml`
 
 ## Localization
 - **Do not manually translate resource strings** - Translations are handled by a separate automated service
 - Only add new resource strings to the main `Resources.resx` file with English values
 - The automated translation service will populate the language-specific `.resx` files (de, es, fr, ja, zh)
 
+## Branching Strategy
+- **Trunk-based development** - All work happens on the `main` branch
+- Small, frequent commits directly to `main`
+- Tag-based releases (`v1.2.3`) trigger packaging pipeline
+- Short-lived feature branches are acceptable for multi-day work
+
+## Code Inspection
+The CI pipeline uses JetBrains ReSharper command-line tools to enforce code quality. Builds fail on any errors or warnings.
+
+### Setup
+```bash
+dotnet tool install -g JetBrains.ReSharper.GlobalTools
+```
+
+### Run Inspection
+```bash
+jb inspectcode OSDP-Bench.sln -o=results.sarif
+```
+
+### Review Results
+```powershell
+# Parse SARIF and display issues
+$sarif = Get-Content results.sarif | ConvertFrom-Json
+foreach ($result in $sarif.runs[0].results) {
+    $level = $result.level
+    $message = $result.message.text
+    $file = $result.locations[0].physicalLocation.artifactLocation.uri
+    $line = $result.locations[0].physicalLocation.region.startLine
+    Write-Host "$level : $file`:$line - $message"
+}
+```
+
+### Common Issues
+- Unused variables or parameters
+- Missing null checks
+- Inconsistent naming conventions
+- Redundant code or casts
+- Possible null reference exceptions
+
 ## Release Process
-- Create a release: `pwsh ci/release.ps1`
-- The script automates the release workflow:
+- Create a release: `pwsh scripts/release.ps1`
+- The script automates the tag-based release workflow:
   - Validates working directory state (no uncommitted changes)
-  - Ensures you're on the develop branch
-  - Fetches latest changes from remote
-  - Verifies develop is ahead of main
-  - Shows commits to be released
-  - Merges develop into main with no-fast-forward
-  - Pushes to trigger CI/CD pipeline
+  - Ensures you're on the main branch
+  - Prompts for new version number (semantic versioning)
+  - Updates `VersionPrefix` in `Directory.Build.props`
+  - Commits the version change
+  - Creates version tag (`vX.Y.Z`)
+  - Pushes commit and tag to trigger release pipeline
 - The Azure DevOps pipeline will automatically:
-  - Run tests
-  - Bump version number
-  - Create a tagged release
+  - Run build and tests
+  - Run code inspection
+  - Create Windows binaries (x64 and ARM64)
+  - Create NuGet package
 - Requirements:
-  - Must be on develop branch
+  - Must be on main branch
   - No uncommitted changes
-  - Develop must be ahead of main
+  - Version must follow semantic versioning (e.g., 3.0.14)
 
 ## Code Style Guidelines
 - Use C# 8.0+ features with async/await patterns for asynchronous operations
