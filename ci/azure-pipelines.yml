@@ -1,0 +1,38 @@
+trigger:
+  branches:
+    include:
+    - main
+  tags:
+    include:
+    - v*
+
+pr: none
+
+pool:
+  vmImage: 'windows-latest'
+
+variables:
+  solution: 'OSDP-Bench.sln'
+  buildConfiguration: 'Release'
+
+jobs:
+  - job: build
+    displayName: 'Build, Test, and Inspect'
+    pool:
+      vmImage: 'windows-latest'
+    steps:
+      - checkout: self
+      - template: build.yml
+
+  - job: package
+    displayName: 'Package and Publish'
+    condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/v'))
+    pool:
+      vmImage: 'windows-latest'
+    dependsOn:
+      build
+    steps:
+      - checkout: self
+        persistCredentials: true
+        clean: true
+      - template: package.yml
