@@ -472,7 +472,162 @@ public class ConnectViewModelTests
     }
     
     #endregion
-    
+
+    #region Passive Monitoring Tests
+
+    [Test]
+    public async Task ConnectViewModel_IsPassiveMode_WhenConnectionTypeIsPassive()
+    {
+        // Arrange
+        await _viewModel.InitializationComplete;
+
+        // Act - Select passive monitoring (index 2)
+        _viewModel.SelectedConnectionTypeIndex = 2;
+
+        // Assert
+        Assert.That(_viewModel.IsPassiveMode, Is.True);
+    }
+
+    [Test]
+    public async Task ConnectViewModel_IsPassiveMode_FalseWhenDiscover()
+    {
+        // Arrange
+        await _viewModel.InitializationComplete;
+
+        // Act - Select discover (index 0)
+        _viewModel.SelectedConnectionTypeIndex = 0;
+
+        // Assert
+        Assert.That(_viewModel.IsPassiveMode, Is.False);
+    }
+
+    [Test]
+    public async Task ConnectViewModel_IsPassiveMode_FalseWhenManual()
+    {
+        // Arrange
+        await _viewModel.InitializationComplete;
+
+        // Act - Select manual (index 1)
+        _viewModel.SelectedConnectionTypeIndex = 1;
+
+        // Assert
+        Assert.That(_viewModel.IsPassiveMode, Is.False);
+    }
+
+    [Test]
+    public async Task ConnectViewModel_PassiveMonitoring_SetsStatusLevelToPassiveMonitoring()
+    {
+        // Arrange
+        await _viewModel.InitializationComplete;
+
+        // Act
+        RaiseConnectionStatusEvent(ConnectionStatus.PassiveMonitoring);
+
+        // Assert
+        Assert.That(_viewModel.StatusLevel, Is.EqualTo(StatusLevel.PassiveMonitoring));
+    }
+
+    [Test]
+    public async Task ConnectViewModel_UseDefaultKey_DefaultsToTrue()
+    {
+        // Arrange
+        await _viewModel.InitializationComplete;
+
+        // Assert
+        Assert.That(_viewModel.UseDefaultKey, Is.True);
+    }
+
+    [Test]
+    public async Task ConnectViewModel_SecurityKey_DefaultsToEmpty()
+    {
+        // Arrange
+        await _viewModel.InitializationComplete;
+
+        // Assert
+        Assert.That(_viewModel.SecurityKey, Is.Null.Or.Empty);
+    }
+
+    [Test]
+    public async Task ConnectViewModel_StartPassiveMonitoringCommand_NotNull()
+    {
+        // Arrange
+        await _viewModel.InitializationComplete;
+
+        // Assert
+        Assert.That(_viewModel.StartPassiveMonitoringCommand, Is.Not.Null);
+    }
+
+    [Test]
+    public async Task ConnectViewModel_StopPassiveMonitoringCommand_NotNull()
+    {
+        // Arrange
+        await _viewModel.InitializationComplete;
+
+        // Assert
+        Assert.That(_viewModel.StopPassiveMonitoringCommand, Is.Not.Null);
+    }
+
+    [Test]
+    public async Task ConnectViewModel_ExecuteStartPassiveMonitoring_NoPortSelected_DoesNotStart()
+    {
+        // Arrange
+        await _viewModel.InitializationComplete;
+        _viewModel.SelectedConnectionTypeIndex = 2; // Passive mode
+        _viewModel.SelectedSerialPort = null;
+        _viewModel.SelectedBaudRate = TestBaudRate;
+
+        // Act
+        await _viewModel.StartPassiveMonitoringCommand.ExecuteAsync(null);
+
+        // Assert - Should not call StartPassiveMonitoring on service
+        _deviceManagementServiceMock.Verify(
+            x => x.StartPassiveMonitoring(
+                It.IsAny<IOsdpConnection>(),
+                It.IsAny<bool>(),
+                It.IsAny<bool>(),
+                It.IsAny<byte[]>()),
+            Times.Never);
+    }
+
+    [Test]
+    public async Task ConnectViewModel_ExecuteStartPassiveMonitoring_WithPortSelected_CallsService()
+    {
+        // Arrange
+        await _viewModel.InitializationComplete;
+        _viewModel.SelectedConnectionTypeIndex = 2; // Passive mode
+        SetupConnectionServiceWithPort(TestPortName, TestBaudRate);
+        SelectTestSerialPortAndBaudRate();
+
+        // Act
+        await _viewModel.StartPassiveMonitoringCommand.ExecuteAsync(null);
+
+        // Assert
+        _deviceManagementServiceMock.Verify(
+            x => x.StartPassiveMonitoring(
+                It.IsAny<IOsdpConnection>(),
+                It.IsAny<bool>(),
+                It.IsAny<bool>(),
+                It.IsAny<byte[]>()),
+            Times.Once);
+    }
+
+    [Test]
+    public async Task ConnectViewModel_ExecuteStopPassiveMonitoring_CallsService()
+    {
+        // Arrange
+        await _viewModel.InitializationComplete;
+
+        // Act
+        await _viewModel.StopPassiveMonitoringCommand.ExecuteAsync(null);
+
+        // Assert
+        _deviceManagementServiceMock.Verify(
+            x => x.StopPassiveMonitoring(),
+            Times.Once);
+    }
+
+    #endregion
+
     // Future enhancements: Add trace entry tests which require more complex mocking
     // For now we'll focus on the refactoring opportunities
 }
