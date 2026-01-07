@@ -26,8 +26,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{ED2EC291-3353-442C-AD2C-3D3438798EF0}"
 	ProjectSection(SolutionItems) = preProject
 		README.md = README.md
-		docs\CLAUDE.md = docs\CLAUDE.md
 		docs\ConnectionButtonBehavior.md = docs\ConnectionButtonBehavior.md
+		CLAUDE.md = CLAUDE.md
 	EndProjectSection
 EndProject
 Global
