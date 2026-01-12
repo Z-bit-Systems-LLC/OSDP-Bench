@@ -1,4 +1,5 @@
-﻿using OSDPBench.Core.ViewModels.Windows;
+﻿using System.Windows;
+using OSDPBench.Core.ViewModels.Windows;
 using Wpf.Ui;
 using Wpf.Ui.Abstractions;
 using Wpf.Ui.Appearance;
@@ -24,6 +25,13 @@ public partial class MainWindow : INavigationWindow
         SystemThemeWatcher.Watch(this);
             
         InitializeComponent();
+        
+        // Set window size based on screen dimensions
+        var workArea = SystemParameters.WorkArea;
+    
+        // Use 80% of the screen size or 800px, whichever is smaller
+        this.Width = Math.Min(800, workArea.Width * 0.8);
+        this.Height = Math.Min(800, workArea.Height * 0.8);
 
         SetPageService(pageService);
 
