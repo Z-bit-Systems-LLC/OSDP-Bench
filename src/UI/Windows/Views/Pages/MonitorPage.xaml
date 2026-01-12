@@ -166,15 +166,42 @@
 							</Grid>
 						</StackPanel>
 					</Border>
-					<DataGrid ItemsSource="{Binding ViewModel.TraceEntriesView}" 
-					          AutoGenerateColumns="False" 
-					          CanUserAddRows="False" 
-					          IsReadOnly="True" 
-					          Margin="10 5" 
-					          RowDetailsVisibilityMode="Collapsed">
+					<DataGrid x:Name="TraceDataGrid"
+					          ItemsSource="{Binding ViewModel.TraceEntriesView}"
+					          AutoGenerateColumns="False"
+					          CanUserAddRows="False"
+					          IsReadOnly="True"
+					          Margin="10 5"
+					          RowDetailsVisibilityMode="Collapsed"
+					          PreviewMouseLeftButtonUp="DataGrid_PreviewMouseLeftButtonUp"
+					          Cursor="Hand">
 
 					<!-- DataGrid Columns -->
 					<DataGrid.Columns>
+						<!-- Expand Button Column -->
+						<DataGridTemplateColumn Header="" Width="40">
+							<DataGridTemplateColumn.CellTemplate>
+								<DataTemplate>
+									<Grid HorizontalAlignment="Left">
+										<ui:Button Appearance="Transparent"
+										           BorderThickness="0"
+										           Padding="0"
+										           ToolTip="{markup:Localize Monitor_Expand}"
+										           DataContext="{Binding Details}"
+										           Margin="5,0,0,0"
+										           Width="24"
+										           Height="24"
+										           Cursor="Hand"
+										           Click="ToggleRowDetails">
+											<ui:Button.Icon>
+												<ui:SymbolIcon Symbol="ChevronDown24"/>
+											</ui:Button.Icon>
+										</ui:Button>
+									</Grid>
+								</DataTemplate>
+							</DataGridTemplateColumn.CellTemplate>
+						</DataGridTemplateColumn>
+
 						<DataGridTextColumn Header="{markup:Localize Monitor_TimeStamp}" Binding="{Binding LocalTimestamp, StringFormat={}{0:HH:mm:ss.fff}}" />
 						<DataGridTextColumn Header="{markup:Localize Monitor_Interval}" Binding="{Binding Interval.TotalMilliseconds, StringFormat={}{0:N0}}" />
 						<DataGridTextColumn Header="{markup:Localize Monitor_Direction}" Binding="{Binding Direction}" />
@@ -274,30 +301,6 @@
 											           FontWeight="SemiBold"
 											           FontSize="10"/>
 										</Border>
-									</Grid>
-								</DataTemplate>
-							</DataGridTemplateColumn.CellTemplate>
-						</DataGridTemplateColumn>
-		        
-						<!-- Button Column -->
-						<DataGridTemplateColumn Header="" Width="50">
-							<DataGridTemplateColumn.CellTemplate>
-								<DataTemplate>
-									<Grid HorizontalAlignment="Right">
-										<ui:Button Appearance="Transparent"
-										           BorderThickness="0"
-										           Padding="0"
-										           ToolTip="{markup:Localize Monitor_Expand}"
-										           DataContext="{Binding Details}"
-										           Margin="0,0,5,0"
-										           Width="24"
-										           Height="24"
-										           Cursor="Hand"
-										           Click="ToggleRowDetails">
-											<ui:Button.Icon>
-												<ui:SymbolIcon Symbol="ChevronDown24"/>
-											</ui:Button.Icon>
-										</ui:Button>
 									</Grid>
 								</DataTemplate>
 							</DataGridTemplateColumn.CellTemplate>
