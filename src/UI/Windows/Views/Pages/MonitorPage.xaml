@@ -290,12 +290,14 @@
 					<!-- RowDetailsTemplate -->
 					<DataGrid.RowDetailsTemplate>
 						<DataTemplate DataType="{x:Type models:PacketTraceEntry}">
-							<TextBlock Text="{Binding Details}"
-							           Style="{StaticResource Text.Body}"
-							           FontFamily="Consolas"
-							           Margin="10" />
+							<TextBox Text="{Binding Details, Mode=OneWay}"
+							         IsReadOnly="True"
+							         BorderThickness="0"
+							         Background="Transparent"
+							         FontFamily="Consolas"
+							         Margin="10" />
 						</DataTemplate>
-						</DataGrid.RowDetailsTemplate>
+					</DataGrid.RowDetailsTemplate>
 					</DataGrid>
 				</StackPanel>
 			</Border>

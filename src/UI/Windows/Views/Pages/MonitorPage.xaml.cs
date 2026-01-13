@@ -1,5 +1,6 @@
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Media;
 using OSDPBench.Core.ViewModels.Pages;
 using Wpf.Ui.Abstractions.Controls;
@@ -45,6 +46,12 @@ public partial class MonitorPage : INavigableView<MonitorViewModel>
     {
         if (e.OriginalSource is DependencyObject source)
         {
+            // Don't toggle if clicking within the row details area (e.g., selecting text)
+            if (FindParent<DataGridDetailsPresenter>(source) != null)
+            {
+                return;
+            }
+
             var row = FindParent<DataGridRow>(source);
             if (row != null)
             {
