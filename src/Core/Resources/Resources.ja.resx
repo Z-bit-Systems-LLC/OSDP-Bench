@@ -329,13 +329,9 @@
     <value>復号できません</value>
     <comment>Message shown in packet details when decryption fails</comment>
   </data>
-  <data name="Monitor_DefaultKey" xml:space="preserve">
-    <value>デフォルトキー</value>
-    <comment>Badge shown when passive monitoring with default key decryption</comment>
-  </data>
-  <data name="Monitor_CustomKey" xml:space="preserve">
-    <value>カスタムキー</value>
-    <comment>Badge shown when passive monitoring with custom key decryption</comment>
+  <data name="Monitor_PassiveMonitoring" xml:space="preserve">
+    <value>Monitor</value>
+    <comment>Badge shown when in passive monitoring mode</comment>
   </data>
   <data name="Monitor_Security" xml:space="preserve">
     <value>セキュリティ</value>
