@@ -7,16 +7,16 @@ using OSDPBench.Core.ViewModels.Pages;
 namespace OSDPBench.Core.Tests.ViewModels;
 
 /// <summary>
-/// Unit tests for ConnectViewModel button visibility logic.
+/// Unit tests for ConfigurationViewModel button visibility logic.
 /// Based on specifications in docs/ConnectionButtonBehavior.md
 /// </summary>
-[TestFixture(TestOf = typeof(ConnectViewModel))]
-public class ConnectViewModelButtonVisibilityTests
+[TestFixture(TestOf = typeof(ConfigurationViewModel))]
+public class ConfigurationViewModelButtonVisibilityTests
 {
     private Mock<IDialogService> _dialogServiceMock;
     private Mock<IDeviceManagementService> _deviceManagementServiceMock;
     private Mock<ISerialPortConnectionService> _serialPortConnectionServiceMock;
-    private ConnectViewModel _viewModel;
+    private ConfigurationViewModel _viewModel;
 
     [SetUp]
     public void Setup()
@@ -29,7 +29,7 @@ public class ConnectViewModelButtonVisibilityTests
         _serialPortConnectionServiceMock.Setup(x => x.FindAvailableSerialPorts())
             .ReturnsAsync([]);
 
-        _viewModel = new ConnectViewModel(
+        _viewModel = new ConfigurationViewModel(
             _dialogServiceMock.Object,
             _deviceManagementServiceMock.Object,
             _serialPortConnectionServiceMock.Object);
@@ -275,11 +275,11 @@ public class ConnectViewModelButtonVisibilityTests
 
         _viewModel.PropertyChanged += (_, args) =>
         {
-            if (args.PropertyName == nameof(ConnectViewModel.ConnectVisible)) connectVisibleChanged = true;
-            if (args.PropertyName == nameof(ConnectViewModel.DisconnectVisible)) disconnectVisibleChanged = true;
-            if (args.PropertyName == nameof(ConnectViewModel.StartDiscoveryVisible)) startDiscoveryVisibleChanged = true;
-            if (args.PropertyName == nameof(ConnectViewModel.CancelDiscoveryVisible)) cancelDiscoveryVisibleChanged = true;
-            if (args.PropertyName == nameof(ConnectViewModel.IsConnectionTypeEnabled)) isConnectionTypeEnabledChanged = true;
+            if (args.PropertyName == nameof(ConfigurationViewModel.ConnectVisible)) connectVisibleChanged = true;
+            if (args.PropertyName == nameof(ConfigurationViewModel.DisconnectVisible)) disconnectVisibleChanged = true;
+            if (args.PropertyName == nameof(ConfigurationViewModel.StartDiscoveryVisible)) startDiscoveryVisibleChanged = true;
+            if (args.PropertyName == nameof(ConfigurationViewModel.CancelDiscoveryVisible)) cancelDiscoveryVisibleChanged = true;
+            if (args.PropertyName == nameof(ConfigurationViewModel.IsConnectionTypeEnabled)) isConnectionTypeEnabledChanged = true;
         };
 
         // Act
@@ -306,8 +306,8 @@ public class ConnectViewModelButtonVisibilityTests
 
         _viewModel.PropertyChanged += (_, args) =>
         {
-            if (args.PropertyName == nameof(ConnectViewModel.ConnectVisible)) connectVisibleChanged = true;
-            if (args.PropertyName == nameof(ConnectViewModel.StartDiscoveryVisible)) startDiscoveryVisibleChanged = true;
+            if (args.PropertyName == nameof(ConfigurationViewModel.ConnectVisible)) connectVisibleChanged = true;
+            if (args.PropertyName == nameof(ConfigurationViewModel.StartDiscoveryVisible)) startDiscoveryVisibleChanged = true;
         };
 
         // Act

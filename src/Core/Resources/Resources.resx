@@ -154,8 +154,8 @@
   
   <!-- Page Titles -->
   <data name="Page_Connect" xml:space="preserve">
-    <value>Connect</value>
-    <comment>Title for the Connect page</comment>
+    <value>Configuration</value>
+    <comment>Title for the Configuration page</comment>
   </data>
   <data name="Page_Manage" xml:space="preserve">
     <value>Manage</value>
@@ -262,8 +262,8 @@
     <comment>Message when device is not identified</comment>
   </data>
   <data name="Manage_ConnectionPageDetails" xml:space="preserve">
-    <value>The Connection page will provide more details</value>
-    <comment>Message directing user to connection page</comment>
+    <value>The Configuration page will provide more details</value>
+    <comment>Message directing user to configuration page</comment>
   </data>
   <data name="Manage_DeviceInformation" xml:space="preserve">
     <value>Device Information</value>
@@ -375,8 +375,8 @@
     <comment>Button text to expand row details</comment>
   </data>
   <data name="Monitor_ConnectionPageDetails" xml:space="preserve">
-    <value>The Connection page will provide more details</value>
-    <comment>Message directing users to connection page for details</comment>
+    <value>The Configuration page will provide more details</value>
+    <comment>Message directing users to configuration page for details</comment>
   </data>
   <data name="Monitor_LastCardRead" xml:space="preserve">
     <value>Last Card Read</value>
@@ -441,8 +441,8 @@
   
   <!-- Navigation Menu Items -->
   <data name="Navigation_ConnectToPD" xml:space="preserve">
-    <value>Connect To PD</value>
-    <comment>Navigation menu item for Connect page</comment>
+    <value>Config</value>
+    <comment>Navigation menu item for Configuration page</comment>
   </data>
   <data name="Navigation_ManagePD" xml:space="preserve">
     <value>Manage PD</value>

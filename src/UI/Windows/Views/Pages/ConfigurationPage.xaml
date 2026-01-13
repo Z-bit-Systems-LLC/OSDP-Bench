@@ -1,14 +1,14 @@
-﻿<Page x:Class="OSDPBench.Windows.Views.Pages.ConnectPage"
+﻿<Page x:Class="OSDPBench.Windows.Views.Pages.ConfigurationPage"
 	  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 	  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-	  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+	  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	  xmlns:pages="clr-namespace:OSDPBench.Windows.Views.Pages"
 	  xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
 	  xmlns:converters="clr-namespace:OSDPBench.Windows.Converters"
 	  xmlns:markup="clr-namespace:OSDPBench.Windows.Markup"
-	  mc:Ignorable="d" 
-	  d:DataContext="{d:DesignInstance pages:ConnectPage,
+	  mc:Ignorable="d"
+	  d:DataContext="{d:DesignInstance pages:ConfigurationPage,
 									 IsDesignTimeCreatable=False}"
 	  d:DesignHeight="450" d:DesignWidth="800"
 	  Title="{markup:Localize Page_Connect}">

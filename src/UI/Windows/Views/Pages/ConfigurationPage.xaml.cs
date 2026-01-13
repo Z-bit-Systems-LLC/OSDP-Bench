@@ -7,11 +7,11 @@ using Wpf.Ui.Controls;
 namespace OSDPBench.Windows.Views.Pages;
 
 /// <summary>
-/// Interaction logic for ConnectPage.xaml
+/// Interaction logic for ConfigurationPage.xaml
 /// </summary>
-public partial class ConnectPage : INavigableView<ConnectViewModel>
+public partial class ConfigurationPage : INavigableView<ConfigurationViewModel>
 {
-    public ConnectPage(ConnectViewModel viewModel)
+    public ConfigurationPage(ConfigurationViewModel viewModel)
     {
         ViewModel = viewModel;
         DataContext = this;
@@ -22,7 +22,7 @@ public partial class ConnectPage : INavigableView<ConnectViewModel>
         Loaded += OnPageLoaded;
     }
 
-    public ConnectViewModel ViewModel { get; }
+    public ConfigurationViewModel ViewModel { get; }
 
     private void OnPageLoaded(object sender, RoutedEventArgs e)
     {

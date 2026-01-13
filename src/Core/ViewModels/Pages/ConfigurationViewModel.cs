@@ -9,9 +9,9 @@ using OSDPBench.Core.Services;
 namespace OSDPBench.Core.ViewModels.Pages;
 
 /// <summary>
-/// ViewModel for the Connect page.
+/// ViewModel for the Configuration page.
 /// </summary>
-public partial class ConnectViewModel : ObservableObject, IDisposable
+public partial class ConfigurationViewModel : ObservableObject, IDisposable
 {
     // Default baud rates available for connection
     private static readonly IReadOnlyList<int> DefaultBaudRates = [9600, 19200, 38400, 57600, 115200, 230400];
@@ -35,9 +35,9 @@ public partial class ConnectViewModel : ObservableObject, IDisposable
     public Task InitializationComplete => _initializationComplete.Task;
 
     /// <summary>
-    /// ViewModel for the Connect page.
+    /// ViewModel for the Configuration page.
     /// </summary>
-    public ConnectViewModel(IDialogService dialogService, IDeviceManagementService deviceManagementService,
+    public ConfigurationViewModel(IDialogService dialogService, IDeviceManagementService deviceManagementService,
         ISerialPortConnectionService serialPortConnectionService, IUsbDeviceMonitorService? usbDeviceMonitorService = null)
     {
         _dialogService = dialogService ??

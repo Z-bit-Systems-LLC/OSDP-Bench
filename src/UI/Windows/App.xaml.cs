@@ -43,8 +43,8 @@ public partial class App
             services.AddSingleton<INavigationWindow, MainWindow>();
             services.AddSingleton<MainWindowViewModel>();
 
-            services.AddSingleton<ConnectPage>();
-            services.AddSingleton<ConnectViewModel>();
+            services.AddSingleton<ConfigurationPage>();
+            services.AddSingleton<ConfigurationViewModel>();
             services.AddSingleton<ManagePage>();
             services.AddSingleton<ManageViewModel>();
             services.AddSingleton<MonitorPage>();
@@ -126,8 +126,8 @@ public partial class App
     private async void OnExit(object sender, ExitEventArgs e)
     {
         // Dispose of services that need explicit cleanup
-        var connectViewModel = Host.Services.GetService<ConnectViewModel>();
-        connectViewModel?.Dispose();
+        var configurationViewModel = Host.Services.GetService<ConfigurationViewModel>();
+        configurationViewModel?.Dispose();
         
         var usbMonitor = Host.Services.GetService<IUsbDeviceMonitorService>();
         usbMonitor?.Dispose();
