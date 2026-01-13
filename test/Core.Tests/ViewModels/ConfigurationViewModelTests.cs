@@ -476,42 +476,59 @@ public class ConfigurationViewModelTests
     #region Passive Monitoring Tests
 
     [Test]
-    public async Task ConfigurationViewModel_IsPassiveMode_WhenConnectionTypeIsPassive()
+    public async Task ConfigurationViewModel_IsPassiveMode_WhenPassiveMonitoringSelected()
     {
         // Arrange
         await _viewModel.InitializationComplete;
 
-        // Act - Select passive monitoring (index 2)
-        _viewModel.SelectedConnectionTypeIndex = 2;
+        // Act - Select passive monitoring
+        _viewModel.IsConnectToPDSelected = false;
 
         // Assert
         Assert.That(_viewModel.IsPassiveMode, Is.True);
     }
 
     [Test]
-    public async Task ConfigurationViewModel_IsPassiveMode_FalseWhenDiscover()
+    public async Task ConfigurationViewModel_IsPassiveMode_FalseWhenConnectToPDSelected()
     {
         // Arrange
         await _viewModel.InitializationComplete;
 
-        // Act - Select discover (index 0)
-        _viewModel.SelectedConnectionTypeIndex = 0;
+        // Act - Select Connect to PD (either Discover or Manual)
+        _viewModel.IsConnectToPDSelected = true;
 
         // Assert
         Assert.That(_viewModel.IsPassiveMode, Is.False);
     }
 
     [Test]
-    public async Task ConfigurationViewModel_IsPassiveMode_FalseWhenManual()
+    public async Task ConfigurationViewModel_IsDiscoverModeVisible_WhenDiscoverSelected()
     {
         // Arrange
         await _viewModel.InitializationComplete;
 
-        // Act - Select manual (index 1)
-        _viewModel.SelectedConnectionTypeIndex = 1;
+        // Act - Select Discover mode
+        _viewModel.IsConnectToPDSelected = true;
+        _viewModel.IsDiscoverModeSelected = true;
 
         // Assert
-        Assert.That(_viewModel.IsPassiveMode, Is.False);
+        Assert.That(_viewModel.IsDiscoverModeVisible, Is.True);
+        Assert.That(_viewModel.IsManualModeVisible, Is.False);
+    }
+
+    [Test]
+    public async Task ConfigurationViewModel_IsManualModeVisible_WhenManualSelected()
+    {
+        // Arrange
+        await _viewModel.InitializationComplete;
+
+        // Act - Select Manual mode
+        _viewModel.IsConnectToPDSelected = true;
+        _viewModel.IsDiscoverModeSelected = false;
+
+        // Assert
+        Assert.That(_viewModel.IsManualModeVisible, Is.True);
+        Assert.That(_viewModel.IsDiscoverModeVisible, Is.False);
     }
 
     [Test]
@@ -572,7 +589,7 @@ public class ConfigurationViewModelTests
     {
         // Arrange
         await _viewModel.InitializationComplete;
-        _viewModel.SelectedConnectionTypeIndex = 2; // Passive mode
+        _viewModel.IsConnectToPDSelected = false; // Passive mode
         _viewModel.SelectedSerialPort = null;
         _viewModel.SelectedBaudRate = TestBaudRate;
 
@@ -594,7 +611,7 @@ public class ConfigurationViewModelTests
     {
         // Arrange
         await _viewModel.InitializationComplete;
-        _viewModel.SelectedConnectionTypeIndex = 2; // Passive mode
+        _viewModel.IsConnectToPDSelected = false; // Passive mode
         SetupConnectionServiceWithPort(TestPortName, TestBaudRate);
         SelectTestSerialPortAndBaudRate();
 

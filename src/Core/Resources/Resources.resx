@@ -627,10 +627,14 @@
     <comment>Connection type option for manual connection</comment>
   </data>
   <data name="ConnectionType_PassiveMonitor" xml:space="preserve">
-    <value>Passive Monitor</value>
+    <value>Passive Monitoring</value>
     <comment>Connection type option for passive bus monitoring</comment>
   </data>
-  
+  <data name="ConnectionMode_ConnectToPD" xml:space="preserve">
+    <value>Connect to PD</value>
+    <comment>Radio button label for Connect to PD mode</comment>
+  </data>
+
   <!-- Language Selection UI -->
   <data name="Language_Selection" xml:space="preserve">
     <value>Language</value>
