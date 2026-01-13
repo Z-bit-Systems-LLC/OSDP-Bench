@@ -220,4 +220,80 @@
         <Setter Property="Margin" Value="0,0,4,0"/>
     </Style>
 
+    <!-- Badge Styles -->
+    <!-- Base badge text style -->
+    <Style x:Key="Badge.Text" TargetType="TextBlock">
+        <Setter Property="FontWeight" Value="SemiBold"/>
+        <Setter Property="FontSize" Value="11"/>
+        <Setter Property="Foreground" Value="White"/>
+    </Style>
+
+    <Style x:Key="Badge.Text.Small" TargetType="TextBlock" BasedOn="{StaticResource Badge.Text}">
+        <Setter Property="FontSize" Value="10"/>
+    </Style>
+
+    <!-- Filled badge styles (white text on colored background) -->
+    <Style x:Key="Badge.Success" TargetType="Border">
+        <Setter Property="Background" Value="{DynamicResource SemanticSuccessBrush}"/>
+        <Setter Property="CornerRadius" Value="4"/>
+        <Setter Property="Padding" Value="8,4"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+    </Style>
+
+    <Style x:Key="Badge.Success.Small" TargetType="Border" BasedOn="{StaticResource Badge.Success}">
+        <Setter Property="CornerRadius" Value="3"/>
+        <Setter Property="Padding" Value="6,2"/>
+        <Setter Property="HorizontalAlignment" Value="Left"/>
+    </Style>
+
+    <Style x:Key="Badge.Info" TargetType="Border">
+        <Setter Property="Background" Value="{DynamicResource SemanticInfoBrush}"/>
+        <Setter Property="CornerRadius" Value="4"/>
+        <Setter Property="Padding" Value="8,4"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+    </Style>
+
+    <Style x:Key="Badge.Info.Small" TargetType="Border" BasedOn="{StaticResource Badge.Info}">
+        <Setter Property="CornerRadius" Value="3"/>
+        <Setter Property="Padding" Value="6,2"/>
+        <Setter Property="HorizontalAlignment" Value="Left"/>
+    </Style>
+
+    <Style x:Key="Badge.Warning" TargetType="Border">
+        <Setter Property="Background" Value="{DynamicResource SemanticWarningBrush}"/>
+        <Setter Property="CornerRadius" Value="4"/>
+        <Setter Property="Padding" Value="8,4"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+    </Style>
+
+    <Style x:Key="Badge.Warning.Small" TargetType="Border" BasedOn="{StaticResource Badge.Warning}">
+        <Setter Property="CornerRadius" Value="3"/>
+        <Setter Property="Padding" Value="6,2"/>
+        <Setter Property="HorizontalAlignment" Value="Left"/>
+    </Style>
+
+    <!-- Outlined badge styles (colored border/text on light background) -->
+    <Style x:Key="Badge.Error.Outlined" TargetType="Border">
+        <Setter Property="Background" Value="{DynamicResource ControlFillColorDefaultBrush}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource SemanticErrorBrush}"/>
+        <Setter Property="BorderThickness" Value="1.5"/>
+        <Setter Property="CornerRadius" Value="4"/>
+        <Setter Property="Padding" Value="8,4"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+    </Style>
+
+    <Style x:Key="Badge.Error.Outlined.Small" TargetType="Border" BasedOn="{StaticResource Badge.Error.Outlined}">
+        <Setter Property="CornerRadius" Value="3"/>
+        <Setter Property="Padding" Value="6,2"/>
+        <Setter Property="HorizontalAlignment" Value="Left"/>
+    </Style>
+
+    <Style x:Key="Badge.Text.Error" TargetType="TextBlock" BasedOn="{StaticResource Badge.Text}">
+        <Setter Property="Foreground" Value="{DynamicResource SemanticErrorBrush}"/>
+    </Style>
+
+    <Style x:Key="Badge.Text.Error.Small" TargetType="TextBlock" BasedOn="{StaticResource Badge.Text.Small}">
+        <Setter Property="Foreground" Value="{DynamicResource SemanticErrorBrush}"/>
+    </Style>
+
 </ResourceDictionary>

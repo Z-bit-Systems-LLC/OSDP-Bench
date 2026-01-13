@@ -213,25 +213,17 @@
 							<DataGridTemplateColumn.CellTemplate>
 								<DataTemplate>
 									<Grid>
-										<!-- Clear Text (Red) - not using secure channel -->
-										<Border Background="{DynamicResource SemanticErrorBrush}"
-										        CornerRadius="3"
-										        Padding="6,2"
-										        HorizontalAlignment="Left"
+										<!-- Clear Text (Red outlined) - not using secure channel -->
+										<Border Style="{StaticResource Badge.Error.Outlined.Small}"
 										        Visibility="{Binding IsSecureMessage, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=Invert}">
 											<TextBlock Text="{markup:Localize Monitor_ClearText}"
-											           Foreground="White"
-											           FontWeight="SemiBold"
-											           FontSize="10"/>
+											           Style="{StaticResource Badge.Text.Error.Small}"/>
 										</Border>
 
-										<!-- Encrypted with Default Key (Red) -->
-										<Border Background="{DynamicResource SemanticErrorBrush}"
-										        CornerRadius="3"
-										        Padding="6,2"
-										        HorizontalAlignment="Left">
+										<!-- Encrypted with Default Key (Red outlined) -->
+										<Border>
 											<Border.Style>
-												<Style TargetType="Border">
+												<Style TargetType="Border" BasedOn="{StaticResource Badge.Error.Outlined.Small}">
 													<Setter Property="Visibility" Value="Collapsed"/>
 													<Style.Triggers>
 														<MultiDataTrigger>
@@ -245,18 +237,13 @@
 												</Style>
 											</Border.Style>
 											<TextBlock Text="{markup:Localize Monitor_EncryptedDefaultKey}"
-											           Foreground="White"
-											           FontWeight="SemiBold"
-											           FontSize="10"/>
+											           Style="{StaticResource Badge.Text.Error.Small}"/>
 										</Border>
 
 										<!-- No Decryption (Orange) - secure but couldn't decrypt -->
-										<Border Background="{DynamicResource SemanticWarningBrush}"
-										        CornerRadius="3"
-										        Padding="6,2"
-										        HorizontalAlignment="Left">
+										<Border>
 											<Border.Style>
-												<Style TargetType="Border">
+												<Style TargetType="Border" BasedOn="{StaticResource Badge.Warning.Small}">
 													<Setter Property="Visibility" Value="Collapsed"/>
 													<Style.Triggers>
 														<MultiDataTrigger>
@@ -271,18 +258,13 @@
 												</Style>
 											</Border.Style>
 											<TextBlock Text="{markup:Localize Monitor_NoDecryption}"
-											           Foreground="White"
-											           FontWeight="SemiBold"
-											           FontSize="10"/>
+											           Style="{StaticResource Badge.Text.Small}"/>
 										</Border>
 
 										<!-- Encrypted (Green) - secure with custom key and decrypted -->
-										<Border Background="{DynamicResource SemanticSuccessBrush}"
-										        CornerRadius="3"
-										        Padding="6,2"
-										        HorizontalAlignment="Left">
+										<Border>
 											<Border.Style>
-												<Style TargetType="Border">
+												<Style TargetType="Border" BasedOn="{StaticResource Badge.Success.Small}">
 													<Setter Property="Visibility" Value="Collapsed"/>
 													<Style.Triggers>
 														<MultiDataTrigger>
@@ -297,9 +279,7 @@
 												</Style>
 											</Border.Style>
 											<TextBlock Text="{markup:Localize Monitor_Encrypted}"
-											           Foreground="White"
-											           FontWeight="SemiBold"
-											           FontSize="10"/>
+											           Style="{StaticResource Badge.Text.Small}"/>
 										</Border>
 									</Grid>
 								</DataTemplate>
