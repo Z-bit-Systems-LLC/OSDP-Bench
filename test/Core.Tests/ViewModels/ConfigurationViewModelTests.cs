@@ -13,8 +13,8 @@ using OSDP.Net.PanelCommands.DeviceDiscover;
 
 namespace OSDPBench.Core.Tests.ViewModels;
 
-[TestFixture(TestOf = typeof(ConnectViewModel))]
-public class ConnectViewModelTests
+[TestFixture(TestOf = typeof(ConfigurationViewModel))]
+public class ConfigurationViewModelTests
 {
     // Constants for common test values
     private const string TestPortId = "COM1";
@@ -27,7 +27,7 @@ public class ConnectViewModelTests
     private Mock<IDialogService> _dialogServiceMock;
     private Mock<IDeviceManagementService> _deviceManagementServiceMock;
     private Mock<ISerialPortConnectionService> _serialPortConnectionServiceMock;
-    private ConnectViewModel _viewModel;
+    private ConfigurationViewModel _viewModel;
 
     [SetUp]
     public void Setup()
@@ -36,7 +36,7 @@ public class ConnectViewModelTests
         _deviceManagementServiceMock = new Mock<IDeviceManagementService>();
         _serialPortConnectionServiceMock = new Mock<ISerialPortConnectionService>();
         
-        _viewModel = new ConnectViewModel(
+        _viewModel = new ConfigurationViewModel(
             _dialogServiceMock.Object,
             _deviceManagementServiceMock.Object,
             _serialPortConnectionServiceMock.Object
@@ -44,7 +44,7 @@ public class ConnectViewModelTests
     }
 
     [Test]
-    public void ConnectViewModel_InitializedAvailableBaudRates()
+    public void ConfigurationViewModel_InitializedAvailableBaudRates()
     {
         // Arrange
         var expectedBaudRates = new[] { 9600, 19200, 38400, 57600, 115200, 230400 };
@@ -55,14 +55,14 @@ public class ConnectViewModelTests
     }
     
     [Test]
-    public async Task ConnectViewModel_InitializesSerialPortsOnStartup()
+    public async Task ConfigurationViewModel_InitializesSerialPortsOnStartup()
     {
         // Arrange
         var availablePorts = CreateTestSerialPorts();
         SetupSerialPortMockWithPorts(availablePorts);
         
         // Act - Create a new view model which should trigger initialization
-        var newViewModel = new ConnectViewModel(
+        var newViewModel = new ConfigurationViewModel(
             _dialogServiceMock.Object,
             _deviceManagementServiceMock.Object,
             _serialPortConnectionServiceMock.Object);
@@ -76,14 +76,14 @@ public class ConnectViewModelTests
     }
     
     [Test]
-    public async Task ConnectViewModel_InitializesSerialPortsOnStartup_NoPortsFound()
+    public async Task ConfigurationViewModel_InitializesSerialPortsOnStartup_NoPortsFound()
     {
         // Arrange
         var emptyPorts = new AvailableSerialPort[0];
         SetupSerialPortMockWithPorts(emptyPorts);
         
         // Act - Create a new view model which should trigger initialization
-        var newViewModel = new ConnectViewModel(
+        var newViewModel = new ConfigurationViewModel(
             _dialogServiceMock.Object,
             _deviceManagementServiceMock.Object,
             _serialPortConnectionServiceMock.Object);
@@ -97,14 +97,14 @@ public class ConnectViewModelTests
     }
     
     [Test]
-    public void ConnectViewModel_InitializesSerialPortsOnStartup_HandlesException()
+    public void ConfigurationViewModel_InitializesSerialPortsOnStartup_HandlesException()
     {
         // Arrange
         _serialPortConnectionServiceMock.Setup(x => x.FindAvailableSerialPorts())
             .ThrowsAsync(new Exception("Test exception"));
         
         // Act - Create a new view model which should trigger initialization
-        var newViewModel = new ConnectViewModel(
+        var newViewModel = new ConfigurationViewModel(
             _dialogServiceMock.Object,
             _deviceManagementServiceMock.Object,
             _serialPortConnectionServiceMock.Object);
@@ -117,7 +117,7 @@ public class ConnectViewModelTests
     #region DiscoverDevice Tests
     
     [Test]
-    public async Task ConnectViewModel_ExecuteDiscoverDeviceCommand()
+    public async Task ConfigurationViewModel_ExecuteDiscoverDeviceCommand()
     {
         // Arrange
         await _viewModel.InitializationComplete;
@@ -132,7 +132,7 @@ public class ConnectViewModelTests
     }
     
     [Test]
-    public async Task ConnectViewModel_ExecuteDiscoverDeviceCommand_Cancelled()
+    public async Task ConfigurationViewModel_ExecuteDiscoverDeviceCommand_Cancelled()
     {
         // Arrange
         await _viewModel.InitializationComplete;
@@ -148,7 +148,7 @@ public class ConnectViewModelTests
     }
     
     [Test]
-    public async Task ConnectViewModel_ExecuteDiscoverDeviceCommand_NoPortSelected()
+    public async Task ConfigurationViewModel_ExecuteDiscoverDeviceCommand_NoPortSelected()
     {
         // Arrange
         await _viewModel.InitializationComplete;
@@ -167,7 +167,7 @@ public class ConnectViewModelTests
     #region ConnectDevice Tests
 
     [Test]
-    public async Task ConnectViewModel_ExecuteConnectDeviceCommand()
+    public async Task ConfigurationViewModel_ExecuteConnectDeviceCommand()
     {
         // Arrange
         await _viewModel.InitializationComplete;
@@ -192,7 +192,7 @@ public class ConnectViewModelTests
     }
     
     [Test]
-    public async Task ConnectViewModel_ExecuteConnectDeviceCommand_NoSerialPortSelected()
+    public async Task ConfigurationViewModel_ExecuteConnectDeviceCommand_NoSerialPortSelected()
     {
         // Arrange
         await _viewModel.InitializationComplete;
@@ -212,7 +212,7 @@ public class ConnectViewModelTests
     }
     
     [Test]
-    public async Task ConnectViewModel_ExecuteConnectDeviceCommand_InvalidSecurityKey()
+    public async Task ConfigurationViewModel_ExecuteConnectDeviceCommand_InvalidSecurityKey()
     {
         // Arrange
         await _viewModel.InitializationComplete;
@@ -246,7 +246,7 @@ public class ConnectViewModelTests
     #region Event Handler Tests
     
     [Test]
-    public async Task ConnectViewModel_DeviceManagementServiceOnConnectionStatusChange_Connected()
+    public async Task ConfigurationViewModel_DeviceManagementServiceOnConnectionStatusChange_Connected()
     {
         // Arrange
         await _viewModel.InitializationComplete;
@@ -261,7 +261,7 @@ public class ConnectViewModelTests
     }
     
     [Test]
-    public async Task ConnectViewModel_DeviceManagementServiceOnConnectionStatusChange_Disconnected()
+    public async Task ConfigurationViewModel_DeviceManagementServiceOnConnectionStatusChange_Disconnected()
     {
         // Arrange
         await _viewModel.InitializationComplete;
@@ -275,7 +275,7 @@ public class ConnectViewModelTests
     }
     
     [Test]
-    public async Task ConnectViewModel_DeviceManagementServiceOnConnectionStatusChange_InvalidSecurityKey()
+    public async Task ConfigurationViewModel_DeviceManagementServiceOnConnectionStatusChange_InvalidSecurityKey()
     {
         // Arrange
         await _viewModel.InitializationComplete;
@@ -289,7 +289,7 @@ public class ConnectViewModelTests
     }
 
     [Test]
-    public async Task ConnectViewModel_DisconnectButtonVisible_WhenInvalidSecurityKeyError()
+    public async Task ConfigurationViewModel_DisconnectButtonVisible_WhenInvalidSecurityKeyError()
     {
         // Arrange
         await _viewModel.InitializationComplete;
@@ -304,7 +304,7 @@ public class ConnectViewModelTests
     }
     
     [Test]
-    public async Task ConnectViewModel_DeviceManagementServiceOnConnectionStatusChange_WhenDiscoveredStatus()
+    public async Task ConfigurationViewModel_DeviceManagementServiceOnConnectionStatusChange_WhenDiscoveredStatus()
     {
         // Arrange
         // Wait for initialization to complete
@@ -321,7 +321,7 @@ public class ConnectViewModelTests
     }
     
     [Test]
-    public void ConnectViewModel_DeviceManagementServiceOnNakReplyReceived()
+    public void ConfigurationViewModel_DeviceManagementServiceOnNakReplyReceived()
     {
         // Arrange
         string expectedNakMessage = "Invalid checksum";
@@ -476,46 +476,63 @@ public class ConnectViewModelTests
     #region Passive Monitoring Tests
 
     [Test]
-    public async Task ConnectViewModel_IsPassiveMode_WhenConnectionTypeIsPassive()
+    public async Task ConfigurationViewModel_IsPassiveMode_WhenPassiveMonitoringSelected()
     {
         // Arrange
         await _viewModel.InitializationComplete;
 
-        // Act - Select passive monitoring (index 2)
-        _viewModel.SelectedConnectionTypeIndex = 2;
+        // Act - Select passive monitoring
+        _viewModel.IsConnectToPDSelected = false;
 
         // Assert
         Assert.That(_viewModel.IsPassiveMode, Is.True);
     }
 
     [Test]
-    public async Task ConnectViewModel_IsPassiveMode_FalseWhenDiscover()
+    public async Task ConfigurationViewModel_IsPassiveMode_FalseWhenConnectToPDSelected()
     {
         // Arrange
         await _viewModel.InitializationComplete;
 
-        // Act - Select discover (index 0)
-        _viewModel.SelectedConnectionTypeIndex = 0;
+        // Act - Select Connect to PD (either Discover or Manual)
+        _viewModel.IsConnectToPDSelected = true;
 
         // Assert
         Assert.That(_viewModel.IsPassiveMode, Is.False);
     }
 
     [Test]
-    public async Task ConnectViewModel_IsPassiveMode_FalseWhenManual()
+    public async Task ConfigurationViewModel_IsDiscoverModeVisible_WhenDiscoverSelected()
     {
         // Arrange
         await _viewModel.InitializationComplete;
 
-        // Act - Select manual (index 1)
-        _viewModel.SelectedConnectionTypeIndex = 1;
+        // Act - Select Discover mode
+        _viewModel.IsConnectToPDSelected = true;
+        _viewModel.IsDiscoverModeSelected = true;
 
         // Assert
-        Assert.That(_viewModel.IsPassiveMode, Is.False);
+        Assert.That(_viewModel.IsDiscoverModeVisible, Is.True);
+        Assert.That(_viewModel.IsManualModeVisible, Is.False);
     }
 
     [Test]
-    public async Task ConnectViewModel_PassiveMonitoring_SetsStatusLevelToPassiveMonitoring()
+    public async Task ConfigurationViewModel_IsManualModeVisible_WhenManualSelected()
+    {
+        // Arrange
+        await _viewModel.InitializationComplete;
+
+        // Act - Select Manual mode
+        _viewModel.IsConnectToPDSelected = true;
+        _viewModel.IsDiscoverModeSelected = false;
+
+        // Assert
+        Assert.That(_viewModel.IsManualModeVisible, Is.True);
+        Assert.That(_viewModel.IsDiscoverModeVisible, Is.False);
+    }
+
+    [Test]
+    public async Task ConfigurationViewModel_PassiveMonitoring_SetsStatusLevelToPassiveMonitoring()
     {
         // Arrange
         await _viewModel.InitializationComplete;
@@ -528,7 +545,7 @@ public class ConnectViewModelTests
     }
 
     [Test]
-    public async Task ConnectViewModel_UseDefaultKey_DefaultsToTrue()
+    public async Task ConfigurationViewModel_UseDefaultKey_DefaultsToTrue()
     {
         // Arrange
         await _viewModel.InitializationComplete;
@@ -538,7 +555,7 @@ public class ConnectViewModelTests
     }
 
     [Test]
-    public async Task ConnectViewModel_SecurityKey_DefaultsToEmpty()
+    public async Task ConfigurationViewModel_SecurityKey_DefaultsToEmpty()
     {
         // Arrange
         await _viewModel.InitializationComplete;
@@ -548,7 +565,7 @@ public class ConnectViewModelTests
     }
 
     [Test]
-    public async Task ConnectViewModel_StartPassiveMonitoringCommand_NotNull()
+    public async Task ConfigurationViewModel_StartPassiveMonitoringCommand_NotNull()
     {
         // Arrange
         await _viewModel.InitializationComplete;
@@ -558,7 +575,7 @@ public class ConnectViewModelTests
     }
 
     [Test]
-    public async Task ConnectViewModel_StopPassiveMonitoringCommand_NotNull()
+    public async Task ConfigurationViewModel_StopPassiveMonitoringCommand_NotNull()
     {
         // Arrange
         await _viewModel.InitializationComplete;
@@ -568,11 +585,11 @@ public class ConnectViewModelTests
     }
 
     [Test]
-    public async Task ConnectViewModel_ExecuteStartPassiveMonitoring_NoPortSelected_DoesNotStart()
+    public async Task ConfigurationViewModel_ExecuteStartPassiveMonitoring_NoPortSelected_DoesNotStart()
     {
         // Arrange
         await _viewModel.InitializationComplete;
-        _viewModel.SelectedConnectionTypeIndex = 2; // Passive mode
+        _viewModel.IsConnectToPDSelected = false; // Passive mode
         _viewModel.SelectedSerialPort = null;
         _viewModel.SelectedBaudRate = TestBaudRate;
 
@@ -590,11 +607,11 @@ public class ConnectViewModelTests
     }
 
     [Test]
-    public async Task ConnectViewModel_ExecuteStartPassiveMonitoring_WithPortSelected_CallsService()
+    public async Task ConfigurationViewModel_ExecuteStartPassiveMonitoring_WithPortSelected_CallsService()
     {
         // Arrange
         await _viewModel.InitializationComplete;
-        _viewModel.SelectedConnectionTypeIndex = 2; // Passive mode
+        _viewModel.IsConnectToPDSelected = false; // Passive mode
         SetupConnectionServiceWithPort(TestPortName, TestBaudRate);
         SelectTestSerialPortAndBaudRate();
 
@@ -612,7 +629,7 @@ public class ConnectViewModelTests
     }
 
     [Test]
-    public async Task ConnectViewModel_ExecuteStopPassiveMonitoring_CallsService()
+    public async Task ConfigurationViewModel_ExecuteStopPassiveMonitoring_CallsService()
     {
         // Arrange
         await _viewModel.InitializationComplete;

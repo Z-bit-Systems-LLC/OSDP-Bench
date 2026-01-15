@@ -7,31 +7,19 @@ using Wpf.Ui.Controls;
 namespace OSDPBench.Windows.Views.Pages;
 
 /// <summary>
-/// Interaction logic for ConnectPage.xaml
+/// Interaction logic for ConfigurationPage.xaml
 /// </summary>
-public partial class ConnectPage : INavigableView<ConnectViewModel>
+public partial class ConfigurationPage : INavigableView<ConfigurationViewModel>
 {
-    public ConnectPage(ConnectViewModel viewModel)
+    public ConfigurationPage(ConfigurationViewModel viewModel)
     {
         ViewModel = viewModel;
         DataContext = this;
 
         InitializeComponent();
-
-        // Set up loaded event to ensure proper initialization
-        Loaded += OnPageLoaded;
     }
 
-    public ConnectViewModel ViewModel { get; }
-
-    private void OnPageLoaded(object sender, RoutedEventArgs e)
-    {
-        // Ensure a default selection is set when a page is loaded
-        if (ViewModel.SelectedConnectionTypeIndex == -1)
-        {
-            ViewModel.SelectedConnectionTypeIndex = 0;
-        }
-    }
+    public ConfigurationViewModel ViewModel { get; }
 
     private void AddressNumberBox_OnTextChanged(object sender, TextChangedEventArgs e)
     {

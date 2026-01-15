@@ -7,16 +7,16 @@ using OSDPBench.Core.ViewModels.Pages;
 namespace OSDPBench.Core.Tests.ViewModels;
 
 /// <summary>
-/// Unit tests for ConnectViewModel button visibility logic.
+/// Unit tests for ConfigurationViewModel button visibility logic.
 /// Based on specifications in docs/ConnectionButtonBehavior.md
 /// </summary>
-[TestFixture(TestOf = typeof(ConnectViewModel))]
-public class ConnectViewModelButtonVisibilityTests
+[TestFixture(TestOf = typeof(ConfigurationViewModel))]
+public class ConfigurationViewModelButtonVisibilityTests
 {
     private Mock<IDialogService> _dialogServiceMock;
     private Mock<IDeviceManagementService> _deviceManagementServiceMock;
     private Mock<ISerialPortConnectionService> _serialPortConnectionServiceMock;
-    private ConnectViewModel _viewModel;
+    private ConfigurationViewModel _viewModel;
 
     [SetUp]
     public void Setup()
@@ -29,20 +29,21 @@ public class ConnectViewModelButtonVisibilityTests
         _serialPortConnectionServiceMock.Setup(x => x.FindAvailableSerialPorts())
             .ReturnsAsync([]);
 
-        _viewModel = new ConnectViewModel(
+        _viewModel = new ConfigurationViewModel(
             _dialogServiceMock.Object,
             _deviceManagementServiceMock.Object,
             _serialPortConnectionServiceMock.Object);
     }
 
-    #region Discover Mode Tests (SelectedConnectionTypeIndex = 0)
+    #region Discover Mode Tests (IsConnectToPDSelected=true, IsDiscoverModeSelected=true)
 
     [Test]
     public async Task DiscoverMode_Disconnected_ShowsCorrectButtons()
     {
         // Arrange
         await _viewModel.InitializationComplete;
-        _viewModel.SelectedConnectionTypeIndex = 0;
+        _viewModel.IsConnectToPDSelected = true;
+        _viewModel.IsDiscoverModeSelected = true;
         _viewModel.StatusLevel = StatusLevel.Disconnected;
 
         // Act & Assert
@@ -50,7 +51,7 @@ public class ConnectViewModelButtonVisibilityTests
         Assert.That(_viewModel.ConnectVisible, Is.False, "Connect button should be hidden");
         Assert.That(_viewModel.DisconnectVisible, Is.False, "Disconnect button should be hidden");
         Assert.That(_viewModel.CancelDiscoveryVisible, Is.False, "Cancel button should be hidden");
-        Assert.That(_viewModel.IsConnectionTypeEnabled, Is.True, "ConnectionTypeComboBox should be enabled");
+        Assert.That(_viewModel.IsConnectionTypeEnabled, Is.True, "Connection mode should be enabled");
     }
 
     [Test]
@@ -58,7 +59,8 @@ public class ConnectViewModelButtonVisibilityTests
     {
         // Arrange
         await _viewModel.InitializationComplete;
-        _viewModel.SelectedConnectionTypeIndex = 0;
+        _viewModel.IsConnectToPDSelected = true;
+        _viewModel.IsDiscoverModeSelected = true;
         _viewModel.StatusLevel = StatusLevel.Discovering;
 
         // Act & Assert
@@ -66,7 +68,7 @@ public class ConnectViewModelButtonVisibilityTests
         Assert.That(_viewModel.ConnectVisible, Is.False, "Connect button should be hidden");
         Assert.That(_viewModel.DisconnectVisible, Is.False, "Disconnect button should be hidden");
         Assert.That(_viewModel.CancelDiscoveryVisible, Is.True, "Cancel button should be visible");
-        Assert.That(_viewModel.IsConnectionTypeEnabled, Is.False, "ConnectionTypeComboBox should be disabled");
+        Assert.That(_viewModel.IsConnectionTypeEnabled, Is.False, "Connection mode should be disabled");
     }
 
     [Test]
@@ -74,7 +76,8 @@ public class ConnectViewModelButtonVisibilityTests
     {
         // Arrange - Bug #2 verification
         await _viewModel.InitializationComplete;
-        _viewModel.SelectedConnectionTypeIndex = 0;
+        _viewModel.IsConnectToPDSelected = true;
+        _viewModel.IsDiscoverModeSelected = true;
         _viewModel.StatusLevel = StatusLevel.Disconnected;
 
         // Act & Assert
@@ -82,7 +85,7 @@ public class ConnectViewModelButtonVisibilityTests
         Assert.That(_viewModel.ConnectVisible, Is.False, "Connect button should be hidden");
         Assert.That(_viewModel.DisconnectVisible, Is.False, "Disconnect button should be hidden (Bug #2 FIXED)");
         Assert.That(_viewModel.CancelDiscoveryVisible, Is.False, "Cancel button should be hidden");
-        Assert.That(_viewModel.IsConnectionTypeEnabled, Is.True, "ConnectionTypeComboBox should be enabled");
+        Assert.That(_viewModel.IsConnectionTypeEnabled, Is.True, "Connection mode should be enabled");
     }
 
     [Test]
@@ -90,7 +93,8 @@ public class ConnectViewModelButtonVisibilityTests
     {
         // Arrange - After successful discovery, before auto-connect
         await _viewModel.InitializationComplete;
-        _viewModel.SelectedConnectionTypeIndex = 0;
+        _viewModel.IsConnectToPDSelected = true;
+        _viewModel.IsDiscoverModeSelected = true;
         _viewModel.StatusLevel = StatusLevel.Discovered;
 
         // Act & Assert
@@ -98,7 +102,7 @@ public class ConnectViewModelButtonVisibilityTests
         Assert.That(_viewModel.ConnectVisible, Is.False, "Connect button should be hidden");
         Assert.That(_viewModel.DisconnectVisible, Is.True, "Disconnect button should be visible to allow cancellation");
         Assert.That(_viewModel.CancelDiscoveryVisible, Is.False, "Cancel button should be hidden");
-        Assert.That(_viewModel.IsConnectionTypeEnabled, Is.False, "ConnectionTypeComboBox should be disabled");
+        Assert.That(_viewModel.IsConnectionTypeEnabled, Is.False, "Connection mode should be disabled");
     }
 
     [Test]
@@ -106,7 +110,8 @@ public class ConnectViewModelButtonVisibilityTests
     {
         // Arrange - Bug #3 verification
         await _viewModel.InitializationComplete;
-        _viewModel.SelectedConnectionTypeIndex = 0;
+        _viewModel.IsConnectToPDSelected = true;
+        _viewModel.IsDiscoverModeSelected = true;
         _viewModel.StatusLevel = StatusLevel.Connecting;
 
         // Act & Assert
@@ -114,7 +119,7 @@ public class ConnectViewModelButtonVisibilityTests
         Assert.That(_viewModel.ConnectVisible, Is.False, "Connect button should be hidden");
         Assert.That(_viewModel.DisconnectVisible, Is.True, "Disconnect button should be visible (Bug #3 FIXED)");
         Assert.That(_viewModel.CancelDiscoveryVisible, Is.False, "Cancel button should be hidden");
-        Assert.That(_viewModel.IsConnectionTypeEnabled, Is.False, "ConnectionTypeComboBox should be disabled");
+        Assert.That(_viewModel.IsConnectionTypeEnabled, Is.False, "Connection mode should be disabled");
     }
 
     [Test]
@@ -122,7 +127,8 @@ public class ConnectViewModelButtonVisibilityTests
     {
         // Arrange
         await _viewModel.InitializationComplete;
-        _viewModel.SelectedConnectionTypeIndex = 0;
+        _viewModel.IsConnectToPDSelected = true;
+        _viewModel.IsDiscoverModeSelected = true;
         _viewModel.StatusLevel = StatusLevel.Connected;
 
         // Act & Assert
@@ -130,19 +136,20 @@ public class ConnectViewModelButtonVisibilityTests
         Assert.That(_viewModel.ConnectVisible, Is.False, "Connect button should be hidden");
         Assert.That(_viewModel.DisconnectVisible, Is.True, "Disconnect button should be visible");
         Assert.That(_viewModel.CancelDiscoveryVisible, Is.False, "Cancel button should be hidden");
-        Assert.That(_viewModel.IsConnectionTypeEnabled, Is.False, "ConnectionTypeComboBox should be disabled");
+        Assert.That(_viewModel.IsConnectionTypeEnabled, Is.False, "Connection mode should be disabled");
     }
 
     #endregion
 
-    #region Manual Mode Tests (SelectedConnectionTypeIndex = 1)
+    #region Manual Mode Tests (IsConnectToPDSelected=true, IsDiscoverModeSelected=false)
 
     [Test]
     public async Task ManualMode_Disconnected_ShowsCorrectButtons()
     {
         // Arrange
         await _viewModel.InitializationComplete;
-        _viewModel.SelectedConnectionTypeIndex = 1;
+        _viewModel.IsConnectToPDSelected = true;
+        _viewModel.IsDiscoverModeSelected = false;
         _viewModel.StatusLevel = StatusLevel.Disconnected;
 
         // Act & Assert
@@ -150,7 +157,7 @@ public class ConnectViewModelButtonVisibilityTests
         Assert.That(_viewModel.ConnectVisible, Is.True, "Connect button should be visible");
         Assert.That(_viewModel.DisconnectVisible, Is.False, "Disconnect button should be hidden");
         Assert.That(_viewModel.CancelDiscoveryVisible, Is.False, "Cancel button should be hidden");
-        Assert.That(_viewModel.IsConnectionTypeEnabled, Is.True, "ConnectionTypeComboBox should be enabled");
+        Assert.That(_viewModel.IsConnectionTypeEnabled, Is.True, "Connection mode should be enabled");
     }
 
     [Test]
@@ -158,7 +165,8 @@ public class ConnectViewModelButtonVisibilityTests
     {
         // Arrange - Bug #3 verification
         await _viewModel.InitializationComplete;
-        _viewModel.SelectedConnectionTypeIndex = 1;
+        _viewModel.IsConnectToPDSelected = true;
+        _viewModel.IsDiscoverModeSelected = false;
         _viewModel.StatusLevel = StatusLevel.ConnectingManually;
 
         // Act & Assert
@@ -166,7 +174,7 @@ public class ConnectViewModelButtonVisibilityTests
         Assert.That(_viewModel.ConnectVisible, Is.False, "Connect button should be hidden (Bug #3 FIXED)");
         Assert.That(_viewModel.DisconnectVisible, Is.True, "Disconnect button should be visible (Bug #3 FIXED)");
         Assert.That(_viewModel.CancelDiscoveryVisible, Is.False, "Cancel button should be hidden");
-        Assert.That(_viewModel.IsConnectionTypeEnabled, Is.False, "ConnectionTypeComboBox should be disabled");
+        Assert.That(_viewModel.IsConnectionTypeEnabled, Is.False, "Connection mode should be disabled");
     }
 
     [Test]
@@ -174,7 +182,8 @@ public class ConnectViewModelButtonVisibilityTests
     {
         // Arrange
         await _viewModel.InitializationComplete;
-        _viewModel.SelectedConnectionTypeIndex = 1;
+        _viewModel.IsConnectToPDSelected = true;
+        _viewModel.IsDiscoverModeSelected = false;
         _viewModel.StatusLevel = StatusLevel.Connected;
 
         // Act & Assert
@@ -182,7 +191,7 @@ public class ConnectViewModelButtonVisibilityTests
         Assert.That(_viewModel.ConnectVisible, Is.False, "Connect button should be hidden");
         Assert.That(_viewModel.DisconnectVisible, Is.True, "Disconnect button should be visible");
         Assert.That(_viewModel.CancelDiscoveryVisible, Is.False, "Cancel button should be hidden");
-        Assert.That(_viewModel.IsConnectionTypeEnabled, Is.False, "ConnectionTypeComboBox should be disabled");
+        Assert.That(_viewModel.IsConnectionTypeEnabled, Is.False, "Connection mode should be disabled");
     }
 
     #endregion
@@ -264,7 +273,8 @@ public class ConnectViewModelButtonVisibilityTests
     {
         // Arrange
         await _viewModel.InitializationComplete;
-        _viewModel.SelectedConnectionTypeIndex = 1;
+        _viewModel.IsConnectToPDSelected = true;
+        _viewModel.IsDiscoverModeSelected = false;
         _viewModel.StatusLevel = StatusLevel.Disconnected;
 
         bool connectVisibleChanged = false;
@@ -275,11 +285,11 @@ public class ConnectViewModelButtonVisibilityTests
 
         _viewModel.PropertyChanged += (_, args) =>
         {
-            if (args.PropertyName == nameof(ConnectViewModel.ConnectVisible)) connectVisibleChanged = true;
-            if (args.PropertyName == nameof(ConnectViewModel.DisconnectVisible)) disconnectVisibleChanged = true;
-            if (args.PropertyName == nameof(ConnectViewModel.StartDiscoveryVisible)) startDiscoveryVisibleChanged = true;
-            if (args.PropertyName == nameof(ConnectViewModel.CancelDiscoveryVisible)) cancelDiscoveryVisibleChanged = true;
-            if (args.PropertyName == nameof(ConnectViewModel.IsConnectionTypeEnabled)) isConnectionTypeEnabledChanged = true;
+            if (args.PropertyName == nameof(ConfigurationViewModel.ConnectVisible)) connectVisibleChanged = true;
+            if (args.PropertyName == nameof(ConfigurationViewModel.DisconnectVisible)) disconnectVisibleChanged = true;
+            if (args.PropertyName == nameof(ConfigurationViewModel.StartDiscoveryVisible)) startDiscoveryVisibleChanged = true;
+            if (args.PropertyName == nameof(ConfigurationViewModel.CancelDiscoveryVisible)) cancelDiscoveryVisibleChanged = true;
+            if (args.PropertyName == nameof(ConfigurationViewModel.IsConnectionTypeEnabled)) isConnectionTypeEnabledChanged = true;
         };
 
         // Act
@@ -294,11 +304,12 @@ public class ConnectViewModelButtonVisibilityTests
     }
 
     [Test]
-    public async Task SelectedConnectionTypeIndexChange_NotifiesButtonVisibilityProperties()
+    public async Task ConnectionModeChange_NotifiesButtonVisibilityProperties()
     {
         // Arrange
         await _viewModel.InitializationComplete;
-        _viewModel.SelectedConnectionTypeIndex = 0;
+        _viewModel.IsConnectToPDSelected = true;
+        _viewModel.IsDiscoverModeSelected = true;
         _viewModel.StatusLevel = StatusLevel.Disconnected;
 
         bool connectVisibleChanged = false;
@@ -306,12 +317,12 @@ public class ConnectViewModelButtonVisibilityTests
 
         _viewModel.PropertyChanged += (_, args) =>
         {
-            if (args.PropertyName == nameof(ConnectViewModel.ConnectVisible)) connectVisibleChanged = true;
-            if (args.PropertyName == nameof(ConnectViewModel.StartDiscoveryVisible)) startDiscoveryVisibleChanged = true;
+            if (args.PropertyName == nameof(ConfigurationViewModel.ConnectVisible)) connectVisibleChanged = true;
+            if (args.PropertyName == nameof(ConfigurationViewModel.StartDiscoveryVisible)) startDiscoveryVisibleChanged = true;
         };
 
-        // Act
-        _viewModel.SelectedConnectionTypeIndex = 1; // Switch from Discovery to Manual
+        // Act - Switch from Discovery to Manual mode
+        _viewModel.IsDiscoverModeSelected = false;
 
         // Assert
         Assert.That(connectVisibleChanged, Is.True, "ConnectVisible should notify change when mode changes");

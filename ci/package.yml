@@ -6,48 +6,27 @@ steps:
       version: '10.x'
 
   - task: DotNetCoreCLI@2
+    displayName: 'dotnet restore'
+    inputs:
+      command: 'restore'
+      projects: 'src/Core/Core.csproj'
+
+  - task: DotNetCoreCLI@2
+    displayName: 'dotnet build Core library'
+    inputs:
+      command: 'build'
+      projects: 'src/Core/Core.csproj'
+      arguments: '--configuration $(buildConfiguration) --no-restore'
+
+  - task: DotNetCoreCLI@2
     displayName: 'dotnet pack Core library'
     inputs:
       command: 'pack'
-      arguments: '--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)/nuget'
+      arguments: '--configuration $(buildConfiguration) --no-build --output $(Build.ArtifactStagingDirectory)/nuget'
       packagesToPack: 'src/Core/Core.csproj'
 
-  - task: DotNetCoreCLI@2
-    displayName: 'dotnet publish for win-x64'
-    inputs:
-      command: 'publish'
-      publishWebProjects: false
-      projects: 'src/UI/Windows/Windows.csproj'
-      arguments: >-
-        -r win-x64
-        --configuration $(buildConfiguration)
-        --self-contained true
-        -p:PublishSingleFile=true
-        -p:IncludeNativeLibrariesForSelfExtract=true
-        -p:EnableCompressionInSingleFile=true
-        --output $(Build.ArtifactStagingDirectory)/OSDPBench/win-x64
-      zipAfterPublish: false
-      modifyOutputPath: false
-
-  - task: DotNetCoreCLI@2
-    displayName: 'dotnet publish for win-arm64'
-    inputs:
-      command: 'publish'
-      publishWebProjects: false
-      projects: 'src/UI/Windows/Windows.csproj'
-      arguments: >-
-        -r win-arm64
-        --configuration $(buildConfiguration)
-        --self-contained true
-        -p:PublishSingleFile=true
-        -p:IncludeNativeLibrariesForSelfExtract=true
-        -p:EnableCompressionInSingleFile=true
-        --output $(Build.ArtifactStagingDirectory)/OSDPBench/win-arm64
-      zipAfterPublish: false
-      modifyOutputPath: false
-
   - task: PublishPipelineArtifact@1
-    displayName: 'Publish artifacts'
+    displayName: 'Publish NuGet package'
     inputs:
-      targetPath: '$(Build.ArtifactStagingDirectory)'
-      artifactName: Release
+      targetPath: '$(Build.ArtifactStagingDirectory)/nuget'
+      artifactName: NuGet

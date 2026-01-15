@@ -42,7 +42,7 @@ public class ApplicationHostService(IServiceProvider serviceProvider) : IHostedS
             )!;
             _navigationWindow.ShowWindow();
 
-            _navigationWindow.Navigate(typeof(Views.Pages.ConnectPage));
+            _navigationWindow.Navigate(typeof(Views.Pages.ConfigurationPage));
         }
 
         await Task.CompletedTask;

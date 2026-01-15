@@ -9,9 +9,9 @@ using OSDPBench.Core.Services;
 namespace OSDPBench.Core.ViewModels.Pages;
 
 /// <summary>
-/// ViewModel for the Connect page.
+/// ViewModel for the Configuration page.
 /// </summary>
-public partial class ConnectViewModel : ObservableObject, IDisposable
+public partial class ConfigurationViewModel : ObservableObject, IDisposable
 {
     // Default baud rates available for connection
     private static readonly IReadOnlyList<int> DefaultBaudRates = [9600, 19200, 38400, 57600, 115200, 230400];
@@ -35,9 +35,9 @@ public partial class ConnectViewModel : ObservableObject, IDisposable
     public Task InitializationComplete => _initializationComplete.Task;
 
     /// <summary>
-    /// ViewModel for the Connect page.
+    /// ViewModel for the Configuration page.
     /// </summary>
-    public ConnectViewModel(IDialogService dialogService, IDeviceManagementService deviceManagementService,
+    public ConfigurationViewModel(IDialogService dialogService, IDeviceManagementService deviceManagementService,
         ISerialPortConnectionService serialPortConnectionService, IUsbDeviceMonitorService? usbDeviceMonitorService = null)
     {
         _dialogService = dialogService ??
@@ -59,10 +59,7 @@ public partial class ConnectViewModel : ObservableObject, IDisposable
             _usbDeviceMonitorService.StartMonitoring();
         }
 
-        // Initialize connection types with localized strings
-        UpdateConnectionTypes();
-
-        // Subscribe to culture changes to update localized strings
+        // Subscribe to culture changes to update localized strings (for dynamic section title)
         Resources.Resources.PropertyChanged += OnResourcesPropertyChanged;
 
         // Perform an initial port scan
@@ -71,21 +68,8 @@ public partial class ConnectViewModel : ObservableObject, IDisposable
 
     private void OnResourcesPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
-        // When culture changes, update the connection types with new localized strings
-        UpdateConnectionTypes();
-    }
-
-    private void UpdateConnectionTypes()
-    {
-        int previousSelectedIndex = SelectedConnectionTypeIndex;
-
-        ConnectionTypes.Clear();
-        ConnectionTypes.Add(Resources.Resources.GetString("ConnectionType_Discover"));
-        ConnectionTypes.Add(Resources.Resources.GetString("ConnectionType_Manual"));
-        ConnectionTypes.Add(Resources.Resources.GetString("ConnectionType_PassiveMonitor"));
-
-        // Restore selection after update
-        SelectedConnectionTypeIndex = previousSelectedIndex;
+        // When culture changes, update the dynamic connection section title
+        OnPropertyChanged(nameof(ConnectionSectionTitle));
     }
 
     private void OnDeviceManagementServiceOnTraceEntryReceived(object? sender, TraceEntry traceEntry)
@@ -259,19 +243,41 @@ public partial class ConnectViewModel : ObservableObject, IDisposable
     [ObservableProperty] private string _usbStatusText = string.Empty;
 
     /// <summary>
-    /// Gets the available connection types (localized).
+    /// Gets or sets a value indicating whether Connect to PD mode is selected.
     /// </summary>
-    [ObservableProperty] private ObservableCollection<string> _connectionTypes = [];
+    [ObservableProperty] private bool _isConnectToPDSelected = true;
 
     /// <summary>
-    /// Gets or sets the selected connection type index (0 = Discovery, 1 = Manual, 2 = Passive Monitor).
+    /// Gets or sets a value indicating whether Discover mode is selected (within Connect to PD).
     /// </summary>
-    [ObservableProperty] private int _selectedConnectionTypeIndex;
+    [ObservableProperty] private bool _isDiscoverModeSelected = true;
 
     /// <summary>
     /// Gets a value indicating whether Passive Monitor mode is selected.
     /// </summary>
-    public bool IsPassiveMode => SelectedConnectionTypeIndex == 2;
+    public bool IsPassiveMode => !IsConnectToPDSelected;
+
+    /// <summary>
+    /// Gets a value indicating whether Manual mode settings should be visible.
+    /// </summary>
+    public bool IsManualModeVisible => IsConnectToPDSelected && !IsDiscoverModeSelected;
+
+    /// <summary>
+    /// Gets a value indicating whether Discover mode settings should be visible.
+    /// </summary>
+    public bool IsDiscoverModeVisible => IsConnectToPDSelected && IsDiscoverModeSelected;
+
+    /// <summary>
+    /// Gets a value indicating whether connection settings should be visible (Manual or Passive mode).
+    /// </summary>
+    public bool ShowConnectionSettings => !IsDiscoverModeVisible;
+
+    /// <summary>
+    /// Gets the dynamic section title based on the selected connection mode.
+    /// </summary>
+    public string ConnectionSectionTitle => IsConnectToPDSelected
+        ? Resources.Resources.GetString("Connect_ConnectToPD")
+        : Resources.Resources.GetString("ConnectionType_PassiveMonitor");
 
     /// <summary>
     /// Gets a value indicating whether the Connect button should be visible.
@@ -315,7 +321,14 @@ public partial class ConnectViewModel : ObservableObject, IDisposable
         NotifyButtonVisibilityChanged();
     }
 
-    partial void OnSelectedConnectionTypeIndexChanged(int value)
+    partial void OnIsConnectToPDSelectedChanged(bool value)
+    {
+        _ = value; // Intentionally unused - only triggering dependent property notification
+        NotifyButtonVisibilityChanged();
+        OnPropertyChanged(nameof(ConnectionSectionTitle));
+    }
+
+    partial void OnIsDiscoverModeSelectedChanged(bool value)
     {
         _ = value; // Intentionally unused - only triggering dependent property notification
         NotifyButtonVisibilityChanged();
@@ -656,7 +669,7 @@ public partial class ConnectViewModel : ObservableObject, IDisposable
                           StatusLevel == StatusLevel.Connecting ||
                           StatusLevel == StatusLevel.ConnectingManually;
 
-        return SelectedConnectionTypeIndex == 1 && !isConnected;
+        return IsConnectToPDSelected && !IsDiscoverModeSelected && !isConnected;
     }
 
     private bool CalculateDisconnectVisibility()
@@ -684,7 +697,7 @@ public partial class ConnectViewModel : ObservableObject, IDisposable
                                        StatusLevel == StatusLevel.Connecting ||
                                        StatusLevel == StatusLevel.ConnectingManually;
 
-        return SelectedConnectionTypeIndex == 0 &&
+        return IsConnectToPDSelected && IsDiscoverModeSelected &&
                StatusLevel is not StatusLevel.Discovering and not StatusLevel.Discovered &&
                !isConnectedOrConnecting;
     }
@@ -692,7 +705,7 @@ public partial class ConnectViewModel : ObservableObject, IDisposable
     private bool CalculateCancelDiscoveryVisibility()
     {
         // Show Cancel button only when actively discovering
-        return SelectedConnectionTypeIndex == 0 && StatusLevel == StatusLevel.Discovering;
+        return IsConnectToPDSelected && IsDiscoverModeSelected && StatusLevel == StatusLevel.Discovering;
     }
 
     private bool CalculateConnectionTypeEnabled()
@@ -709,7 +722,7 @@ public partial class ConnectViewModel : ObservableObject, IDisposable
     private bool CalculateStartPassiveMonitoringVisibility()
     {
         // Show Start Passive Monitoring when in Passive mode and not actively monitoring
-        return SelectedConnectionTypeIndex == 2 && StatusLevel != StatusLevel.PassiveMonitoring;
+        return !IsConnectToPDSelected && StatusLevel != StatusLevel.PassiveMonitoring;
     }
 
     private bool CalculateStopPassiveMonitoringVisibility()
@@ -720,7 +733,7 @@ public partial class ConnectViewModel : ObservableObject, IDisposable
 
     /// <summary>
     /// Notifies UI that button visibility properties may have changed.
-    /// Should be called whenever StatusLevel or SelectedConnectionTypeIndex changes.
+    /// Should be called whenever StatusLevel or connection mode selection changes.
     /// </summary>
     private void NotifyButtonVisibilityChanged()
     {
@@ -732,6 +745,9 @@ public partial class ConnectViewModel : ObservableObject, IDisposable
         OnPropertyChanged(nameof(StopPassiveMonitoringVisible));
         OnPropertyChanged(nameof(IsConnectionTypeEnabled));
         OnPropertyChanged(nameof(IsPassiveMode));
+        OnPropertyChanged(nameof(IsManualModeVisible));
+        OnPropertyChanged(nameof(IsDiscoverModeVisible));
+        OnPropertyChanged(nameof(ShowConnectionSettings));
     }
 
     #endregion

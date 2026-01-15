@@ -1,22 +1,22 @@
-﻿<Page x:Class="OSDPBench.Windows.Views.Pages.ConnectPage"
+﻿<Page x:Class="OSDPBench.Windows.Views.Pages.ConfigurationPage"
 	  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 	  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-	  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+	  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	  xmlns:pages="clr-namespace:OSDPBench.Windows.Views.Pages"
 	  xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
 	  xmlns:converters="clr-namespace:OSDPBench.Windows.Converters"
 	  xmlns:markup="clr-namespace:OSDPBench.Windows.Markup"
-	  mc:Ignorable="d" 
-	  d:DataContext="{d:DesignInstance pages:ConnectPage,
+	  mc:Ignorable="d"
+	  d:DataContext="{d:DesignInstance pages:ConfigurationPage,
 									 IsDesignTimeCreatable=False}"
 	  d:DesignHeight="450" d:DesignWidth="800"
 	  Title="{markup:Localize Page_Connect}">
 
     <Page.Resources>
         <converters:StatusLevelConverter x:Key="StatusLevelConverter" />
-        <converters:IndexToVisibilityConverter x:Key="IndexToVisibilityConverter" />
         <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+        <converters:InverseBoolConverter x:Key="InverseBoolConverter" />
     </Page.Resources>
 
     <StackPanel Style="{StaticResource Page.Container}">
@@ -29,33 +29,54 @@
                               Text="{markup:Localize Connect_SerialPortSelection}"
                               TextWrapping="Wrap"
                               Margin="0,0,0,10"/>
-                <StackPanel Orientation="Vertical">
-                    <Label Content="{markup:Localize Connect_SerialPort}"
-                           Style="{StaticResource Label.Standard}"
-                           Target="{Binding ElementName=SerialPortComboBox}" />
-                    <DockPanel>
-                        <ComboBox x:Name="SerialPortComboBox"
-                                  Style="{StaticResource ComboBox.Standard}"
-                                  ItemsSource="{Binding ViewModel.AvailableSerialPorts }"
-                                  DisplayMemberPath="Name"
-                                  SelectedItem="{Binding ViewModel.SelectedSerialPort}"
-                                  MinWidth="200"
-                                  MaxWidth="400"/>
-                        <TextBlock Text="{Binding ViewModel.UsbStatusText}"
-                                   VerticalAlignment="Center"
-                           Margin="10,0,0,0">
-                    <TextBlock.Style>
-                        <Style TargetType="TextBlock" BasedOn="{StaticResource Text.Caption}">
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding Text, RelativeSource={RelativeSource Self}}" Value="">
-                                    <Setter Property="Visibility" Value="Collapsed" />
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </TextBlock.Style>
-                </TextBlock>
-                    </DockPanel>
-                </StackPanel>
+                <WrapPanel Orientation="Horizontal">
+                    <!-- Serial Port Selection -->
+                    <StackPanel Orientation="Vertical" Margin="0,0,24,0">
+                        <Label Content="{markup:Localize Connect_SerialPort}"
+                               Style="{StaticResource Label.Standard}"
+                               Target="{Binding ElementName=SerialPortComboBox}" />
+                        <StackPanel Orientation="Horizontal">
+                            <ComboBox x:Name="SerialPortComboBox"
+                                      Style="{StaticResource ComboBox.Standard}"
+                                      ItemsSource="{Binding ViewModel.AvailableSerialPorts }"
+                                      DisplayMemberPath="Name"
+                                      SelectedItem="{Binding ViewModel.SelectedSerialPort}"
+                                      MinWidth="200"
+                                      MaxWidth="400"/>
+                            <TextBlock Text="{Binding ViewModel.UsbStatusText}"
+                                       VerticalAlignment="Center"
+                                       Margin="10,0,0,0">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock" BasedOn="{StaticResource Text.Caption}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding Text, RelativeSource={RelativeSource Self}}" Value="">
+                                                <Setter Property="Visibility" Value="Collapsed" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                        </StackPanel>
+                    </StackPanel>
+
+                    <!-- Connection Mode Selection -->
+                    <StackPanel Orientation="Vertical">
+                        <Label Content=" " Style="{StaticResource Label.Standard}" />
+                        <StackPanel Orientation="Horizontal">
+                            <RadioButton Content="{markup:Localize ConnectionMode_ConnectToPD}"
+                                         IsChecked="{Binding ViewModel.IsConnectToPDSelected, Mode=TwoWay}"
+                                         IsEnabled="{Binding ViewModel.IsConnectionTypeEnabled}"
+                                         GroupName="ConnectionMode"
+                                         Margin="0,0,16,0"
+                                         VerticalAlignment="Center"/>
+                            <RadioButton Content="{markup:Localize ConnectionType_PassiveMonitor}"
+                                         IsChecked="{Binding ViewModel.IsConnectToPDSelected, Mode=OneWay, Converter={StaticResource InverseBoolConverter}}"
+                                         IsEnabled="{Binding ViewModel.IsConnectionTypeEnabled}"
+                                         GroupName="ConnectionMode"
+                                         VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </StackPanel>
+                </WrapPanel>
             </StackPanel>
         </Border>
         <Border Style="{StaticResource Card.Bordered}">
@@ -71,10 +92,10 @@
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
                     
-                    <!-- Title always in top-left -->
+                    <!-- Title always in top-left - dynamically updates based on selected mode -->
                     <ui:TextBlock Grid.Row="0" Grid.Column="0"
-                                  Style="{StaticResource Text.Subtitle}" 
-                                  Text="{markup:Localize Connect_ConnectToPD}"
+                                  Style="{StaticResource Text.Subtitle}"
+                                  Text="{Binding ViewModel.ConnectionSectionTitle}"
                                   TextWrapping="Wrap"
                                   VerticalAlignment="Center"
                                   Margin="0,0,20,10"/>
@@ -141,20 +162,31 @@
                             </ui:Button.Visibility>
                         </ui:Button>
 
-                        <ComboBox Name="ConnectionTypeComboBox"
-                                  ItemsSource="{Binding ViewModel.ConnectionTypes}"
-                                  SelectedIndex="{Binding ViewModel.SelectedConnectionTypeIndex, Mode=TwoWay}"
-                                  IsEnabled="{Binding ViewModel.IsConnectionTypeEnabled}"/>
                         </StackPanel>
+
+                    <!-- Discover/Manual sub-options (only shown when Connect to PD is selected) -->
+                    <StackPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
+                                Orientation="Horizontal" Margin="0,8,0,0"
+                                Visibility="{Binding ViewModel.IsConnectToPDSelected, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <RadioButton Content="{markup:Localize ConnectionType_Discover}"
+                                     IsChecked="{Binding ViewModel.IsDiscoverModeSelected, Mode=TwoWay}"
+                                     IsEnabled="{Binding ViewModel.IsConnectionTypeEnabled}"
+                                     GroupName="ConnectSubMode"
+                                     Margin="0,0,16,0"/>
+                        <RadioButton Content="{markup:Localize ConnectionType_Manual}"
+                                     IsChecked="{Binding ViewModel.IsDiscoverModeSelected, Mode=OneWay, Converter={StaticResource InverseBoolConverter}}"
+                                     IsEnabled="{Binding ViewModel.IsConnectionTypeEnabled}"
+                                     GroupName="ConnectSubMode"/>
+                    </StackPanel>
                 </Grid>
-                
+
                 <!-- Discovery Warning (only shown when Discovery mode is selected) -->
                 <ui:TextBlock Style="{StaticResource Text.Body}"
 					  Margin="10 5"
 					  HorizontalAlignment="Center"
 					  Text="{markup:Localize Connect_DiscoveryWarning}"
 					  TextWrapping="Wrap"
-					  Visibility="{Binding ElementName=ConnectionTypeComboBox, Path=SelectedIndex, Converter={StaticResource IndexToVisibilityConverter}, ConverterParameter=0, Mode=OneWay}"/>
+					  Visibility="{Binding ViewModel.IsDiscoverModeVisible, Converter={StaticResource BooleanToVisibilityConverter}}"/>
 
                 <!-- Passive Monitor Info (only shown when Passive Monitor mode is selected) -->
                 <ui:TextBlock Style="{StaticResource Text.Body}"
@@ -162,11 +194,11 @@
 					  HorizontalAlignment="Center"
 					  Text="{markup:Localize Connect_PassiveMonitorInfo}"
 					  TextWrapping="Wrap"
-					  Visibility="{Binding ElementName=ConnectionTypeComboBox, Path=SelectedIndex, Converter={StaticResource IndexToVisibilityConverter}, ConverterParameter=2, Mode=OneWay}"/>
+					  Visibility="{Binding ViewModel.IsPassiveMode, Converter={StaticResource BooleanToVisibilityConverter}}"/>
 
                 <ScrollViewer VerticalScrollBarVisibility="Auto"
                              HorizontalScrollBarVisibility="Disabled"
-                             Visibility="{Binding ElementName=ConnectionTypeComboBox, Path=SelectedIndex, Converter={StaticResource IndexToVisibilityConverter}, ConverterParameter=1|2, Mode=OneWay}">
+                             Visibility="{Binding ViewModel.ShowConnectionSettings, Converter={StaticResource BooleanToVisibilityConverter}}">
                 <StackPanel Orientation="Vertical"
                            Margin="0,0,16,0">
                     
@@ -189,7 +221,7 @@
                             
                             <!-- Address field - only visible in Manual mode (not in Passive Monitor) -->
                             <StackPanel Orientation="Vertical"
-                                        Visibility="{Binding ElementName=ConnectionTypeComboBox, Path=SelectedIndex, Converter={StaticResource IndexToVisibilityConverter}, ConverterParameter=1, Mode=OneWay}">
+                                        Visibility="{Binding ViewModel.IsManualModeVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
                                 <Label Content="{markup:Localize Connect_Address}"
                                        Style="{StaticResource Label.Standard}"
                                        Target="{Binding ElementName=AddressNumberBox}" />
@@ -210,7 +242,7 @@
                     <Border Style="{StaticResource Card.Bordered}"
                             Padding="16"
                             Margin="0,0,0,16"
-                            Visibility="{Binding ElementName=ConnectionTypeComboBox, Path=SelectedIndex, Converter={StaticResource IndexToVisibilityConverter}, ConverterParameter=1, Mode=OneWay}">
+                            Visibility="{Binding ViewModel.IsManualModeVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
                         <StackPanel Orientation="Vertical">
                             <ui:TextBlock Style="{StaticResource Section.Header}"
                                           Text="{markup:Localize Connect_SecuritySettings}"/>
@@ -259,7 +291,7 @@
                     <Border Style="{StaticResource Card.Bordered}"
                             Padding="16"
                             Margin="0,0,0,16"
-                            Visibility="{Binding ElementName=ConnectionTypeComboBox, Path=SelectedIndex, Converter={StaticResource IndexToVisibilityConverter}, ConverterParameter=2, Mode=OneWay}">
+                            Visibility="{Binding ViewModel.IsPassiveMode, Converter={StaticResource BooleanToVisibilityConverter}}">
                         <StackPanel Orientation="Vertical">
                             <ui:TextBlock Style="{StaticResource Section.Header}"
                                           Text="{markup:Localize Connect_DecryptionSettings}"/>

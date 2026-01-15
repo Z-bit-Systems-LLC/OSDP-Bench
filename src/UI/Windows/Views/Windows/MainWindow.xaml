@@ -25,7 +25,7 @@
                            IsBackButtonVisible="Collapsed"
                            PaneDisplayMode="LeftFluent" >
             <ui:NavigationView.MenuItems>
-                <ui:NavigationViewItem Content="{markup:Localize Navigation_ConnectToPD}" TargetPageType="{x:Type pages:ConnectPage}" NavigationCacheMode="Required">
+                <ui:NavigationViewItem Content="{markup:Localize Navigation_ConnectToPD}" TargetPageType="{x:Type pages:ConfigurationPage}" NavigationCacheMode="Required">
                     <ui:NavigationViewItem.Icon>
                         <ui:SymbolIcon Symbol="Connector24" />
                     </ui:NavigationViewItem.Icon>

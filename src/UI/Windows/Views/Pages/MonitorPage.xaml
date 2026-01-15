@@ -166,15 +166,42 @@
 							</Grid>
 						</StackPanel>
 					</Border>
-					<DataGrid ItemsSource="{Binding ViewModel.TraceEntriesView}" 
-					          AutoGenerateColumns="False" 
-					          CanUserAddRows="False" 
-					          IsReadOnly="True" 
-					          Margin="10 5" 
-					          RowDetailsVisibilityMode="Collapsed">
+					<DataGrid x:Name="TraceDataGrid"
+					          ItemsSource="{Binding ViewModel.TraceEntriesView}"
+					          AutoGenerateColumns="False"
+					          CanUserAddRows="False"
+					          IsReadOnly="True"
+					          Margin="10 5"
+					          RowDetailsVisibilityMode="Collapsed"
+					          PreviewMouseLeftButtonUp="DataGrid_PreviewMouseLeftButtonUp"
+					          Cursor="Hand">
 
 					<!-- DataGrid Columns -->
 					<DataGrid.Columns>
+						<!-- Expand Button Column -->
+						<DataGridTemplateColumn Header="" Width="40">
+							<DataGridTemplateColumn.CellTemplate>
+								<DataTemplate>
+									<Grid HorizontalAlignment="Left">
+										<ui:Button Appearance="Transparent"
+										           BorderThickness="0"
+										           Padding="0"
+										           ToolTip="{markup:Localize Monitor_Expand}"
+										           DataContext="{Binding Details}"
+										           Margin="5,0,0,0"
+										           Width="24"
+										           Height="24"
+										           Cursor="Hand"
+										           Click="ToggleRowDetails">
+											<ui:Button.Icon>
+												<ui:SymbolIcon Symbol="ChevronDown24"/>
+											</ui:Button.Icon>
+										</ui:Button>
+									</Grid>
+								</DataTemplate>
+							</DataGridTemplateColumn.CellTemplate>
+						</DataGridTemplateColumn>
+
 						<DataGridTextColumn Header="{markup:Localize Monitor_TimeStamp}" Binding="{Binding LocalTimestamp, StringFormat={}{0:HH:mm:ss.fff}}" />
 						<DataGridTextColumn Header="{markup:Localize Monitor_Interval}" Binding="{Binding Interval.TotalMilliseconds, StringFormat={}{0:N0}}" />
 						<DataGridTextColumn Header="{markup:Localize Monitor_Direction}" Binding="{Binding Direction}" />
@@ -186,25 +213,17 @@
 							<DataGridTemplateColumn.CellTemplate>
 								<DataTemplate>
 									<Grid>
-										<!-- Clear Text (Red) - not using secure channel -->
-										<Border Background="{DynamicResource SemanticErrorBrush}"
-										        CornerRadius="3"
-										        Padding="6,2"
-										        HorizontalAlignment="Left"
+										<!-- Clear Text (Red outlined) - not using secure channel -->
+										<Border Style="{StaticResource Badge.Error.Outlined.Small}"
 										        Visibility="{Binding IsSecureMessage, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=Invert}">
 											<TextBlock Text="{markup:Localize Monitor_ClearText}"
-											           Foreground="White"
-											           FontWeight="SemiBold"
-											           FontSize="10"/>
+											           Style="{StaticResource Badge.Text.Error.Small}"/>
 										</Border>
 
-										<!-- Encrypted with Default Key (Red) -->
-										<Border Background="{DynamicResource SemanticErrorBrush}"
-										        CornerRadius="3"
-										        Padding="6,2"
-										        HorizontalAlignment="Left">
+										<!-- Encrypted with Default Key (Red outlined) -->
+										<Border>
 											<Border.Style>
-												<Style TargetType="Border">
+												<Style TargetType="Border" BasedOn="{StaticResource Badge.Error.Outlined.Small}">
 													<Setter Property="Visibility" Value="Collapsed"/>
 													<Style.Triggers>
 														<MultiDataTrigger>
@@ -218,18 +237,13 @@
 												</Style>
 											</Border.Style>
 											<TextBlock Text="{markup:Localize Monitor_EncryptedDefaultKey}"
-											           Foreground="White"
-											           FontWeight="SemiBold"
-											           FontSize="10"/>
+											           Style="{StaticResource Badge.Text.Error.Small}"/>
 										</Border>
 
 										<!-- No Decryption (Orange) - secure but couldn't decrypt -->
-										<Border Background="{DynamicResource SemanticWarningBrush}"
-										        CornerRadius="3"
-										        Padding="6,2"
-										        HorizontalAlignment="Left">
+										<Border>
 											<Border.Style>
-												<Style TargetType="Border">
+												<Style TargetType="Border" BasedOn="{StaticResource Badge.Warning.Small}">
 													<Setter Property="Visibility" Value="Collapsed"/>
 													<Style.Triggers>
 														<MultiDataTrigger>
@@ -244,18 +258,13 @@
 												</Style>
 											</Border.Style>
 											<TextBlock Text="{markup:Localize Monitor_NoDecryption}"
-											           Foreground="White"
-											           FontWeight="SemiBold"
-											           FontSize="10"/>
+											           Style="{StaticResource Badge.Text.Small}"/>
 										</Border>
 
 										<!-- Encrypted (Green) - secure with custom key and decrypted -->
-										<Border Background="{DynamicResource SemanticSuccessBrush}"
-										        CornerRadius="3"
-										        Padding="6,2"
-										        HorizontalAlignment="Left">
+										<Border>
 											<Border.Style>
-												<Style TargetType="Border">
+												<Style TargetType="Border" BasedOn="{StaticResource Badge.Success.Small}">
 													<Setter Property="Visibility" Value="Collapsed"/>
 													<Style.Triggers>
 														<MultiDataTrigger>
@@ -270,34 +279,8 @@
 												</Style>
 											</Border.Style>
 											<TextBlock Text="{markup:Localize Monitor_Encrypted}"
-											           Foreground="White"
-											           FontWeight="SemiBold"
-											           FontSize="10"/>
+											           Style="{StaticResource Badge.Text.Small}"/>
 										</Border>
-									</Grid>
-								</DataTemplate>
-							</DataGridTemplateColumn.CellTemplate>
-						</DataGridTemplateColumn>
-		        
-						<!-- Button Column -->
-						<DataGridTemplateColumn Header="" Width="50">
-							<DataGridTemplateColumn.CellTemplate>
-								<DataTemplate>
-									<Grid HorizontalAlignment="Right">
-										<ui:Button Appearance="Transparent"
-										           BorderThickness="0"
-										           Padding="0"
-										           ToolTip="{markup:Localize Monitor_Expand}"
-										           DataContext="{Binding Details}"
-										           Margin="0,0,5,0"
-										           Width="24"
-										           Height="24"
-										           Cursor="Hand"
-										           Click="ToggleRowDetails">
-											<ui:Button.Icon>
-												<ui:SymbolIcon Symbol="ChevronDown24"/>
-											</ui:Button.Icon>
-										</ui:Button>
 									</Grid>
 								</DataTemplate>
 							</DataGridTemplateColumn.CellTemplate>
@@ -307,12 +290,14 @@
 					<!-- RowDetailsTemplate -->
 					<DataGrid.RowDetailsTemplate>
 						<DataTemplate DataType="{x:Type models:PacketTraceEntry}">
-							<TextBlock Text="{Binding Details}"
-							           Style="{StaticResource Text.Body}"
-							           FontFamily="Consolas"
-							           Margin="10" />
+							<TextBox Text="{Binding Details, Mode=OneWay}"
+							         IsReadOnly="True"
+							         BorderThickness="0"
+							         Background="Transparent"
+							         FontFamily="Consolas"
+							         Margin="10" />
 						</DataTemplate>
-						</DataGrid.RowDetailsTemplate>
+					</DataGrid.RowDetailsTemplate>
 					</DataGrid>
 				</StackPanel>
 			</Border>

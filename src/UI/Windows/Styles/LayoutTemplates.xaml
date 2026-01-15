@@ -77,14 +77,10 @@
                         </TextBlock>
 
                         <!-- Security Status Badges -->
-                        <!-- Clear Text (Red) - shown when connected and not using secure channel -->
-                        <Border Background="{DynamicResource SemanticErrorBrush}"
-                                CornerRadius="4"
-                                Padding="8,4"
-                                Margin="0,0,16,0"
-                                VerticalAlignment="Center">
+                        <!-- Clear Text (Red outlined) - shown when connected and not using secure channel -->
+                        <Border Margin="0,0,16,0">
                             <Border.Style>
-                                <Style TargetType="Border">
+                                <Style TargetType="Border" BasedOn="{StaticResource Badge.Error.Outlined}">
                                     <Setter Property="Visibility" Value="Collapsed"/>
                                     <Style.Triggers>
                                         <MultiDataTrigger>
@@ -98,19 +94,13 @@
                                 </Style>
                             </Border.Style>
                             <TextBlock Text="{markup:Localize Monitor_ClearText}"
-                                       Foreground="White"
-                                       FontWeight="SemiBold"
-                                       FontSize="11"/>
+                                       Style="{StaticResource Badge.Text.Error}"/>
                         </Border>
 
-                        <!-- Encrypted - Default Key (Red) - shown when connected with secure channel using default key -->
-                        <Border Background="{DynamicResource SemanticErrorBrush}"
-                                CornerRadius="4"
-                                Padding="8,4"
-                                Margin="0,0,16,0"
-                                VerticalAlignment="Center">
+                        <!-- Encrypted - Default Key (Red outlined) - shown when connected with secure channel using default key -->
+                        <Border Margin="0,0,16,0">
                             <Border.Style>
-                                <Style TargetType="Border">
+                                <Style TargetType="Border" BasedOn="{StaticResource Badge.Error.Outlined}">
                                     <Setter Property="Visibility" Value="Collapsed"/>
                                     <Style.Triggers>
                                         <MultiDataTrigger>
@@ -125,19 +115,13 @@
                                 </Style>
                             </Border.Style>
                             <TextBlock Text="{markup:Localize Monitor_EncryptedDefaultKey}"
-                                       Foreground="White"
-                                       FontWeight="SemiBold"
-                                       FontSize="11"/>
+                                       Style="{StaticResource Badge.Text.Error}"/>
                         </Border>
 
                         <!-- Encrypted (Green) - shown when connected with secure channel using custom key -->
-                        <Border Background="{DynamicResource SemanticSuccessBrush}"
-                                CornerRadius="4"
-                                Padding="8,4"
-                                Margin="0,0,16,0"
-                                VerticalAlignment="Center">
+                        <Border Margin="0,0,16,0">
                             <Border.Style>
-                                <Style TargetType="Border">
+                                <Style TargetType="Border" BasedOn="{StaticResource Badge.Success}">
                                     <Setter Property="Visibility" Value="Collapsed"/>
                                     <Style.Triggers>
                                         <MultiDataTrigger>
@@ -152,63 +136,23 @@
                                 </Style>
                             </Border.Style>
                             <TextBlock Text="{markup:Localize Monitor_Encrypted}"
-                                       Foreground="White"
-                                       FontWeight="SemiBold"
-                                       FontSize="11"/>
+                                       Style="{StaticResource Badge.Text}"/>
                         </Border>
 
-                        <!-- Default Key (Red) - shown when passive monitoring with default key decryption -->
-                        <Border Background="{DynamicResource SemanticErrorBrush}"
-                                CornerRadius="4"
-                                Padding="8,4"
-                                Margin="0,0,16,0"
-                                VerticalAlignment="Center">
+                        <!-- Monitor (Blue) - shown when in passive monitoring mode -->
+                        <Border Margin="0,0,16,0">
                             <Border.Style>
-                                <Style TargetType="Border">
+                                <Style TargetType="Border" BasedOn="{StaticResource Badge.Info}">
                                     <Setter Property="Visibility" Value="Collapsed"/>
                                     <Style.Triggers>
-                                        <MultiDataTrigger>
-                                            <MultiDataTrigger.Conditions>
-                                                <Condition Binding="{Binding Path=ViewModel.StatusLevel}" Value="PassiveMonitoring"/>
-                                                <Condition Binding="{Binding Path=ViewModel.UsingSecureChannel}" Value="True"/>
-                                                <Condition Binding="{Binding Path=ViewModel.UsesDefaultSecurityKey}" Value="True"/>
-                                            </MultiDataTrigger.Conditions>
+                                        <DataTrigger Binding="{Binding Path=ViewModel.StatusLevel}" Value="PassiveMonitoring">
                                             <Setter Property="Visibility" Value="Visible"/>
-                                        </MultiDataTrigger>
+                                        </DataTrigger>
                                     </Style.Triggers>
                                 </Style>
                             </Border.Style>
-                            <TextBlock Text="{markup:Localize Monitor_DefaultKey}"
-                                       Foreground="White"
-                                       FontWeight="SemiBold"
-                                       FontSize="11"/>
-                        </Border>
-
-                        <!-- Custom Key (Green) - shown when passive monitoring with custom key decryption -->
-                        <Border Background="{DynamicResource SemanticSuccessBrush}"
-                                CornerRadius="4"
-                                Padding="8,4"
-                                Margin="0,0,16,0"
-                                VerticalAlignment="Center">
-                            <Border.Style>
-                                <Style TargetType="Border">
-                                    <Setter Property="Visibility" Value="Collapsed"/>
-                                    <Style.Triggers>
-                                        <MultiDataTrigger>
-                                            <MultiDataTrigger.Conditions>
-                                                <Condition Binding="{Binding Path=ViewModel.StatusLevel}" Value="PassiveMonitoring"/>
-                                                <Condition Binding="{Binding Path=ViewModel.UsingSecureChannel}" Value="True"/>
-                                                <Condition Binding="{Binding Path=ViewModel.UsesDefaultSecurityKey}" Value="False"/>
-                                            </MultiDataTrigger.Conditions>
-                                            <Setter Property="Visibility" Value="Visible"/>
-                                        </MultiDataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Border.Style>
-                            <TextBlock Text="{markup:Localize Monitor_CustomKey}"
-                                       Foreground="White"
-                                       FontWeight="SemiBold"
-                                       FontSize="11"/>
+                            <TextBlock Text="{markup:Localize Monitor_PassiveMonitoring}"
+                                       Style="{StaticResource Badge.Text}"/>
                         </Border>
 
                         <!-- TX Activity Indicator -->

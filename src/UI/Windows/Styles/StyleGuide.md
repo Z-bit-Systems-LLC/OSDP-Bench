@@ -88,6 +88,48 @@ Reusable styles for UI components.
 <ui:Button Style="{StaticResource Button.Transparent}" Content="Browse"/>
 ```
 
+#### Badges
+Status badges for displaying security states and status indicators.
+
+```xml
+<!-- Filled badges (white text on colored background) -->
+<Border Style="{StaticResource Badge.Success}">
+    <TextBlock Text="Encrypted" Style="{StaticResource Badge.Text}"/>
+</Border>
+
+<Border Style="{StaticResource Badge.Info}">
+    <TextBlock Text="Monitor" Style="{StaticResource Badge.Text}"/>
+</Border>
+
+<Border Style="{StaticResource Badge.Warning}">
+    <TextBlock Text="No Decryption" Style="{StaticResource Badge.Text}"/>
+</Border>
+
+<!-- Outlined badges (colored border/text on light background - better readability) -->
+<Border Style="{StaticResource Badge.Error.Outlined}">
+    <TextBlock Text="Clear Text" Style="{StaticResource Badge.Text.Error}"/>
+</Border>
+
+<!-- Small variants for data grids -->
+<Border Style="{StaticResource Badge.Success.Small}">
+    <TextBlock Text="Encrypted" Style="{StaticResource Badge.Text.Small}"/>
+</Border>
+
+<Border Style="{StaticResource Badge.Error.Outlined.Small}">
+    <TextBlock Text="Clear Text" Style="{StaticResource Badge.Text.Error.Small}"/>
+</Border>
+```
+
+**Badge Styles:**
+- `Badge.Success` / `Badge.Success.Small` - Green filled (secure/positive states)
+- `Badge.Info` / `Badge.Info.Small` - Blue filled (informational states)
+- `Badge.Warning` / `Badge.Warning.Small` - Orange filled (warning states)
+- `Badge.Error.Outlined` / `Badge.Error.Outlined.Small` - Red outlined (error/insecure states)
+
+**Badge Text Styles:**
+- `Badge.Text` / `Badge.Text.Small` - White text for filled badges
+- `Badge.Text.Error` / `Badge.Text.Error.Small` - Red text for outlined error badges
+
 ### 3. Layout Templates (`LayoutTemplates.xaml`)
 Templates for common layout patterns.
 
