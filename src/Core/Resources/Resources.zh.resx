@@ -148,7 +148,7 @@
   </data>
   <!-- Page Titles -->
   <data name="Page_Connect" xml:space="preserve">
-    <value>Configuration</value>
+    <value>配置</value>
     <comment>Title for the Configuration page</comment>
   </data>
   <data name="Page_Manage" xml:space="preserve">
@@ -254,7 +254,7 @@
     <comment>Message when device is not identified</comment>
   </data>
   <data name="Manage_ConnectionPageDetails" xml:space="preserve">
-    <value>The Configuration page will provide more details</value>
+    <value>配置页面会提供更多细节</value>
     <comment>Message directing user to configuration page</comment>
   </data>
   <data name="Manage_DeviceInformation" xml:space="preserve">
@@ -330,7 +330,7 @@
     <comment>Message shown in packet details when decryption fails</comment>
   </data>
   <data name="Monitor_PassiveMonitoring" xml:space="preserve">
-    <value>Monitor</value>
+    <value>监视器</value>
     <comment>Badge shown when in passive monitoring mode</comment>
   </data>
   <data name="Monitor_Security" xml:space="preserve">
@@ -362,7 +362,7 @@
     <comment>Button text to expand row details</comment>
   </data>
   <data name="Monitor_ConnectionPageDetails" xml:space="preserve">
-    <value>The Configuration page will provide more details</value>
+    <value>配置页面会提供更多细节</value>
     <comment>Message directing users to configuration page for details</comment>
   </data>
   <data name="Monitor_LastCardRead" xml:space="preserve">
@@ -425,7 +425,7 @@
   </data>
   <!-- Navigation Menu Items -->
   <data name="Navigation_ConnectToPD" xml:space="preserve">
-    <value>Config</value>
+    <value>配置</value>
     <comment>Navigation menu item for Configuration page</comment>
   </data>
   <data name="Navigation_ManagePD" xml:space="preserve">
@@ -604,11 +604,11 @@
     <comment>Connection type option for manual connection</comment>
   </data>
   <data name="ConnectionType_PassiveMonitor" xml:space="preserve">
-    <value>Passive Monitoring</value>
+    <value>被动监测</value>
     <comment>Connection type option for passive bus monitoring</comment>
   </data>
   <data name="ConnectionMode_ConnectToPD" xml:space="preserve">
-    <value>Connect to PD</value>
+    <value>连接PD</value>
     <comment>Radio button label for Connect to PD mode</comment>
   </data>
   <!-- Language Selection UI -->
