@@ -148,8 +148,8 @@
   </data>
   <!-- Page Titles -->
   <data name="Page_Connect" xml:space="preserve">
-    <value>连接</value>
-    <comment>Title for the Connect page</comment>
+    <value>配置</value>
+    <comment>Title for the Configuration page</comment>
   </data>
   <data name="Page_Manage" xml:space="preserve">
     <value>管理</value>
@@ -254,8 +254,8 @@
     <comment>Message when device is not identified</comment>
   </data>
   <data name="Manage_ConnectionPageDetails" xml:space="preserve">
-    <value>连接页面将提供更多详细信息</value>
-    <comment>Message directing user to connection page</comment>
+    <value>配置页面会提供更多细节</value>
+    <comment>Message directing user to configuration page</comment>
   </data>
   <data name="Manage_DeviceInformation" xml:space="preserve">
     <value>设备信息</value>
@@ -329,13 +329,9 @@
     <value>无法解密</value>
     <comment>Message shown in packet details when decryption fails</comment>
   </data>
-  <data name="Monitor_DefaultKey" xml:space="preserve">
-    <value>默认密钥</value>
-    <comment>Badge shown when passive monitoring with default key decryption</comment>
-  </data>
-  <data name="Monitor_CustomKey" xml:space="preserve">
-    <value>自定义密钥</value>
-    <comment>Badge shown when passive monitoring with custom key decryption</comment>
+  <data name="Monitor_PassiveMonitoring" xml:space="preserve">
+    <value>监视器</value>
+    <comment>Badge shown when in passive monitoring mode</comment>
   </data>
   <data name="Monitor_Security" xml:space="preserve">
     <value>安全性</value>
@@ -366,8 +362,8 @@
     <comment>Button text to expand row details</comment>
   </data>
   <data name="Monitor_ConnectionPageDetails" xml:space="preserve">
-    <value>连接”页面将提供更多详细信息</value>
-    <comment>Message directing users to connection page for details</comment>
+    <value>配置页面会提供更多细节</value>
+    <comment>Message directing users to configuration page for details</comment>
   </data>
   <data name="Monitor_LastCardRead" xml:space="preserve">
     <value>上次读卡</value>
@@ -429,8 +425,8 @@
   </data>
   <!-- Navigation Menu Items -->
   <data name="Navigation_ConnectToPD" xml:space="preserve">
-    <value>连接到 PD</value>
-    <comment>Navigation menu item for Connect page</comment>
+    <value>配置</value>
+    <comment>Navigation menu item for Configuration page</comment>
   </data>
   <data name="Navigation_ManagePD" xml:space="preserve">
     <value>管理 PD</value>
@@ -608,8 +604,12 @@
     <comment>Connection type option for manual connection</comment>
   </data>
   <data name="ConnectionType_PassiveMonitor" xml:space="preserve">
-    <value>被动监视器</value>
+    <value>被动监测</value>
     <comment>Connection type option for passive bus monitoring</comment>
+  </data>
+  <data name="ConnectionMode_ConnectToPD" xml:space="preserve">
+    <value>连接PD</value>
+    <comment>Radio button label for Connect to PD mode</comment>
   </data>
   <!-- Language Selection UI -->
   <data name="Language_Selection" xml:space="preserve">

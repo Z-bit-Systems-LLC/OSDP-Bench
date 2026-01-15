@@ -148,8 +148,8 @@
   </data>
   <!-- Page Titles -->
   <data name="Page_Connect" xml:space="preserve">
-    <value>Verbinden</value>
-    <comment>Title for the Connect page</comment>
+    <value>Konfiguration</value>
+    <comment>Title for the Configuration page</comment>
   </data>
   <data name="Page_Manage" xml:space="preserve">
     <value>Verwalten</value>
@@ -254,8 +254,8 @@
     <comment>Message when device is not identified</comment>
   </data>
   <data name="Manage_ConnectionPageDetails" xml:space="preserve">
-    <value>Auf der Verbindungsseite finden Sie weitere Details</value>
-    <comment>Message directing user to connection page</comment>
+    <value>Die Konfigurationsseite liefert weitere Details</value>
+    <comment>Message directing user to configuration page</comment>
   </data>
   <data name="Manage_DeviceInformation" xml:space="preserve">
     <value>Geräteschrift</value>
@@ -329,13 +329,9 @@
     <value>Unmöglich zu entschlüsseln</value>
     <comment>Message shown in packet details when decryption fails</comment>
   </data>
-  <data name="Monitor_DefaultKey" xml:space="preserve">
-    <value>Standardschlüssel</value>
-    <comment>Badge shown when passive monitoring with default key decryption</comment>
-  </data>
-  <data name="Monitor_CustomKey" xml:space="preserve">
-    <value>Benutzerdefinierter Schlüssel</value>
-    <comment>Badge shown when passive monitoring with custom key decryption</comment>
+  <data name="Monitor_PassiveMonitoring" xml:space="preserve">
+    <value>Monitor</value>
+    <comment>Badge shown when in passive monitoring mode</comment>
   </data>
   <data name="Monitor_Security" xml:space="preserve">
     <value>Sicherheit</value>
@@ -366,8 +362,8 @@
     <comment>Button text to expand row details</comment>
   </data>
   <data name="Monitor_ConnectionPageDetails" xml:space="preserve">
-    <value>Auf der Verbindungsseite finden Sie weitere Details</value>
-    <comment>Message directing users to connection page for details</comment>
+    <value>Die Konfigurationsseite liefert weitere Details</value>
+    <comment>Message directing users to configuration page for details</comment>
   </data>
   <data name="Monitor_LastCardRead" xml:space="preserve">
     <value>Zuletzt gelesene Karte</value>
@@ -429,8 +425,8 @@
   </data>
   <!-- Navigation Menu Items -->
   <data name="Navigation_ConnectToPD" xml:space="preserve">
-    <value>Mit PD verbinden</value>
-    <comment>Navigation menu item for Connect page</comment>
+    <value>Konfiguration</value>
+    <comment>Navigation menu item for Configuration page</comment>
   </data>
   <data name="Navigation_ManagePD" xml:space="preserve">
     <value>PD verwalten</value>
@@ -608,8 +604,12 @@
     <comment>Connection type option for manual connection</comment>
   </data>
   <data name="ConnectionType_PassiveMonitor" xml:space="preserve">
-    <value>Passiver Monitor</value>
+    <value>Passive Überwachung</value>
     <comment>Connection type option for passive bus monitoring</comment>
+  </data>
+  <data name="ConnectionMode_ConnectToPD" xml:space="preserve">
+    <value>Verbinden Sie sich mit der Polizei</value>
+    <comment>Radio button label for Connect to PD mode</comment>
   </data>
   <!-- Language Selection UI -->
   <data name="Language_Selection" xml:space="preserve">
