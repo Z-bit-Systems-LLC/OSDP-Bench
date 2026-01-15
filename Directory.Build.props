@@ -1,7 +1,7 @@
 <Project>
   <PropertyGroup>
     <!-- Version management - single source of truth -->
-    <VersionPrefix>3.0.24</VersionPrefix>
+    <VersionPrefix>3.0.25</VersionPrefix>
 
     <!-- Package metadata -->
     <Authors>Jonathan Horvath</Authors>
