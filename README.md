@@ -15,10 +15,13 @@ Core functionality is under an open source license to help increase the adoption
 
 - **Device Discovery** - Automatically discover OSDP devices on serial connections
 - **Real-time Monitoring** - Monitor card reads, keypad entries, and device status
+- **Passive Monitoring** - Monitor OSDP traffic without actively participating in communication
 - **Device Configuration** - Configure LEDs, buzzers, and communication parameters
+- **File Transfer** - Transfer files to OSDP devices for firmware updates and configuration
 - **Packet Tracing** - View detailed OSDP communication packets
+- **Capture Packet Export** - Export captured packets for offline analysis and sharing
 - **Multi-language Support** - Available in multiple languages
-- **Cross-platform** - Built on .NET 8.0 for modern compatibility
+- **Cross-platform Core** - Core logic library built on .NET 8.0 can be reused across different platforms
 
 ## Get OSDP Bench
 
