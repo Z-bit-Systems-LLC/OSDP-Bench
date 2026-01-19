@@ -40,7 +40,7 @@ public partial class ManageViewModel : ObservableObject
         KeypadReadData = string.Empty;
 
         UpdateFields();
-        StatusLevel = _deviceManagementService.IsConnected ? StatusLevel.Connected : StatusLevel.Disconnected;
+        InitializeStatusLevel();
 
         _deviceManagementService.ConnectionStatusChange += DeviceManagementServiceOnConnectionStatusChange;
         _deviceManagementService.CardReadReceived += DeviceManagementServiceOnCardReadReceived;
@@ -270,6 +270,25 @@ public partial class ManageViewModel : ObservableObject
         ConnectedPortName = _deviceManagementService.PortName;
         ConnectedAddress = _deviceManagementService.Address;
         ConnectedBaudRate = _deviceManagementService.BaudRate;
+    }
+
+    private void InitializeStatusLevel()
+    {
+        if (_deviceManagementService.IsPassiveMonitoring)
+        {
+            StatusLevel = StatusLevel.PassiveMonitoring;
+            ConnectedBaudRate = _deviceManagementService.BaudRate;
+            UsingSecureChannel = _deviceManagementService.IsUsingSecureChannel;
+            UsesDefaultSecurityKey = _deviceManagementService.UsesDefaultSecurityKey;
+        }
+        else if (_deviceManagementService.IsConnected)
+        {
+            StatusLevel = StatusLevel.Connected;
+        }
+        else
+        {
+            StatusLevel = StatusLevel.Disconnected;
+        }
     }
 
     private void DeviceManagementServiceOnConnectionStatusChange(object? sender, ConnectionStatus connectionStatus)

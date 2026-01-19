@@ -44,7 +44,7 @@ public partial class MonitorViewModel : ObservableObject
         ];
 
         UpdateConnectionInfo();
-        StatusLevel = _deviceManagementService.IsConnected ? StatusLevel.Connected : StatusLevel.Disconnected;
+        InitializeStatusLevel();
 
         _deviceManagementService.ConnectionStatusChange += OnDeviceManagementServiceOnConnectionStatusChange;
         _deviceManagementService.TraceEntryReceived += OnDeviceManagementServiceOnTraceEntryReceived;
@@ -81,6 +81,24 @@ public partial class MonitorViewModel : ObservableObject
     {
         ConnectedAddress = _deviceManagementService.Address;
         ConnectedBaudRate = _deviceManagementService.BaudRate;
+    }
+
+    private void InitializeStatusLevel()
+    {
+        if (_deviceManagementService.IsPassiveMonitoring)
+        {
+            StatusLevel = StatusLevel.PassiveMonitoring;
+            UsingSecureChannel = _deviceManagementService.IsUsingSecureChannel;
+            UsesDefaultSecurityKey = _deviceManagementService.UsesDefaultSecurityKey;
+        }
+        else if (_deviceManagementService.IsConnected)
+        {
+            StatusLevel = StatusLevel.Connected;
+        }
+        else
+        {
+            StatusLevel = StatusLevel.Disconnected;
+        }
     }
 
     private void InitializePollingMetrics()
