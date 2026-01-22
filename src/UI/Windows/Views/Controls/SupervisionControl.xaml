@@ -1,0 +1,189 @@
+<UserControl x:Class="OSDPBench.Windows.Views.Controls.SupervisionControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+             xmlns:controls="clr-namespace:OSDPBench.Windows.Views.Controls"
+             xmlns:models="clr-namespace:OSDPBench.Core.Models;assembly=OSDPBench.Core"
+             xmlns:markup="clr-namespace:OSDPBench.Windows.Markup"
+             d:DataContext="{d:DesignInstance controls:SupervisionControl,
+                                            IsDesignTimeCreatable=False}"
+             mc:Ignorable="d"
+             d:DesignHeight="500" d:DesignWidth="500">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Current Status Section -->
+        <StackPanel Grid.Row="0"
+                    Orientation="Vertical"
+                    Margin="0,0,0,16">
+
+            <!-- Tamper Status Row -->
+            <Grid Margin="0,0,20,8">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="100"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0"
+                           Text="{markup:Localize Supervision_TamperStatus}"
+                           Style="{StaticResource Text.Body}"
+                           VerticalAlignment="Center"/>
+                <Border Grid.Column="1"
+                        Name="TamperBadge"
+                        Style="{StaticResource Badge.Success.Small}">
+                    <TextBlock Name="TamperBadgeText"
+                               Text="{markup:Localize Supervision_Unknown}"
+                               Style="{StaticResource Badge.Text.Small}"/>
+                </Border>
+                <TextBlock Grid.Column="2"
+                           Name="TamperTimestampText"
+                           Style="{StaticResource Text.Caption}"
+                           VerticalAlignment="Center"
+                           Margin="12,0,0,0"/>
+            </Grid>
+
+            <!-- Power Status Row -->
+            <Grid Margin="0,0,20,8">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="100"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0"
+                           Text="{markup:Localize Supervision_PowerStatus}"
+                           Style="{StaticResource Text.Body}"
+                           VerticalAlignment="Center"/>
+                <Border Grid.Column="1"
+                        Name="PowerBadge"
+                        Style="{StaticResource Badge.Success.Small}">
+                    <TextBlock Name="PowerBadgeText"
+                               Text="{markup:Localize Supervision_Unknown}"
+                               Style="{StaticResource Badge.Text.Small}"/>
+                </Border>
+                <TextBlock Grid.Column="2"
+                           Name="PowerTimestampText"
+                           Style="{StaticResource Text.Caption}"
+                           VerticalAlignment="Center"
+                           Margin="12,0,0,0"/>
+            </Grid>
+
+            <!-- Communication Status Row -->
+            <Grid Margin="0,0,20,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="100"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0"
+                           Text="{markup:Localize Supervision_CommunicationStatus}"
+                           Style="{StaticResource Text.Body}"
+                           VerticalAlignment="Center"/>
+                <Border Grid.Column="1"
+                        Name="OnlineBadge"
+                        Style="{StaticResource Badge.Success.Small}">
+                    <TextBlock Name="OnlineBadgeText"
+                               Text="{markup:Localize Supervision_Unknown}"
+                               Style="{StaticResource Badge.Text.Small}"/>
+                </Border>
+                <TextBlock Grid.Column="2"
+                           Name="OnlineTimestampText"
+                           Style="{StaticResource Text.Caption}"
+                           VerticalAlignment="Center"
+                           Margin="12,0,0,0"/>
+            </Grid>
+        </StackPanel>
+
+        <!-- Event History Section -->
+        <Grid Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <DockPanel Grid.Row="0"
+                       Margin="0,0,20,5">
+                <Label Content="{markup:Localize Supervision_EventHistory}"
+                       Style="{StaticResource Label.Standard}"
+                       VerticalAlignment="Bottom"
+                       DockPanel.Dock="Left"/>
+                <ui:Button Content="{markup:Localize Supervision_ClearHistory}"
+                           Appearance="Secondary"
+                           DockPanel.Dock="Right"
+                           HorizontalAlignment="Right"
+                           Click="ClearHistory_Click"/>
+            </DockPanel>
+
+            <ui:DataGrid Grid.Row="1"
+                         Name="HistoryDataGrid"
+                         Margin="0,0,20,0"
+                         AutoGenerateColumns="False"
+                         IsReadOnly="True"
+                         GridLinesVisibility="Horizontal"
+                         BorderThickness="1"
+                         HeadersVisibility="Column"
+                         VerticalScrollBarVisibility="Auto"
+                         MaxHeight="300"
+                         CanUserSortColumns="False"
+                         d:DataContext="{d:DesignInstance models:SupervisionEntry}">
+                <ui:DataGrid.RowStyle>
+                    <Style TargetType="DataGridRow">
+                        <Style.Triggers>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter Property="Background" Value="Transparent"/>
+                                <Setter Property="BorderBrush" Value="Transparent"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </ui:DataGrid.RowStyle>
+                <ui:DataGrid.CellStyle>
+                    <Style TargetType="DataGridCell">
+                        <Style.Triggers>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter Property="Background" Value="Transparent"/>
+                                <Setter Property="BorderBrush" Value="Transparent"/>
+                                <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </ui:DataGrid.CellStyle>
+                <ui:DataGrid.Columns>
+                    <DataGridTextColumn Header="{markup:Localize Supervision_ColumnDateTime}"
+                                        Binding="{Binding Timestamp, StringFormat='MM/dd/yyyy HH:mm:ss'}"
+                                        Width="Auto">
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="VerticalAlignment" Value="Center"/>
+                                <Setter Property="Padding" Value="5,0"/>
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+                    <DataGridTextColumn Header="{markup:Localize Supervision_ColumnEventType}"
+                                        Binding="{Binding EventType}"
+                                        Width="Auto">
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="VerticalAlignment" Value="Center"/>
+                                <Setter Property="Padding" Value="5,0"/>
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+                    <DataGridTextColumn Header="{markup:Localize Supervision_ColumnStatus}"
+                                        Binding="{Binding Status}"
+                                        Width="*">
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="VerticalAlignment" Value="Center"/>
+                                <Setter Property="Padding" Value="5,0"/>
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+                </ui:DataGrid.Columns>
+            </ui:DataGrid>
+        </Grid>
+    </Grid>
+</UserControl>

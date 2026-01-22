@@ -91,6 +91,10 @@ public sealed class DeviceManagementService : IDeviceManagementService
             RaiseEvent(CardReadReceived, FormatData(args.RawCardData.Data));
         };
         _panel.KeypadReplyReceived += (_, args) => RaiseEvent(KeypadReadReceived, FormatKeypadData(args.KeypadData.Data));
+        _panel.LocalStatusReportReplyReceived += (_, args) =>
+        {
+            RaiseEvent(LocalStatusReceived, new LocalStatusEventArgs(args.LocalStatus.Tamper, args.LocalStatus.PowerFailure));
+        };
     }
 
     /// <inheritdoc />
@@ -333,6 +337,9 @@ public sealed class DeviceManagementService : IDeviceManagementService
     
     /// <inheritdoc />
     public event EventHandler<TraceEntry>? TraceEntryReceived;
+
+    /// <inheritdoc />
+    public event EventHandler<LocalStatusEventArgs>? LocalStatusReceived;
 
     /// <inheritdoc />
     public async Task Reconnect(IOsdpConnection osdpConnection, byte connectionParametersAddress)

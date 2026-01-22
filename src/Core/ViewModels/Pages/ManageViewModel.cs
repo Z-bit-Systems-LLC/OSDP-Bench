@@ -17,6 +17,8 @@ namespace OSDPBench.Core.ViewModels.Pages;
 /// </summary>
 public partial class ManageViewModel : ObservableObject
 {
+    private const int MaxSupervisionEntries = 20;
+
     private readonly IDialogService _dialogService;
     private readonly IDeviceManagementService _deviceManagementService;
     private readonly ISerialPortConnectionService _serialPortConnectionService;
@@ -47,6 +49,7 @@ public partial class ManageViewModel : ObservableObject
         _deviceManagementService.KeypadReadReceived += DeviceManagementServiceOnKeypadReadReceived;
         _deviceManagementService.DeviceLookupsChanged += DeviceManagementServiceOnDeviceLookupsChanged;
         _deviceManagementService.TraceEntryReceived += OnDeviceManagementServiceOnTraceEntryReceived;
+        _deviceManagementService.LocalStatusReceived += DeviceManagementServiceOnLocalStatusReceived;
     }
 
     [RelayCommand]
@@ -293,6 +296,17 @@ public partial class ManageViewModel : ObservableObject
 
     private void DeviceManagementServiceOnConnectionStatusChange(object? sender, ConnectionStatus connectionStatus)
     {
+        // Track online status for supervision
+        var now = DateTime.Now;
+        bool isOnline = connectionStatus == ConnectionStatus.Connected;
+        if (OnlineStatus != isOnline && (connectionStatus == ConnectionStatus.Connected || connectionStatus == ConnectionStatus.Disconnected))
+        {
+            OnlineStatus = isOnline;
+            OnlineTimestamp = now;
+            AddSupervisionEntry(new SupervisionEntry(now, SupervisionEventType.Communication,
+                isOnline ? Resources.Resources.GetString("Supervision_Online") : Resources.Resources.GetString("Supervision_Offline")));
+        }
+
         switch (connectionStatus)
         {
             case ConnectionStatus.Disconnected:
@@ -317,6 +331,52 @@ public partial class ManageViewModel : ObservableObject
         }
     }
 
+    private void DeviceManagementServiceOnLocalStatusReceived(object? sender, LocalStatusEventArgs args)
+    {
+        var now = DateTime.Now;
+
+        // Update tamper status and add history entry if changed
+        if (TamperStatus != args.Tamper)
+        {
+            TamperStatus = args.Tamper;
+            TamperTimestamp = now;
+            AddSupervisionEntry(new SupervisionEntry(now, SupervisionEventType.Tamper,
+                args.Tamper ? Resources.Resources.GetString("Supervision_Tampered") : Resources.Resources.GetString("Supervision_Normal")));
+        }
+
+        // Update power status and add history entry if changed
+        if (PowerStatus != args.PowerFailure)
+        {
+            PowerStatus = args.PowerFailure;
+            PowerTimestamp = now;
+            AddSupervisionEntry(new SupervisionEntry(now, SupervisionEventType.Power,
+                args.PowerFailure ? Resources.Resources.GetString("Supervision_PowerFailure") : Resources.Resources.GetString("Supervision_Normal")));
+        }
+    }
+
+    private void AddSupervisionEntry(SupervisionEntry entry)
+    {
+        SupervisionEntries.Insert(0, entry);
+        while (SupervisionEntries.Count > MaxSupervisionEntries)
+        {
+            SupervisionEntries.RemoveAt(SupervisionEntries.Count - 1);
+        }
+    }
+
+    /// <summary>
+    /// Clears all supervision history and resets status indicators to unknown state.
+    /// </summary>
+    public void ClearSupervisionHistory()
+    {
+        TamperStatus = null;
+        TamperTimestamp = null;
+        PowerStatus = null;
+        PowerTimestamp = null;
+        OnlineStatus = null;
+        OnlineTimestamp = null;
+        SupervisionEntries.Clear();
+    }
+
     [ObservableProperty] private string? _connectedPortName;
 
     [ObservableProperty] private byte _connectedAddress;
@@ -333,12 +393,22 @@ public partial class ManageViewModel : ObservableObject
         new FileTransferAction(),
         new MonitoringAction(MonitoringType.CardReads),
         new MonitoringAction(MonitoringType.KeypadReads),
-        new ResetCypressDeviceAction(), 
+        new ResetCypressDeviceAction(),
         new SetCommunicationAction(),
-        new SetReaderLedAction()
+        new SetReaderLedAction(),
+        new SupervisionAction()
     ];
         
     [ObservableProperty] private ObservableCollection<CardReadEntry> _cardReadEntries = [];
+
+    // Supervision status properties - tracked continuously regardless of which action is displayed
+    [ObservableProperty] private bool? _tamperStatus;  // null = unknown, true = tampered, false = normal
+    [ObservableProperty] private DateTime? _tamperTimestamp;
+    [ObservableProperty] private bool? _powerStatus;   // null = unknown, true = power failure, false = normal
+    [ObservableProperty] private DateTime? _powerTimestamp;
+    [ObservableProperty] private bool? _onlineStatus;  // tracks connection status
+    [ObservableProperty] private DateTime? _onlineTimestamp;
+    [ObservableProperty] private ObservableCollection<SupervisionEntry> _supervisionEntries = [];
 
     [ObservableProperty] private IDeviceAction? _selectedDeviceAction;
 

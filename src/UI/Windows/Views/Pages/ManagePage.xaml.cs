@@ -75,6 +75,10 @@ public partial class ManagePage : INavigableView<ManageViewModel>
             case SetReaderLedAction:
                 SetReaderLedActionControl();
                 break;
+
+            case SupervisionAction:
+                SupervisionControl();
+                break;
         }
     }
 
@@ -153,7 +157,7 @@ public partial class ManagePage : INavigableView<ManageViewModel>
     private void SetReaderLedActionControl()
     {
         PerformActionButton.Visibility = Visibility.Visible;
-    
+
         var actionControl = new SetReaderLedControl();
         actionControl.PropertyChanged += (_, args) =>
         {
@@ -162,6 +166,16 @@ public partial class ManagePage : INavigableView<ManageViewModel>
                 ViewModel.DeviceActionParameter = actionControl.SelectedColor;
             }
         };
+
+        DeviceActionControl.Children.Add(actionControl);
+    }
+
+    private void SupervisionControl()
+    {
+        PerformActionButton.Visibility = Visibility.Visible;
+
+        var actionControl = new SupervisionControl();
+        actionControl.Initialize(ViewModel);
 
         DeviceActionControl.Children.Add(actionControl);
     }

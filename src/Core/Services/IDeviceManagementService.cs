@@ -155,6 +155,11 @@ public interface IDeviceManagementService
     event EventHandler<TraceEntry>? TraceEntryReceived;
 
     /// <summary>
+    /// Event triggered when a local status report is received from the device.
+    /// </summary>
+    event EventHandler<LocalStatusEventArgs>? LocalStatusReceived;
+
+    /// <summary>
     /// Gets a value indicating whether passive monitoring is currently active.
     /// </summary>
     bool IsPassiveMonitoring { get; }
