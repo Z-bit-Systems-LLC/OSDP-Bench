@@ -671,67 +671,67 @@
   </data>
   <!-- Supervision Feature -->
   <data name="Supervision_Name" xml:space="preserve">
-    <value>Supervision</value>
+    <value>監督</value>
     <comment>Name of the Supervision device action</comment>
   </data>
   <data name="Supervision_CheckStatus" xml:space="preserve">
-    <value>Check Status</value>
+    <value>チェック状況</value>
     <comment>Button text to send osdp_LSTAT command</comment>
   </data>
   <data name="Supervision_TamperStatus" xml:space="preserve">
-    <value>Tamper</value>
+    <value>タンパー</value>
     <comment>Label for tamper status indicator</comment>
   </data>
   <data name="Supervision_PowerStatus" xml:space="preserve">
-    <value>Power</value>
+    <value>パワー</value>
     <comment>Label for power status indicator</comment>
   </data>
   <data name="Supervision_CommunicationStatus" xml:space="preserve">
-    <value>Comm</value>
+    <value>Communication</value>
     <comment>Label for communication status indicator</comment>
   </data>
   <data name="Supervision_Normal" xml:space="preserve">
-    <value>Normal</value>
+    <value>ノーマル</value>
     <comment>Status indicating normal operation</comment>
   </data>
   <data name="Supervision_Tampered" xml:space="preserve">
-    <value>Tampered</value>
+    <value>改ざんされた</value>
     <comment>Status indicating device has been tampered</comment>
   </data>
   <data name="Supervision_PowerFailure" xml:space="preserve">
-    <value>Power Failure</value>
+    <value>停電</value>
     <comment>Status indicating power failure detected</comment>
   </data>
   <data name="Supervision_Online" xml:space="preserve">
-    <value>Online</value>
+    <value>オンライン</value>
     <comment>Status indicating device is connected</comment>
   </data>
   <data name="Supervision_Offline" xml:space="preserve">
-    <value>Offline</value>
+    <value>オフライン</value>
     <comment>Status indicating device is disconnected</comment>
   </data>
   <data name="Supervision_Unknown" xml:space="preserve">
-    <value>Unknown</value>
+    <value>不明</value>
     <comment>Status when no status has been received yet</comment>
   </data>
   <data name="Supervision_EventHistory" xml:space="preserve">
-    <value>Event History</value>
+    <value>イベントの歴史</value>
     <comment>Header for supervision event history section</comment>
   </data>
   <data name="Supervision_ClearHistory" xml:space="preserve">
-    <value>Clear History</value>
+    <value>クリアな歴史</value>
     <comment>Button text to clear supervision history</comment>
   </data>
   <data name="Supervision_ColumnDateTime" xml:space="preserve">
-    <value>Date/Time</value>
+    <value>日付・時刻</value>
     <comment>Column header for date/time in supervision history</comment>
   </data>
   <data name="Supervision_ColumnEventType" xml:space="preserve">
-    <value>Event Type</value>
+    <value>イベントタイプ</value>
     <comment>Column header for event type in supervision history</comment>
   </data>
   <data name="Supervision_ColumnStatus" xml:space="preserve">
-    <value>Status</value>
+    <value>現状</value>
     <comment>Column header for status in supervision history</comment>
   </data>
 </root>

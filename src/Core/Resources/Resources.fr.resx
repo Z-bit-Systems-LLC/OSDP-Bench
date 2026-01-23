@@ -675,7 +675,7 @@
     <comment>Name of the Supervision device action</comment>
   </data>
   <data name="Supervision_CheckStatus" xml:space="preserve">
-    <value>Check Status</value>
+    <value>Vérification du statut</value>
     <comment>Button text to send osdp_LSTAT command</comment>
   </data>
   <data name="Supervision_TamperStatus" xml:space="preserve">
@@ -683,11 +683,11 @@
     <comment>Label for tamper status indicator</comment>
   </data>
   <data name="Supervision_PowerStatus" xml:space="preserve">
-    <value>Power</value>
+    <value>Puissance</value>
     <comment>Label for power status indicator</comment>
   </data>
   <data name="Supervision_CommunicationStatus" xml:space="preserve">
-    <value>Comm</value>
+    <value>Communication</value>
     <comment>Label for communication status indicator</comment>
   </data>
   <data name="Supervision_Normal" xml:space="preserve">
@@ -695,43 +695,43 @@
     <comment>Status indicating normal operation</comment>
   </data>
   <data name="Supervision_Tampered" xml:space="preserve">
-    <value>Tampered</value>
+    <value>Falsificé</value>
     <comment>Status indicating device has been tampered</comment>
   </data>
   <data name="Supervision_PowerFailure" xml:space="preserve">
-    <value>Power Failure</value>
+    <value>Panne de courant</value>
     <comment>Status indicating power failure detected</comment>
   </data>
   <data name="Supervision_Online" xml:space="preserve">
-    <value>Online</value>
+    <value>En ligne</value>
     <comment>Status indicating device is connected</comment>
   </data>
   <data name="Supervision_Offline" xml:space="preserve">
-    <value>Offline</value>
+    <value>Hors-ligne</value>
     <comment>Status indicating device is disconnected</comment>
   </data>
   <data name="Supervision_Unknown" xml:space="preserve">
-    <value>Unknown</value>
+    <value>Inconnu</value>
     <comment>Status when no status has been received yet</comment>
   </data>
   <data name="Supervision_EventHistory" xml:space="preserve">
-    <value>Event History</value>
+    <value>Historique de l’événement</value>
     <comment>Header for supervision event history section</comment>
   </data>
   <data name="Supervision_ClearHistory" xml:space="preserve">
-    <value>Clear History</value>
+    <value>Histoire claire</value>
     <comment>Button text to clear supervision history</comment>
   </data>
   <data name="Supervision_ColumnDateTime" xml:space="preserve">
-    <value>Date/Time</value>
+    <value>Date/Heure</value>
     <comment>Column header for date/time in supervision history</comment>
   </data>
   <data name="Supervision_ColumnEventType" xml:space="preserve">
-    <value>Event Type</value>
+    <value>Type d’événement</value>
     <comment>Column header for event type in supervision history</comment>
   </data>
   <data name="Supervision_ColumnStatus" xml:space="preserve">
-    <value>Status</value>
+    <value>Statut</value>
     <comment>Column header for status in supervision history</comment>
   </data>
 </root>
