@@ -182,22 +182,10 @@
 						<DataGridTemplateColumn Header="" Width="40">
 							<DataGridTemplateColumn.CellTemplate>
 								<DataTemplate>
-									<Grid HorizontalAlignment="Left">
-										<ui:Button Appearance="Transparent"
-										           BorderThickness="0"
-										           Padding="0"
-										           ToolTip="{markup:Localize Monitor_Expand}"
-										           DataContext="{Binding Details}"
-										           Margin="5,0,0,0"
-										           Width="24"
-										           Height="24"
-										           Cursor="Hand"
-										           Click="ToggleRowDetails">
-											<ui:Button.Icon>
-												<ui:SymbolIcon Symbol="ChevronDown24"/>
-											</ui:Button.Icon>
-										</ui:Button>
-									</Grid>
+									<ui:SymbolIcon Symbol="ChevronDown24"
+								               Margin="5,0,0,0"
+								               ToolTip="{markup:Localize Monitor_Expand}"
+								               Cursor="Hand"/>
 								</DataTemplate>
 							</DataGridTemplateColumn.CellTemplate>
 						</DataGridTemplateColumn>

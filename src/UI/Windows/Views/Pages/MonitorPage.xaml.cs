@@ -30,18 +30,6 @@ public partial class MonitorPage : INavigableView<MonitorViewModel>
         }
     }
 
-    private void ToggleRowDetails(object sender, RoutedEventArgs e)
-    {
-        if (sender is Button { DataContext: not null } button)
-        {
-            var row = FindParent<DataGridRow>(button);
-            if (row != null)
-            {
-                ToggleRowDetailsVisibility(row);
-            }
-        }
-    }
-
     private void DataGrid_PreviewMouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
     {
         if (e.OriginalSource is DependencyObject source)
@@ -66,16 +54,13 @@ public partial class MonitorPage : INavigableView<MonitorViewModel>
             ? Visibility.Collapsed
             : Visibility.Visible;
 
-        var button = FindChild<Button>(row);
-        if (button != null)
+        var icon = FindChild<SymbolIcon>(row);
+        if (icon != null)
         {
-            button.Icon = new SymbolIcon
-            {
-                Symbol = row.DetailsVisibility == Visibility.Visible
-                    ? SymbolRegular.ChevronUp24
-                    : SymbolRegular.ChevronDown24
-            };
-            button.ToolTip = row.DetailsVisibility == Visibility.Visible
+            icon.Symbol = row.DetailsVisibility == Visibility.Visible
+                ? SymbolRegular.ChevronUp24
+                : SymbolRegular.ChevronDown24;
+            icon.ToolTip = row.DetailsVisibility == Visibility.Visible
                 ? Core.Resources.Resources.GetString("Monitor_Collapse")
                 : Core.Resources.Resources.GetString("Monitor_Expand");
         }
