@@ -22,8 +22,10 @@ public partial class MainWindow : INavigationWindow
         ViewModel = viewModel;
         DataContext = this;
 
+        // Register for system theme changes after window is fully loaded to ensure
+        // the window handle is available. See: https://github.com/lepoco/wpfui/issues/1193
         SystemThemeWatcher.Watch(this);
-            
+        
         InitializeComponent();
         
         // Set window size based on screen dimensions
