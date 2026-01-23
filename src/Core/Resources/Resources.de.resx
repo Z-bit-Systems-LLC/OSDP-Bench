@@ -671,11 +671,11 @@
   </data>
   <!-- Supervision Feature -->
   <data name="Supervision_Name" xml:space="preserve">
-    <value>Supervision</value>
+    <value>Aufsicht</value>
     <comment>Name of the Supervision device action</comment>
   </data>
   <data name="Supervision_CheckStatus" xml:space="preserve">
-    <value>Check Status</value>
+    <value>Status prüfen</value>
     <comment>Button text to send osdp_LSTAT command</comment>
   </data>
   <data name="Supervision_TamperStatus" xml:space="preserve">
@@ -683,11 +683,11 @@
     <comment>Label for tamper status indicator</comment>
   </data>
   <data name="Supervision_PowerStatus" xml:space="preserve">
-    <value>Power</value>
+    <value>Macht</value>
     <comment>Label for power status indicator</comment>
   </data>
   <data name="Supervision_CommunicationStatus" xml:space="preserve">
-    <value>Comm</value>
+    <value>Communication</value>
     <comment>Label for communication status indicator</comment>
   </data>
   <data name="Supervision_Normal" xml:space="preserve">
@@ -695,11 +695,11 @@
     <comment>Status indicating normal operation</comment>
   </data>
   <data name="Supervision_Tampered" xml:space="preserve">
-    <value>Tampered</value>
+    <value>Manipuliert</value>
     <comment>Status indicating device has been tampered</comment>
   </data>
   <data name="Supervision_PowerFailure" xml:space="preserve">
-    <value>Power Failure</value>
+    <value>Stromausfall</value>
     <comment>Status indicating power failure detected</comment>
   </data>
   <data name="Supervision_Online" xml:space="preserve">
@@ -711,23 +711,23 @@
     <comment>Status indicating device is disconnected</comment>
   </data>
   <data name="Supervision_Unknown" xml:space="preserve">
-    <value>Unknown</value>
+    <value>Unbekannt</value>
     <comment>Status when no status has been received yet</comment>
   </data>
   <data name="Supervision_EventHistory" xml:space="preserve">
-    <value>Event History</value>
+    <value>Veranstaltungsgeschichte</value>
     <comment>Header for supervision event history section</comment>
   </data>
   <data name="Supervision_ClearHistory" xml:space="preserve">
-    <value>Clear History</value>
+    <value>Klare Geschichte</value>
     <comment>Button text to clear supervision history</comment>
   </data>
   <data name="Supervision_ColumnDateTime" xml:space="preserve">
-    <value>Date/Time</value>
+    <value>Datum/Uhrzeit</value>
     <comment>Column header for date/time in supervision history</comment>
   </data>
   <data name="Supervision_ColumnEventType" xml:space="preserve">
-    <value>Event Type</value>
+    <value>Ereignistyp</value>
     <comment>Column header for event type in supervision history</comment>
   </data>
   <data name="Supervision_ColumnStatus" xml:space="preserve">
