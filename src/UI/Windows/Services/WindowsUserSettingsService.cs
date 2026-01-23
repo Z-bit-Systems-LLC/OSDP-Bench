@@ -1,4 +1,5 @@
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Text.Json;
 using OSDPBench.Core.Models;
 using OSDPBench.Core.Services;
@@ -10,27 +11,74 @@ namespace OSDPBench.Windows.Services;
 /// </summary>
 public class WindowsUserSettingsService : IUserSettingsService
 {
+    private const string SettingsFileName = "settings.json";
     private readonly string _settingsFilePath;
     private UserSettings _settings;
-    
+
     /// <summary>
     /// Initializes a new instance of the WindowsUserSettingsService
     /// </summary>
     public WindowsUserSettingsService()
     {
-        var appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-        var appFolderPath = Path.Combine(appDataPath, "OSDPBench");
+        var appFolderPath = GetSettingsFolderPath();
         Directory.CreateDirectory(appFolderPath);
-        _settingsFilePath = Path.Combine(appFolderPath, "settings.json");
-        _settings = new UserSettings();
+        _settingsFilePath = Path.Combine(appFolderPath, SettingsFileName);
+        _settings = LoadSettingsFromFile();
     }
+
+    private UserSettings LoadSettingsFromFile()
+    {
+        try
+        {
+            if (File.Exists(_settingsFilePath))
+            {
+                var json = File.ReadAllText(_settingsFilePath);
+                var loadedSettings = JsonSerializer.Deserialize<UserSettings>(json);
+                if (loadedSettings != null)
+                {
+                    return loadedSettings;
+                }
+            }
+        }
+        catch
+        {
+            // If loading fails, use default settings
+        }
+
+        return new UserSettings();
+    }
+
+    private static string GetSettingsFolderPath()
+    {
+        if (IsPackagedApp())
+        {
+            // For Microsoft Store packaged apps, use the app's local folder
+            // which is automatically managed and cleaned up with the app
+            var localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+            return localAppData;
+        }
+
+        // For unpackaged apps, use traditional AppData location with app subfolder
+        var appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+        return Path.Combine(appDataPath, "OSDPBench");
+    }
+
+    private static bool IsPackagedApp()
+    {
+        // Check if running as a packaged app using the kernel32 API
+        var length = 0u;
+        var result = GetCurrentPackageFullName(ref length, null);
+        return result != AppmodelErrorNoPackage;
+    }
+
+    private const int AppmodelErrorNoPackage = 15700;
+
+    [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = false)]
+    private static extern int GetCurrentPackageFullName(ref uint packageFullNameLength, char[]? packageFullName);
     
     /// <inheritdoc />
     public UserSettings Settings => _settings;
-    
-    /// <inheritdoc />
-    public event EventHandler<UserSettings>? SettingsChanged;
-    
+
     /// <inheritdoc />
     public async Task LoadAsync()
     {
@@ -43,7 +91,6 @@ public class WindowsUserSettingsService : IUserSettingsService
                 if (loadedSettings != null)
                 {
                     _settings = loadedSettings;
-                    SettingsChanged?.Invoke(this, _settings);
                 }
             }
         }
@@ -72,13 +119,12 @@ public class WindowsUserSettingsService : IUserSettingsService
     }
     
     /// <summary>
-    /// Updates a setting and notifies listeners
+    /// Updates a setting and saves
     /// </summary>
     /// <param name="updateAction">Action to update the settings</param>
     public async Task UpdateSettingsAsync(Action<UserSettings> updateAction)
     {
         updateAction(_settings);
-        SettingsChanged?.Invoke(this, _settings);
         await SaveAsync();
     }
-}
+}   

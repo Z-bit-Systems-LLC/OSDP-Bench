@@ -13,17 +13,27 @@ public class UserSettings
     /// <summary>
     /// Gets or sets the window width
     /// </summary>
-    public double WindowWidth { get; init; } = 800;
-    
+    public double WindowWidth { get; set; } = 800;
+
     /// <summary>
     /// Gets or sets the window height
     /// </summary>
-    public double WindowHeight { get; init; } = 600;
-    
+    public double WindowHeight { get; set; } = 600;
+
+    /// <summary>
+    /// Gets or sets the window left position (null means center on screen)
+    /// </summary>
+    public double? WindowLeft { get; set; }
+
+    /// <summary>
+    /// Gets or sets the window top position (null means center on screen)
+    /// </summary>
+    public double? WindowTop { get; set; }
+
     /// <summary>
     /// Gets or sets whether the window is maximized
     /// </summary>
-    public bool IsMaximized { get; init; }
+    public bool IsMaximized { get; set; }
     
     /// <summary>
     /// Gets or sets whether to skip language mismatch checking

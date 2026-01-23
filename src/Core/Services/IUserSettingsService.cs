@@ -23,12 +23,7 @@ public interface IUserSettingsService
     /// </summary>
     /// <returns>Task representing the async operation</returns>
     Task SaveAsync();
-    
-    /// <summary>
-    /// Event raised when settings are changed
-    /// </summary>
-    event EventHandler<UserSettings>? SettingsChanged;
-    
+
     /// <summary>
     /// Updates settings using an action and saves them
     /// </summary>

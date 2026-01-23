@@ -9,7 +9,7 @@
         xmlns:markup="clr-namespace:OSDPBench.Windows.Markup"
         ExtendsContentIntoTitleBar="True"
         WindowCornerPreference="Round"
-        WindowStartupLocation="CenterScreen"
+        WindowStartupLocation="Manual"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance local:MainWindow, IsDesignTimeCreatable=True}"
         d:DesignHeight="450"
