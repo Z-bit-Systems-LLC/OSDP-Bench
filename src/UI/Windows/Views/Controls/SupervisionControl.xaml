@@ -20,19 +20,21 @@
         <!-- Current Status Section -->
         <StackPanel Grid.Row="0"
                     Orientation="Vertical"
-                    Margin="0,0,0,16">
+                    Margin="0,0,0,16"
+                    Grid.IsSharedSizeScope="True">
 
             <!-- Tamper Status Row -->
             <Grid Margin="0,0,20,8">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="100"/>
-                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="LabelColumn"/>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="BadgeColumn"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
                 <TextBlock Grid.Column="0"
                            Text="{markup:Localize Supervision_TamperStatus}"
                            Style="{StaticResource Text.Body}"
-                           VerticalAlignment="Center"/>
+                           VerticalAlignment="Center"
+                           Margin="0,0,12,0"/>
                 <Border Grid.Column="1"
                         Name="TamperBadge"
                         Style="{StaticResource Badge.Success.Small}">
@@ -50,14 +52,15 @@
             <!-- Power Status Row -->
             <Grid Margin="0,0,20,8">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="100"/>
-                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="LabelColumn"/>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="BadgeColumn"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
                 <TextBlock Grid.Column="0"
                            Text="{markup:Localize Supervision_PowerStatus}"
                            Style="{StaticResource Text.Body}"
-                           VerticalAlignment="Center"/>
+                           VerticalAlignment="Center"
+                           Margin="0,0,12,0"/>
                 <Border Grid.Column="1"
                         Name="PowerBadge"
                         Style="{StaticResource Badge.Success.Small}">
@@ -75,14 +78,15 @@
             <!-- Communication Status Row -->
             <Grid Margin="0,0,20,0">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="100"/>
-                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="LabelColumn"/>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="BadgeColumn"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
                 <TextBlock Grid.Column="0"
                            Text="{markup:Localize Supervision_CommunicationStatus}"
                            Style="{StaticResource Text.Body}"
-                           VerticalAlignment="Center"/>
+                           VerticalAlignment="Center"
+                           Margin="0,0,12,0"/>
                 <Border Grid.Column="1"
                         Name="OnlineBadge"
                         Style="{StaticResource Badge.Success.Small}">

@@ -709,7 +709,7 @@
     <comment>Label for power status indicator</comment>
   </data>
   <data name="Supervision_CommunicationStatus" xml:space="preserve">
-    <value>Comm</value>
+    <value>Communication</value>
     <comment>Label for communication status indicator</comment>
   </data>
   <data name="Supervision_Normal" xml:space="preserve">
