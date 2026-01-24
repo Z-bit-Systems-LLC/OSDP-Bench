@@ -1,5 +1,4 @@
 ﻿using System.Windows;
-using System.Windows.Media;
 using OSDPBench.Core.Services;
 using OSDPBench.Core.ViewModels.Windows;
 using Wpf.Ui;
