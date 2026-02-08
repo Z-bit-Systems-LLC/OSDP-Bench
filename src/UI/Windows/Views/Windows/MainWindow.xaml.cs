@@ -1,10 +1,12 @@
 ﻿using System.Windows;
 using OSDPBench.Core.Services;
 using OSDPBench.Core.ViewModels.Windows;
+using OSDPBench.Windows.Services;
 using Wpf.Ui;
 using Wpf.Ui.Abstractions;
 using Wpf.Ui.Appearance;
 using Wpf.Ui.Controls;
+using ZBitSystems.Wpf.UI.Services;
 
 namespace OSDPBench.Windows.Views.Windows;
 
@@ -14,6 +16,7 @@ namespace OSDPBench.Windows.Views.Windows;
 public partial class MainWindow : INavigationWindow
 {
     private readonly IUserSettingsService _userSettingsService;
+    private readonly WindowStateManager _windowStateManager;
 
     // ReSharper disable once UnusedAutoPropertyAccessor.Global
     public MainWindowViewModel ViewModel { get; }
@@ -24,6 +27,8 @@ public partial class MainWindow : INavigationWindow
         IUserSettingsService userSettingsService)
     {
         _userSettingsService = userSettingsService;
+        var adapter = new UserSettingsWindowStateAdapter(userSettingsService.Settings);
+        _windowStateManager = new WindowStateManager(this, adapter);
         ViewModel = viewModel;
         DataContext = this;
 
@@ -33,7 +38,7 @@ public partial class MainWindow : INavigationWindow
 
         InitializeComponent();
 
-        RestoreWindowPosition();
+        _windowStateManager.RestoreWindowState();
 
         SetPageService(pageService);
 
@@ -42,98 +47,17 @@ public partial class MainWindow : INavigationWindow
         Closing += MainWindow_Closing;
     }
 
-    private void RestoreWindowPosition()
-    {
-        var settings = _userSettingsService.Settings;
-        var workArea = SystemParameters.WorkArea;
-
-        // Restore size, clamped to fit within the primary monitor's work area
-        Width = Math.Clamp(settings.WindowWidth, 400, workArea.Width);
-        Height = Math.Clamp(settings.WindowHeight, 300, workArea.Height);
-
-        // Restore position or center on screen
-        if (settings.WindowLeft.HasValue && settings.WindowTop.HasValue)
-        {
-            var left = settings.WindowLeft.Value;
-            var top = settings.WindowTop.Value;
-
-            // Check if the saved position is within the virtual screen (all monitors)
-            var virtualLeft = SystemParameters.VirtualScreenLeft;
-            var virtualTop = SystemParameters.VirtualScreenTop;
-            var virtualRight = virtualLeft + SystemParameters.VirtualScreenWidth;
-            var virtualBottom = virtualTop + SystemParameters.VirtualScreenHeight;
-
-            // Clamp position to ensure entire window is visible within virtual screen bounds
-            left = Math.Clamp(left, virtualLeft, virtualRight - Width);
-            top = Math.Clamp(top, virtualTop, virtualBottom - Height);
-
-            // Additional check: ensure the window is reasonably accessible
-            // (not hidden behind taskbar on primary monitor if that's where it ends up)
-            if (left >= workArea.Left && left + Width <= workArea.Right &&
-                top >= workArea.Top && top + Height <= workArea.Bottom)
-            {
-                // Window fits entirely within primary work area
-                Left = left;
-                Top = top;
-            }
-            else if (left >= virtualLeft && left + Width <= virtualRight &&
-                     top >= virtualTop && top + Height <= virtualBottom)
-            {
-                // Window is on another monitor or partially outside work area but within virtual screen
-                Left = left;
-                Top = top;
-            }
-            else
-            {
-                // Window would be off-screen, center on primary monitor
-                CenterOnWorkArea(workArea);
-            }
-        }
-        else
-        {
-            CenterOnWorkArea(workArea);
-        }
-
-        // Restore maximized state after setting position
-        if (settings.IsMaximized)
-        {
-            WindowState = WindowState.Maximized;
-        }
-    }
-
-    private void CenterOnWorkArea(Rect workArea)
-    {
-        Left = workArea.Left + (workArea.Width - Width) / 2;
-        Top = workArea.Top + (workArea.Height - Height) / 2;
-    }
-
     private async void MainWindow_Closing(object? sender, System.ComponentModel.CancelEventArgs e)
     {
         try
         {
-            await SaveWindowPosition();
+            _windowStateManager.SaveWindowState();
+            await _userSettingsService.SaveAsync();
         }
         catch
         {
             // ignored
         }
-    }
-
-    private async Task SaveWindowPosition()
-    {
-        _userSettingsService.Settings.IsMaximized = WindowState == WindowState.Maximized;
-
-        // Save normal bounds (not maximized bounds)
-        if (WindowState == WindowState.Normal)
-        {
-            _userSettingsService.Settings.WindowWidth = Width;
-            _userSettingsService.Settings.WindowHeight = Height;
-            _userSettingsService.Settings.WindowLeft = Left;
-            _userSettingsService.Settings.WindowTop = Top;
-        }
-
-        // Wait for save to complete before app exits
-        await _userSettingsService.SaveAsync();
     }
         
     /// <inheritdoc />

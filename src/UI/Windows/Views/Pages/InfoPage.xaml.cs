@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Windows;
 using Wpf.Ui.Abstractions.Controls;
+using ZBitSystems.Wpf.UI.Services;
 
 namespace OSDPBench.Windows.Views.Pages;
 
@@ -15,15 +16,16 @@ public sealed partial class InfoPage : INavigableView<MainWindowViewModel>, INot
     const string ApacheFilePath = "pack://application:,,,/Assets/Apache.txt";
     const string MitFilePath = "pack://application:,,,/Assets/MIT.txt";
 
+    private readonly ThemeManager _themeManager;
+
     public InfoPage(MainWindowViewModel viewModel)
     {
         ViewModel = viewModel;
         DataContext = this;
-            
-        InitializeComponent();
+        _themeManager = new ThemeManager();
+        _themeManager.PropertyChanged += OnThemePropertyChanged;
 
-        // Subscribe to theme change events
-        Wpf.Ui.Appearance.ApplicationThemeManager.Changed += OnThemeChanged;
+        InitializeComponent();
             
         Loaded += (_, _) =>
         {
@@ -62,9 +64,8 @@ public sealed partial class InfoPage : INavigableView<MainWindowViewModel>, INot
     }
 
     public string CopyWriteNotice => $"\u00a9 {DateTime.Now.Year} Z-bit Systems, LLC";
-    
-    public bool IsDarkMode => 
-        Wpf.Ui.Appearance.ApplicationThemeManager.GetAppTheme() == Wpf.Ui.Appearance.ApplicationTheme.Dark;
+
+    public bool IsDarkMode => _themeManager.IsDarkMode;
 
     public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -73,13 +74,17 @@ public sealed partial class InfoPage : INavigableView<MainWindowViewModel>, INot
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 
-    private void OnThemeChanged(Wpf.Ui.Appearance.ApplicationTheme currentApplicationTheme, System.Windows.Media.Color systemAccent)
+    private void OnThemePropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        OnPropertyChanged(nameof(IsDarkMode));
+        if (e.PropertyName == nameof(ThemeManager.IsDarkMode))
+        {
+            OnPropertyChanged(nameof(IsDarkMode));
+        }
     }
 
     public void Dispose()
     {
-        Wpf.Ui.Appearance.ApplicationThemeManager.Changed -= OnThemeChanged;
+        _themeManager.PropertyChanged -= OnThemePropertyChanged;
+        _themeManager.Dispose();
     }
 }
