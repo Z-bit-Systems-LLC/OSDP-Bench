@@ -6,12 +6,12 @@
     xmlns:pages="clr-namespace:OSDPBench.Windows.Views.Pages"
     xmlns:effects="clr-namespace:ZBitSystems.Wpf.UI.Effects;assembly=ZBitSystems.Wpf.UI"
     xmlns:controls="clr-namespace:ZBitSystems.Wpf.UI.Controls;assembly=ZBitSystems.Wpf.UI"
-    xmlns:markup="clr-namespace:OSDPBench.Windows.Markup"
+    xmlns:localization="clr-namespace:ZBitSystems.Wpf.UI.Localization;assembly=ZBitSystems.Wpf.UI"
     mc:Ignorable="d"
     d:DesignHeight="450" d:DesignWidth="800"
     d:DataContext="{d:DesignInstance pages:InfoPage,
 									 IsDesignTimeCreatable=False}"
-    Title="{markup:Localize Page_Info}">
+    Title="{localization:Localize Page_Info}">
 
     <Grid Margin="20 30">
         <Grid.RowDefinitions>
@@ -25,13 +25,13 @@
         </Grid.ColumnDefinitions>
         <StackPanel Grid.Column="0"
                     Grid.Row="0">
-            <TextBlock Text="{markup:Localize Info_ApplicationName}" Style="{StaticResource Text.Title}" />
+            <TextBlock Text="{localization:Localize Info_ApplicationName}" Style="{StaticResource Text.Title}" />
             <TextBlock Text="{Binding AppVersion}" Style="{StaticResource Text.Subtitle}" />
             <TextBlock Text="{Binding CopyWriteNotice}" Style="{StaticResource Text.Body}" />
 
             <!-- Language Selection -->
             <StackPanel Orientation="Horizontal" Margin="0,20,0,0">
-                <TextBlock Text="{markup:Localize Language_Selection}"
+                <TextBlock Text="{localization:Localize Language_Selection}"
                            Style="{StaticResource Text.Subtitle}"
                            VerticalAlignment="Center"
                            Margin="0,0,10,0"/>
@@ -39,7 +39,7 @@
                           ItemsSource="{Binding ViewModel.LanguageViewModel.AvailableLanguages}"
                           SelectedItem="{Binding ViewModel.LanguageViewModel.SelectedLanguage, Mode=TwoWay}"
                           DisplayMemberPath="DisplayName"
-                          ToolTip="{markup:Localize Language_SelectLanguage}"
+                          ToolTip="{localization:Localize Language_SelectLanguage}"
                           Width="150"
                           VerticalAlignment="Center" />
             </StackPanel>
@@ -66,16 +66,16 @@
         <StackPanel Grid.Column="0"
                     Grid.Row="2"
                     Grid.ColumnSpan="2">
-            <TextBlock Text="{markup:Localize Info_LicenseInfo}"
+            <TextBlock Text="{localization:Localize Info_LicenseInfo}"
                        Style="{StaticResource Text.Headline}"
                        HorizontalAlignment="Center"
                        Margin="0, 30, 0,10"/>
-            <controls:LicenseExpander Header="{markup:Localize Info_EPLLicense}"
+            <controls:LicenseExpander Header="{localization:Localize Info_EPLLicense}"
                 ResourceUri="pack://application:,,,/Assets/EPL.txt" />
-            <controls:LicenseExpander Header="{markup:Localize Info_ApacheLicense}"
+            <controls:LicenseExpander Header="{localization:Localize Info_ApacheLicense}"
                 Margin="0,10,0,0"
                 ResourceUri="pack://application:,,,/Assets/Apache.txt" />
-            <controls:LicenseExpander Header="{markup:Localize Info_MITLicense}"
+            <controls:LicenseExpander Header="{localization:Localize Info_MITLicense}"
                 Margin="0,10,0,0"
                 ResourceUri="pack://application:,,,/Assets/MIT.txt" />
         </StackPanel>

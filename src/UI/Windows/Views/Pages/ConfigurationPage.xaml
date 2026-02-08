@@ -7,12 +7,12 @@
 	  xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
 	  xmlns:converters="clr-namespace:ZBitSystems.Wpf.UI.Converters;assembly=ZBitSystems.Wpf.UI"
 	  xmlns:localConverters="clr-namespace:OSDPBench.Windows.Converters"
-	  xmlns:markup="clr-namespace:OSDPBench.Windows.Markup"
+	  xmlns:localization="clr-namespace:ZBitSystems.Wpf.UI.Localization;assembly=ZBitSystems.Wpf.UI"
 	  mc:Ignorable="d"
 	  d:DataContext="{d:DesignInstance pages:ConfigurationPage,
 									 IsDesignTimeCreatable=False}"
 	  d:DesignHeight="450" d:DesignWidth="800"
-	  Title="{markup:Localize Page_Connect}">
+	  Title="{localization:Localize Page_Connect}">
 
     <Page.Resources>
         <localConverters:StatusLevelConverter x:Key="StatusLevelConverter" />
@@ -27,13 +27,13 @@
         <Border Style="{StaticResource Card.Bordered}">
             <StackPanel Style="{StaticResource Card.Content}">
                 <ui:TextBlock Style="{StaticResource Text.Subtitle}" 
-                              Text="{markup:Localize Connect_SerialPortSelection}"
+                              Text="{localization:Localize Connect_SerialPortSelection}"
                               TextWrapping="Wrap"
                               Margin="0,0,0,10"/>
                 <WrapPanel Orientation="Horizontal">
                     <!-- Serial Port Selection -->
                     <StackPanel Orientation="Vertical" Margin="0,0,24,0">
-                        <Label Content="{markup:Localize Connect_SerialPort}"
+                        <Label Content="{localization:Localize Connect_SerialPort}"
                                Style="{StaticResource Label.Standard}"
                                Target="{Binding ElementName=SerialPortComboBox}" />
                         <StackPanel Orientation="Horizontal">
@@ -64,13 +64,13 @@
                     <StackPanel Orientation="Vertical">
                         <Label Content=" " Style="{StaticResource Label.Standard}" />
                         <StackPanel Orientation="Horizontal">
-                            <RadioButton Content="{markup:Localize ConnectionMode_ConnectToPD}"
+                            <RadioButton Content="{localization:Localize ConnectionMode_ConnectToPD}"
                                          IsChecked="{Binding ViewModel.IsConnectToPDSelected, Mode=TwoWay}"
                                          IsEnabled="{Binding ViewModel.IsConnectionTypeEnabled}"
                                          GroupName="ConnectionMode"
                                          Margin="0,0,16,0"
                                          VerticalAlignment="Center"/>
-                            <RadioButton Content="{markup:Localize ConnectionType_PassiveMonitor}"
+                            <RadioButton Content="{localization:Localize ConnectionType_PassiveMonitor}"
                                          IsChecked="{Binding ViewModel.IsConnectToPDSelected, Mode=OneWay, Converter={StaticResource InverseBoolConverter}}"
                                          IsEnabled="{Binding ViewModel.IsConnectionTypeEnabled}"
                                          GroupName="ConnectionMode"
@@ -109,7 +109,7 @@
                                 HorizontalAlignment="Right"
                                 Margin="0,0,0,10">
                         
-                        <ui:Button Content="{markup:Localize Connect_Connect}"
+                        <ui:Button Content="{localization:Localize Connect_Connect}"
                                    Command="{Binding ViewModel.ConnectDeviceCommand}"
                                    Margin="0,0,8,0"
                                    Style="{StaticResource Button.Primary}">
@@ -118,7 +118,7 @@
                             </ui:Button.Visibility>
                         </ui:Button>
 
-                        <ui:Button Content="{markup:Localize Connect_StartDiscovery}"
+                        <ui:Button Content="{localization:Localize Connect_StartDiscovery}"
                                    Command="{Binding ViewModel.DiscoverDeviceCommand}"
                                    Margin="0,0,8,0"
                                    Style="{StaticResource Button.Primary}">
@@ -127,7 +127,7 @@
                             </ui:Button.Visibility>
                         </ui:Button>
 
-                        <ui:Button Content="{markup:Localize Connect_CancelDiscovery}"
+                        <ui:Button Content="{localization:Localize Connect_CancelDiscovery}"
                                    Command="{Binding ViewModel.DiscoverDeviceCancelCommand}"
                                    Margin="0,0,8,0"
                                    Style="{StaticResource Button.Secondary}">
@@ -136,7 +136,7 @@
                             </ui:Button.Visibility>
                         </ui:Button>
 
-                        <ui:Button Content="{markup:Localize Connect_Disconnect}"
+                        <ui:Button Content="{localization:Localize Connect_Disconnect}"
                                    Command="{Binding ViewModel.DisconnectDeviceCommand}"
                                    Margin="0,0,8,0"
                                    Style="{StaticResource Button.Secondary}">
@@ -145,7 +145,7 @@
                             </ui:Button.Visibility>
                         </ui:Button>
 
-                        <ui:Button Content="{markup:Localize Connect_StartPassiveMonitoring}"
+                        <ui:Button Content="{localization:Localize Connect_StartPassiveMonitoring}"
                                    Command="{Binding ViewModel.StartPassiveMonitoringCommand}"
                                    Margin="0,0,8,0"
                                    Style="{StaticResource Button.Primary}">
@@ -154,7 +154,7 @@
                             </ui:Button.Visibility>
                         </ui:Button>
 
-                        <ui:Button Content="{markup:Localize Connect_StopPassiveMonitoring}"
+                        <ui:Button Content="{localization:Localize Connect_StopPassiveMonitoring}"
                                    Command="{Binding ViewModel.StopPassiveMonitoringCommand}"
                                    Margin="0,0,8,0"
                                    Style="{StaticResource Button.Secondary}">
@@ -169,12 +169,12 @@
                     <StackPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
                                 Orientation="Horizontal" Margin="0,8,0,0"
                                 Visibility="{Binding ViewModel.IsConnectToPDSelected, Converter={StaticResource BooleanToVisibilityConverter}}">
-                        <RadioButton Content="{markup:Localize ConnectionType_Discover}"
+                        <RadioButton Content="{localization:Localize ConnectionType_Discover}"
                                      IsChecked="{Binding ViewModel.IsDiscoverModeSelected, Mode=TwoWay}"
                                      IsEnabled="{Binding ViewModel.IsConnectionTypeEnabled}"
                                      GroupName="ConnectSubMode"
                                      Margin="0,0,16,0"/>
-                        <RadioButton Content="{markup:Localize ConnectionType_Manual}"
+                        <RadioButton Content="{localization:Localize ConnectionType_Manual}"
                                      IsChecked="{Binding ViewModel.IsDiscoverModeSelected, Mode=OneWay, Converter={StaticResource InverseBoolConverter}}"
                                      IsEnabled="{Binding ViewModel.IsConnectionTypeEnabled}"
                                      GroupName="ConnectSubMode"/>
@@ -185,7 +185,7 @@
                 <ui:TextBlock Style="{StaticResource Text.Body}"
 					  Margin="10 5"
 					  HorizontalAlignment="Center"
-					  Text="{markup:Localize Connect_DiscoveryWarning}"
+					  Text="{localization:Localize Connect_DiscoveryWarning}"
 					  TextWrapping="Wrap"
 					  Visibility="{Binding ViewModel.IsDiscoverModeVisible, Converter={StaticResource BooleanToVisibilityConverter}}"/>
 
@@ -193,7 +193,7 @@
                 <ui:TextBlock Style="{StaticResource Text.Body}"
 					  Margin="10 5"
 					  HorizontalAlignment="Center"
-					  Text="{markup:Localize Connect_PassiveMonitorInfo}"
+					  Text="{localization:Localize Connect_PassiveMonitorInfo}"
 					  TextWrapping="Wrap"
 					  Visibility="{Binding ViewModel.IsPassiveMode, Converter={StaticResource BooleanToVisibilityConverter}}"/>
 
@@ -206,11 +206,11 @@
                     <!-- Connection Settings Section -->
                     <StackPanel Orientation="Vertical" Margin="0,0,0,16">
                         <ui:TextBlock Style="{StaticResource Section.Header}"
-                                      Text="{markup:Localize Connect_ConnectionSettings}"/>
+                                      Text="{localization:Localize Connect_ConnectionSettings}"/>
                         
                         <WrapPanel Orientation="Horizontal">
                             <StackPanel Orientation="Vertical" Margin="0,0,16,0">
-                                <Label Content="{markup:Localize Connect_BaudRate}"
+                                <Label Content="{localization:Localize Connect_BaudRate}"
                                        Style="{StaticResource Label.Standard}"
                                        Target="{Binding ElementName=BaudRateComboBox}" />
                                 <ComboBox Name="BaudRateComboBox"
@@ -223,7 +223,7 @@
                             <!-- Address field - only visible in Manual mode (not in Passive Monitor) -->
                             <StackPanel Orientation="Vertical"
                                         Visibility="{Binding ViewModel.IsManualModeVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
-                                <Label Content="{markup:Localize Connect_Address}"
+                                <Label Content="{localization:Localize Connect_Address}"
                                        Style="{StaticResource Label.Standard}"
                                        Target="{Binding ElementName=AddressNumberBox}" />
                                 <ui:NumberBox Name="AddressNumberBox"
@@ -246,23 +246,23 @@
                             Visibility="{Binding ViewModel.IsManualModeVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
                         <StackPanel Orientation="Vertical">
                             <ui:TextBlock Style="{StaticResource Section.Header}"
-                                          Text="{markup:Localize Connect_SecuritySettings}"/>
+                                          Text="{localization:Localize Connect_SecuritySettings}"/>
 
                             <WrapPanel Orientation="Horizontal" Margin="0,0,0,8">
                                 <CheckBox Name="UseSecureChannelCheckBox"
-                                          Content="{markup:Localize Connect_UseSecureChannel}"
+                                          Content="{localization:Localize Connect_UseSecureChannel}"
                                           IsChecked="{Binding Path=ViewModel.UseSecureChannel, Mode=TwoWay}"
                                           Margin="0,0,16,4"/>
 
                                 <CheckBox Name="UseDefaultKeyCheckBox"
-                                          Content="{markup:Localize Connect_UseDefaultKey}"
+                                          Content="{localization:Localize Connect_UseDefaultKey}"
                                           IsEnabled="{Binding ElementName=UseSecureChannelCheckBox, Path=IsChecked}"
                                           IsChecked="{Binding Path=ViewModel.UseDefaultKey, Mode=TwoWay}"
                                           Margin="0,0,0,4"/>
                             </WrapPanel>
 
                             <StackPanel Orientation="Vertical">
-                                <Label Content="{markup:Localize Connect_SecurityKey}"
+                                <Label Content="{localization:Localize Connect_SecurityKey}"
                                        Style="{StaticResource Label.Standard}"
                                        Target="{Binding ElementName=SecurityKeyTextBox}" />
                                 <TextBox Name="SecurityKeyTextBox"
@@ -295,15 +295,15 @@
                             Visibility="{Binding ViewModel.IsPassiveMode, Converter={StaticResource BooleanToVisibilityConverter}}">
                         <StackPanel Orientation="Vertical">
                             <ui:TextBlock Style="{StaticResource Section.Header}"
-                                          Text="{markup:Localize Connect_DecryptionSettings}"/>
+                                          Text="{localization:Localize Connect_DecryptionSettings}"/>
 
                             <CheckBox Name="PassiveUseDefaultKeyCheckBox"
-                                      Content="{markup:Localize Connect_UseDefaultSecureKey}"
+                                      Content="{localization:Localize Connect_UseDefaultSecureKey}"
                                       IsChecked="{Binding Path=ViewModel.UseDefaultKey, Mode=TwoWay}"
                                       Margin="0,0,0,8"/>
 
                             <StackPanel Orientation="Vertical">
-                                <Label Content="{markup:Localize Connect_CustomKey}"
+                                <Label Content="{localization:Localize Connect_CustomKey}"
                                        Style="{StaticResource Label.Standard}"
                                        Target="{Binding ElementName=PassiveSecurityKeyTextBox}" />
                                 <TextBox Name="PassiveSecurityKeyTextBox"

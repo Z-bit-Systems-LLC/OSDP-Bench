@@ -16,7 +16,7 @@ This example shows how to apply the new style system to improve consistency and 
                     HorizontalAlignment="Right" 
                     VerticalAlignment="Center">
             <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0 0 15 0">
-                <TextBlock Text="{markup:Localize Activity_Tx}" VerticalAlignment="Center" Margin="0 0 5 0"/>
+                <TextBlock Text="{localization:Localize Activity_Tx}" VerticalAlignment="Center" Margin="0 0 5 0"/>
                 <controls:LedControl LastActivityTime="{Binding Path=ViewModel.LastTxActiveTime}" 
                                    LedColor="Red" VerticalAlignment="Center"/>
             </StackPanel>
@@ -28,7 +28,7 @@ This example shows how to apply the new style system to improve consistency and 
         <StackPanel Orientation="Vertical">
             <ui:TextBlock VerticalAlignment="Center"
                          FontTypography="Subtitle"
-                         Text="{markup:Localize Connect_SerialPortSelection}" 
+                         Text="{localization:Localize Connect_SerialPortSelection}" 
                          TextWrapping="Wrap"
                          Margin="0,0,0,10"/>
             <!-- Form content -->
@@ -48,10 +48,10 @@ This example shows how to apply the new style system to improve consistency and 
     <ui:Card Style="{StaticResource Card.Standard}">
         <StackPanel Style="{StaticResource Card.Content}">
             <ui:TextBlock Style="{StaticResource Section.Header}"
-                         Text="{markup:Localize Connect_SerialPortSelection}"/>
+                         Text="{localization:Localize Connect_SerialPortSelection}"/>
             
             <!-- Form content with consistent styling -->
-            <ContentControl Tag="{markup:Localize Connect_SerialPort}"
+            <ContentControl Tag="{localization:Localize Connect_SerialPort}"
                            Template="{StaticResource Template.FormField}">
                 <ComboBox Style="{StaticResource ComboBox.Standard}"
                          ItemsSource="{Binding ViewModel.AvailableSerialPorts}"

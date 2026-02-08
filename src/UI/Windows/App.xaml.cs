@@ -10,7 +10,6 @@ using OSDPBench.Windows.Views.Pages;
 using OSDPBench.Windows.Views.Windows;
 using Wpf.Ui;
 using Wpf.Ui.Abstractions;
-
 namespace OSDPBench.Windows;
 
 /// <summary>
@@ -78,6 +77,9 @@ public partial class App
     private async void OnStartup(object sender, StartupEventArgs e)
     {
         Host.Start();
+
+        // Register the localization provider for Guidelines XAML markup extensions
+        ZBitSystems.Wpf.UI.Localization.LocalizationService.Provider = new ResourceLocalizationProvider();
 
         // Initialize the localization service to apply saved culture
         var userSettingsService = Host.Services.GetService<IUserSettingsService>();

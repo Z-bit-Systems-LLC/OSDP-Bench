@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
-             xmlns:markup="clr-namespace:OSDPBench.Windows.Markup"
+             xmlns:localization="clr-namespace:ZBitSystems.Wpf.UI.Localization;assembly=ZBitSystems.Wpf.UI"
              mc:Ignorable="d" 
              d:DesignHeight="250" d:DesignWidth="450">
     <Grid Margin="20">
@@ -18,7 +18,7 @@
         <!-- Icon and Title -->
         <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,20">
             <ui:SymbolIcon Symbol="Globe24" FontSize="32" Margin="0,0,15,0"/>
-            <TextBlock Text="{markup:Localize Language_SystemMismatchTitle}" 
+            <TextBlock Text="{localization:Localize Language_SystemMismatchTitle}" 
                        Style="{StaticResource Text.Title}"
                        VerticalAlignment="Center"/>
         </StackPanel>
@@ -33,7 +33,7 @@
         
         <!-- Don't ask again checkbox -->
         <CheckBox Grid.Row="2" 
-                  Content="{markup:Localize Language_DontAskAgain}"
+                  Content="{localization:Localize Language_DontAskAgain}"
                   IsChecked="{Binding DontAskAgain}"
                   Margin="0,0,0,20"/>
         
@@ -41,12 +41,12 @@
         <StackPanel Grid.Row="3" 
                     Orientation="Horizontal" 
                     HorizontalAlignment="Right">
-            <ui:Button Content="{markup:Localize Common_Yes}"
+            <ui:Button Content="{localization:Localize Common_Yes}"
                        Command="{Binding YesCommand}"
                        Style="{StaticResource Button.Primary}"
                        Margin="0,0,10,0"
                        MinWidth="80"/>
-            <ui:Button Content="{markup:Localize Common_No}"
+            <ui:Button Content="{localization:Localize Common_No}"
                        Command="{Binding NoCommand}"
                        Style="{StaticResource Button.Secondary}"
                        MinWidth="80"/>

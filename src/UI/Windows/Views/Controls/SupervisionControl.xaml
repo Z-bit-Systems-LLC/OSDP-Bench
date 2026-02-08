@@ -6,7 +6,7 @@
              xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
              xmlns:controls="clr-namespace:OSDPBench.Windows.Views.Controls"
              xmlns:models="clr-namespace:OSDPBench.Core.Models;assembly=OSDPBench.Core"
-             xmlns:markup="clr-namespace:OSDPBench.Windows.Markup"
+             xmlns:localization="clr-namespace:ZBitSystems.Wpf.UI.Localization;assembly=ZBitSystems.Wpf.UI"
              d:DataContext="{d:DesignInstance controls:SupervisionControl,
                                             IsDesignTimeCreatable=False}"
              mc:Ignorable="d"
@@ -31,7 +31,7 @@
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
                 <TextBlock Grid.Column="0"
-                           Text="{markup:Localize Supervision_TamperStatus}"
+                           Text="{localization:Localize Supervision_TamperStatus}"
                            Style="{StaticResource Text.Body}"
                            VerticalAlignment="Center"
                            Margin="0,0,12,0"/>
@@ -39,7 +39,7 @@
                         Name="TamperBadge"
                         Style="{StaticResource Badge.Success.Small}">
                     <TextBlock Name="TamperBadgeText"
-                               Text="{markup:Localize Supervision_Unknown}"
+                               Text="{localization:Localize Supervision_Unknown}"
                                Style="{StaticResource Badge.Text.Small}"/>
                 </Border>
                 <TextBlock Grid.Column="2"
@@ -57,7 +57,7 @@
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
                 <TextBlock Grid.Column="0"
-                           Text="{markup:Localize Supervision_PowerStatus}"
+                           Text="{localization:Localize Supervision_PowerStatus}"
                            Style="{StaticResource Text.Body}"
                            VerticalAlignment="Center"
                            Margin="0,0,12,0"/>
@@ -65,7 +65,7 @@
                         Name="PowerBadge"
                         Style="{StaticResource Badge.Success.Small}">
                     <TextBlock Name="PowerBadgeText"
-                               Text="{markup:Localize Supervision_Unknown}"
+                               Text="{localization:Localize Supervision_Unknown}"
                                Style="{StaticResource Badge.Text.Small}"/>
                 </Border>
                 <TextBlock Grid.Column="2"
@@ -83,7 +83,7 @@
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
                 <TextBlock Grid.Column="0"
-                           Text="{markup:Localize Supervision_CommunicationStatus}"
+                           Text="{localization:Localize Supervision_CommunicationStatus}"
                            Style="{StaticResource Text.Body}"
                            VerticalAlignment="Center"
                            Margin="0,0,12,0"/>
@@ -91,7 +91,7 @@
                         Name="OnlineBadge"
                         Style="{StaticResource Badge.Success.Small}">
                     <TextBlock Name="OnlineBadgeText"
-                               Text="{markup:Localize Supervision_Unknown}"
+                               Text="{localization:Localize Supervision_Unknown}"
                                Style="{StaticResource Badge.Text.Small}"/>
                 </Border>
                 <TextBlock Grid.Column="2"
@@ -111,11 +111,11 @@
 
             <DockPanel Grid.Row="0"
                        Margin="0,0,20,5">
-                <Label Content="{markup:Localize Supervision_EventHistory}"
+                <Label Content="{localization:Localize Supervision_EventHistory}"
                        Style="{StaticResource Label.Standard}"
                        VerticalAlignment="Bottom"
                        DockPanel.Dock="Left"/>
-                <ui:Button Content="{markup:Localize Supervision_ClearHistory}"
+                <ui:Button Content="{localization:Localize Supervision_ClearHistory}"
                            Appearance="Secondary"
                            DockPanel.Dock="Right"
                            HorizontalAlignment="Right"
@@ -156,7 +156,7 @@
                     </Style>
                 </ui:DataGrid.CellStyle>
                 <ui:DataGrid.Columns>
-                    <DataGridTextColumn Header="{markup:Localize Supervision_ColumnDateTime}"
+                    <DataGridTextColumn Header="{localization:Localize Supervision_ColumnDateTime}"
                                         Binding="{Binding Timestamp, StringFormat='MM/dd/yyyy HH:mm:ss'}"
                                         Width="Auto">
                         <DataGridTextColumn.ElementStyle>
@@ -166,7 +166,7 @@
                             </Style>
                         </DataGridTextColumn.ElementStyle>
                     </DataGridTextColumn>
-                    <DataGridTextColumn Header="{markup:Localize Supervision_ColumnEventType}"
+                    <DataGridTextColumn Header="{localization:Localize Supervision_ColumnEventType}"
                                         Binding="{Binding EventType}"
                                         Width="Auto">
                         <DataGridTextColumn.ElementStyle>
@@ -176,7 +176,7 @@
                             </Style>
                         </DataGridTextColumn.ElementStyle>
                     </DataGridTextColumn>
-                    <DataGridTextColumn Header="{markup:Localize Supervision_ColumnStatus}"
+                    <DataGridTextColumn Header="{localization:Localize Supervision_ColumnStatus}"
                                         Binding="{Binding Status}"
                                         Width="*">
                         <DataGridTextColumn.ElementStyle>

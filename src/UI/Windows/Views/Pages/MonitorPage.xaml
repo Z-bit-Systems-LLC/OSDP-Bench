@@ -7,11 +7,11 @@
       xmlns:local="clr-namespace:OSDPBench.Windows.Views.Pages"
       xmlns:models="clr-namespace:OSDPBench.Core.Models;assembly=OSDPBench.Core"
       xmlns:converters="clr-namespace:ZBitSystems.Wpf.UI.Converters;assembly=ZBitSystems.Wpf.UI"
-      xmlns:markup="clr-namespace:OSDPBench.Windows.Markup"      mc:Ignorable="d" 
+      xmlns:localization="clr-namespace:ZBitSystems.Wpf.UI.Localization;assembly=ZBitSystems.Wpf.UI"      mc:Ignorable="d" 
       d:DataContext="{d:DesignInstance local:MonitorPage,
 									 IsDesignTimeCreatable=False}"
       d:DesignHeight="450" d:DesignWidth="800"
-      Title="{markup:Localize Page_Monitor}">
+      Title="{localization:Localize Page_Monitor}">
 	
 	<Page.Resources>
 		<converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
@@ -31,7 +31,7 @@
 						<StackPanel Orientation="Vertical" Margin="15 10">
 							<!-- Line Quality Display -->
 							<StackPanel Orientation="Vertical" HorizontalAlignment="Center" Margin="0 5 0 15">
-								<TextBlock Text="{markup:Localize Monitor_LineQuality}"
+								<TextBlock Text="{localization:Localize Monitor_LineQuality}"
 								           Style="{StaticResource Text.Body}"
 								           HorizontalAlignment="Center"/>
 								<TextBlock HorizontalAlignment="Center" Margin="0 5 0 0">
@@ -55,7 +55,7 @@
 
 								<!-- Commands Sent -->
 								<StackPanel Grid.Column="0" Orientation="Vertical" Margin="5 0">
-									<TextBlock Text="{markup:Localize Monitor_CommandsSent}"
+									<TextBlock Text="{localization:Localize Monitor_CommandsSent}"
 									           Style="{StaticResource Text.Body}"
 									           HorizontalAlignment="Center"
 									           FontSize="{StaticResource FontSize.Caption}"
@@ -71,7 +71,7 @@
 
 								<!-- Replies Received -->
 								<StackPanel Grid.Column="1" Orientation="Vertical" Margin="5 0">
-									<TextBlock Text="{markup:Localize Monitor_RepliesReceived}"
+									<TextBlock Text="{localization:Localize Monitor_RepliesReceived}"
 									           Style="{StaticResource Text.Body}"
 									           HorizontalAlignment="Center"
 									           FontSize="{StaticResource FontSize.Caption}"
@@ -87,7 +87,7 @@
 
 								<!-- Polls -->
 								<StackPanel Grid.Column="2" Orientation="Vertical" Margin="5 0">
-									<TextBlock Text="{markup:Localize Monitor_Polls}"
+									<TextBlock Text="{localization:Localize Monitor_Polls}"
 									           Style="{StaticResource Text.Body}"
 									           HorizontalAlignment="Center"
 									           FontSize="{StaticResource FontSize.Caption}"
@@ -103,7 +103,7 @@
 
 								<!-- NAKs -->
 								<StackPanel Grid.Column="3" Orientation="Vertical" Margin="5 0">
-									<TextBlock Text="{markup:Localize Monitor_Naks}"
+									<TextBlock Text="{localization:Localize Monitor_Naks}"
 									           Style="{StaticResource Text.Body}"
 									           HorizontalAlignment="Center"
 									           FontSize="{StaticResource FontSize.Caption}"
@@ -131,7 +131,7 @@
 									           VerticalAlignment="Center">
 										<Run Text="{Binding ViewModel.TotalPacketsCaptured, Mode=OneWay}"/>
 										<Run Text=" "/>
-										<Run Text="{markup:Localize Monitor_PacketsCaptured}"/>
+										<Run Text="{localization:Localize Monitor_PacketsCaptured}"/>
 									</TextBlock>
 									<ProgressBar Value="{Binding ViewModel.BufferUsagePercentage, Mode=OneWay}"
 									             Minimum="0"
@@ -149,16 +149,16 @@
 								<!-- Export Button with Dropdown -->
 								<ui:Button Grid.Column="1"
 								           x:Name="ExportButton"
-								           Content="{markup:Localize Monitor_Export}"
+								           Content="{localization:Localize Monitor_Export}"
 								           Click="ExportButton_Click">
 									<ui:Button.Icon>
 										<ui:SymbolIcon Symbol="ArrowDownload24"/>
 									</ui:Button.Icon>
 									<ui:Button.ContextMenu>
 										<ContextMenu>
-											<MenuItem Header="{markup:Localize Export_OsdpCapture}"
+											<MenuItem Header="{localization:Localize Export_OsdpCapture}"
 											          Command="{Binding ViewModel.ExportOsdpCaptureCommand}"/>
-											<MenuItem Header="{markup:Localize Export_ParsedText}"
+											<MenuItem Header="{localization:Localize Export_ParsedText}"
 											          Command="{Binding ViewModel.ExportParsedTextCommand}"/>
 										</ContextMenu>
 									</ui:Button.ContextMenu>
@@ -184,27 +184,27 @@
 								<DataTemplate>
 									<ui:SymbolIcon Symbol="ChevronDown24"
 								               Margin="5,0,0,0"
-								               ToolTip="{markup:Localize Monitor_Expand}"
+								               ToolTip="{localization:Localize Monitor_Expand}"
 								               Cursor="Hand"/>
 								</DataTemplate>
 							</DataGridTemplateColumn.CellTemplate>
 						</DataGridTemplateColumn>
 
-						<DataGridTextColumn Header="{markup:Localize Monitor_TimeStamp}" Binding="{Binding LocalTimestamp, StringFormat={}{0:HH:mm:ss.fff}}" />
-						<DataGridTextColumn Header="{markup:Localize Monitor_Interval}" Binding="{Binding Interval.TotalMilliseconds, StringFormat={}{0:N0}}" />
-						<DataGridTextColumn Header="{markup:Localize Monitor_Direction}" Binding="{Binding Direction}" />
-						<DataGridTextColumn Header="{markup:Localize Monitor_Address}" Binding="{Binding Packet.Address}" />
-						<DataGridTextColumn Header="{markup:Localize Monitor_Type}" Binding="{Binding Type}" />
+						<DataGridTextColumn Header="{localization:Localize Monitor_TimeStamp}" Binding="{Binding LocalTimestamp, StringFormat={}{0:HH:mm:ss.fff}}" />
+						<DataGridTextColumn Header="{localization:Localize Monitor_Interval}" Binding="{Binding Interval.TotalMilliseconds, StringFormat={}{0:N0}}" />
+						<DataGridTextColumn Header="{localization:Localize Monitor_Direction}" Binding="{Binding Direction}" />
+						<DataGridTextColumn Header="{localization:Localize Monitor_Address}" Binding="{Binding Packet.Address}" />
+						<DataGridTextColumn Header="{localization:Localize Monitor_Type}" Binding="{Binding Type}" />
 
 						<!-- Security Status Column -->
-						<DataGridTemplateColumn Header="{markup:Localize Monitor_Security}">
+						<DataGridTemplateColumn Header="{localization:Localize Monitor_Security}">
 							<DataGridTemplateColumn.CellTemplate>
 								<DataTemplate>
 									<Grid>
 										<!-- Clear Text (Red outlined) - not using secure channel -->
 										<Border Style="{StaticResource Badge.Error.Outlined.Small}"
 										        Visibility="{Binding IsSecureMessage, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=Invert}">
-											<TextBlock Text="{markup:Localize Monitor_ClearText}"
+											<TextBlock Text="{localization:Localize Monitor_ClearText}"
 											           Style="{StaticResource Badge.Text.Error.Small}"/>
 										</Border>
 
@@ -224,7 +224,7 @@
 													</Style.Triggers>
 												</Style>
 											</Border.Style>
-											<TextBlock Text="{markup:Localize Monitor_EncryptedDefaultKey}"
+											<TextBlock Text="{localization:Localize Monitor_EncryptedDefaultKey}"
 											           Style="{StaticResource Badge.Text.Error.Small}"/>
 										</Border>
 
@@ -245,7 +245,7 @@
 													</Style.Triggers>
 												</Style>
 											</Border.Style>
-											<TextBlock Text="{markup:Localize Monitor_NoDecryption}"
+											<TextBlock Text="{localization:Localize Monitor_NoDecryption}"
 											           Style="{StaticResource Badge.Text.Small}"/>
 										</Border>
 
@@ -266,7 +266,7 @@
 													</Style.Triggers>
 												</Style>
 											</Border.Style>
-											<TextBlock Text="{markup:Localize Monitor_Encrypted}"
+											<TextBlock Text="{localization:Localize Monitor_Encrypted}"
 											           Style="{StaticResource Badge.Text.Small}"/>
 										</Border>
 									</Grid>

@@ -6,7 +6,7 @@
              xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
              xmlns:models="clr-namespace:OSDPBench.Core.Models;assembly=OSDPBench.Core"
              xmlns:converters="clr-namespace:ZBitSystems.Wpf.UI.Converters;assembly=ZBitSystems.Wpf.UI"
-             xmlns:markup="clr-namespace:OSDPBench.Windows.Markup"
+             xmlns:localization="clr-namespace:ZBitSystems.Wpf.UI.Localization;assembly=ZBitSystems.Wpf.UI"
              d:DataContext="{d:DesignInstance models:FileTransferParameters,
                                             IsDesignTimeCreatable=false}"
              mc:Ignorable="d"
@@ -18,11 +18,11 @@
                 Margin="{StaticResource Margin.Card}">
         
         <StackPanel Orientation="Vertical" >
-            <Label Content="{markup:Localize Manage_SelectedFile}"
+            <Label Content="{localization:Localize Manage_SelectedFile}"
                    Style="{StaticResource Label.Standard}"
                    Target="{Binding ElementName=FilePathTextBox}"/>
             <DockPanel>
-                <ui:Button Content="{markup:Localize Manage_Browse}"
+                <ui:Button Content="{localization:Localize Manage_Browse}"
                            Style="{StaticResource Button.Secondary}"
                            DockPanel.Dock="Right"
                            Click="BrowseFileButton_OnClick"
@@ -38,7 +38,7 @@
         </StackPanel>
 
         <StackPanel Orientation="Vertical">
-            <Label Content="{markup:Localize Manage_Progress}"
+            <Label Content="{localization:Localize Manage_Progress}"
                    Style="{StaticResource Label.Standard}"/>
             <ProgressBar Value="{Binding ProgressPercentage, Mode=OneWay}"
                          Style="{StaticResource ProgressBar.FileTransfer}"/>
@@ -46,9 +46,9 @@
                 <TextBlock Style="{StaticResource Text.Caption}"
                            HorizontalAlignment="Left">
                     <Run Text="{Binding TransferredBytes, StringFormat={}{0:N0}}"/>
-                    <Run Text="{markup:Localize Manage_BytesOf}"/>
+                    <Run Text="{localization:Localize Manage_BytesOf}"/>
                     <Run Text="{Binding TotalBytes, StringFormat={}{0:N0}}"/>
-                    <Run Text="{markup:Localize Manage_Bytes}"/>
+                    <Run Text="{localization:Localize Manage_Bytes}"/>
                 </TextBlock>
             </Grid>
         </StackPanel>

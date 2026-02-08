@@ -6,7 +6,7 @@
              xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
              xmlns:controls="clr-namespace:OSDPBench.Windows.Views.Controls"
              xmlns:models="clr-namespace:OSDPBench.Core.Models;assembly=OSDPBench.Core"
-             xmlns:markup="clr-namespace:OSDPBench.Windows.Markup"
+             xmlns:localization="clr-namespace:ZBitSystems.Wpf.UI.Localization;assembly=ZBitSystems.Wpf.UI"
              d:DataContext="{d:DesignInstance controls:MonitorCardReadsControl,
                                             IsDesignTimeCreatable=False}"
              mc:Ignorable="d"
@@ -20,7 +20,7 @@
         <StackPanel Grid.Row="0" 
                     Orientation="Vertical" 
                     Margin="0,0,0,10">
-            <Label Content="{markup:Localize Monitor_LastCardRead}"
+            <Label Content="{localization:Localize Monitor_LastCardRead}"
                    Style="{StaticResource Label.Standard}"
                    Target="{Binding ElementName=CardNumberTextBox}" />
             <TextBox Name="CardNumberTextBox"
@@ -38,11 +38,11 @@
             
             <DockPanel Grid.Row="0" 
                        Margin="0,0,20,5">
-                <Label Content="{markup:Localize Monitor_ReadHistory}"
+                <Label Content="{localization:Localize Monitor_ReadHistory}"
                        Style="{StaticResource Label.Standard}"
                        VerticalAlignment="Bottom"
                        DockPanel.Dock="Left"/>
-                <ui:Button Content="{markup:Localize Monitor_ClearHistory}"
+                <ui:Button Content="{localization:Localize Monitor_ClearHistory}"
                            Appearance="Secondary"
                            DockPanel.Dock="Right"
                            HorizontalAlignment="Right"
@@ -83,7 +83,7 @@
                     </Style>
                 </ui:DataGrid.CellStyle>
                 <ui:DataGrid.Columns>
-                    <DataGridTextColumn Header="{markup:Localize Monitor_ColumnDateTime}" 
+                    <DataGridTextColumn Header="{localization:Localize Monitor_ColumnDateTime}" 
                                            Binding="{Binding Timestamp, StringFormat='MM/dd/yyyy HH:mm:ss'}"
                                            Width="150">
                         <DataGridTextColumn.ElementStyle>
@@ -93,7 +93,7 @@
                             </Style>
                         </DataGridTextColumn.ElementStyle>
                     </DataGridTextColumn>
-                    <DataGridTemplateColumn Header="{markup:Localize Monitor_ColumnCardNumber}" 
+                    <DataGridTemplateColumn Header="{localization:Localize Monitor_ColumnCardNumber}" 
                                                Width="*">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>

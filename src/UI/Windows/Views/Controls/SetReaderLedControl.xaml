@@ -4,13 +4,13 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:controls="clr-namespace:OSDPBench.Windows.Views.Controls"
-             xmlns:markup="clr-namespace:OSDPBench.Windows.Markup"
+             xmlns:localization="clr-namespace:ZBitSystems.Wpf.UI.Localization;assembly=ZBitSystems.Wpf.UI"
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance controls:SetReaderLedControl}"
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid>
         <StackPanel Style="{StaticResource Section.Container}">
-            <Label Content="{markup:Localize Manage_LedColor}"
+            <Label Content="{localization:Localize Manage_LedColor}"
                    Style="{StaticResource Label.Standard}"
                    Target="{Binding ElementName=ColorComboBox}" />
             <ComboBox Name="ColorComboBox"

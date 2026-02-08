@@ -2,7 +2,7 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
                     xmlns:controls="clr-namespace:OSDPBench.Windows.Views.Controls"
-                    xmlns:markup="clr-namespace:OSDPBench.Windows.Markup"
+                    xmlns:localization="clr-namespace:ZBitSystems.Wpf.UI.Localization;assembly=ZBitSystems.Wpf.UI"
                     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d">
 
@@ -49,7 +49,7 @@
                                    VerticalAlignment="Center"
                                    Margin="0,0,16,0">
                             <TextBlock.Text>
-                                <MultiBinding StringFormat="{markup:Localize Status_ConnectionFormat}">
+                                <MultiBinding StringFormat="{localization:Localize Status_ConnectionFormat}">
                                     <Binding Path="ViewModel.ConnectedAddress" />
                                     <Binding Path="ViewModel.ConnectedBaudRate" />
                                 </MultiBinding>
@@ -60,7 +60,7 @@
                         <TextBlock VerticalAlignment="Center"
                                    Margin="0,0,16,0"
                                    FontWeight="Bold"
-                                   Text="{Binding Path=ViewModel.ConnectedBaudRate, StringFormat={markup:Localize Status_PassiveMonitoringFormat}}">
+                                   Text="{Binding Path=ViewModel.ConnectedBaudRate, StringFormat={localization:Localize Status_PassiveMonitoringFormat}}">
                             <TextBlock.Style>
                                 <Style TargetType="TextBlock" BasedOn="{StaticResource Text.Body}">
                                     <Setter Property="Visibility" Value="Collapsed"/>
@@ -90,7 +90,7 @@
                                     </Style.Triggers>
                                 </Style>
                             </Border.Style>
-                            <TextBlock Text="{markup:Localize Monitor_ClearText}"
+                            <TextBlock Text="{localization:Localize Monitor_ClearText}"
                                        Style="{StaticResource Badge.Text.Error}"/>
                         </Border>
 
@@ -111,7 +111,7 @@
                                     </Style.Triggers>
                                 </Style>
                             </Border.Style>
-                            <TextBlock Text="{markup:Localize Monitor_EncryptedDefaultKey}"
+                            <TextBlock Text="{localization:Localize Monitor_EncryptedDefaultKey}"
                                        Style="{StaticResource Badge.Text.Error}"/>
                         </Border>
 
@@ -132,7 +132,7 @@
                                     </Style.Triggers>
                                 </Style>
                             </Border.Style>
-                            <TextBlock Text="{markup:Localize Monitor_Encrypted}"
+                            <TextBlock Text="{localization:Localize Monitor_Encrypted}"
                                        Style="{StaticResource Badge.Text}"/>
                         </Border>
 
@@ -148,13 +148,13 @@
                                     </Style.Triggers>
                                 </Style>
                             </Border.Style>
-                            <TextBlock Text="{markup:Localize Monitor_PassiveMonitoring}"
+                            <TextBlock Text="{localization:Localize Monitor_PassiveMonitoring}"
                                        Style="{StaticResource Badge.Text}"/>
                         </Border>
 
                         <!-- TX Activity Indicator -->
                         <StackPanel Style="{StaticResource Activity.Container}">
-                            <TextBlock Text="{markup:Localize Activity_Tx}" 
+                            <TextBlock Text="{localization:Localize Activity_Tx}" 
                                        Style="{StaticResource Activity.Label}"
                                        FontWeight="Bold"/>
                             <controls:LedControl LastActivityTime="{Binding Path=ViewModel.LastTxActiveTime}" 
@@ -165,7 +165,7 @@
                         <!-- RX Activity Indicator -->
                         <StackPanel Style="{StaticResource Activity.Container}"
                                     Margin="0">
-                            <TextBlock Text="{markup:Localize Activity_Rx}" 
+                            <TextBlock Text="{localization:Localize Activity_Rx}" 
                                        Style="{StaticResource Activity.Label}"
                                        FontWeight="Bold"/>
                             <controls:LedControl LastActivityTime="{Binding Path=ViewModel.LastRxActiveTime}" 
