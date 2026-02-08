@@ -69,18 +69,12 @@ OSDP Bench is available for purchase on multiple platforms:
 
 ### Project Documentation
 - **[Developer Guidelines](CLAUDE.md)** - Development guidelines and build commands
-- **[UI Style Guide](src/UI/Windows/Styles/StyleGuide.md)** - Comprehensive design system and styling guidelines
 
 ### Shared Libraries
-- **[Guidelines](lib/Guidelines/README.md)** - Shared WPF components and CI/CD documentation
+- **[Guidelines](https://github.com/Z-bit-Systems-LLC/Guidelines)** - Shared WPF components and CI/CD documentation
 
 ### Architecture Plans
 - **[Connection Plugin Architecture](docs/CONNECTION_PLUGIN_ARCHITECTURE.md)** - Plan for implementing pluggable connection types (Serial, Bluetooth, Network)
-
-### Localization
-- **[Localization Plan](docs/LOCALIZATION_PLAN.md)** - Multi-language support implementation
-- **[Language Switching](docs/LANGUAGE_SWITCHING_DEMO.md)** - Language switching functionality
-- **[Language Fixes](docs/LANGUAGE_SWITCHING_FIX.md)** - Language switching issue fixes
 
 ## Contributing
 
