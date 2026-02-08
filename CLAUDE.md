@@ -157,12 +157,17 @@ See `lib/Guidelines/src/ZBitSystems.Wpf.UI/Styles/StyleGuide.md` for:
 - **Always use standard styles** - Apply predefined styles from the design system instead of inline properties
 - **Use design tokens for spacing** - Reference `{StaticResource Margin.Card}` instead of hardcoding values
 - **Apply theme-aware semantic colors** - Use `{DynamicResource SemanticSuccessBrush}` for automatic light/dark theme support
-- **Follow the style hierarchy** - Check ComponentStyles.xaml and LayoutTemplates.xaml before creating custom styles
+- **Follow the style hierarchy** - Check the shared design system (Guidelines library) and LayoutTemplates.xaml before creating custom styles
 - **Update existing code** - When modifying files, replace inline styling with standard styles
 - **Create reusable patterns** - If you find yourself repeating XAML structures, consider adding a new style or template
 - **Use WrapPanel for responsive layouts** - When controls should be horizontal on wide screens but wrap to vertical on narrow screens, use WrapPanel instead of fixed Grid layouts
 - **Prefer dynamic resources for colors** - Use `{DynamicResource}` instead of `{StaticResource}` for colors to ensure theme compatibility
 
-For detailed UI styling guidelines and examples, see: `lib/Guidelines/src/ZBitSystems.Wpf.UI/Styles/StyleGuide.md`
+### Documentation References
 
-**Note:** OSDP-specific layout templates remain in `src/UI/Windows/Styles/LayoutTemplates.xaml`
+**Shared Design System (Guidelines Library):**
+- `lib/Guidelines/src/ZBitSystems.Wpf.UI/Styles/StyleGuide.md` - Complete style guide with design tokens, semantic colors, and component styles
+
+**OSDP-Specific Styling:**
+- `src/UI/Windows/Styles/LayoutTemplates.xaml` - Application-specific layout templates (connection status, page headers with activity indicators)
+- `src/UI/Windows/Styles/ExampleImplementation.md` - OSDP-specific implementation examples and migration guide
