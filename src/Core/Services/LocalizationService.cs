@@ -19,11 +19,11 @@ public class LocalizationService : ILocalizationService
         _userSettingsService = userSettingsService;
         
         // Initialize culture from settings or system default
-        if (_userSettingsService?.Settings.PreferredCulture != null)
+        if (_userSettingsService?.PreferredCulture != null)
         {
             try
             {
-                _currentCulture = new CultureInfo(_userSettingsService.Settings.PreferredCulture);
+                _currentCulture = new CultureInfo(_userSettingsService.PreferredCulture);
             }
             catch
             {
@@ -102,10 +102,9 @@ public class LocalizationService : ILocalizationService
         // Save preference to settings
         if (_userSettingsService != null)
         {
-            _ = Task.Run(async () => 
+            _ = Task.Run(async () =>
             {
-                await _userSettingsService.UpdateSettingsAsync(settings => 
-                    settings.PreferredCulture = culture.Name);
+                await _userSettingsService.UpdatePreferredCultureAsync(culture.Name);
             });
         }
         

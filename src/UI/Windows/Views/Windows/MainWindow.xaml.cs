@@ -1,5 +1,4 @@
 ﻿using System.Windows;
-using OSDPBench.Core.Services;
 using OSDPBench.Core.ViewModels.Windows;
 using OSDPBench.Windows.Services;
 using Wpf.Ui;
@@ -15,7 +14,7 @@ namespace OSDPBench.Windows.Views.Windows;
 /// </summary>
 public partial class MainWindow : INavigationWindow
 {
-    private readonly IUserSettingsService _userSettingsService;
+    private readonly AppUserSettingsService _settingsService;
     private readonly WindowStateManager _windowStateManager;
 
     // ReSharper disable once UnusedAutoPropertyAccessor.Global
@@ -24,11 +23,10 @@ public partial class MainWindow : INavigationWindow
     public MainWindow(MainWindowViewModel viewModel,
         INavigationViewPageProvider pageService,
         INavigationService navigationService,
-        IUserSettingsService userSettingsService)
+        AppUserSettingsService settingsService)
     {
-        _userSettingsService = userSettingsService;
-        var adapter = new UserSettingsWindowStateAdapter(userSettingsService.Settings);
-        _windowStateManager = new WindowStateManager(this, adapter);
+        _settingsService = settingsService;
+        _windowStateManager = new WindowStateManager(this, settingsService.Settings);
         ViewModel = viewModel;
         DataContext = this;
 
@@ -52,21 +50,21 @@ public partial class MainWindow : INavigationWindow
         try
         {
             _windowStateManager.SaveWindowState();
-            await _userSettingsService.SaveAsync();
+            await _settingsService.SaveAsync();
         }
         catch
         {
             // ignored
         }
     }
-        
+
     /// <inheritdoc />
     public INavigationView GetNavigation() => RootNavigation;
 
 
     /// <inheritdoc />
     public bool Navigate(Type pageType) => RootNavigation.Navigate(pageType);
-        
+
     /// <inheritdoc />
     public void SetServiceProvider(IServiceProvider serviceProvider)
     {

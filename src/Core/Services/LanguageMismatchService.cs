@@ -32,14 +32,14 @@ public class LanguageMismatchService : ILanguageMismatchService
     {
         // Only check if this is not the user's first time setting a language
         // (i.e., they have a saved preference)
-        if (string.IsNullOrEmpty(_userSettingsService.Settings.PreferredCulture))
+        if (string.IsNullOrEmpty(_userSettingsService.PreferredCulture))
         {
             // First time user - don't prompt, just use system language
             return;
         }
 
         // Check if user has disabled language mismatch checking
-        if (_userSettingsService.Settings.SkipLanguageMismatchCheck)
+        if (_userSettingsService.SkipLanguageMismatchCheck)
         {
             // User has opted out of language mismatch checks
             return;
@@ -61,8 +61,7 @@ public class LanguageMismatchService : ILanguageMismatchService
         // Save the "don't ask again" preference
         if (dontAskAgain)
         {
-            await _userSettingsService.UpdateSettingsAsync(settings => 
-                settings.SkipLanguageMismatchCheck = true);
+            await _userSettingsService.UpdateSkipLanguageMismatchCheckAsync(true);
         }
         
         if (userWantsToSwitch)

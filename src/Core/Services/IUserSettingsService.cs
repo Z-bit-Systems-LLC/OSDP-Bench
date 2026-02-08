@@ -1,5 +1,3 @@
-using OSDPBench.Core.Models;
-
 namespace OSDPBench.Core.Services;
 
 /// <summary>
@@ -8,26 +6,26 @@ namespace OSDPBench.Core.Services;
 public interface IUserSettingsService
 {
     /// <summary>
-    /// Gets the current user settings
+    /// Gets the user's preferred culture/language
     /// </summary>
-    UserSettings Settings { get; }
-    
-    /// <summary>
-    /// Loads user settings from storage
-    /// </summary>
-    /// <returns>Task representing the async operation</returns>
-    Task LoadAsync();
-    
-    /// <summary>
-    /// Saves user settings to storage
-    /// </summary>
-    /// <returns>Task representing the async operation</returns>
-    Task SaveAsync();
+    string PreferredCulture { get; }
 
     /// <summary>
-    /// Updates settings using an action and saves them
+    /// Gets whether to skip language mismatch checking
     /// </summary>
-    /// <param name="updateAction">Action to update the settings</param>
+    bool SkipLanguageMismatchCheck { get; }
+
+    /// <summary>
+    /// Updates the preferred culture and saves settings
+    /// </summary>
+    /// <param name="cultureName">The culture name to save</param>
     /// <returns>Task representing the async operation</returns>
-    Task UpdateSettingsAsync(Action<UserSettings> updateAction);
+    Task UpdatePreferredCultureAsync(string cultureName);
+
+    /// <summary>
+    /// Updates the skip language mismatch check preference and saves settings
+    /// </summary>
+    /// <param name="skip">Whether to skip language mismatch checking</param>
+    /// <returns>Task representing the async operation</returns>
+    Task UpdateSkipLanguageMismatchCheckAsync(bool skip);
 }

@@ -33,14 +33,14 @@ public class WindowsLanguageMismatchService : ILanguageMismatchService
         System.Diagnostics.Debug.WriteLine("LanguageMismatchService: Starting check...");
         
         // Only check if this is not the user's first time setting a language
-        if (string.IsNullOrEmpty(_userSettingsService.Settings.PreferredCulture))
+        if (string.IsNullOrEmpty(_userSettingsService.PreferredCulture))
         {
             System.Diagnostics.Debug.WriteLine("LanguageMismatchService: First time user - skipping");
             return;
         }
 
         // Check if the user has disabled language mismatch checking
-        if (_userSettingsService.Settings.SkipLanguageMismatchCheck)
+        if (_userSettingsService.SkipLanguageMismatchCheck)
         {
             return;
         }
@@ -62,8 +62,7 @@ public class WindowsLanguageMismatchService : ILanguageMismatchService
         // Save the "don't ask again" preference
         if (dontAskAgain)
         {
-            await _userSettingsService.UpdateSettingsAsync(settings => 
-                settings.SkipLanguageMismatchCheck = true);
+            await _userSettingsService.UpdateSkipLanguageMismatchCheckAsync(true);
         }
         
         if (userWantsToSwitch)
