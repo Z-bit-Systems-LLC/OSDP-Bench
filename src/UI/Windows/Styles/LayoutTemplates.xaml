@@ -6,10 +6,7 @@
                     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d">
 
-    <ResourceDictionary.MergedDictionaries>
-        <ResourceDictionary Source="DesignTokens.xaml"/>
-        <ResourceDictionary Source="ComponentStyles.xaml"/>
-    </ResourceDictionary.MergedDictionaries>
+    <!-- DesignTokens and ComponentStyles are loaded via App.xaml from Guidelines library -->
 
     <!-- Connection Status Style -->
     <Style x:Key="ConnectionStatusText" TargetType="TextBlock" BasedOn="{StaticResource Text.Body}">
