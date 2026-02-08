@@ -82,21 +82,10 @@ public partial class MainWindow : INavigationWindow
 
     public void CloseWindow() => Close();
 
-    /// <summary>
-    /// Forces visual refresh when moving between monitors with different DPI settings.
-    /// Fixes rendering glitches that occur during DPI transitions.
-    /// </summary>
+    /// <inheritdoc />
     protected override void OnDpiChanged(DpiScale oldDpi, DpiScale newDpi)
     {
         base.OnDpiChanged(oldDpi, newDpi);
-
-        // Force the window and its content to re-render
-        InvalidateVisual();
-
-        if (Content is FrameworkElement content)
-        {
-            content.InvalidateMeasure();
-            content.InvalidateArrange();
-        }
+        _windowStateManager.HandleDpiChanged();
     }
 }
