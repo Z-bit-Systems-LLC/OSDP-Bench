@@ -1,3 +1,6 @@
 [submodule "src/UI/UsbSerialForAndroid"]
 	path = src/UI/UsbSerialForAndroid
 	url = https://github.com/bytedreamer/UsbSerialForAndroid
+[submodule "lib/Guidelines"]
+	path = lib/Guidelines
+	url = https://github.com/Z-bit-Systems-LLC/Guidelines.git
