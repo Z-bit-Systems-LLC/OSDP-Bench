@@ -22,6 +22,7 @@ jobs:
       vmImage: 'windows-latest'
     steps:
       - checkout: self
+        submodules: true
       - template: build.yml
 
   - job: package
@@ -33,6 +34,7 @@ jobs:
       build
     steps:
       - checkout: self
+        submodules: true
         persistCredentials: true
         clean: true
       - template: package.yml

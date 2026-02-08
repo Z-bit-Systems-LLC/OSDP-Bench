@@ -2,7 +2,7 @@
 
 A professional tool for configuring and troubleshooting OSDP devices.
 
-[![.NET](https://img.shields.io/badge/.NET-8.0-blue)](https://dotnet.microsoft.com/)
+[![.NET](https://img.shields.io/badge/.NET-10.0-blue)](https://dotnet.microsoft.com/)
 [![License](https://img.shields.io/badge/License-Eclipse%202.0-green.svg)](LICENSE)
 
 ## About
@@ -21,7 +21,7 @@ Core functionality is under an open source license to help increase the adoption
 - **Packet Tracing** - View detailed OSDP communication packets
 - **Capture Packet Export** - Export captured packets for offline analysis and sharing
 - **Multi-language Support** - Available in multiple languages
-- **Cross-platform Core** - Core logic library built on .NET 8.0 can be reused across different platforms
+- **Cross-platform Core** - Core logic library built on .NET 10.0 can be reused across different platforms
 
 ## Get OSDP Bench
 
@@ -36,15 +36,15 @@ OSDP Bench is available for purchase on multiple platforms:
 
 ### Prerequisites
 
-- .NET 8.0 SDK or later
-- Windows 10/11 (for WinUI version)
+- .NET 10.0 SDK or later
+- Windows 10/11 (for Windows version)
 - Serial port access for device communication
 
 ### Building from Source
 
-1. Clone the repository:
+1. Clone the repository with submodules:
    ```bash
-   git clone https://github.com/bytedreamer/OSDP-Bench.git
+   git clone --recursive https://github.com/bytedreamer/OSDP-Bench.git
    cd OSDP-Bench
    ```
 
@@ -68,8 +68,11 @@ OSDP Bench is available for purchase on multiple platforms:
 ## Documentation
 
 ### Project Documentation
-- **[Developer Guidelines](docs/CLAUDE.md)** - Development guidelines and build commands
+- **[Developer Guidelines](CLAUDE.md)** - Development guidelines and build commands
 - **[UI Style Guide](src/UI/Windows/Styles/StyleGuide.md)** - Comprehensive design system and styling guidelines
+
+### Shared Libraries
+- **[Guidelines](lib/Guidelines/README.md)** - Shared WPF components and CI/CD documentation
 
 ### Architecture Plans
 - **[Connection Plugin Architecture](docs/CONNECTION_PLUGIN_ARCHITECTURE.md)** - Plan for implementing pluggable connection types (Serial, Bluetooth, Network)
