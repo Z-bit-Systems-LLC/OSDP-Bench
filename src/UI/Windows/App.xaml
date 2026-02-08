@@ -11,10 +11,11 @@
             <ResourceDictionary.MergedDictionaries>
                 <ui:ThemesDictionary />
                 <ui:ControlsDictionary />
-                <!-- OSDP Bench Design System -->
-                <ResourceDictionary Source="Styles/DesignTokens.xaml"/>
-                <ResourceDictionary Source="Styles/ThemeSemanticColors.xaml"/>
-                <ResourceDictionary Source="Styles/ComponentStyles.xaml"/>
+                <!-- Z-bit Systems Shared Design System -->
+                <ResourceDictionary Source="pack://application:,,,/ZBitSystems.Wpf.UI;component/Styles/DesignTokens.xaml"/>
+                <ResourceDictionary Source="pack://application:,,,/ZBitSystems.Wpf.UI;component/Styles/ThemeSemanticColors.xaml"/>
+                <ResourceDictionary Source="pack://application:,,,/ZBitSystems.Wpf.UI;component/Styles/ComponentStyles.xaml"/>
+                <!-- OSDP Bench Application-Specific Templates -->
                 <ResourceDictionary Source="Styles/LayoutTemplates.xaml"/>
             </ResourceDictionary.MergedDictionaries>
             

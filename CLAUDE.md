@@ -121,6 +121,38 @@ $sarif.runs[0].results | Where-Object { $_.level -eq 'warning' } | ForEach-Objec
 - Use meaningful variable names that reflect their purpose
 - Keep methods focused and small with a single responsibility
 
+## Shared UI Components
+
+This project uses the [Guidelines](https://github.com/Z-bit-Systems-LLC/Guidelines) shared WPF library for design system components.
+
+### Working with the Guidelines Submodule
+
+**Initial clone (new developers):**
+```bash
+git clone --recursive https://github.com/Z-bit-Systems-LLC/OSDP-Bench.git
+```
+
+**Update Guidelines to latest version:**
+```bash
+git submodule update --remote lib/Guidelines
+git add lib/Guidelines
+git commit -m "Update Guidelines submodule to latest version"
+```
+
+**Making changes to Guidelines:**
+If you need to modify the shared library:
+1. Make changes in `lib/Guidelines/`
+2. Test changes in OSDP-Bench (local project reference)
+3. Commit and push in Guidelines repository
+4. Update submodule reference in OSDP-Bench
+
+### Design System Reference
+See `lib/Guidelines/src/ZBitSystems.Wpf.UI/Styles/StyleGuide.md` for:
+- Available styles and design tokens
+- Standard components and layouts
+- Theme-aware semantic colors
+- Usage examples and best practices
+
 ## UI Style Guidelines
 - **Always use standard styles** - Apply predefined styles from the design system instead of inline properties
 - **Use design tokens for spacing** - Reference `{StaticResource Margin.Card}` instead of hardcoding values
@@ -131,4 +163,6 @@ $sarif.runs[0].results | Where-Object { $_.level -eq 'warning' } | ForEach-Objec
 - **Use WrapPanel for responsive layouts** - When controls should be horizontal on wide screens but wrap to vertical on narrow screens, use WrapPanel instead of fixed Grid layouts
 - **Prefer dynamic resources for colors** - Use `{DynamicResource}` instead of `{StaticResource}` for colors to ensure theme compatibility
 
-For detailed UI styling guidelines and examples, see: `src/UI/Windows/Styles/StyleGuide.md`
+For detailed UI styling guidelines and examples, see: `lib/Guidelines/src/ZBitSystems.Wpf.UI/Styles/StyleGuide.md`
+
+**Note:** OSDP-specific layout templates remain in `src/UI/Windows/Styles/LayoutTemplates.xaml`
