@@ -1,8 +1,7 @@
 ﻿using OSDPBench.Core.ViewModels.Windows;
 using System.ComponentModel;
-using System.IO;
-using System.Windows;
 using Wpf.Ui.Abstractions.Controls;
+using ZBitSystems.Wpf.UI.Helpers;
 using ZBitSystems.Wpf.UI.Services;
 
 namespace OSDPBench.Windows.Views.Pages;
@@ -12,10 +11,6 @@ namespace OSDPBench.Windows.Views.Pages;
 /// </summary>
 public sealed partial class InfoPage : INavigableView<MainWindowViewModel>, INotifyPropertyChanged, IDisposable
 {
-    const string EplFilePath = "pack://application:,,,/Assets/EPL.txt";
-    const string ApacheFilePath = "pack://application:,,,/Assets/Apache.txt";
-    const string MitFilePath = "pack://application:,,,/Assets/MIT.txt";
-
     private readonly ThemeManager _themeManager;
 
     public InfoPage(MainWindowViewModel viewModel)
@@ -26,44 +21,13 @@ public sealed partial class InfoPage : INavigableView<MainWindowViewModel>, INot
         _themeManager.PropertyChanged += OnThemePropertyChanged;
 
         InitializeComponent();
-            
-        Loaded += (_, _) =>
-        {
-            var info = Application.GetResourceStream(new Uri(EplFilePath));
-            if (info != null)
-            {
-                using StreamReader reader = new(info.Stream);
-                EplLicenseTextBlock.Text = reader.ReadToEnd();
-            }
-                
-            info = Application.GetResourceStream(new Uri(ApacheFilePath));
-            if (info != null)
-            {
-                using StreamReader reader = new(info.Stream);
-                ApacheLicenseTextBlock.Text = reader.ReadToEnd();
-            }
-
-            info = Application.GetResourceStream(new Uri(MitFilePath));
-            if (info != null)
-            {
-                using StreamReader reader = new(info.Stream);
-                MitLicenseTextBlock.Text = reader.ReadToEnd();
-            }
-        };
     }
 
     public MainWindowViewModel ViewModel { get; }
 
-    public string AppVersion
-    {
-        get
-        {
-            var version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
-            return version != null ? $"Version {version.Major}.{version.Minor}.{version.Build}" : string.Empty;
-        }
-    }
+    public string AppVersion => ApplicationInfoHelper.GetVersion();
 
-    public string CopyWriteNotice => $"\u00a9 {DateTime.Now.Year} Z-bit Systems, LLC";
+    public string CopyWriteNotice => ApplicationInfoHelper.GetCopyright();
 
     public bool IsDarkMode => _themeManager.IsDarkMode;
 
