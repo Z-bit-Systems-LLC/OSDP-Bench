@@ -6,7 +6,7 @@
       xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
       xmlns:local="clr-namespace:OSDPBench.Windows.Views.Pages"
       xmlns:models="clr-namespace:OSDPBench.Core.Models;assembly=OSDPBench.Core"
-      xmlns:converters="clr-namespace:OSDPBench.Windows.Converters"
+      xmlns:converters="clr-namespace:ZBitSystems.Wpf.UI.Converters;assembly=ZBitSystems.Wpf.UI"
       xmlns:markup="clr-namespace:OSDPBench.Windows.Markup"      mc:Ignorable="d" 
       d:DataContext="{d:DesignInstance local:MonitorPage,
 									 IsDesignTimeCreatable=False}"

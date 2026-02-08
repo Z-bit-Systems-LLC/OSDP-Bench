@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
              xmlns:models="clr-namespace:OSDPBench.Core.Models;assembly=OSDPBench.Core"
-             xmlns:converters="clr-namespace:OSDPBench.Windows.Converters"
+             xmlns:converters="clr-namespace:ZBitSystems.Wpf.UI.Converters;assembly=ZBitSystems.Wpf.UI"
              xmlns:markup="clr-namespace:OSDPBench.Windows.Markup"
              d:DataContext="{d:DesignInstance models:FileTransferParameters,
                                             IsDesignTimeCreatable=false}"

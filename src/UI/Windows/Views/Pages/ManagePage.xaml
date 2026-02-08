@@ -4,7 +4,7 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:OSDPBench.Windows.Views.Pages"
-      xmlns:converters="clr-namespace:OSDPBench.Windows.Converters"
+      xmlns:converters="clr-namespace:ZBitSystems.Wpf.UI.Converters;assembly=ZBitSystems.Wpf.UI"
       xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
       xmlns:markup="clr-namespace:OSDPBench.Windows.Markup"
       mc:Ignorable="d" 

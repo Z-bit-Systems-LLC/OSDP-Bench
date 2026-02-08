@@ -5,7 +5,8 @@
 	  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	  xmlns:pages="clr-namespace:OSDPBench.Windows.Views.Pages"
 	  xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
-	  xmlns:converters="clr-namespace:OSDPBench.Windows.Converters"
+	  xmlns:converters="clr-namespace:ZBitSystems.Wpf.UI.Converters;assembly=ZBitSystems.Wpf.UI"
+	  xmlns:localConverters="clr-namespace:OSDPBench.Windows.Converters"
 	  xmlns:markup="clr-namespace:OSDPBench.Windows.Markup"
 	  mc:Ignorable="d"
 	  d:DataContext="{d:DesignInstance pages:ConfigurationPage,
@@ -14,7 +15,7 @@
 	  Title="{markup:Localize Page_Connect}">
 
     <Page.Resources>
-        <converters:StatusLevelConverter x:Key="StatusLevelConverter" />
+        <localConverters:StatusLevelConverter x:Key="StatusLevelConverter" />
         <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
         <converters:InverseBoolConverter x:Key="InverseBoolConverter" />
     </Page.Resources>
