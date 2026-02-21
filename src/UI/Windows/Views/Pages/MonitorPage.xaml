@@ -27,7 +27,7 @@
 			<Border Style="{StaticResource Card.Bordered}">
 				<StackPanel Orientation="Vertical">
 					<!-- Statistics Panel -->
-					<Border Style="{StaticResource Card.Bordered}" Margin="{StaticResource Margin.Card}">
+					<Border Style="{StaticResource Card.Bordered}">
 						<StackPanel Orientation="Vertical" Margin="{StaticResource Margin.Card}">
 							<!-- Line Quality Display -->
 							<StackPanel Orientation="Vertical" HorizontalAlignment="Center" Margin="{StaticResource Margin.Section}">

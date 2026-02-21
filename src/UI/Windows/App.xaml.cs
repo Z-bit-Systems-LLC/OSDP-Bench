@@ -29,7 +29,7 @@ public partial class App
     /// </summary>
     protected static IHost BuildHost(Action<IServiceCollection>? configureOverrides = null)
     {
-        return Microsoft.Extensions.Hosting.Host
+        return Host
             .CreateDefaultBuilder()
             .ConfigureServices((_, services) =>
             {
@@ -92,7 +92,7 @@ public partial class App
     /// <summary>
     /// Occurs when the application is loading.
     /// </summary>
-    private async void OnStartup(object sender, StartupEventArgs e)
+    private void OnStartup(object sender, StartupEventArgs e)
     {
         // Register the localization provider for Guidelines XAML markup extensions
         // Must be set before Host.Start() which creates windows that use localization

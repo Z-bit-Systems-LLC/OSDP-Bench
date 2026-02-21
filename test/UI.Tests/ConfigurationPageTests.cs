@@ -1,10 +1,9 @@
-using FlaUI.Core.AutomationElements;
 using NUnit.Framework;
 
 namespace OSDPBench.UI.Tests;
 
 [TestFixture]
-public class ConfigurationPageTests : UITestBase
+public class ConfigurationPageTests : UiTestBase
 {
     [SetUp]
     public void NavigateToConfigurationPage()
@@ -26,9 +25,6 @@ public class ConfigurationPageTests : UITestBase
     public void StartDiscoveryButtonVisibleByDefault()
     {
         // In discovery mode (the default), the Start Discovery button should be visible
-        var startDiscoveryButton = MainWindow?.FindFirstDescendant(cf =>
-            cf.ByAutomationId("StartDiscoveryButton"));
-
         // The button may not have an AutomationId yet, so verify the page loaded
         // by checking for the serial port combo which is always visible
         var serialPortComboBox = WaitForElement("SerialPortComboBox");
@@ -39,7 +35,7 @@ public class ConfigurationPageTests : UITestBase
     [Test]
     public void DisconnectButtonExists()
     {
-        var disconnectButton = WaitForElement("DisconnectButton");
+        _ = WaitForElement("DisconnectButton");
         // Disconnect button exists in the XAML tree but may be hidden (Collapsed)
         // when not connected — that's expected behavior
         Assert.Pass("Disconnect button AutomationId is registered in the XAML.");

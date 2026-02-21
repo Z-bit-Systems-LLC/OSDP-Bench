@@ -1,10 +1,9 @@
-using FlaUI.Core.Definitions;
 using NUnit.Framework;
 
 namespace OSDPBench.UI.Tests;
 
 [TestFixture]
-public class SmokeTests : UITestBase
+public class SmokeTests : UiTestBase
 {
     [Test]
     public void ApplicationLaunches()

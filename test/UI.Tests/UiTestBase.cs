@@ -1,4 +1,3 @@
-using System.Windows;
 using System.Windows.Threading;
 using FlaUI.Core.AutomationElements;
 using FlaUI.UIA3;
@@ -15,7 +14,7 @@ public class AssemblySetup
 {
     internal static TestApp? App { get; private set; }
     internal static UIA3Automation? Automation { get; private set; }
-    internal static FlaUI.Core.AutomationElements.Window? MainWindow { get; private set; }
+    internal static Window? MainWindow { get; private set; }
     private static Thread? _staThread;
 
     [OneTimeSetUp]
@@ -42,16 +41,16 @@ public class AssemblySetup
                     };
                     timer.Tick += (_, _) =>
                     {
-                        if (App.MainWindow is System.Windows.Window window)
+                        if (App.MainWindow is not null)
                         {
                             timer.Stop();
-                            if (window.IsLoaded)
+                            if (App.MainWindow.IsLoaded)
                             {
                                 appStarted.Set();
                             }
                             else
                             {
-                                window.ContentRendered += (_, _) => appStarted.Set();
+                                App.MainWindow.ContentRendered += (_, _) => appStarted.Set();
                             }
                         }
                     };
@@ -138,9 +137,9 @@ public class AssemblySetup
 /// </summary>
 [TestFixture]
 [Apartment(ApartmentState.STA)]
-public abstract class UITestBase
+public abstract class UiTestBase
 {
-    protected FlaUI.Core.AutomationElements.Window? MainWindow => AssemblySetup.MainWindow;
+    protected Window? MainWindow => AssemblySetup.MainWindow;
     protected TestApp TestApp => AssemblySetup.App!;
     protected UIA3Automation Automation => AssemblySetup.Automation!;
 

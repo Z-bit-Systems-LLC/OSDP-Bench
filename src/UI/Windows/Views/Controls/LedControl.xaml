@@ -13,7 +13,7 @@
                  Fill="{DynamicResource SemanticErrorBrush}"
                  AutomationProperties.Name="{localization:Localize Accessibility_StatusIndicator}">
             <Ellipse.Effect>
-                <DropShadowEffect Color="{Binding ElementName=Led, Path=Fill.Color}" ShadowDepth="0" BlurRadius="10" Opacity="0.3"/>
+                <DropShadowEffect Color="{Binding ElementName=Led, Path=Fill.(SolidColorBrush.Color)}" ShadowDepth="0" BlurRadius="10" Opacity="0.3"/>
             </Ellipse.Effect>
         </Ellipse>
     </Grid>

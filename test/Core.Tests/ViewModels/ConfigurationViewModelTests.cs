@@ -10,7 +10,6 @@ using OSDP.Net.Tracing;
 using NUnit.Framework;
 using OSDPBench.Core.Models;
 using OSDPBench.Core.Services;
-using OSDPBench.Core.Tests.Helpers;
 using OSDPBench.Core.ViewModels.Pages;
 using static OSDPBench.Core.Tests.Helpers.TraceEntryTestHelper;
 
