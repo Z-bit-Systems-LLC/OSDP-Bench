@@ -161,6 +161,7 @@ See `lib/Guidelines/src/ZBitSystems.Wpf.UI/Styles/StyleGuide.md` for:
 - **Update existing code** - When modifying files, replace inline styling with standard styles
 - **Create reusable patterns** - If you find yourself repeating XAML structures, consider adding a new style or template
 - **Use WrapPanel for responsive layouts** - When controls should be horizontal on wide screens but wrap to vertical on narrow screens, use WrapPanel instead of fixed Grid layouts
+- **Avoid Grid row collisions in responsive layouts** - When using code-behind `SizeChanged` handlers to reposition elements between Grid rows, ensure moved elements don't share a row with existing static content. Always verify that the target row is either empty or the static content is also relocated
 - **Prefer dynamic resources for colors** - Use `{DynamicResource}` instead of `{StaticResource}` for colors to ensure theme compatibility
 
 ### Documentation References

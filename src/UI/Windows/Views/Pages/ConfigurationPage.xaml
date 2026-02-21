@@ -64,7 +64,7 @@
                     <!-- Connection Mode Selection -->
                     <StackPanel Orientation="Vertical">
                         <Label Content=" " Style="{StaticResource Label.Standard}" />
-                        <StackPanel Orientation="Horizontal">
+                        <WrapPanel Orientation="Horizontal">
                             <RadioButton Content="{localization:Localize ConnectionMode_ConnectToPD}"
                                          IsChecked="{Binding ViewModel.IsConnectToPDSelected, Mode=TwoWay}"
                                          IsEnabled="{Binding ViewModel.IsConnectionTypeEnabled}"
@@ -76,7 +76,7 @@
                                          IsEnabled="{Binding ViewModel.IsConnectionTypeEnabled}"
                                          GroupName="ConnectionMode"
                                          VerticalAlignment="Center"/>
-                        </StackPanel>
+                        </WrapPanel>
                     </StackPanel>
                 </WrapPanel>
             </StackPanel>

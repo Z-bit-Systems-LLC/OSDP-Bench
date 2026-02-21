@@ -41,8 +41,8 @@ public partial class ConfigurationPage : INavigableView<ConfigurationViewModel>
         {
             if (e.NewSize.Width < widthThreshold)
             {
-                // Narrow: Move buttons to the second row, left aligned
-                Grid.SetRow(ButtonPanel, 1);
+                // Narrow: Move buttons below the radio buttons (row 2), left aligned
+                Grid.SetRow(ButtonPanel, 2);
                 Grid.SetColumn(ButtonPanel, 0);
                 Grid.SetColumnSpan(ButtonPanel, 2);
                 ButtonPanel.HorizontalAlignment = HorizontalAlignment.Left;
