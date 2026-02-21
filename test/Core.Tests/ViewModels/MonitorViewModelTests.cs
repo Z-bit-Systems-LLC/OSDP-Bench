@@ -1,9 +1,13 @@
 using System;
+using System.Threading.Tasks;
 using Moq;
 using NUnit.Framework;
+using OSDP.Net.Tracing;
 using OSDPBench.Core.Models;
 using OSDPBench.Core.Services;
+using OSDPBench.Core.Tests.Helpers;
 using OSDPBench.Core.ViewModels.Pages;
+using static OSDPBench.Core.Tests.Helpers.TraceEntryTestHelper;
 
 namespace OSDPBench.Core.Tests.ViewModels;
 
@@ -79,13 +83,64 @@ public class MonitorViewModelTests
     }
 
     [Test]
-    public void ExportOsdpCaptureCommand_WhenNoData_ShowsNoDataMessage()
+    public void CanExport_AfterReceivingEntry_ReturnsTrue()
     {
-        // Arrange - Use reflection to test the command even when CanExecute is false
-        // This simulates what would happen if the command somehow executed with no data
+        // Act
+        RaiseTraceEntry(_deviceManagementServiceMock, TraceDirection.Output, ValidPollPacket);
 
-        // We can't directly test this without data, but we verify the dialog service is set up
-        Assert.That(_dialogServiceMock, Is.Not.Null);
+        // Assert
+        Assert.That(_viewModel.CanExport, Is.True);
+    }
+
+    [Test]
+    public async Task ExportOsdpCapture_WithData_ShowsSaveDialog()
+    {
+        // Arrange
+        RaiseTraceEntry(_deviceManagementServiceMock, TraceDirection.Output, ValidPollPacket);
+        _dialogServiceMock.Setup(x => x.ShowSaveFileDialogAsync(
+                It.IsAny<string>(), It.IsAny<string>(), It.IsAny<System.Collections.Generic.List<(string, string)>>()))
+            .ReturnsAsync(string.Empty); // User cancels
+
+        // Act
+        await _viewModel.ExportOsdpCaptureCommand.ExecuteAsync(null);
+
+        // Assert
+        _dialogServiceMock.Verify(x => x.ShowSaveFileDialogAsync(
+            It.IsAny<string>(), It.IsAny<string>(), It.IsAny<System.Collections.Generic.List<(string, string)>>()), Times.Once);
+    }
+
+    [Test]
+    public async Task ExportOsdpCapture_UserCancels_DoesNotWriteFile()
+    {
+        // Arrange
+        RaiseTraceEntry(_deviceManagementServiceMock, TraceDirection.Output, ValidPollPacket);
+        _dialogServiceMock.Setup(x => x.ShowSaveFileDialogAsync(
+                It.IsAny<string>(), It.IsAny<string>(), It.IsAny<System.Collections.Generic.List<(string, string)>>()))
+            .ReturnsAsync(string.Empty); // User cancels
+
+        // Act
+        await _viewModel.ExportOsdpCaptureCommand.ExecuteAsync(null);
+
+        // Assert - No success or error dialog shown means file was not written
+        _dialogServiceMock.Verify(x => x.ShowMessageDialog(
+            It.IsAny<string>(), It.IsAny<string>(), MessageIcon.Information), Times.Never);
+    }
+
+    [Test]
+    public async Task ExportParsedText_WithData_ShowsSaveDialog()
+    {
+        // Arrange
+        RaiseTraceEntry(_deviceManagementServiceMock, TraceDirection.Output, ValidPollPacket);
+        _dialogServiceMock.Setup(x => x.ShowSaveFileDialogAsync(
+                It.IsAny<string>(), It.IsAny<string>(), It.IsAny<System.Collections.Generic.List<(string, string)>>()))
+            .ReturnsAsync(string.Empty); // User cancels
+
+        // Act
+        await _viewModel.ExportParsedTextCommand.ExecuteAsync(null);
+
+        // Assert
+        _dialogServiceMock.Verify(x => x.ShowSaveFileDialogAsync(
+            It.IsAny<string>(), It.IsAny<string>(), It.IsAny<System.Collections.Generic.List<(string, string)>>()), Times.Once);
     }
 
     #endregion
@@ -99,6 +154,82 @@ public class MonitorViewModelTests
         Assert.That(_viewModel.LineQualityPercentage, Is.EqualTo(100.0));
     }
 
+    [Test]
+    public void LineQualityPercentage_AllRepliesReceived_Returns100()
+    {
+        // Arrange - Send poll commands and receive ACK replies
+        for (int i = 0; i < 10; i++)
+        {
+            RaiseTraceEntry(_deviceManagementServiceMock, TraceDirection.Output, ValidPollPacket);
+            RaiseTraceEntry(_deviceManagementServiceMock, TraceDirection.Input, ValidAckPacket);
+        }
+
+        // Assert
+        Assert.That(_viewModel.CommandsSent, Is.EqualTo(10));
+        Assert.That(_viewModel.RepliesReceived, Is.EqualTo(10));
+        Assert.That(_viewModel.LineQualityPercentage, Is.EqualTo(100.0));
+    }
+
+    [Test]
+    public void LineQualityPercentage_MissingReplies_ReturnsLessThan100()
+    {
+        // Arrange - Send 10 commands but only receive 5 replies (3+ in-flight triggers quality drop)
+        for (int i = 0; i < 5; i++)
+        {
+            RaiseTraceEntry(_deviceManagementServiceMock, TraceDirection.Output, ValidPollPacket);
+            RaiseTraceEntry(_deviceManagementServiceMock, TraceDirection.Input, ValidAckPacket);
+        }
+        // 5 more commands with no replies
+        for (int i = 0; i < 5; i++)
+        {
+            RaiseTraceEntry(_deviceManagementServiceMock, TraceDirection.Output, ValidPollPacket);
+        }
+
+        // Assert
+        Assert.That(_viewModel.CommandsSent, Is.EqualTo(10));
+        Assert.That(_viewModel.RepliesReceived, Is.EqualTo(5));
+        Assert.That(_viewModel.LineQualityPercentage, Is.LessThan(100.0));
+    }
+
+    [Test]
+    public void LineQualityPercentage_TwoInFlight_StillReturns100()
+    {
+        // Arrange - Exactly 2 in-flight commands (within grace window)
+        for (int i = 0; i < 5; i++)
+        {
+            RaiseTraceEntry(_deviceManagementServiceMock, TraceDirection.Output, ValidPollPacket);
+            RaiseTraceEntry(_deviceManagementServiceMock, TraceDirection.Input, ValidAckPacket);
+        }
+        // 2 more commands with no replies (within the 2-in-flight grace window)
+        RaiseTraceEntry(_deviceManagementServiceMock, TraceDirection.Output, ValidPollPacket);
+        RaiseTraceEntry(_deviceManagementServiceMock, TraceDirection.Output, ValidPollPacket);
+
+        // Assert
+        Assert.That(_viewModel.CommandsSent, Is.EqualTo(7));
+        Assert.That(_viewModel.RepliesReceived, Is.EqualTo(5));
+        Assert.That(_viewModel.LineQualityPercentage, Is.EqualTo(100.0));
+    }
+
+    [Test]
+    public void LineQualityPercentage_ThreeInFlight_ReturnsLessThan100()
+    {
+        // Arrange - 3 in-flight commands (exceeds the 2-in-flight grace window)
+        for (int i = 0; i < 5; i++)
+        {
+            RaiseTraceEntry(_deviceManagementServiceMock, TraceDirection.Output, ValidPollPacket);
+            RaiseTraceEntry(_deviceManagementServiceMock, TraceDirection.Input, ValidAckPacket);
+        }
+        // 3 more commands with no replies
+        RaiseTraceEntry(_deviceManagementServiceMock, TraceDirection.Output, ValidPollPacket);
+        RaiseTraceEntry(_deviceManagementServiceMock, TraceDirection.Output, ValidPollPacket);
+        RaiseTraceEntry(_deviceManagementServiceMock, TraceDirection.Output, ValidPollPacket);
+
+        // Assert
+        Assert.That(_viewModel.CommandsSent, Is.EqualTo(8));
+        Assert.That(_viewModel.RepliesReceived, Is.EqualTo(5));
+        Assert.That(_viewModel.LineQualityPercentage, Is.LessThan(100.0));
+    }
+
     #endregion
 
     #region Buffer Management Tests
@@ -110,6 +241,27 @@ public class MonitorViewModelTests
         Assert.That(MonitorViewModel.MaxBufferSize, Is.EqualTo(10 * 1024 * 1024));
     }
 
+    [Test]
+    public void BufferUsagePercentage_IncreasesWithEntries()
+    {
+        // Act
+        RaiseTraceEntry(_deviceManagementServiceMock, TraceDirection.Output, ValidPollPacket);
+
+        // Assert
+        Assert.That(_viewModel.BufferUsagePercentage, Is.GreaterThan(0));
+    }
+
+    [Test]
+    public void TotalPacketsCaptured_IncrementsWithEntries()
+    {
+        // Act
+        RaiseTraceEntry(_deviceManagementServiceMock, TraceDirection.Output, ValidPollPacket);
+        RaiseTraceEntry(_deviceManagementServiceMock, TraceDirection.Input, ValidAckPacket);
+
+        // Assert
+        Assert.That(_viewModel.TotalPacketsCaptured, Is.EqualTo(2));
+    }
+
     #endregion
 
     #region Connection Status Tests
@@ -119,15 +271,15 @@ public class MonitorViewModelTests
     {
         // Act
         _deviceManagementServiceMock.Raise(
-            d => d.ConnectionStatusChange += null!, 
-            EventArgs.Empty, 
+            d => d.ConnectionStatusChange += null!,
+            EventArgs.Empty,
             ConnectionStatus.Connected);
-        
+
         // Assert
         Assert.That(_viewModel.StatusLevel, Is.EqualTo(StatusLevel.Connected));
         Assert.That(_viewModel.TraceEntriesView, Is.Empty);
     }
-    
+
     [Test]
     public void MonitorViewModel_DeviceManagementServiceOnConnectionStatusChange_Disconnected()
     {
@@ -159,7 +311,7 @@ public class MonitorViewModelTests
         // Assert
         Assert.That(_viewModel.StatusLevel, Is.EqualTo(StatusLevel.Error));
     }
-    
+
     [Test]
     public void MonitorViewModel_ConnectionStatusChanges_UpdatesStatusLevel()
     {
@@ -218,54 +370,171 @@ public class MonitorViewModelTests
 
     #endregion
 
-    // Note: These tests related to TraceEntryReceived are disabled because
-    // they require a more sophisticated test setup with internal class access
-    // that's beyond the scope of this refactoring. We'll need to address them
-    // in the future with proper mocking or reflection.
+    #region Trace Entry Processing Tests
 
-    /*
     [Test]
-    public void MonitorViewModel_DeviceManagementServiceOnTraceEntryReceived_OutputDirection()
+    public void TraceEntryReceived_OutputDirection_IncrementsCommandsSent()
     {
-        // Test receiving a trace entry with output direction
+        // Act
+        RaiseTraceEntry(_deviceManagementServiceMock, TraceDirection.Output, ValidPollPacket);
+
+        // Assert
+        Assert.That(_viewModel.CommandsSent, Is.EqualTo(1));
     }
 
     [Test]
-    public void MonitorViewModel_DeviceManagementServiceOnTraceEntryReceived_InputDirection()
+    public void TraceEntryReceived_InputDirection_IncrementsRepliesReceived()
     {
-        // Test receiving a trace entry with input direction
+        // Arrange - Send a command first so reply makes sense
+        RaiseTraceEntry(_deviceManagementServiceMock, TraceDirection.Output, ValidPollPacket);
+
+        // Act
+        RaiseTraceEntry(_deviceManagementServiceMock, TraceDirection.Input, ValidAckPacket);
+
+        // Assert
+        Assert.That(_viewModel.RepliesReceived, Is.EqualTo(1));
     }
 
     [Test]
-    public void MonitorViewModel_DeviceManagementServiceOnTraceEntryReceived_IgnoresPollCommands()
+    public void TraceEntryReceived_PollCommand_IncrementsPolls()
     {
-        // Test that poll commands are ignored
+        // Act
+        RaiseTraceEntry(_deviceManagementServiceMock, TraceDirection.Output, ValidPollPacket);
+
+        // Assert
+        Assert.That(_viewModel.Polls, Is.EqualTo(1));
     }
 
     [Test]
-    public void MonitorViewModel_DeviceManagementServiceOnTraceEntryReceived_WithSecureChannel_IgnoresTraces()
+    public void TraceEntryReceived_NakReply_IncrementsNaks()
     {
-        // Test that traces are ignored when using secure channel
+        // Arrange - Send a command first
+        RaiseTraceEntry(_deviceManagementServiceMock, TraceDirection.Output, ValidIdReportPacket);
+
+        // Act
+        RaiseTraceEntry(_deviceManagementServiceMock, TraceDirection.Input, ValidNakPacket);
+
+        // Assert
+        Assert.That(_viewModel.Naks, Is.EqualTo(1));
     }
 
     [Test]
-    public void MonitorViewModel_DeviceManagementServiceOnTraceEntryReceived_LimitsTraceEntries()
+    public void TraceEntryReceived_OutputDirection_UpdatesLastTxActiveTime()
     {
-        // Test that trace entries are limited to 20
+        // Arrange
+        var before = DateTime.Now;
+
+        // Act
+        RaiseTraceEntry(_deviceManagementServiceMock, TraceDirection.Output, ValidPollPacket);
+
+        // Assert
+        Assert.That(_viewModel.LastTxActiveTime, Is.GreaterThanOrEqualTo(before));
     }
 
     [Test]
-    public void MonitorViewModel_DeviceManagementServiceOnTraceEntryReceived_InvalidPacket_IgnoresEntry()
+    public void TraceEntryReceived_InputDirection_UpdatesLastRxActiveTime()
     {
-        // Test handling invalid packets
+        // Arrange
+        var before = DateTime.Now;
+
+        // Act
+        RaiseTraceEntry(_deviceManagementServiceMock, TraceDirection.Input, ValidAckPacket);
+
+        // Assert
+        Assert.That(_viewModel.LastRxActiveTime, Is.GreaterThanOrEqualTo(before));
     }
 
     [Test]
-    public void MonitorViewModel_DeviceManagementServiceOnTraceEntryReceived_SequentialEntries()
+    public void TraceEntryReceived_InvalidPacket_DoesNotThrow()
     {
-        // Test handling sequential entries
+        // Act & Assert - Should not throw when processing an invalid packet
+        Assert.DoesNotThrow(() =>
+            RaiseTraceEntry(_deviceManagementServiceMock, TraceDirection.Output, InvalidPacket));
     }
-    */
 
-    // Helper methods now moved to TestTraceEntryFactory
+    [Test]
+    public void TraceEntryReceived_PollCommand_NotAddedToView()
+    {
+        // Act
+        RaiseTraceEntry(_deviceManagementServiceMock, TraceDirection.Output, ValidPollPacket);
+
+        // Assert - Poll commands are filtered from the display view
+        Assert.That(_viewModel.TraceEntriesView, Is.Empty);
+    }
+
+    [Test]
+    public void TraceEntryReceived_NonPollCommand_AddedToView()
+    {
+        // Act - ID Report is a non-poll command
+        RaiseTraceEntry(_deviceManagementServiceMock, TraceDirection.Output, ValidIdReportPacket);
+
+        // Assert
+        Assert.That(_viewModel.TraceEntriesView, Has.Count.EqualTo(1));
+    }
+
+    [Test]
+    public void TraceEntryReceived_ViewLimitedTo20Entries()
+    {
+        // Arrange & Act - Send 25 non-poll commands
+        for (int i = 0; i < 25; i++)
+        {
+            RaiseTraceEntry(_deviceManagementServiceMock, TraceDirection.Output, ValidIdReportPacket);
+        }
+
+        // Assert
+        Assert.That(_viewModel.TraceEntriesView, Has.Count.EqualTo(20));
+    }
+
+    [Test]
+    public void TraceEntryReceived_DuplicateNak_FilteredFromView()
+    {
+        // Arrange - Send a poll command (not displayed) then get a NAK reply (displayed)
+        RaiseTraceEntry(_deviceManagementServiceMock, TraceDirection.Output, ValidPollPacket);
+        RaiseTraceEntry(_deviceManagementServiceMock, TraceDirection.Input, ValidNakPacket);
+        var countAfterFirstNak = _viewModel.TraceEntriesView.Count;
+
+        // Act - Send another poll (not displayed) then same NAK (duplicate should be filtered)
+        RaiseTraceEntry(_deviceManagementServiceMock, TraceDirection.Output, ValidPollPacket);
+        RaiseTraceEntry(_deviceManagementServiceMock, TraceDirection.Input, ValidNakPacket);
+
+        // Assert - NAK count increments (for statistics) but view doesn't grow
+        Assert.That(_viewModel.Naks, Is.EqualTo(2));
+        Assert.That(_viewModel.TraceEntriesView.Count, Is.EqualTo(countAfterFirstNak));
+    }
+
+    [Test]
+    public void TraceEntryReceived_FirstEntry_InitializesSession()
+    {
+        // Act
+        RaiseTraceEntry(_deviceManagementServiceMock, TraceDirection.Output, ValidPollPacket);
+
+        // Assert - After first entry, buffer should have data and stats should be initialized
+        Assert.That(_viewModel.TotalPacketsCaptured, Is.EqualTo(1));
+        Assert.That(_viewModel.CommandsSent, Is.EqualTo(1));
+    }
+
+    [Test]
+    public void TraceEntryReceived_AfterDisconnect_ClearsBufferOnNextEntry()
+    {
+        // Arrange - Send some entries
+        RaiseTraceEntry(_deviceManagementServiceMock, TraceDirection.Output, ValidPollPacket);
+        RaiseTraceEntry(_deviceManagementServiceMock, TraceDirection.Input, ValidAckPacket);
+        Assert.That(_viewModel.TotalPacketsCaptured, Is.EqualTo(2));
+
+        // Disconnect (marks session as ended)
+        _deviceManagementServiceMock.Raise(
+            d => d.ConnectionStatusChange += null!,
+            EventArgs.Empty,
+            ConnectionStatus.Disconnected);
+
+        // Act - Next trace entry should clear the buffer first
+        RaiseTraceEntry(_deviceManagementServiceMock, TraceDirection.Output, ValidPollPacket);
+
+        // Assert - Buffer was cleared, so only the new entry exists
+        Assert.That(_viewModel.TotalPacketsCaptured, Is.EqualTo(1));
+        Assert.That(_viewModel.CommandsSent, Is.EqualTo(1));
+        Assert.That(_viewModel.RepliesReceived, Is.EqualTo(0));
+    }
+
+    #endregion
 }

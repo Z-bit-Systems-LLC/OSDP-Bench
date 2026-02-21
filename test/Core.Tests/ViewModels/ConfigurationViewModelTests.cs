@@ -4,12 +4,15 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Moq;
-using OSDPBench.Core.Models;
-using OSDPBench.Core.Services;
-using OSDPBench.Core.ViewModels.Pages;
-using NUnit.Framework;
 using OSDP.Net.Connections;
 using OSDP.Net.PanelCommands.DeviceDiscover;
+using OSDP.Net.Tracing;
+using NUnit.Framework;
+using OSDPBench.Core.Models;
+using OSDPBench.Core.Services;
+using OSDPBench.Core.Tests.Helpers;
+using OSDPBench.Core.ViewModels.Pages;
+using static OSDPBench.Core.Tests.Helpers.TraceEntryTestHelper;
 
 namespace OSDPBench.Core.Tests.ViewModels;
 
@@ -645,6 +648,176 @@ public class ConfigurationViewModelTests
 
     #endregion
 
-    // Future enhancements: Add trace entry tests which require more complex mocking
-    // For now we'll focus on the refactoring opportunities
+    #region Trace Entry Activity Indicator Tests
+
+    [Test]
+    public void TraceEntryReceived_OutputDirection_UpdatesLastTxActiveTime()
+    {
+        // Arrange
+        var before = DateTime.Now;
+
+        // Act
+        RaiseTraceEntry(_deviceManagementServiceMock, TraceDirection.Output, ValidPollPacket);
+
+        // Assert
+        Assert.That(_viewModel.LastTxActiveTime, Is.GreaterThanOrEqualTo(before));
+    }
+
+    [Test]
+    public void TraceEntryReceived_InputDirection_UpdatesLastRxActiveTime()
+    {
+        // Arrange
+        var before = DateTime.Now;
+
+        // Act
+        RaiseTraceEntry(_deviceManagementServiceMock, TraceDirection.Input, ValidAckPacket);
+
+        // Assert
+        Assert.That(_viewModel.LastRxActiveTime, Is.GreaterThanOrEqualTo(before));
+    }
+
+    [Test]
+    public void TraceEntryReceived_InvalidPacket_DoesNotThrow()
+    {
+        // Act & Assert
+        Assert.DoesNotThrow(() =>
+            RaiseTraceEntry(_deviceManagementServiceMock, TraceDirection.Output, InvalidPacket));
+    }
+
+    [Test]
+    public void TraceEntryReceived_UpdatesSecureChannelStatus()
+    {
+        // Arrange
+        _deviceManagementServiceMock.Setup(x => x.IsUsingSecureChannel).Returns(true);
+        _deviceManagementServiceMock.Setup(x => x.UsesDefaultSecurityKey).Returns(false);
+
+        // Act
+        RaiseTraceEntry(_deviceManagementServiceMock, TraceDirection.Output, ValidPollPacket);
+
+        // Assert
+        Assert.That(_viewModel.UsingSecureChannel, Is.True);
+        Assert.That(_viewModel.UsesDefaultSecurityKey, Is.False);
+    }
+
+    #endregion
+
+    #region USB Device Monitoring Tests
+
+    [Test]
+    public async Task UsbDeviceChanged_RefreshesSerialPorts()
+    {
+        // Arrange
+        var usbMonitorMock = new Mock<IUsbDeviceMonitorService>();
+        var updatedPorts = new[]
+        {
+            new AvailableSerialPort("id1", "COM1", "desc1"),
+            new AvailableSerialPort("id2", "COM2", "desc2"),
+            new AvailableSerialPort("id3", "COM3", "desc3")
+        };
+        _serialPortConnectionServiceMock.Setup(x => x.FindAvailableSerialPorts())
+            .ReturnsAsync(updatedPorts);
+
+        using var viewModel = new ConfigurationViewModel(
+            _dialogServiceMock.Object,
+            _deviceManagementServiceMock.Object,
+            _serialPortConnectionServiceMock.Object,
+            usbMonitorMock.Object);
+
+        await viewModel.InitializationComplete;
+
+        // Act - Raise USB device changed event
+        usbMonitorMock.Raise(
+            d => d.UsbDeviceChanged += null!,
+            new UsbDeviceChangedEventArgs(UsbDeviceChangeType.Connected, new[] { "COM1", "COM2", "COM3" }));
+
+        // Allow async handler to complete
+        await Task.Delay(100);
+
+        // Assert
+        Assert.That(viewModel.AvailableSerialPorts, Has.Count.EqualTo(3));
+    }
+
+    [Test]
+    public async Task UsbDeviceChanged_PreservesSelectedPort()
+    {
+        // Arrange
+        var usbMonitorMock = new Mock<IUsbDeviceMonitorService>();
+        var initialPorts = new[]
+        {
+            new AvailableSerialPort("id1", "COM1", "desc1"),
+            new AvailableSerialPort("id2", "COM2", "desc2")
+        };
+        _serialPortConnectionServiceMock.Setup(x => x.FindAvailableSerialPorts())
+            .ReturnsAsync(initialPorts);
+
+        using var viewModel = new ConfigurationViewModel(
+            _dialogServiceMock.Object,
+            _deviceManagementServiceMock.Object,
+            _serialPortConnectionServiceMock.Object,
+            usbMonitorMock.Object);
+
+        await viewModel.InitializationComplete;
+
+        // Select COM2
+        viewModel.SelectedSerialPort = viewModel.AvailableSerialPorts.First(p => p.Name == "COM2");
+
+        // Updated ports still include COM2
+        var updatedPorts = new[]
+        {
+            new AvailableSerialPort("id1", "COM1", "desc1"),
+            new AvailableSerialPort("id2", "COM2", "desc2"),
+            new AvailableSerialPort("id3", "COM3", "desc3")
+        };
+        _serialPortConnectionServiceMock.Setup(x => x.FindAvailableSerialPorts())
+            .ReturnsAsync(updatedPorts);
+
+        // Act
+        usbMonitorMock.Raise(
+            d => d.UsbDeviceChanged += null!,
+            new UsbDeviceChangedEventArgs(UsbDeviceChangeType.Connected, new[] { "COM1", "COM2", "COM3" }));
+
+        // Allow async handler to complete
+        await Task.Delay(100);
+
+        // Assert - Previously selected COM2 should still be selected
+        Assert.That(viewModel.SelectedSerialPort?.Name, Is.EqualTo("COM2"));
+    }
+
+    #endregion
+
+    #region Cancel Discovery Tests
+
+    [Test]
+    public async Task CancelDiscoveryCommand_CancelsInProgressDiscovery()
+    {
+        // Arrange
+        await _viewModel.InitializationComplete;
+        SetupConnectionService();
+        SelectTestSerialPortAndBaudRate();
+
+        // Set up discovery to delay so we can cancel it
+        _deviceManagementServiceMock.Setup(x => x.DiscoverDevice(
+                It.IsAny<IEnumerable<IOsdpConnection>>(),
+                It.IsAny<DiscoveryProgress>(),
+                It.IsAny<CancellationToken>()))
+            .Returns<IEnumerable<IOsdpConnection>, DiscoveryProgress, CancellationToken>(
+                async (_, _, ct) =>
+                {
+                    await Task.Delay(5000, ct);
+                    return Mock.Of<DiscoveryResult>(r => r.Status == DiscoveryStatus.Succeeded);
+                });
+
+        // Act - Start discovery then cancel
+        var discoverTask = _viewModel.DiscoverDeviceCommand.ExecuteAsync(null);
+        await Task.Delay(50); // Let discovery start
+        _viewModel.DiscoverDeviceCommand.Cancel();
+
+        // Wait for the task to complete (should be cancelled)
+        await discoverTask;
+
+        // Assert - The cancel command exists and was invocable
+        Assert.That(_viewModel.DiscoverDeviceCommand.IsCancellationRequested, Is.True);
+    }
+
+    #endregion
 }

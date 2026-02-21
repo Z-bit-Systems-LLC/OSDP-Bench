@@ -4,10 +4,13 @@ using Moq;
 using NUnit.Framework;
 using OSDP.Net.Connections;
 using OSDP.Net.Model.ReplyData;
+using OSDP.Net.Tracing;
 using OSDPBench.Core.Actions;
 using OSDPBench.Core.Models;
 using OSDPBench.Core.Services;
+using OSDPBench.Core.Tests.Helpers;
 using OSDPBench.Core.ViewModels.Pages;
+using static OSDPBench.Core.Tests.Helpers.TraceEntryTestHelper;
 
 namespace OSDPBench.Core.Tests.ViewModels
 {
@@ -497,7 +500,230 @@ namespace OSDPBench.Core.Tests.ViewModels
         }
         
         #endregion
-        
+
+        #region Trace Entry Processing Tests
+
+        [Test]
+        public void TraceEntryReceived_OutputDirection_UpdatesLastTxActiveTime()
+        {
+            // Arrange
+            var before = DateTime.Now;
+
+            // Act
+            RaiseTraceEntry(_deviceManagementServiceMock, TraceDirection.Output, ValidPollPacket);
+
+            // Assert
+            Assert.That(_viewModel.LastTxActiveTime, Is.GreaterThanOrEqualTo(before));
+        }
+
+        [Test]
+        public void TraceEntryReceived_InputDirection_UpdatesLastRxActiveTime()
+        {
+            // Arrange
+            var before = DateTime.Now;
+
+            // Act
+            RaiseTraceEntry(_deviceManagementServiceMock, TraceDirection.Input, ValidAckPacket);
+
+            // Assert
+            Assert.That(_viewModel.LastRxActiveTime, Is.GreaterThanOrEqualTo(before));
+        }
+
+        [Test]
+        public void TraceEntryReceived_UpdatesSecureChannelStatus()
+        {
+            // Arrange
+            _deviceManagementServiceMock.Setup(x => x.IsUsingSecureChannel).Returns(true);
+            _deviceManagementServiceMock.Setup(x => x.UsesDefaultSecurityKey).Returns(true);
+
+            // Act
+            RaiseTraceEntry(_deviceManagementServiceMock, TraceDirection.Output, ValidPollPacket);
+
+            // Assert
+            Assert.That(_viewModel.UsingSecureChannel, Is.True);
+            Assert.That(_viewModel.UsesDefaultSecurityKey, Is.True);
+        }
+
+        [Test]
+        public void TraceEntryReceived_InvalidPacket_DoesNotThrow()
+        {
+            // Act & Assert
+            Assert.DoesNotThrow(() =>
+                RaiseTraceEntry(_deviceManagementServiceMock, TraceDirection.Output, InvalidPacket));
+        }
+
+        #endregion
+
+        #region Supervision Tracking Tests
+
+        [Test]
+        public void LocalStatusReceived_TamperChanged_AddsSupervisionEntry()
+        {
+            // Arrange - Initialize with a baseline so only tamper changes
+            _deviceManagementServiceMock.Raise(
+                d => d.LocalStatusReceived += null!,
+                EventArgs.Empty,
+                new LocalStatusEventArgs(false, false));
+            _viewModel.SupervisionEntries.Clear();
+
+            // Act - Raise local status with tamper = true (changed from false)
+            _deviceManagementServiceMock.Raise(
+                d => d.LocalStatusReceived += null!,
+                EventArgs.Empty,
+                new LocalStatusEventArgs(true, false));
+
+            // Assert
+            Assert.That(_viewModel.TamperStatus, Is.True);
+            Assert.That(_viewModel.TamperTimestamp, Is.Not.Null);
+            Assert.That(_viewModel.SupervisionEntries, Has.Count.EqualTo(1));
+            Assert.That(_viewModel.SupervisionEntries[0].EventType, Is.EqualTo(SupervisionEventType.Tamper));
+        }
+
+        [Test]
+        public void LocalStatusReceived_TamperUnchanged_NoNewEntry()
+        {
+            // Arrange - Set initial tamper state
+            _deviceManagementServiceMock.Raise(
+                d => d.LocalStatusReceived += null!,
+                EventArgs.Empty,
+                new LocalStatusEventArgs(true, false));
+            var initialCount = _viewModel.SupervisionEntries.Count;
+
+            // Act - Same tamper state again
+            _deviceManagementServiceMock.Raise(
+                d => d.LocalStatusReceived += null!,
+                EventArgs.Empty,
+                new LocalStatusEventArgs(true, false));
+
+            // Assert - No new supervision entries for unchanged tamper
+            Assert.That(_viewModel.SupervisionEntries.Count, Is.EqualTo(initialCount));
+        }
+
+        [Test]
+        public void LocalStatusReceived_PowerFailureChanged_AddsSupervisionEntry()
+        {
+            // Arrange - Initialize with a baseline so only power changes
+            _deviceManagementServiceMock.Raise(
+                d => d.LocalStatusReceived += null!,
+                EventArgs.Empty,
+                new LocalStatusEventArgs(false, false));
+            _viewModel.SupervisionEntries.Clear();
+
+            // Act - Power failure changes from false to true
+            _deviceManagementServiceMock.Raise(
+                d => d.LocalStatusReceived += null!,
+                EventArgs.Empty,
+                new LocalStatusEventArgs(false, true));
+
+            // Assert
+            Assert.That(_viewModel.PowerStatus, Is.True);
+            Assert.That(_viewModel.PowerTimestamp, Is.Not.Null);
+            Assert.That(_viewModel.SupervisionEntries, Has.Count.EqualTo(1));
+            Assert.That(_viewModel.SupervisionEntries[0].EventType, Is.EqualTo(SupervisionEventType.Power));
+        }
+
+        [Test]
+        public void LocalStatusReceived_PowerFailureUnchanged_NoNewEntry()
+        {
+            // Arrange - Set initial power state
+            _deviceManagementServiceMock.Raise(
+                d => d.LocalStatusReceived += null!,
+                EventArgs.Empty,
+                new LocalStatusEventArgs(false, true));
+            var initialCount = _viewModel.SupervisionEntries.Count;
+
+            // Act - Same power state again
+            _deviceManagementServiceMock.Raise(
+                d => d.LocalStatusReceived += null!,
+                EventArgs.Empty,
+                new LocalStatusEventArgs(false, true));
+
+            // Assert
+            Assert.That(_viewModel.SupervisionEntries.Count, Is.EqualTo(initialCount));
+        }
+
+        [Test]
+        public void SupervisionEntries_LimitedTo20()
+        {
+            // Act - Generate 25 status changes (alternating tamper on/off)
+            for (int i = 0; i < 25; i++)
+            {
+                bool tamper = i % 2 == 0;
+                _deviceManagementServiceMock.Raise(
+                    d => d.LocalStatusReceived += null!,
+                    EventArgs.Empty,
+                    new LocalStatusEventArgs(tamper, false));
+            }
+
+            // Assert
+            Assert.That(_viewModel.SupervisionEntries, Has.Count.LessThanOrEqualTo(20));
+        }
+
+        [Test]
+        public void ClearSupervisionHistory_ResetsAllStatusFields()
+        {
+            // Arrange - Set some supervision state
+            _deviceManagementServiceMock.Raise(
+                d => d.LocalStatusReceived += null!,
+                EventArgs.Empty,
+                new LocalStatusEventArgs(true, true));
+            _deviceManagementServiceMock.Raise(
+                d => d.ConnectionStatusChange += null!,
+                EventArgs.Empty,
+                ConnectionStatus.Connected);
+
+            // Act
+            _viewModel.ClearSupervisionHistory();
+
+            // Assert
+            Assert.That(_viewModel.TamperStatus, Is.Null);
+            Assert.That(_viewModel.TamperTimestamp, Is.Null);
+            Assert.That(_viewModel.PowerStatus, Is.Null);
+            Assert.That(_viewModel.PowerTimestamp, Is.Null);
+            Assert.That(_viewModel.OnlineStatus, Is.Null);
+            Assert.That(_viewModel.OnlineTimestamp, Is.Null);
+            Assert.That(_viewModel.SupervisionEntries, Is.Empty);
+        }
+
+        [Test]
+        public void ConnectionStatusChange_Connected_AddsOnlineSupervisionEntry()
+        {
+            // Act
+            _deviceManagementServiceMock.Raise(
+                d => d.ConnectionStatusChange += null!,
+                EventArgs.Empty,
+                ConnectionStatus.Connected);
+
+            // Assert
+            Assert.That(_viewModel.OnlineStatus, Is.True);
+            Assert.That(_viewModel.OnlineTimestamp, Is.Not.Null);
+            Assert.That(_viewModel.SupervisionEntries, Has.Count.GreaterThanOrEqualTo(1));
+            Assert.That(_viewModel.SupervisionEntries[0].EventType, Is.EqualTo(SupervisionEventType.Communication));
+        }
+
+        [Test]
+        public void ConnectionStatusChange_Disconnected_AddsOfflineSupervisionEntry()
+        {
+            // Arrange - First connect so we have a state change
+            _deviceManagementServiceMock.Raise(
+                d => d.ConnectionStatusChange += null!,
+                EventArgs.Empty,
+                ConnectionStatus.Connected);
+
+            // Act
+            _deviceManagementServiceMock.Raise(
+                d => d.ConnectionStatusChange += null!,
+                EventArgs.Empty,
+                ConnectionStatus.Disconnected);
+
+            // Assert
+            Assert.That(_viewModel.OnlineStatus, Is.False);
+            Assert.That(_viewModel.SupervisionEntries, Has.Count.EqualTo(2));
+            Assert.That(_viewModel.SupervisionEntries[0].EventType, Is.EqualTo(SupervisionEventType.Communication));
+        }
+
+        #endregion
+
         #region Test Helpers
         
         /// <summary>
