@@ -756,4 +756,22 @@
     <value>Status</value>
     <comment>Column header for status in supervision history</comment>
   </data>
+
+  <!-- Accessibility -->
+  <data name="Accessibility_PacketTrace" xml:space="preserve">
+    <value>Packet Trace</value>
+    <comment>Screen reader name for the packet trace data grid</comment>
+  </data>
+  <data name="Accessibility_CardReadHistory" xml:space="preserve">
+    <value>Card Read History</value>
+    <comment>Screen reader name for the card read history data grid</comment>
+  </data>
+  <data name="Accessibility_ApplicationLogo" xml:space="preserve">
+    <value>Application Logo</value>
+    <comment>Screen reader name for the application logo image</comment>
+  </data>
+  <data name="Accessibility_StatusIndicator" xml:space="preserve">
+    <value>Status Indicator</value>
+    <comment>Screen reader name for LED status indicator</comment>
+  </data>
 </root>

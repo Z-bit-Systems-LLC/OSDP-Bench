@@ -48,7 +48,8 @@
 
         <Image Grid.Column="1"
                Grid.Row="0"
-               Source="../../Assets/logo.png">
+               Source="../../Assets/logo.png"
+               AutomationProperties.Name="{localization:Localize Accessibility_ApplicationLogo}">
             <Image.Style>
                 <Style TargetType="Image">
                     <Style.Triggers>

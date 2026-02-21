@@ -49,7 +49,7 @@
                            Click="ClearHistory_Click"/>
             </DockPanel>
 
-            <ui:DataGrid Grid.Row="1" 
+            <ui:DataGrid Grid.Row="1"
                          Name="HistoryDataGrid"
                          Margin="0,0,20,0"
                          AutoGenerateColumns="False"
@@ -60,7 +60,8 @@
                          VerticalScrollBarVisibility="Auto"
                          MaxHeight="300"
                          CanUserSortColumns="False"
-                         d:DataContext="{d:DesignInstance models:CardReadEntry}">
+                         d:DataContext="{d:DesignInstance models:CardReadEntry}"
+                         AutomationProperties.Name="{localization:Localize Accessibility_CardReadHistory}">
                 <ui:DataGrid.RowStyle>
                     <Style TargetType="DataGridRow">
                         <Style.Triggers>

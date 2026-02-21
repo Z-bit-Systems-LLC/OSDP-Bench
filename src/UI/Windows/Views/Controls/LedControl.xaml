@@ -1,17 +1,19 @@
 <UserControl x:Class="OSDPBench.Windows.Views.Controls.LedControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             mc:Ignorable="d" 
+             xmlns:localization="clr-namespace:ZBitSystems.Wpf.UI.Localization;assembly=ZBitSystems.Wpf.UI"
+             mc:Ignorable="d"
              d:DesignHeight="20" d:DesignWidth="20">
     <Grid>
-        <Ellipse x:Name="Led" 
-                 Width="16" 
-                 Height="16" 
-                 Fill="{DynamicResource SemanticErrorBrush}">
+        <Ellipse x:Name="Led"
+                 Width="16"
+                 Height="16"
+                 Fill="{DynamicResource SemanticErrorBrush}"
+                 AutomationProperties.Name="{localization:Localize Accessibility_StatusIndicator}">
             <Ellipse.Effect>
-                <DropShadowEffect Color="Red" ShadowDepth="0" BlurRadius="10" Opacity="0.3"/>
+                <DropShadowEffect Color="{Binding ElementName=Led, Path=Fill.Color}" ShadowDepth="0" BlurRadius="10" Opacity="0.3"/>
             </Ellipse.Effect>
         </Ellipse>
     </Grid>

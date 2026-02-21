@@ -133,7 +133,8 @@
                          VerticalScrollBarVisibility="Auto"
                          MaxHeight="300"
                          CanUserSortColumns="False"
-                         d:DataContext="{d:DesignInstance models:SupervisionEntry}">
+                         d:DataContext="{d:DesignInstance models:SupervisionEntry}"
+                         AutomationProperties.Name="{localization:Localize Supervision_EventHistory}">
                 <ui:DataGrid.RowStyle>
                     <Style TargetType="DataGridRow">
                         <Style.Triggers>

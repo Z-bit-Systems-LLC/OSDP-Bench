@@ -41,7 +41,8 @@
             <Label Content="{localization:Localize Manage_Progress}"
                    Style="{StaticResource Label.Standard}"/>
             <ProgressBar Value="{Binding ProgressPercentage, Mode=OneWay}"
-                         Style="{StaticResource ProgressBar.FileTransfer}"/>
+                         Style="{StaticResource ProgressBar.FileTransfer}"
+                         AutomationProperties.Name="{localization:Localize Manage_Progress}"/>
             <Grid>
                 <TextBlock Style="{StaticResource Text.Caption}"
                            HorizontalAlignment="Left">

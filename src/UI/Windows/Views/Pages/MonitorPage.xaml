@@ -142,12 +142,13 @@
 					          Margin="{StaticResource Margin.Card}"
 					          RowDetailsVisibilityMode="Collapsed"
 					          PreviewMouseLeftButtonUp="DataGrid_PreviewMouseLeftButtonUp"
-					          Cursor="Hand">
+					          Cursor="Hand"
+				          AutomationProperties.Name="{localization:Localize Accessibility_PacketTrace}">
 
 					<!-- DataGrid Columns -->
 					<DataGrid.Columns>
 						<!-- Expand Button Column -->
-						<DataGridTemplateColumn Header="" Width="40">
+						<DataGridTemplateColumn Header="{localization:Localize Monitor_Expand}" Width="40">
 							<DataGridTemplateColumn.CellTemplate>
 								<DataTemplate>
 									<ui:SymbolIcon Symbol="ChevronDown24"
