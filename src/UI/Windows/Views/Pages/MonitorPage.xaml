@@ -27,10 +27,10 @@
 			<Border Style="{StaticResource Card.Bordered}">
 				<StackPanel Orientation="Vertical">
 					<!-- Statistics Panel -->
-					<Border Style="{StaticResource Card.Bordered}" Margin="10 5">
-						<StackPanel Orientation="Vertical" Margin="15 10">
+					<Border Style="{StaticResource Card.Bordered}" Margin="{StaticResource Margin.Card}">
+						<StackPanel Orientation="Vertical" Margin="{StaticResource Margin.Card}">
 							<!-- Line Quality Display -->
-							<StackPanel Orientation="Vertical" HorizontalAlignment="Center" Margin="0 5 0 15">
+							<StackPanel Orientation="Vertical" HorizontalAlignment="Center" Margin="{StaticResource Margin.Section}">
 								<TextBlock Text="{localization:Localize Monitor_LineQuality}"
 								           Style="{StaticResource Text.Body}"
 								           HorizontalAlignment="Center"/>
@@ -54,67 +54,35 @@
 								</Grid.ColumnDefinitions>
 
 								<!-- Commands Sent -->
-								<StackPanel Grid.Column="0" Orientation="Vertical" Margin="5 0">
+								<StackPanel Grid.Column="0" Orientation="Vertical" Margin="5,0">
 									<TextBlock Text="{localization:Localize Monitor_CommandsSent}"
-									           Style="{StaticResource Text.Body}"
-									           HorizontalAlignment="Center"
-									           FontSize="{StaticResource FontSize.Caption}"
-									           TextWrapping="Wrap"
-									           TextAlignment="Center"/>
+									           Style="{StaticResource Text.Stat.Label}"/>
 									<TextBlock Text="{Binding ViewModel.CommandsSent}"
-									           Style="{StaticResource Text.Body}"
-									           HorizontalAlignment="Center"
-									           FontSize="{StaticResource FontSize.Headline}"
-									           FontWeight="Bold"
-									           Margin="0 5 0 0"/>
+									           Style="{StaticResource Text.Stat.Value}"/>
 								</StackPanel>
 
 								<!-- Replies Received -->
-								<StackPanel Grid.Column="1" Orientation="Vertical" Margin="5 0">
+								<StackPanel Grid.Column="1" Orientation="Vertical" Margin="5,0">
 									<TextBlock Text="{localization:Localize Monitor_RepliesReceived}"
-									           Style="{StaticResource Text.Body}"
-									           HorizontalAlignment="Center"
-									           FontSize="{StaticResource FontSize.Caption}"
-									           TextWrapping="Wrap"
-									           TextAlignment="Center"/>
+									           Style="{StaticResource Text.Stat.Label}"/>
 									<TextBlock Text="{Binding ViewModel.RepliesReceived}"
-									           Style="{StaticResource Text.Body}"
-									           HorizontalAlignment="Center"
-									           FontSize="{StaticResource FontSize.Headline}"
-									           FontWeight="Bold"
-									           Margin="0 5 0 0"/>
+									           Style="{StaticResource Text.Stat.Value}"/>
 								</StackPanel>
 
 								<!-- Polls -->
-								<StackPanel Grid.Column="2" Orientation="Vertical" Margin="5 0">
+								<StackPanel Grid.Column="2" Orientation="Vertical" Margin="5,0">
 									<TextBlock Text="{localization:Localize Monitor_Polls}"
-									           Style="{StaticResource Text.Body}"
-									           HorizontalAlignment="Center"
-									           FontSize="{StaticResource FontSize.Caption}"
-									           TextWrapping="Wrap"
-									           TextAlignment="Center"/>
+									           Style="{StaticResource Text.Stat.Label}"/>
 									<TextBlock Text="{Binding ViewModel.Polls}"
-									           Style="{StaticResource Text.Body}"
-									           HorizontalAlignment="Center"
-									           FontSize="{StaticResource FontSize.Headline}"
-									           FontWeight="Bold"
-									           Margin="0 5 0 0"/>
+									           Style="{StaticResource Text.Stat.Value}"/>
 								</StackPanel>
 
 								<!-- NAKs -->
-								<StackPanel Grid.Column="3" Orientation="Vertical" Margin="5 0">
+								<StackPanel Grid.Column="3" Orientation="Vertical" Margin="5,0">
 									<TextBlock Text="{localization:Localize Monitor_Naks}"
-									           Style="{StaticResource Text.Body}"
-									           HorizontalAlignment="Center"
-									           FontSize="{StaticResource FontSize.Caption}"
-									           TextWrapping="Wrap"
-									           TextAlignment="Center"/>
+									           Style="{StaticResource Text.Stat.Label}"/>
 									<TextBlock Text="{Binding ViewModel.Naks}"
-									           Style="{StaticResource Text.Body}"
-									           HorizontalAlignment="Center"
-									           FontSize="{StaticResource FontSize.Headline}"
-									           FontWeight="Bold"
-									           Margin="0 5 0 0"/>
+									           Style="{StaticResource Text.Stat.Value}"/>
 								</StackPanel>
 							</Grid>
 
@@ -171,7 +139,7 @@
 					          AutoGenerateColumns="False"
 					          CanUserAddRows="False"
 					          IsReadOnly="True"
-					          Margin="10 5"
+					          Margin="{StaticResource Margin.Card}"
 					          RowDetailsVisibilityMode="Collapsed"
 					          PreviewMouseLeftButtonUp="DataGrid_PreviewMouseLeftButtonUp"
 					          Cursor="Hand">

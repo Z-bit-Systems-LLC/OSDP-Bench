@@ -183,7 +183,7 @@
 
                 <!-- Discovery Warning (only shown when Discovery mode is selected) -->
                 <ui:TextBlock Style="{StaticResource Text.Body}"
-					  Margin="10 5"
+					  Margin="{StaticResource Margin.Card}"
 					  HorizontalAlignment="Center"
 					  Text="{localization:Localize Connect_DiscoveryWarning}"
 					  TextWrapping="Wrap"
@@ -191,7 +191,7 @@
 
                 <!-- Passive Monitor Info (only shown when Passive Monitor mode is selected) -->
                 <ui:TextBlock Style="{StaticResource Text.Body}"
-					  Margin="10 5"
+					  Margin="{StaticResource Margin.Card}"
 					  HorizontalAlignment="Center"
 					  Text="{localization:Localize Connect_PassiveMonitorInfo}"
 					  TextWrapping="Wrap"
@@ -318,8 +318,8 @@
                 </StackPanel>
                 </ScrollViewer>
 
-                <TextBlock 
-					Margin="10 5"
+                <TextBlock
+					Margin="{StaticResource Margin.Card}"
 					HorizontalAlignment="Center"
 					TextAlignment="Center"
 					TextWrapping="Wrap"
@@ -335,8 +335,8 @@
                         </Style>
                     </TextBlock.Style>
                 </TextBlock>
-                <TextBlock 
-					Margin="10 5"
+                <TextBlock
+					Margin="{StaticResource Margin.Card}"
 					HorizontalAlignment="Center"
 					TextAlignment="Center"
 					TextWrapping="Wrap"

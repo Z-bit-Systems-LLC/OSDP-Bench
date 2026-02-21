@@ -21,7 +21,7 @@
                    Style="{StaticResource Label.Standard}"
                    Target="{Binding ElementName=BaudRateComboBox}" />
             <ComboBox Name="BaudRateComboBox"
-                      Margin="0 0 20 0"
+                      Style="{StaticResource ComboBox.Standard}"
                       ItemsSource="{Binding AvailableBaudRates}"
                       SelectedItem="{Binding SelectedBaudRate, Mode=TwoWay}"/>
         </StackPanel>

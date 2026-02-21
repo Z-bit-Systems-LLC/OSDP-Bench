@@ -36,6 +36,7 @@
                            VerticalAlignment="Center"
                            Margin="0,0,10,0"/>
                 <ComboBox x:Name="LanguageComboBox"
+                          Style="{StaticResource ComboBox.Standard}"
                           ItemsSource="{Binding ViewModel.LanguageViewModel.AvailableLanguages}"
                           SelectedItem="{Binding ViewModel.LanguageViewModel.SelectedLanguage, Mode=TwoWay}"
                           DisplayMemberPath="DisplayName"
