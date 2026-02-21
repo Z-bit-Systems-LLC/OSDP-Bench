@@ -46,7 +46,7 @@
                         Text="{localization:Localize Manage_DeviceInformation}" 
                         TextWrapping="Wrap"
                         Margin="0,0,0,10"/>
-                    <StackPanel Orientation="Horizontal"
+                    <WrapPanel Orientation="Horizontal"
                                 Margin="{StaticResource Margin.ContentCenter}"
                                 HorizontalAlignment="Center">
                         <TextBlock Style="{StaticResource Text.Title}"
@@ -69,7 +69,7 @@
                             TextAlignment="Left"
                             TextWrapping="Wrap"
                             Text=")"/>
-                    </StackPanel>
+                    </WrapPanel>
                     <TextBlock Style="{StaticResource Text.Subtitle}"
                         Margin="{StaticResource Margin.ContentCenter}"
                         HorizontalAlignment="Center"
@@ -135,11 +135,11 @@
                     </Grid>
                     
                     <Grid Name="DeviceActionControl"
-                          Margin="5, 10" />
+                          Margin="{StaticResource Margin.Card}" />
 
                     <ui:Button Name="PerformActionButton"
                         Content="{Binding ViewModel.SelectedDeviceAction.PerformActionName}"
-                                Margin="10 5"
+                                Margin="{StaticResource Margin.Card}"
                                 HorizontalAlignment="Left"
                                 Command="{Binding ViewModel.ExecuteDeviceActionCommand}"/>
                 </StackPanel>

@@ -30,7 +30,7 @@
             <TextBlock Text="{Binding CopyWriteNotice}" Style="{StaticResource Text.Body}" />
 
             <!-- Language Selection -->
-            <StackPanel Orientation="Horizontal" Margin="0,20,0,0">
+            <WrapPanel Orientation="Horizontal" Margin="0,20,0,0">
                 <TextBlock Text="{localization:Localize Language_Selection}"
                            Style="{StaticResource Text.Subtitle}"
                            VerticalAlignment="Center"
@@ -43,7 +43,7 @@
                           ToolTip="{localization:Localize Language_SelectLanguage}"
                           Width="150"
                           VerticalAlignment="Center" />
-            </StackPanel>
+            </WrapPanel>
         </StackPanel>
 
         <Image Grid.Column="1"

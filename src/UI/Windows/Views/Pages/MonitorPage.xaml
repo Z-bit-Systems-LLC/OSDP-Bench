@@ -94,7 +94,7 @@
 								</Grid.ColumnDefinitions>
 
 								<!-- Buffer Info -->
-								<StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+								<WrapPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
 									<TextBlock Style="{StaticResource Text.Body}"
 									           VerticalAlignment="Center">
 										<Run Text="{Binding ViewModel.TotalPacketsCaptured, Mode=OneWay}"/>
@@ -112,7 +112,7 @@
 									           VerticalAlignment="Center"
 									           Margin="5 0 0 0"
 									           Text="{Binding ViewModel.BufferUsagePercentage, StringFormat={}{0:F0}%, Mode=OneWay}"/>
-								</StackPanel>
+								</WrapPanel>
 
 								<!-- Export Button with Dropdown -->
 								<ui:Button Grid.Column="1"
@@ -252,6 +252,7 @@
 							         BorderThickness="0"
 							         Background="Transparent"
 							         FontFamily="Consolas"
+							         TextWrapping="Wrap"
 							         Margin="10" />
 						</DataTemplate>
 					</DataGrid.RowDetailsTemplate>
