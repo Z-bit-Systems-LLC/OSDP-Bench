@@ -17,12 +17,4 @@ steps:
     inputs:
       command: 'test'
       projects: 'test/UI.Tests/UI.Tests.csproj'
-      arguments: '--configuration $(buildConfiguration) --logger trx --results-directory $(Build.ArtifactStagingDirectory)/TestResults'
-
-  - task: PublishTestResults@2
-    displayName: 'Publish UI Test Results'
-    condition: succeededOrFailed()
-    inputs:
-      testResultsFormat: 'VSTest'
-      testResultsFiles: '$(Build.ArtifactStagingDirectory)/TestResults/*.trx'
-      testRunTitle: 'UI Tests'
+      arguments: '--configuration $(buildConfiguration)'
