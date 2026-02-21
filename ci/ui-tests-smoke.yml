@@ -1,0 +1,20 @@
+steps:
+  - task: UseDotNet@2
+    displayName: 'Install .NET SDK'
+    inputs:
+      packageType: 'sdk'
+      version: '10.x'
+
+  - task: DotNetCoreCLI@2
+    displayName: 'dotnet build UI.Tests'
+    inputs:
+      command: 'build'
+      projects: 'test/UI.Tests/UI.Tests.csproj'
+      arguments: '--configuration $(buildConfiguration)'
+
+  - task: DotNetCoreCLI@2
+    displayName: 'dotnet test UI.Tests (Smoke)'
+    inputs:
+      command: 'test'
+      projects: 'test/UI.Tests/UI.Tests.csproj'
+      arguments: '--configuration $(buildConfiguration) --filter TestCategory=Smoke'

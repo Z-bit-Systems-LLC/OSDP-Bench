@@ -3,6 +3,7 @@ using NUnit.Framework;
 namespace OSDPBench.UI.Tests;
 
 [TestFixture]
+[Category("Smoke")]
 public class SmokeTests : UiTestBase
 {
     [Test]

@@ -8,6 +8,14 @@ trigger:
 
 pr: none
 
+schedules:
+- cron: '0 6 * * *'
+  displayName: 'Daily full UI test run'
+  branches:
+    include:
+    - main
+  always: true
+
 pool:
   vmImage: 'windows-latest'
 
@@ -26,7 +34,20 @@ jobs:
       - template: build.yml
 
   - job: ui_tests
-    displayName: 'UI Tests'
+    displayName: 'UI Smoke Tests'
+    pool:
+      vmImage: 'windows-latest'
+    dependsOn:
+      build
+    continueOnError: true
+    steps:
+      - checkout: self
+        submodules: true
+      - template: ui-tests-smoke.yml
+
+  - job: ui_tests_full
+    displayName: 'UI Tests (Full)'
+    condition: or(eq(variables['Build.Reason'], 'Schedule'), startsWith(variables['Build.SourceBranch'], 'refs/tags/v'))
     pool:
       vmImage: 'windows-latest'
     dependsOn:
