@@ -20,29 +20,34 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <ui:NavigationView x:Name="RootNavigation" Grid.Row="1" 
+        <ui:NavigationView x:Name="RootNavigation" Grid.Row="1"
+                           AutomationProperties.AutomationId="RootNavigation"
                            Padding="42,0,42,0"
                            IsBackButtonVisible="Collapsed"
                            PaneDisplayMode="LeftFluent" >
             <ui:NavigationView.MenuItems>
-                <ui:NavigationViewItem Content="{localization:Localize Navigation_ConnectToPD}" TargetPageType="{x:Type pages:ConfigurationPage}" NavigationCacheMode="Required">
+                <ui:NavigationViewItem AutomationProperties.AutomationId="NavItem_Connect"
+                                      Content="{localization:Localize Navigation_ConnectToPD}" TargetPageType="{x:Type pages:ConfigurationPage}" NavigationCacheMode="Required">
                     <ui:NavigationViewItem.Icon>
                         <ui:SymbolIcon Symbol="Connector24" />
                     </ui:NavigationViewItem.Icon>
                 </ui:NavigationViewItem>
-                <ui:NavigationViewItem Content="{localization:Localize Navigation_ManagePD}" TargetPageType="{x:Type pages:ManagePage}" NavigationCacheMode="Required">
+                <ui:NavigationViewItem AutomationProperties.AutomationId="NavItem_Manage"
+                                      Content="{localization:Localize Navigation_ManagePD}" TargetPageType="{x:Type pages:ManagePage}" NavigationCacheMode="Required">
                     <ui:NavigationViewItem.Icon>
                         <ui:SymbolIcon Symbol="Toolbox24" />
                     </ui:NavigationViewItem.Icon>
                 </ui:NavigationViewItem>
-                <ui:NavigationViewItem Content="{localization:Localize Navigation_Monitor}" TargetPageType="{x:Type pages:MonitorPage}" NavigationCacheMode="Required">
+                <ui:NavigationViewItem AutomationProperties.AutomationId="NavItem_Monitor"
+                                      Content="{localization:Localize Navigation_Monitor}" TargetPageType="{x:Type pages:MonitorPage}" NavigationCacheMode="Required">
                     <ui:NavigationViewItem.Icon>
                         <ui:SymbolIcon Symbol="Tv24" />
                     </ui:NavigationViewItem.Icon>
                 </ui:NavigationViewItem>
             </ui:NavigationView.MenuItems>
             <ui:NavigationView.FooterMenuItems>
-                <ui:NavigationViewItem Content="{localization:Localize Navigation_Info}" TargetPageType="{x:Type pages:InfoPage}">
+                <ui:NavigationViewItem AutomationProperties.AutomationId="NavItem_Info"
+                                      Content="{localization:Localize Navigation_Info}" TargetPageType="{x:Type pages:InfoPage}">
                     <ui:NavigationViewItem.Icon>
                         <ui:SymbolIcon Symbol="Info24" />
                     </ui:NavigationViewItem.Icon>
@@ -56,7 +61,7 @@
             Grid.Row="0"
             CloseWindowByDoubleClickOnIcon="True">
             <ui:TitleBar.Icon>
-                <ui:ImageIcon Source="pack://application:,,,/Assets/osdpbench-icon.png" />
+                <ui:ImageIcon Source="pack://application:,,,/OSDPBench;component/Assets/osdpbench-icon.png" />
             </ui:TitleBar.Icon>
         </ui:TitleBar>
     </Grid>

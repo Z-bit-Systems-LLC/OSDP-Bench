@@ -1,0 +1,28 @@
+steps:
+  - task: UseDotNet@2
+    displayName: 'Install .NET SDK'
+    inputs:
+      packageType: 'sdk'
+      version: '10.x'
+
+  - task: DotNetCoreCLI@2
+    displayName: 'dotnet build UI.Tests'
+    inputs:
+      command: 'build'
+      projects: 'test/UI.Tests/UI.Tests.csproj'
+      arguments: '--configuration $(buildConfiguration)'
+
+  - task: DotNetCoreCLI@2
+    displayName: 'dotnet test UI.Tests'
+    inputs:
+      command: 'test'
+      projects: 'test/UI.Tests/UI.Tests.csproj'
+      arguments: '--configuration $(buildConfiguration) --logger trx --results-directory $(Build.ArtifactStagingDirectory)/TestResults'
+
+  - task: PublishTestResults@2
+    displayName: 'Publish UI Test Results'
+    condition: succeededOrFailed()
+    inputs:
+      testResultsFormat: 'VSTest'
+      testResultsFiles: '$(Build.ArtifactStagingDirectory)/TestResults/*.trx'
+      testRunTitle: 'UI Tests'

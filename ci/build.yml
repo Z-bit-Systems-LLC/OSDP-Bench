@@ -16,7 +16,7 @@ steps:
     displayName: 'dotnet test'
     inputs:
       command: 'test'
-      projects: 'test/*Tests/*.csproj'
+      projects: 'test/Core.Tests/Core.Tests.csproj'
       arguments: '--configuration $(buildConfiguration) --collect:"XPlat Code Coverage"'
 
   - task: reportgenerator@5

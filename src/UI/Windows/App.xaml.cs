@@ -1,4 +1,4 @@
-﻿using System.Windows;
+using System.Windows;
 using System.Windows.Threading;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -22,43 +22,61 @@ public partial class App
     // https://docs.microsoft.com/dotnet/core/extensions/dependency-injection
     // https://docs.microsoft.com/dotnet/core/extensions/configuration
     // https://docs.microsoft.com/dotnet/core/extensions/logging
-    private static readonly IHost Host = Microsoft.Extensions.Hosting.Host
-        .CreateDefaultBuilder()
-        .ConfigureServices((_, services) =>
-        {
-            services.AddHostedService<ApplicationHostService>();
+    private static IHost? _host;
 
-            // Theme manipulation
-            services.AddSingleton<IThemeService, ThemeService>();
+    /// <summary>
+    /// Builds and returns the application host.
+    /// </summary>
+    protected static IHost BuildHost(Action<IServiceCollection>? configureOverrides = null)
+    {
+        return Microsoft.Extensions.Hosting.Host
+            .CreateDefaultBuilder()
+            .ConfigureServices((_, services) =>
+            {
+                ConfigureServices(services);
+                configureOverrides?.Invoke(services);
+            }).Build();
+    }
 
-            // TaskBar manipulation
-            services.AddSingleton<ITaskBarService, TaskBarService>();
+    /// <summary>
+    /// Registers application services with the dependency injection container.
+    /// </summary>
+    /// <param name="services">The service collection to configure.</param>
+    protected static void ConfigureServices(IServiceCollection services)
+    {
+        services.AddHostedService<ApplicationHostService>();
 
-            // Service containing navigation, same as INavigationWindow... but without window
-            services.AddSingleton<INavigationService, NavigationService>();
-            services.AddSingleton<INavigationViewPageProvider, PageService>();
+        // Theme manipulation
+        services.AddSingleton<IThemeService, ThemeService>();
 
-            // Main window with navigation
-            services.AddSingleton<INavigationWindow, MainWindow>();
-            services.AddSingleton<MainWindowViewModel>();
+        // TaskBar manipulation
+        services.AddSingleton<ITaskBarService, TaskBarService>();
 
-            services.AddSingleton<ConfigurationPage>();
-            services.AddSingleton<ConfigurationViewModel>();
-            services.AddSingleton<ManagePage>();
-            services.AddSingleton<ManageViewModel>();
-            services.AddSingleton<MonitorPage>();
-            services.AddSingleton<MonitorViewModel>();
-            services.AddSingleton<InfoPage>();
+        // Service containing navigation, same as INavigationWindow... but without window
+        services.AddSingleton<INavigationService, NavigationService>();
+        services.AddSingleton<INavigationViewPageProvider, PageService>();
 
-            services.AddSingleton<IDeviceManagementService, DeviceManagementService>();
-            services.AddSingleton<IDialogService, WindowsDialogService>();
-            services.AddSingleton<ISerialPortConnectionService, WindowsSerialPortConnectionService>();
-            services.AddSingleton<IUsbDeviceMonitorService, WindowsUsbDeviceMonitorService>();
-            services.AddSingleton<AppUserSettingsService>();
-            services.AddSingleton<IUserSettingsService>(sp => sp.GetRequiredService<AppUserSettingsService>());
-            services.AddSingleton<ILocalizationService, LocalizationService>();
-            services.AddSingleton<ILanguageMismatchService, WindowsLanguageMismatchService>();
-        }).Build();
+        // Main window with navigation
+        services.AddSingleton<INavigationWindow, MainWindow>();
+        services.AddSingleton<MainWindowViewModel>();
+
+        services.AddSingleton<ConfigurationPage>();
+        services.AddSingleton<ConfigurationViewModel>();
+        services.AddSingleton<ManagePage>();
+        services.AddSingleton<ManageViewModel>();
+        services.AddSingleton<MonitorPage>();
+        services.AddSingleton<MonitorViewModel>();
+        services.AddSingleton<InfoPage>();
+
+        services.AddSingleton<IDeviceManagementService, DeviceManagementService>();
+        services.AddSingleton<IDialogService, WindowsDialogService>();
+        services.AddSingleton<ISerialPortConnectionService, WindowsSerialPortConnectionService>();
+        services.AddSingleton<IUsbDeviceMonitorService, WindowsUsbDeviceMonitorService>();
+        services.AddSingleton<AppUserSettingsService>();
+        services.AddSingleton<IUserSettingsService>(sp => sp.GetRequiredService<AppUserSettingsService>());
+        services.AddSingleton<ILocalizationService, LocalizationService>();
+        services.AddSingleton<ILanguageMismatchService, WindowsLanguageMismatchService>();
+    }
 
     /// <summary>
     /// Gets registered service.
@@ -68,7 +86,7 @@ public partial class App
     public static T GetService<T>()
         where T : class
     {
-        return (Host.Services.GetService(typeof(T)) as T)!;
+        return (_host!.Services.GetService(typeof(T)) as T)!;
     }
 
     /// <summary>
@@ -80,11 +98,12 @@ public partial class App
         // Must be set before Host.Start() which creates windows that use localization
         ZBitSystems.Wpf.UI.Localization.LocalizationService.Provider = new ResourceLocalizationProvider();
 
-        Host.Start();
+        _host = BuildHost();
+        _host.Start();
 
         // Initialize the localization service to apply saved culture
-        var userSettingsService = Host.Services.GetService<IUserSettingsService>();
-        var localizationService = Host.Services.GetService<ILocalizationService>();
+        var userSettingsService = _host.Services.GetService<IUserSettingsService>();
+        var localizationService = _host.Services.GetService<ILocalizationService>();
         if (localizationService != null && userSettingsService?.PreferredCulture != null)
         {
             try
@@ -96,20 +115,20 @@ public partial class App
                 // If culture loading fails, continue with system default
             }
         }
-        
-        Host.Services.GetService<ManageViewModel>();
-        Host.Services.GetService<MonitorViewModel>();
-        
+
+        _host.Services.GetService<ManageViewModel>();
+        _host.Services.GetService<MonitorViewModel>();
+
         // Check for language mismatch after UI is initialized
         _ = Task.Run(async () =>
         {
             // Small delay to ensure UI is fully loaded
             await Task.Delay(500);
-            
+
             // Run on UI thread to ensure proper dialog display and culture updates
             await Current.Dispatcher.InvokeAsync(async () =>
             {
-                var languageMismatchService = Host.Services.GetService<ILanguageMismatchService>();
+                var languageMismatchService = _host.Services.GetService<ILanguageMismatchService>();
                 if (languageMismatchService != null)
                 {
                     await languageMismatchService.CheckAndPromptForLanguageMismatchAsync();
@@ -123,16 +142,18 @@ public partial class App
     /// </summary>
     private async void OnExit(object sender, ExitEventArgs e)
     {
-        // Dispose of services that need explicit cleanup
-        var configurationViewModel = Host.Services.GetService<ConfigurationViewModel>();
-        configurationViewModel?.Dispose();
-        
-        var usbMonitor = Host.Services.GetService<IUsbDeviceMonitorService>();
-        usbMonitor?.Dispose();
-        
-        await Host.StopAsync();
+        if (_host == null) return;
 
-        Host.Dispose();
+        // Dispose of services that need explicit cleanup
+        var configurationViewModel = _host.Services.GetService<ConfigurationViewModel>();
+        configurationViewModel?.Dispose();
+
+        var usbMonitor = _host.Services.GetService<IUsbDeviceMonitorService>();
+        usbMonitor?.Dispose();
+
+        await _host.StopAsync();
+
+        _host.Dispose();
     }
 
     /// <summary>

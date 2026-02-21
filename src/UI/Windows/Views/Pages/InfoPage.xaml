@@ -73,13 +73,13 @@
                        HorizontalAlignment="Center"
                        Margin="0, 30, 0,10"/>
             <controls:LicenseExpander Header="{localization:Localize Info_EPLLicense}"
-                ResourceUri="pack://application:,,,/Assets/EPL.txt" />
+                ResourceUri="pack://application:,,,/OSDPBench;component/Assets/EPL.txt" />
             <controls:LicenseExpander Header="{localization:Localize Info_ApacheLicense}"
                 Margin="0,10,0,0"
-                ResourceUri="pack://application:,,,/Assets/Apache.txt" />
+                ResourceUri="pack://application:,,,/OSDPBench;component/Assets/Apache.txt" />
             <controls:LicenseExpander Header="{localization:Localize Info_MITLicense}"
                 Margin="0,10,0,0"
-                ResourceUri="pack://application:,,,/Assets/MIT.txt" />
+                ResourceUri="pack://application:,,,/OSDPBench;component/Assets/MIT.txt" />
         </StackPanel>
 
     </Grid>

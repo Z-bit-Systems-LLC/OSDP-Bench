@@ -38,6 +38,7 @@
                                Target="{Binding ElementName=SerialPortComboBox}" />
                         <StackPanel Orientation="Horizontal">
                             <ComboBox x:Name="SerialPortComboBox"
+                                      AutomationProperties.AutomationId="SerialPortComboBox"
                                       Style="{StaticResource ComboBox.Standard}"
                                       ItemsSource="{Binding ViewModel.AvailableSerialPorts }"
                                       DisplayMemberPath="Name"
@@ -109,7 +110,8 @@
                                 HorizontalAlignment="Right"
                                 Margin="0,0,0,10">
                         
-                        <ui:Button Content="{localization:Localize Connect_Connect}"
+                        <ui:Button AutomationProperties.AutomationId="ConnectButton"
+                                   Content="{localization:Localize Connect_Connect}"
                                    Command="{Binding ViewModel.ConnectDeviceCommand}"
                                    Margin="0,0,8,0"
                                    Style="{StaticResource Button.Primary}">
@@ -136,7 +138,8 @@
                             </ui:Button.Visibility>
                         </ui:Button>
 
-                        <ui:Button Content="{localization:Localize Connect_Disconnect}"
+                        <ui:Button AutomationProperties.AutomationId="DisconnectButton"
+                                   Content="{localization:Localize Connect_Disconnect}"
                                    Command="{Binding ViewModel.DisconnectDeviceCommand}"
                                    Margin="0,0,8,0"
                                    Style="{StaticResource Button.Secondary}">
@@ -214,6 +217,7 @@
                                        Style="{StaticResource Label.Standard}"
                                        Target="{Binding ElementName=BaudRateComboBox}" />
                                 <ComboBox Name="BaudRateComboBox"
+                                          AutomationProperties.AutomationId="BaudRateComboBox"
                                           Style="{StaticResource ComboBox.Standard}"
                                           Width="200"
                                           ItemsSource="{Binding ViewModel.AvailableBaudRates}"
