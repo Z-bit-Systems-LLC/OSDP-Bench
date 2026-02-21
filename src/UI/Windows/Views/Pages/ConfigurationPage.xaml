@@ -59,11 +59,25 @@
                                 </TextBlock.Style>
                             </TextBlock>
                         </StackPanel>
+                        <TextBlock AutomationProperties.AutomationId="NoSerialPortsMessage"
+                                   Text="{localization:Localize Connect_NoSerialPortsDetected}"
+                                   Foreground="{DynamicResource SemanticWarningBrush}"
+                                   Margin="0,4,0,0">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock" BasedOn="{StaticResource Text.Caption}">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding ElementName=SerialPortComboBox, Path=HasItems}" Value="False">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
                     </StackPanel>
 
                     <!-- Connection Mode Selection -->
-                    <StackPanel Orientation="Vertical">
-                        <Label Content=" " Style="{StaticResource Label.Standard}" />
+                    <StackPanel Orientation="Vertical" VerticalAlignment="Bottom">
                         <WrapPanel Orientation="Horizontal">
                             <RadioButton Content="{localization:Localize ConnectionMode_ConnectToPD}"
                                          IsChecked="{Binding ViewModel.IsConnectToPDSelected, Mode=TwoWay}"
@@ -113,6 +127,7 @@
                         <ui:Button AutomationProperties.AutomationId="ConnectButton"
                                    Content="{localization:Localize Connect_Connect}"
                                    Command="{Binding ViewModel.ConnectDeviceCommand}"
+                                   MinWidth="120"
                                    Margin="0,0,8,0"
                                    Style="{StaticResource Button.Primary}">
                             <ui:Button.Visibility>
@@ -122,6 +137,7 @@
 
                         <ui:Button Content="{localization:Localize Connect_StartDiscovery}"
                                    Command="{Binding ViewModel.DiscoverDeviceCommand}"
+                                   MinWidth="120"
                                    Margin="0,0,8,0"
                                    Style="{StaticResource Button.Primary}">
                             <ui:Button.Visibility>
@@ -131,6 +147,7 @@
 
                         <ui:Button Content="{localization:Localize Connect_CancelDiscovery}"
                                    Command="{Binding ViewModel.DiscoverDeviceCancelCommand}"
+                                   MinWidth="120"
                                    Margin="0,0,8,0"
                                    Style="{StaticResource Button.Secondary}">
                             <ui:Button.Visibility>
@@ -141,6 +158,7 @@
                         <ui:Button AutomationProperties.AutomationId="DisconnectButton"
                                    Content="{localization:Localize Connect_Disconnect}"
                                    Command="{Binding ViewModel.DisconnectDeviceCommand}"
+                                   MinWidth="120"
                                    Margin="0,0,8,0"
                                    Style="{StaticResource Button.Secondary}">
                             <ui:Button.Visibility>
@@ -150,6 +168,7 @@
 
                         <ui:Button Content="{localization:Localize Connect_StartPassiveMonitoring}"
                                    Command="{Binding ViewModel.StartPassiveMonitoringCommand}"
+                                   MinWidth="120"
                                    Margin="0,0,8,0"
                                    Style="{StaticResource Button.Primary}">
                             <ui:Button.Visibility>
@@ -159,6 +178,7 @@
 
                         <ui:Button Content="{localization:Localize Connect_StopPassiveMonitoring}"
                                    Command="{Binding ViewModel.StopPassiveMonitoringCommand}"
+                                   MinWidth="120"
                                    Margin="0,0,8,0"
                                    Style="{StaticResource Button.Secondary}">
                             <ui:Button.Visibility>
@@ -269,12 +289,17 @@
                                 <Label Content="{localization:Localize Connect_SecurityKey}"
                                        Style="{StaticResource Label.Standard}"
                                        Target="{Binding ElementName=SecurityKeyTextBox}" />
-                                <TextBox Name="SecurityKeyTextBox"
-                                         Text="{Binding Path=ViewModel.SecurityKey, Mode=TwoWay}"
-                                         MaxWidth="600"
-                                         HorizontalAlignment="Stretch">
-                                    <TextBox.Style>
-                                        <Style TargetType="TextBox" BasedOn="{StaticResource TextBox.Standard}">
+                                <ui:TextBox Name="SecurityKeyTextBox"
+                                           AutomationProperties.AutomationId="SecurityKeyTextBox"
+                                           Text="{Binding Path=ViewModel.SecurityKey, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                           PlaceholderText="{localization:Localize Connect_SecurityKeyPlaceholder}"
+                                           MaxWidth="600"
+                                           HorizontalAlignment="Stretch">
+                                    <ui:TextBox.Style>
+                                        <Style TargetType="ui:TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
+                                            <Setter Property="MinHeight" Value="{StaticResource Control.Height.Medium}"/>
+                                            <Setter Property="Margin" Value="{StaticResource Margin.Control}"/>
+                                            <Setter Property="Padding" Value="{StaticResource Padding.Control}"/>
                                             <Setter Property="IsEnabled" Value="False"/>
                                             <Style.Triggers>
                                                 <MultiDataTrigger>
@@ -286,8 +311,8 @@
                                                 </MultiDataTrigger>
                                             </Style.Triggers>
                                         </Style>
-                                    </TextBox.Style>
-                                </TextBox>
+                                    </ui:TextBox.Style>
+                                </ui:TextBox>
                             </StackPanel>
                         </StackPanel>
                     </Border>
@@ -310,11 +335,26 @@
                                 <Label Content="{localization:Localize Connect_CustomKey}"
                                        Style="{StaticResource Label.Standard}"
                                        Target="{Binding ElementName=PassiveSecurityKeyTextBox}" />
-                                <TextBox Name="PassiveSecurityKeyTextBox"
-                                         Style="{StaticResource TextBox.Standard}"
-                                         Text="{Binding Path=ViewModel.SecurityKey, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                         MaxWidth="600"
-                                         HorizontalAlignment="Stretch"/>
+                                <ui:TextBox Name="PassiveSecurityKeyTextBox"
+                                           AutomationProperties.AutomationId="PassiveSecurityKeyTextBox"
+                                           Text="{Binding Path=ViewModel.SecurityKey, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                           PlaceholderText="{localization:Localize Connect_SecurityKeyPlaceholder}"
+                                           MaxWidth="600"
+                                           HorizontalAlignment="Stretch">
+                                    <ui:TextBox.Style>
+                                        <Style TargetType="ui:TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
+                                            <Setter Property="MinHeight" Value="{StaticResource Control.Height.Medium}"/>
+                                            <Setter Property="Margin" Value="{StaticResource Margin.Control}"/>
+                                            <Setter Property="Padding" Value="{StaticResource Padding.Control}"/>
+                                            <Setter Property="IsEnabled" Value="False"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding ElementName=PassiveUseDefaultKeyCheckBox, Path=IsChecked}" Value="False">
+                                                    <Setter Property="IsEnabled" Value="True"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </ui:TextBox.Style>
+                                </ui:TextBox>
                             </StackPanel>
                         </StackPanel>
                     </Border>

@@ -255,6 +255,14 @@
     <value>Connect</value>
     <comment>Button text to connect to device</comment>
   </data>
+  <data name="Connect_NoSerialPortsDetected" xml:space="preserve">
+    <value>No serial ports detected</value>
+    <comment>Warning message when no serial ports are available</comment>
+  </data>
+  <data name="Connect_SecurityKeyPlaceholder" xml:space="preserve">
+    <value>00112233445566778899AABBCCDDEEFF</value>
+    <comment>Placeholder text for security key input fields</comment>
+  </data>
   
   <!-- Manage Page -->
   <data name="Manage_DeviceNotIdentified" xml:space="preserve">

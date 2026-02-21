@@ -1,3 +1,6 @@
+using System.Windows;
+using System.Windows.Automation;
+using System.Windows.Media;
 using NUnit.Framework;
 using OSDPBench.Core.Models;
 using OSDPBench.Core.ViewModels.Pages;
@@ -22,6 +25,8 @@ public class ConfigurationPageAdvancedTests : UiTestBase
             var vm = TestApp.GetService<ConfigurationViewModel>();
             vm.IsConnectToPDSelected = true;
             vm.IsDiscoverModeSelected = true;
+            vm.UseDefaultKey = true;
+            vm.SecurityKey = string.Empty;
         });
 
         // Ensure we reset back to disconnected state
@@ -170,5 +175,130 @@ public class ConfigurationPageAdvancedTests : UiTestBase
             Assert.That(InvokeOnUI(() => viewModel.DisconnectVisible), Is.True,
                 "Disconnect should be visible when connected.");
         });
+    }
+
+    [Test]
+    public void PassiveSecurityKeyDisabledWhenDefaultKeyChecked()
+    {
+        // Switch to passive mode
+        InvokeOnUI(() =>
+        {
+            var vm = TestApp.GetService<ConfigurationViewModel>();
+            vm.IsConnectToPDSelected = false;
+            vm.UseDefaultKey = true;
+        });
+
+        var passiveKeyTextBox = WaitForElement("PassiveSecurityKeyTextBox");
+        Assert.That(passiveKeyTextBox, Is.Not.Null, "PassiveSecurityKeyTextBox should exist.");
+
+        var isEnabled = InvokeOnUI(() =>
+        {
+            var element = FindWpfElement<Wpf.Ui.Controls.TextBox>("PassiveSecurityKeyTextBox");
+            return element?.IsEnabled ?? true;
+        });
+
+        Assert.That(isEnabled, Is.False,
+            "Passive security key should be disabled when default key is checked.");
+    }
+
+    [Test]
+    public void PassiveSecurityKeyEnabledWhenDefaultKeyUnchecked()
+    {
+        // Switch to passive mode and uncheck default key
+        InvokeOnUI(() =>
+        {
+            var vm = TestApp.GetService<ConfigurationViewModel>();
+            vm.IsConnectToPDSelected = false;
+            vm.SecurityKey = "00112233445566778899AABBCCDDEEFF";
+            vm.UseDefaultKey = false;
+        });
+
+        var isEnabled = InvokeOnUI(() =>
+        {
+            var element = FindWpfElement<Wpf.Ui.Controls.TextBox>("PassiveSecurityKeyTextBox");
+            return element?.IsEnabled ?? false;
+        });
+
+        Assert.That(isEnabled, Is.True,
+            "Passive security key should be enabled when default key is unchecked.");
+    }
+
+    [Test]
+    public void SecurityKeyPlaceholderVisible()
+    {
+        // Switch to manual mode with secure channel
+        InvokeOnUI(() =>
+        {
+            var vm = TestApp.GetService<ConfigurationViewModel>();
+            vm.IsConnectToPDSelected = true;
+            vm.IsDiscoverModeSelected = false;
+            vm.UseSecureChannel = true;
+            vm.UseDefaultKey = false;
+        });
+
+        var placeholderText = InvokeOnUI(() =>
+        {
+            var element = FindWpfElement<Wpf.Ui.Controls.TextBox>("SecurityKeyTextBox");
+            return element?.PlaceholderText ?? string.Empty;
+        });
+
+        Assert.That(placeholderText, Is.Not.Empty,
+            "Security key TextBox should have placeholder text.");
+    }
+
+    [Test]
+    public void ActionButtonsHaveMinWidth()
+    {
+        // Ensure initialization is complete
+        var viewModel = InvokeOnUI(() => TestApp.GetService<ConfigurationViewModel>());
+        viewModel.InitializationComplete.Wait(TimeSpan.FromSeconds(5));
+
+        // Switch to manual mode so Connect button is visible
+        InvokeOnUI(() =>
+        {
+            var vm = TestApp.GetService<ConfigurationViewModel>();
+            vm.IsConnectToPDSelected = true;
+            vm.IsDiscoverModeSelected = false;
+        });
+
+        var minWidth = InvokeOnUI(() =>
+        {
+            var element = FindWpfElement<Wpf.Ui.Controls.Button>("ConnectButton");
+            return element?.MinWidth ?? 0;
+        });
+
+        Assert.That(minWidth, Is.GreaterThanOrEqualTo(120),
+            "Connect button should have MinWidth of at least 120.");
+    }
+
+    /// <summary>
+    /// Finds a WPF element by AutomationId within the current page's visual tree.
+    /// </summary>
+    private T? FindWpfElement<T>(string automationId) where T : FrameworkElement
+    {
+        var mainWindow = Application.Current.MainWindow;
+        if (mainWindow == null) return null;
+
+        return FindByAutomationIdInVisualTree<T>(mainWindow, automationId);
+    }
+
+    private static T? FindByAutomationIdInVisualTree<T>(DependencyObject parent, string automationId)
+        where T : FrameworkElement
+    {
+        var childCount = VisualTreeHelper.GetChildrenCount(parent);
+        for (var i = 0; i < childCount; i++)
+        {
+            var child = VisualTreeHelper.GetChild(parent, i);
+            if (child is T element &&
+                AutomationProperties.GetAutomationId(element) == automationId)
+            {
+                return element;
+            }
+
+            var found = FindByAutomationIdInVisualTree<T>(child, automationId);
+            if (found != null) return found;
+        }
+
+        return null;
     }
 }
