@@ -26,6 +26,14 @@ public class TestApp : App
 
     private IHost? _testHost;
 
+    /// <summary>
+    /// Gets a registered service from the test host.
+    /// </summary>
+    public new T GetService<T>() where T : class
+    {
+        return (_testHost!.Services.GetService(typeof(T)) as T)!;
+    }
+
     public TestApp()
     {
         ConfigureMockDefaults();

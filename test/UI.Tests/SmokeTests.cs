@@ -36,13 +36,7 @@ public class SmokeTests : UiTestBase
 
         foreach (var navId in navIds)
         {
-            var navItem = WaitForElement(navId);
-            Assert.That(navItem, Is.Not.Null, $"Navigation item '{navId}' should exist.");
-
-            navItem!.Click();
-
-            // Allow time for page navigation
-            Thread.Sleep(500);
+            NavigateToPage(navId);
 
             // Verify the window is still responsive after navigation
             Assert.That(MainWindow!.IsAvailable, Is.True,

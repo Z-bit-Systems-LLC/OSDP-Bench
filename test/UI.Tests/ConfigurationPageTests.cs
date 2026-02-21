@@ -8,10 +8,7 @@ public class ConfigurationPageTests : UiTestBase
     [SetUp]
     public void NavigateToConfigurationPage()
     {
-        // Ensure we're on the Configuration page
-        var connectNav = WaitForElement("NavItem_Connect");
-        connectNav?.Click();
-        Thread.Sleep(500);
+        NavigateToPage("NavItem_Connect", "SerialPortComboBox");
     }
 
     [Test]

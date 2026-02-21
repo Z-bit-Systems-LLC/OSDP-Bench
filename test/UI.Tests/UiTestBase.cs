@@ -176,4 +176,25 @@ public abstract class UiTestBase
     {
         return TestApp.Dispatcher.Invoke(func);
     }
+
+    /// <summary>
+    /// Clicks a navigation item and waits for a known element on the target page to appear.
+    /// </summary>
+    protected void NavigateToPage(string navItemId, string pageElementId)
+    {
+        var navItem = WaitForElement(navItemId);
+        navItem?.Click();
+        WaitForElement(pageElementId);
+    }
+
+    /// <summary>
+    /// Clicks a navigation item and waits for the UI thread to finish processing.
+    /// Use when the target page has no always-visible element to wait for.
+    /// </summary>
+    protected void NavigateToPage(string navItemId)
+    {
+        var navItem = WaitForElement(navItemId);
+        navItem?.Click();
+        InvokeOnUI(() => { }); // Flush the dispatcher queue
+    }
 }
