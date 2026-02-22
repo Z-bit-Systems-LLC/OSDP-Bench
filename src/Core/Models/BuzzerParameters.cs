@@ -31,4 +31,10 @@ public class BuzzerParameters
     /// Repeat count (0 = infinite).
     /// </summary>
     public byte Count { get; set; } = 3;
+
+    /// <summary>
+    /// Gets a value indicating whether the ON time is invalid.
+    /// ON time must be non-zero unless the tone code is set to off.
+    /// </summary>
+    public bool IsOnTimeInvalid => ToneCode != ToneCode.Off && OnTime == 0;
 }

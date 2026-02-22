@@ -1,7 +1,9 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Windows.Controls;
 using OSDP.Net.Model.CommandData;
 using OSDPBench.Core.Models;
+using Wpf.Ui.Controls;
 
 namespace OSDPBench.Windows.Views.Controls;
 
@@ -78,6 +80,7 @@ public partial class SetReaderLedControl
             if (_selectedTemporaryMode.Key == value.Key) return;
             _selectedTemporaryMode = value;
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SelectedTemporaryMode)));
+            NotifyTemporaryTimingValidationChanged();
         }
     }
 
@@ -89,6 +92,7 @@ public partial class SetReaderLedControl
             if (_temporaryOnTime == value) return;
             _temporaryOnTime = value;
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(TemporaryOnTime)));
+            NotifyTemporaryTimingValidationChanged();
         }
     }
 
@@ -100,6 +104,7 @@ public partial class SetReaderLedControl
             if (_temporaryOffTime == value) return;
             _temporaryOffTime = value;
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(TemporaryOffTime)));
+            NotifyTemporaryTimingValidationChanged();
         }
     }
 
@@ -144,6 +149,7 @@ public partial class SetReaderLedControl
             if (_selectedPermanentMode.Key == value.Key) return;
             _selectedPermanentMode = value;
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SelectedPermanentMode)));
+            NotifyPermanentTimingValidationChanged();
         }
     }
 
@@ -155,6 +161,7 @@ public partial class SetReaderLedControl
             if (_permanentOnTime == value) return;
             _permanentOnTime = value;
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(PermanentOnTime)));
+            NotifyPermanentTimingValidationChanged();
         }
     }
 
@@ -166,6 +173,7 @@ public partial class SetReaderLedControl
             if (_permanentOffTime == value) return;
             _permanentOffTime = value;
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(PermanentOffTime)));
+            NotifyPermanentTimingValidationChanged();
         }
     }
 
@@ -189,6 +197,24 @@ public partial class SetReaderLedControl
             _selectedPermanentOffColor = value;
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SelectedPermanentOffColor)));
         }
+    }
+
+    public bool IsTemporaryTimingInvalid => GetLedParameters().IsTemporaryTimingInvalid;
+
+    public bool IsPermanentTimingInvalid => GetLedParameters().IsPermanentTimingInvalid;
+
+    public bool HasErrors => IsTemporaryTimingInvalid || IsPermanentTimingInvalid;
+
+    private void NotifyTemporaryTimingValidationChanged()
+    {
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsTemporaryTimingInvalid)));
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(HasErrors)));
+    }
+
+    private void NotifyPermanentTimingValidationChanged()
+    {
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsPermanentTimingInvalid)));
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(HasErrors)));
     }
 
     /// <summary>
@@ -226,5 +252,75 @@ public partial class SetReaderLedControl
         _selectedPermanentMode = AvailablePermanentModes[0];
         _selectedPermanentOnColor = AvailableColors[0];
         _selectedPermanentOffColor = AvailableColors[0];
+    }
+
+    private void ReaderNumberBox_OnValueChanged(object sender, NumberBoxValueChangedEventArgs args)
+    {
+        ReaderNumber = (byte)(ReaderNumberBox.Value ?? 0);
+    }
+
+    private void ReaderNumberBox_OnTextChanged(object sender, TextChangedEventArgs e)
+    {
+        ReaderNumber = (byte)(ReaderNumberBox.Value ?? 0);
+    }
+
+    private void LedNumberBox_OnValueChanged(object sender, NumberBoxValueChangedEventArgs args)
+    {
+        LedNumber = (byte)(LedNumberBox.Value ?? 0);
+    }
+
+    private void LedNumberBox_OnTextChanged(object sender, TextChangedEventArgs e)
+    {
+        LedNumber = (byte)(LedNumberBox.Value ?? 0);
+    }
+
+    private void TemporaryOnTimeBox_OnValueChanged(object sender, NumberBoxValueChangedEventArgs args)
+    {
+        TemporaryOnTime = (byte)(TemporaryOnTimeBox.Value ?? 10);
+    }
+
+    private void TemporaryOnTimeBox_OnTextChanged(object sender, TextChangedEventArgs e)
+    {
+        TemporaryOnTime = (byte)(TemporaryOnTimeBox.Value ?? 10);
+    }
+
+    private void TemporaryOffTimeBox_OnValueChanged(object sender, NumberBoxValueChangedEventArgs args)
+    {
+        TemporaryOffTime = (byte)(TemporaryOffTimeBox.Value ?? 10);
+    }
+
+    private void TemporaryOffTimeBox_OnTextChanged(object sender, TextChangedEventArgs e)
+    {
+        TemporaryOffTime = (byte)(TemporaryOffTimeBox.Value ?? 10);
+    }
+
+    private void TemporaryTimerBox_OnValueChanged(object sender, NumberBoxValueChangedEventArgs args)
+    {
+        TemporaryTimer = (ushort)(TemporaryTimerBox.Value ?? 50);
+    }
+
+    private void TemporaryTimerBox_OnTextChanged(object sender, TextChangedEventArgs e)
+    {
+        TemporaryTimer = (ushort)(TemporaryTimerBox.Value ?? 50);
+    }
+
+    private void PermanentOnTimeBox_OnValueChanged(object sender, NumberBoxValueChangedEventArgs args)
+    {
+        PermanentOnTime = (byte)(PermanentOnTimeBox.Value ?? 0);
+    }
+
+    private void PermanentOnTimeBox_OnTextChanged(object sender, TextChangedEventArgs e)
+    {
+        PermanentOnTime = (byte)(PermanentOnTimeBox.Value ?? 0);
+    }
+
+    private void PermanentOffTimeBox_OnValueChanged(object sender, NumberBoxValueChangedEventArgs args)
+    {
+        PermanentOffTime = (byte)(PermanentOffTimeBox.Value ?? 0);
+    }
+
+    private void PermanentOffTimeBox_OnTextChanged(object sender, TextChangedEventArgs e)
+    {
+        PermanentOffTime = (byte)(PermanentOffTimeBox.Value ?? 0);
     }
 }

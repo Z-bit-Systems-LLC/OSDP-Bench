@@ -59,14 +59,24 @@
                       Style="{StaticResource Label.Standard}"
                       Target="{Binding ElementName=OnTimeNumberBox}" />
                <ui:NumberBox Name="OnTimeNumberBox"
-                             Style="{StaticResource NumberBox.Standard}"
                              Value="{Binding OnTime, Mode=TwoWay}"
                              TextChanged="OnTimeNumberBox_OnTextChanged"
                              ValueChanged="OnTimeNumberBox_OnValueChanged"
                              Minimum="0"
                              Maximum="255"
                              Width="100"
-                             HorizontalAlignment="Left"/>
+                             HorizontalAlignment="Left">
+                   <ui:NumberBox.Style>
+                       <Style TargetType="ui:NumberBox" BasedOn="{StaticResource NumberBox.Standard}">
+                           <Style.Triggers>
+                               <DataTrigger Binding="{Binding IsOnTimeInvalid}" Value="True">
+                                   <Setter Property="BorderBrush" Value="{DynamicResource SemanticErrorBrush}"/>
+                                   <Setter Property="BorderThickness" Value="2"/>
+                               </DataTrigger>
+                           </Style.Triggers>
+                       </Style>
+                   </ui:NumberBox.Style>
+               </ui:NumberBox>
            </StackPanel>
            <StackPanel Grid.Column="1"
                        Style="{StaticResource Section.Container}">

@@ -31,6 +31,7 @@ public partial class ControlBuzzerControl
             if (_selectedToneCode == value) return;
             _selectedToneCode = value;
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SelectedToneCode)));
+            NotifyValidationChanged();
         }
     }
 
@@ -53,6 +54,7 @@ public partial class ControlBuzzerControl
             if (_onTime == value) return;
             _onTime = value;
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(OnTime)));
+            NotifyValidationChanged();
         }
     }
 
@@ -65,6 +67,16 @@ public partial class ControlBuzzerControl
             _offTime = value;
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(OffTime)));
         }
+    }
+
+    public bool IsOnTimeInvalid => GetBuzzerParameters().IsOnTimeInvalid;
+
+    public bool HasErrors => IsOnTimeInvalid;
+
+    private void NotifyValidationChanged()
+    {
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsOnTimeInvalid)));
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(HasErrors)));
     }
 
     public byte Count

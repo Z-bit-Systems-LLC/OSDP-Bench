@@ -135,6 +135,7 @@ public partial class ManagePage : INavigableView<ManageViewModel>
         actionControl.PropertyChanged += (_, _) =>
         {
             ViewModel.DeviceActionParameter = actionControl.GetBuzzerParameters();
+            PerformActionButton.IsEnabled = !actionControl.HasErrors;
         };
 
         DeviceActionControl.Children.Add(actionControl);
@@ -212,6 +213,7 @@ public partial class ManagePage : INavigableView<ManageViewModel>
         actionControl.PropertyChanged += (_, _) =>
         {
             ViewModel.DeviceActionParameter = actionControl.GetLedParameters();
+            PerformActionButton.IsEnabled = !actionControl.HasErrors;
         };
 
         DeviceActionControl.Children.Add(actionControl);

@@ -71,4 +71,20 @@ public class LedParameters
     /// The color displayed during the permanent OFF state.
     /// </summary>
     public LedColor PermanentOffColor { get; set; } = LedColor.Black;
+
+    /// <summary>
+    /// Gets a value indicating whether the temporary timing values are invalid.
+    /// Both ON and OFF time cannot be zero when the mode sets a temporary state.
+    /// </summary>
+    public bool IsTemporaryTimingInvalid =>
+        TemporaryMode == TemporaryReaderControlCode.SetTemporaryAndStartTimer &&
+        TemporaryOnTime == 0 && TemporaryOffTime == 0;
+
+    /// <summary>
+    /// Gets a value indicating whether the permanent timing values are invalid.
+    /// Both ON and OFF time cannot be zero when the mode sets a permanent state.
+    /// </summary>
+    public bool IsPermanentTimingInvalid =>
+        PermanentMode == PermanentReaderControlCode.SetPermanentState &&
+        PermanentOnTime == 0 && PermanentOffTime == 0;
 }
