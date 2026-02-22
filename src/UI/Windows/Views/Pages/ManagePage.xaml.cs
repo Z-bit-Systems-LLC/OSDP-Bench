@@ -26,7 +26,7 @@ public partial class ManagePage : INavigableView<ManageViewModel>
             
         InitializeComponent();
             
-        viewModel.SelectedDeviceAction = viewModel.AvailableDeviceActions.FirstOrDefault();
+        viewModel.SelectedDeviceAction = viewModel.AvailableDeviceActions.OfType<SetReaderLedAction>().FirstOrDefault();
     }
 
     public ManageViewModel ViewModel { get; }

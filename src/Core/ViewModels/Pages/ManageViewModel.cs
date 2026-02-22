@@ -392,14 +392,14 @@ public partial class ManageViewModel : ObservableObject
 
     [ObservableProperty] private ObservableCollection<IDeviceAction> _availableDeviceActions =
     [
-        new ControlBuzzerAction(),
         new FileTransferAction(),
         new MonitoringAction(MonitoringType.CardReads),
         new MonitoringAction(MonitoringType.KeypadReads),
         new ResetCypressDeviceAction(),
         new SetCommunicationAction(),
-        new SetReaderLedAction(),
-        new SupervisionAction()
+        new SupervisionAction(),
+        new ControlBuzzerAction(),
+        new SetReaderLedAction()
     ];
         
     [ObservableProperty] private ObservableCollection<CardReadEntry> _cardReadEntries = [];
