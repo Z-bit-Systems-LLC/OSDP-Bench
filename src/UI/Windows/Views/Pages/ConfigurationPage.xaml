@@ -78,19 +78,21 @@
 
                     <!-- Connection Mode Selection -->
                     <StackPanel Orientation="Vertical" VerticalAlignment="Bottom">
-                        <WrapPanel Orientation="Horizontal">
+                        <StackPanel Orientation="Horizontal">
                             <RadioButton Content="{localization:Localize ConnectionMode_ConnectToPD}"
                                          IsChecked="{Binding ViewModel.IsConnectToPDSelected, Mode=TwoWay}"
                                          IsEnabled="{Binding ViewModel.IsConnectionTypeEnabled}"
                                          GroupName="ConnectionMode"
-                                         Margin="0,0,16,0"
+                                         Style="{StaticResource ToggleButton.Segmented}"
                                          VerticalAlignment="Center"/>
                             <RadioButton Content="{localization:Localize ConnectionType_PassiveMonitor}"
                                          IsChecked="{Binding ViewModel.IsConnectToPDSelected, Mode=OneWay, Converter={StaticResource InverseBoolConverter}}"
                                          IsEnabled="{Binding ViewModel.IsConnectionTypeEnabled}"
                                          GroupName="ConnectionMode"
+                                         Style="{StaticResource ToggleButton.Segmented}"
+                                         Margin="4,0,0,0"
                                          VerticalAlignment="Center"/>
-                        </WrapPanel>
+                        </StackPanel>
                     </StackPanel>
                 </WrapPanel>
             </StackPanel>
@@ -196,11 +198,13 @@
                                      IsChecked="{Binding ViewModel.IsDiscoverModeSelected, Mode=TwoWay}"
                                      IsEnabled="{Binding ViewModel.IsConnectionTypeEnabled}"
                                      GroupName="ConnectSubMode"
-                                     Margin="0,0,16,0"/>
+                                     Style="{StaticResource ToggleButton.Segmented}"/>
                         <RadioButton Content="{localization:Localize ConnectionType_Manual}"
                                      IsChecked="{Binding ViewModel.IsDiscoverModeSelected, Mode=OneWay, Converter={StaticResource InverseBoolConverter}}"
                                      IsEnabled="{Binding ViewModel.IsConnectionTypeEnabled}"
-                                     GroupName="ConnectSubMode"/>
+                                     GroupName="ConnectSubMode"
+                                     Style="{StaticResource ToggleButton.Segmented}"
+                                     Margin="4,0,0,0"/>
                     </StackPanel>
                 </Grid>
 
@@ -227,7 +231,7 @@
                            Margin="0,0,16,0">
                     
                     <!-- Connection Settings Section -->
-                    <StackPanel Orientation="Vertical" Margin="0,0,0,16">
+                    <StackPanel Orientation="Vertical" Margin="0,8,0,16">
                         <ui:TextBlock Style="{StaticResource Section.Header}"
                                       Text="{localization:Localize Connect_ConnectionSettings}"/>
                         

@@ -67,240 +67,252 @@
             </StackPanel>
         </Grid>
 
-        <!-- Temporary / Permanent Tabs -->
-        <TabControl Margin="0,8,0,0">
-            <TabItem Header="{localization:Localize Manage_LedTemporary}">
-                <StackPanel Margin="8">
-                    <StackPanel Style="{StaticResource Section.Container}">
-                        <Label Content="{localization:Localize Manage_LedMode}"
-                               Style="{StaticResource Label.Standard}"
-                               Target="{Binding ElementName=TemporaryModeComboBox}" />
-                        <ComboBox Name="TemporaryModeComboBox"
-                                  Style="{StaticResource ComboBox.Standard}"
-                                  ItemsSource="{Binding AvailableTemporaryModes}"
-                                  SelectedItem="{Binding SelectedTemporaryMode}"
-                                  DisplayMemberPath="Key"
-                                  HorizontalAlignment="Left" />
-                    </StackPanel>
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
-                        <StackPanel Grid.Column="0"
-                                    Style="{StaticResource Section.Container}">
-                            <Label Content="{localization:Localize Manage_LedOnColor}"
-                                   Style="{StaticResource Label.Standard}"
-                                   Target="{Binding ElementName=TemporaryOnColorComboBox}" />
-                            <ComboBox Name="TemporaryOnColorComboBox"
-                                      Style="{StaticResource ComboBox.Standard}"
-                                      ItemsSource="{Binding AvailableColors}"
-                                      SelectedItem="{Binding SelectedTemporaryOnColor}"
-                                      ItemTemplate="{StaticResource LedColorItemTemplate}"
-                                      HorizontalAlignment="Left" />
-                        </StackPanel>
-                        <StackPanel Grid.Column="1"
-                                    Style="{StaticResource Section.Container}">
-                            <Label Content="{localization:Localize Manage_LedOffColor}"
-                                   Style="{StaticResource Label.Standard}"
-                                   Target="{Binding ElementName=TemporaryOffColorComboBox}" />
-                            <ComboBox Name="TemporaryOffColorComboBox"
-                                      Style="{StaticResource ComboBox.Standard}"
-                                      ItemsSource="{Binding AvailableColors}"
-                                      SelectedItem="{Binding SelectedTemporaryOffColor}"
-                                      ItemTemplate="{StaticResource LedColorItemTemplate}"
-                                      HorizontalAlignment="Left" />
-                        </StackPanel>
-                    </Grid>
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
-                        <StackPanel Grid.Column="0"
-                                    Style="{StaticResource Section.Container}">
-                            <Label Content="{localization:Localize Manage_LedOnTime}"
-                                   Style="{StaticResource Label.Standard}"
-                                   Target="{Binding ElementName=TemporaryOnTimeBox}" />
-                            <Border CornerRadius="4">
-                                <Border.Style>
-                                    <Style TargetType="Border">
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding IsTemporaryTimingInvalid}" Value="True">
-                                                <Setter Property="BorderBrush" Value="{DynamicResource SemanticErrorBrush}"/>
-                                                <Setter Property="BorderThickness" Value="2"/>
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </Border.Style>
-                                <ui:NumberBox Name="TemporaryOnTimeBox"
-                                              Style="{StaticResource NumberBox.Standard}"
-                                              Value="{Binding TemporaryOnTime, Mode=TwoWay}"
-                                              TextChanged="TemporaryOnTimeBox_OnTextChanged"
-                                              ValueChanged="TemporaryOnTimeBox_OnValueChanged"
-                                              Minimum="0"
-                                              Maximum="255"
-                                              Width="100"
-                                              HorizontalAlignment="Left"/>
-                            </Border>
-                        </StackPanel>
-                        <StackPanel Grid.Column="1"
-                                    Style="{StaticResource Section.Container}">
-                            <Label Content="{localization:Localize Manage_LedOffTime}"
-                                   Style="{StaticResource Label.Standard}"
-                                   Target="{Binding ElementName=TemporaryOffTimeBox}" />
-                            <Border CornerRadius="4">
-                                <Border.Style>
-                                    <Style TargetType="Border">
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding IsTemporaryTimingInvalid}" Value="True">
-                                                <Setter Property="BorderBrush" Value="{DynamicResource SemanticErrorBrush}"/>
-                                                <Setter Property="BorderThickness" Value="2"/>
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </Border.Style>
-                                <ui:NumberBox Name="TemporaryOffTimeBox"
-                                              Style="{StaticResource NumberBox.Standard}"
-                                              Value="{Binding TemporaryOffTime, Mode=TwoWay}"
-                                              TextChanged="TemporaryOffTimeBox_OnTextChanged"
-                                              ValueChanged="TemporaryOffTimeBox_OnValueChanged"
-                                              Minimum="0"
-                                              Maximum="255"
-                                              Width="100"
-                                              HorizontalAlignment="Left"/>
-                            </Border>
-                        </StackPanel>
-                        <StackPanel Grid.Column="2"
-                                    Style="{StaticResource Section.Container}">
-                            <Label Content="{localization:Localize Manage_LedTimer}"
-                                   Style="{StaticResource Label.Standard}"
-                                   Target="{Binding ElementName=TemporaryTimerBox}" />
-                            <ui:NumberBox Name="TemporaryTimerBox"
-                                          Style="{StaticResource NumberBox.Standard}"
-                                          Value="{Binding TemporaryTimer, Mode=TwoWay}"
-                                          TextChanged="TemporaryTimerBox_OnTextChanged"
-                                          ValueChanged="TemporaryTimerBox_OnValueChanged"
-                                          Minimum="0"
-                                          Maximum="65535"
-                                          Width="100"
-                                          HorizontalAlignment="Left"/>
-                        </StackPanel>
-                    </Grid>
-                    <TextBlock Text="{localization:Localize Manage_LedTimingInvalid}"
-                               Style="{StaticResource Text.Validation.Error}"
-                               Visibility="{Binding IsTemporaryTimingInvalid, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+        <!-- Temporary / Permanent Toggle -->
+        <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+            <RadioButton Name="TemporaryToggle"
+                         Content="{localization:Localize Manage_LedTemporary}"
+                         GroupName="LedMode"
+                         IsChecked="True"
+                         Style="{StaticResource ToggleButton.Segmented}" />
+            <RadioButton Name="PermanentToggle"
+                         Content="{localization:Localize Manage_LedPermanent}"
+                         GroupName="LedMode"
+                         Style="{StaticResource ToggleButton.Segmented}"
+                         Margin="4,0,0,0" />
+        </StackPanel>
+
+        <!-- Temporary Settings -->
+        <StackPanel Margin="0,8,0,0"
+                    Visibility="{Binding IsChecked, ElementName=TemporaryToggle, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <StackPanel Style="{StaticResource Section.Container}">
+                <Label Content="{localization:Localize Manage_LedMode}"
+                       Style="{StaticResource Label.Standard}"
+                       Target="{Binding ElementName=TemporaryModeComboBox}" />
+                <ComboBox Name="TemporaryModeComboBox"
+                          Style="{StaticResource ComboBox.Standard}"
+                          ItemsSource="{Binding AvailableTemporaryModes}"
+                          SelectedItem="{Binding SelectedTemporaryMode}"
+                          DisplayMemberPath="Key"
+                          HorizontalAlignment="Left" />
+            </StackPanel>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0"
+                            Style="{StaticResource Section.Container}">
+                    <Label Content="{localization:Localize Manage_LedOnColor}"
+                           Style="{StaticResource Label.Standard}"
+                           Target="{Binding ElementName=TemporaryOnColorComboBox}" />
+                    <ComboBox Name="TemporaryOnColorComboBox"
+                              Style="{StaticResource ComboBox.Standard}"
+                              ItemsSource="{Binding AvailableColors}"
+                              SelectedItem="{Binding SelectedTemporaryOnColor}"
+                              ItemTemplate="{StaticResource LedColorItemTemplate}"
+                              HorizontalAlignment="Left" />
                 </StackPanel>
-            </TabItem>
-            <TabItem Header="{localization:Localize Manage_LedPermanent}">
-                <StackPanel Margin="8">
-                    <StackPanel Style="{StaticResource Section.Container}">
-                        <Label Content="{localization:Localize Manage_LedMode}"
-                               Style="{StaticResource Label.Standard}"
-                               Target="{Binding ElementName=PermanentModeComboBox}" />
-                        <ComboBox Name="PermanentModeComboBox"
-                                  Style="{StaticResource ComboBox.Standard}"
-                                  ItemsSource="{Binding AvailablePermanentModes}"
-                                  SelectedItem="{Binding SelectedPermanentMode}"
-                                  DisplayMemberPath="Key"
-                                  HorizontalAlignment="Left" />
-                    </StackPanel>
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
-                        <StackPanel Grid.Column="0"
-                                    Style="{StaticResource Section.Container}">
-                            <Label Content="{localization:Localize Manage_LedOnColor}"
-                                   Style="{StaticResource Label.Standard}"
-                                   Target="{Binding ElementName=PermanentOnColorComboBox}" />
-                            <ComboBox Name="PermanentOnColorComboBox"
-                                      Style="{StaticResource ComboBox.Standard}"
-                                      ItemsSource="{Binding AvailableColors}"
-                                      SelectedItem="{Binding SelectedPermanentOnColor}"
-                                      ItemTemplate="{StaticResource LedColorItemTemplate}"
-                                      HorizontalAlignment="Left" />
-                        </StackPanel>
-                        <StackPanel Grid.Column="1"
-                                    Style="{StaticResource Section.Container}">
-                            <Label Content="{localization:Localize Manage_LedOffColor}"
-                                   Style="{StaticResource Label.Standard}"
-                                   Target="{Binding ElementName=PermanentOffColorComboBox}" />
-                            <ComboBox Name="PermanentOffColorComboBox"
-                                      Style="{StaticResource ComboBox.Standard}"
-                                      ItemsSource="{Binding AvailableColors}"
-                                      SelectedItem="{Binding SelectedPermanentOffColor}"
-                                      ItemTemplate="{StaticResource LedColorItemTemplate}"
-                                      HorizontalAlignment="Left" />
-                        </StackPanel>
-                    </Grid>
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
-                        <StackPanel Grid.Column="0"
-                                    Style="{StaticResource Section.Container}">
-                            <Label Content="{localization:Localize Manage_LedOnTime}"
-                                   Style="{StaticResource Label.Standard}"
-                                   Target="{Binding ElementName=PermanentOnTimeBox}" />
-                            <Border CornerRadius="4">
-                                <Border.Style>
-                                    <Style TargetType="Border">
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding IsPermanentTimingInvalid}" Value="True">
-                                                <Setter Property="BorderBrush" Value="{DynamicResource SemanticErrorBrush}"/>
-                                                <Setter Property="BorderThickness" Value="2"/>
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </Border.Style>
-                                <ui:NumberBox Name="PermanentOnTimeBox"
-                                              Style="{StaticResource NumberBox.Standard}"
-                                              Value="{Binding PermanentOnTime, Mode=TwoWay}"
-                                              TextChanged="PermanentOnTimeBox_OnTextChanged"
-                                              ValueChanged="PermanentOnTimeBox_OnValueChanged"
-                                              Minimum="0"
-                                              Maximum="255"
-                                              Width="100"
-                                              HorizontalAlignment="Left"/>
-                            </Border>
-                        </StackPanel>
-                        <StackPanel Grid.Column="1"
-                                    Style="{StaticResource Section.Container}">
-                            <Label Content="{localization:Localize Manage_LedOffTime}"
-                                   Style="{StaticResource Label.Standard}"
-                                   Target="{Binding ElementName=PermanentOffTimeBox}" />
-                            <Border CornerRadius="4">
-                                <Border.Style>
-                                    <Style TargetType="Border">
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding IsPermanentTimingInvalid}" Value="True">
-                                                <Setter Property="BorderBrush" Value="{DynamicResource SemanticErrorBrush}"/>
-                                                <Setter Property="BorderThickness" Value="2"/>
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </Border.Style>
-                                <ui:NumberBox Name="PermanentOffTimeBox"
-                                              Style="{StaticResource NumberBox.Standard}"
-                                              Value="{Binding PermanentOffTime, Mode=TwoWay}"
-                                              TextChanged="PermanentOffTimeBox_OnTextChanged"
-                                              ValueChanged="PermanentOffTimeBox_OnValueChanged"
-                                              Minimum="0"
-                                              Maximum="255"
-                                              Width="100"
-                                              HorizontalAlignment="Left"/>
-                            </Border>
-                        </StackPanel>
-                    </Grid>
-                    <TextBlock Text="{localization:Localize Manage_LedTimingInvalid}"
-                               Style="{StaticResource Text.Validation.Error}"
-                               Visibility="{Binding IsPermanentTimingInvalid, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                <StackPanel Grid.Column="1"
+                            Style="{StaticResource Section.Container}">
+                    <Label Content="{localization:Localize Manage_LedOffColor}"
+                           Style="{StaticResource Label.Standard}"
+                           Target="{Binding ElementName=TemporaryOffColorComboBox}" />
+                    <ComboBox Name="TemporaryOffColorComboBox"
+                              Style="{StaticResource ComboBox.Standard}"
+                              ItemsSource="{Binding AvailableColors}"
+                              SelectedItem="{Binding SelectedTemporaryOffColor}"
+                              ItemTemplate="{StaticResource LedColorItemTemplate}"
+                              HorizontalAlignment="Left" />
                 </StackPanel>
-            </TabItem>
-        </TabControl>
+            </Grid>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0"
+                            Style="{StaticResource Section.Container}">
+                    <Label Content="{localization:Localize Manage_LedOnTime}"
+                           Style="{StaticResource Label.Standard}"
+                           Target="{Binding ElementName=TemporaryOnTimeBox}" />
+                    <Border CornerRadius="4">
+                        <Border.Style>
+                            <Style TargetType="Border">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsTemporaryTimingInvalid}" Value="True">
+                                        <Setter Property="BorderBrush" Value="{DynamicResource SemanticErrorBrush}"/>
+                                        <Setter Property="BorderThickness" Value="2"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Border.Style>
+                        <ui:NumberBox Name="TemporaryOnTimeBox"
+                                      Style="{StaticResource NumberBox.Standard}"
+                                      Value="{Binding TemporaryOnTime, Mode=TwoWay}"
+                                      TextChanged="TemporaryOnTimeBox_OnTextChanged"
+                                      ValueChanged="TemporaryOnTimeBox_OnValueChanged"
+                                      Minimum="0"
+                                      Maximum="255"
+                                      Width="100"
+                                      HorizontalAlignment="Left"/>
+                    </Border>
+                </StackPanel>
+                <StackPanel Grid.Column="1"
+                            Style="{StaticResource Section.Container}">
+                    <Label Content="{localization:Localize Manage_LedOffTime}"
+                           Style="{StaticResource Label.Standard}"
+                           Target="{Binding ElementName=TemporaryOffTimeBox}" />
+                    <Border CornerRadius="4">
+                        <Border.Style>
+                            <Style TargetType="Border">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsTemporaryTimingInvalid}" Value="True">
+                                        <Setter Property="BorderBrush" Value="{DynamicResource SemanticErrorBrush}"/>
+                                        <Setter Property="BorderThickness" Value="2"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Border.Style>
+                        <ui:NumberBox Name="TemporaryOffTimeBox"
+                                      Style="{StaticResource NumberBox.Standard}"
+                                      Value="{Binding TemporaryOffTime, Mode=TwoWay}"
+                                      TextChanged="TemporaryOffTimeBox_OnTextChanged"
+                                      ValueChanged="TemporaryOffTimeBox_OnValueChanged"
+                                      Minimum="0"
+                                      Maximum="255"
+                                      Width="100"
+                                      HorizontalAlignment="Left"/>
+                    </Border>
+                </StackPanel>
+                <StackPanel Grid.Column="2"
+                            Style="{StaticResource Section.Container}">
+                    <Label Content="{localization:Localize Manage_LedTimer}"
+                           Style="{StaticResource Label.Standard}"
+                           Target="{Binding ElementName=TemporaryTimerBox}" />
+                    <ui:NumberBox Name="TemporaryTimerBox"
+                                  Style="{StaticResource NumberBox.Standard}"
+                                  Value="{Binding TemporaryTimer, Mode=TwoWay}"
+                                  TextChanged="TemporaryTimerBox_OnTextChanged"
+                                  ValueChanged="TemporaryTimerBox_OnValueChanged"
+                                  Minimum="0"
+                                  Maximum="65535"
+                                  Width="100"
+                                  HorizontalAlignment="Left"/>
+                </StackPanel>
+            </Grid>
+            <TextBlock Text="{localization:Localize Manage_LedTimingInvalid}"
+                       Style="{StaticResource Text.Validation.Error}"
+                       Visibility="{Binding IsTemporaryTimingInvalid, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+        </StackPanel>
+
+        <!-- Permanent Settings -->
+        <StackPanel Margin="0,8,0,0"
+                    Visibility="{Binding IsChecked, ElementName=PermanentToggle, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <StackPanel Style="{StaticResource Section.Container}">
+                <Label Content="{localization:Localize Manage_LedMode}"
+                       Style="{StaticResource Label.Standard}"
+                       Target="{Binding ElementName=PermanentModeComboBox}" />
+                <ComboBox Name="PermanentModeComboBox"
+                          Style="{StaticResource ComboBox.Standard}"
+                          ItemsSource="{Binding AvailablePermanentModes}"
+                          SelectedItem="{Binding SelectedPermanentMode}"
+                          DisplayMemberPath="Key"
+                          HorizontalAlignment="Left" />
+            </StackPanel>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0"
+                            Style="{StaticResource Section.Container}">
+                    <Label Content="{localization:Localize Manage_LedOnColor}"
+                           Style="{StaticResource Label.Standard}"
+                           Target="{Binding ElementName=PermanentOnColorComboBox}" />
+                    <ComboBox Name="PermanentOnColorComboBox"
+                              Style="{StaticResource ComboBox.Standard}"
+                              ItemsSource="{Binding AvailableColors}"
+                              SelectedItem="{Binding SelectedPermanentOnColor}"
+                              ItemTemplate="{StaticResource LedColorItemTemplate}"
+                              HorizontalAlignment="Left" />
+                </StackPanel>
+                <StackPanel Grid.Column="1"
+                            Style="{StaticResource Section.Container}">
+                    <Label Content="{localization:Localize Manage_LedOffColor}"
+                           Style="{StaticResource Label.Standard}"
+                           Target="{Binding ElementName=PermanentOffColorComboBox}" />
+                    <ComboBox Name="PermanentOffColorComboBox"
+                              Style="{StaticResource ComboBox.Standard}"
+                              ItemsSource="{Binding AvailableColors}"
+                              SelectedItem="{Binding SelectedPermanentOffColor}"
+                              ItemTemplate="{StaticResource LedColorItemTemplate}"
+                              HorizontalAlignment="Left" />
+                </StackPanel>
+            </Grid>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0"
+                            Style="{StaticResource Section.Container}">
+                    <Label Content="{localization:Localize Manage_LedOnTime}"
+                           Style="{StaticResource Label.Standard}"
+                           Target="{Binding ElementName=PermanentOnTimeBox}" />
+                    <Border CornerRadius="4">
+                        <Border.Style>
+                            <Style TargetType="Border">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsPermanentTimingInvalid}" Value="True">
+                                        <Setter Property="BorderBrush" Value="{DynamicResource SemanticErrorBrush}"/>
+                                        <Setter Property="BorderThickness" Value="2"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Border.Style>
+                        <ui:NumberBox Name="PermanentOnTimeBox"
+                                      Style="{StaticResource NumberBox.Standard}"
+                                      Value="{Binding PermanentOnTime, Mode=TwoWay}"
+                                      TextChanged="PermanentOnTimeBox_OnTextChanged"
+                                      ValueChanged="PermanentOnTimeBox_OnValueChanged"
+                                      Minimum="0"
+                                      Maximum="255"
+                                      Width="100"
+                                      HorizontalAlignment="Left"/>
+                    </Border>
+                </StackPanel>
+                <StackPanel Grid.Column="1"
+                            Style="{StaticResource Section.Container}">
+                    <Label Content="{localization:Localize Manage_LedOffTime}"
+                           Style="{StaticResource Label.Standard}"
+                           Target="{Binding ElementName=PermanentOffTimeBox}" />
+                    <Border CornerRadius="4">
+                        <Border.Style>
+                            <Style TargetType="Border">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsPermanentTimingInvalid}" Value="True">
+                                        <Setter Property="BorderBrush" Value="{DynamicResource SemanticErrorBrush}"/>
+                                        <Setter Property="BorderThickness" Value="2"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Border.Style>
+                        <ui:NumberBox Name="PermanentOffTimeBox"
+                                      Style="{StaticResource NumberBox.Standard}"
+                                      Value="{Binding PermanentOffTime, Mode=TwoWay}"
+                                      TextChanged="PermanentOffTimeBox_OnTextChanged"
+                                      ValueChanged="PermanentOffTimeBox_OnValueChanged"
+                                      Minimum="0"
+                                      Maximum="255"
+                                      Width="100"
+                                      HorizontalAlignment="Left"/>
+                    </Border>
+                </StackPanel>
+            </Grid>
+            <TextBlock Text="{localization:Localize Manage_LedTimingInvalid}"
+                       Style="{StaticResource Text.Validation.Error}"
+                       Visibility="{Binding IsPermanentTimingInvalid, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+        </StackPanel>
     </StackPanel>
 </UserControl>
