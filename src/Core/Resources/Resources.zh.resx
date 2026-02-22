@@ -248,6 +248,14 @@
     <value>连接</value>
     <comment>Button text to connect to device</comment>
   </data>
+  <data name="Connect_NoSerialPortsDetected" xml:space="preserve">
+    <value>未检测到串口</value>
+    <comment>Warning message when no serial ports are available</comment>
+  </data>
+  <data name="Connect_SecurityKeyPlaceholder" xml:space="preserve">
+    <value>00112233445566778899AABBCCDDEEFF</value>
+    <comment>Placeholder text for security key input fields</comment>
+  </data>
   <!-- Manage Page -->
   <data name="Manage_DeviceNotIdentified" xml:space="preserve">
     <value>设备尚未被识别</value>
@@ -268,6 +276,46 @@
   <data name="Manage_LedColor" xml:space="preserve">
     <value>LED 颜色</value>
     <comment>Label for LED color selection</comment>
+  </data>
+  <data name="Manage_LedReaderNumber" xml:space="preserve">
+    <value>读者编号</value>
+    <comment>Label for LED reader number input</comment>
+  </data>
+  <data name="Manage_LedLedNumber" xml:space="preserve">
+    <value>LED编号</value>
+    <comment>Label for LED number input</comment>
+  </data>
+  <data name="Manage_LedTemporary" xml:space="preserve">
+    <value>临时</value>
+    <comment>Tab header for temporary LED settings</comment>
+  </data>
+  <data name="Manage_LedPermanent" xml:space="preserve">
+    <value>永久性</value>
+    <comment>Tab header for permanent LED settings</comment>
+  </data>
+  <data name="Manage_LedMode" xml:space="preserve">
+    <value>模式</value>
+    <comment>Label for LED control mode selection</comment>
+  </data>
+  <data name="Manage_LedOnColor" xml:space="preserve">
+    <value>ON Color</value>
+    <comment>Label for LED ON color selection</comment>
+  </data>
+  <data name="Manage_LedOffColor" xml:space="preserve">
+    <value>粗鲁</value>
+    <comment>Label for LED OFF color selection</comment>
+  </data>
+  <data name="Manage_LedOnTime" xml:space="preserve">
+    <value>开时（x 100毫秒）</value>
+    <comment>Label for LED ON time input in units of 100ms</comment>
+  </data>
+  <data name="Manage_LedOffTime" xml:space="preserve">
+    <value>关闭时间（x 100毫秒）</value>
+    <comment>Label for LED OFF time input in units of 100ms</comment>
+  </data>
+  <data name="Manage_LedTimer" xml:space="preserve">
+    <value>计时器（x 100毫秒）</value>
+    <comment>Label for LED timer duration input in units of 100ms</comment>
   </data>
   <data name="Manage_SelectedFile" xml:space="preserve">
     <value>所选文件</value>
@@ -296,6 +344,58 @@
   <data name="Manage_PassiveMonitoringDetails" xml:space="preserve">
     <value>断开被动监控以执行设备作</value>
     <comment>Details for passive monitoring notice on Manage page</comment>
+  </data>
+  <data name="Manage_BuzzerToneCode" xml:space="preserve">
+    <value>音调代码</value>
+    <comment>Label for buzzer tone code selection</comment>
+  </data>
+  <data name="Manage_BuzzerReaderNumber" xml:space="preserve">
+    <value>读者编号</value>
+    <comment>Label for buzzer reader number input</comment>
+  </data>
+  <data name="Manage_BuzzerOnTime" xml:space="preserve">
+    <value>开时（x 100毫秒）</value>
+    <comment>Label for buzzer ON time input in units of 100ms</comment>
+  </data>
+  <data name="Manage_BuzzerOffTime" xml:space="preserve">
+    <value>关闭时间（x 100毫秒）</value>
+    <comment>Label for buzzer OFF time input in units of 100ms</comment>
+  </data>
+  <data name="Manage_BuzzerCount" xml:space="preserve">
+    <value>计数（0 = 无限）</value>
+    <comment>Label for buzzer repeat count input</comment>
+  </data>
+  <data name="Manage_BuzzerSignal" xml:space="preserve">
+    <value>信号</value>
+    <comment>Group header for buzzer signal settings (tone code, reader number)</comment>
+  </data>
+  <data name="Manage_BuzzerTiming" xml:space="preserve">
+    <value>时间安排</value>
+    <comment>Group header for buzzer timing settings (on/off time, count)</comment>
+  </data>
+  <data name="Manage_BuzzerOnTimeRequired" xml:space="preserve">
+    <value>ON time must be greater than zero when tone is active.</value>
+    <comment>Validation message when buzzer ON time is zero with a non-Off tone code</comment>
+  </data>
+  <data name="Manage_LedTimingInvalid" xml:space="preserve">
+    <value>ON and OFF time cannot both be zero.</value>
+    <comment>Validation message when both LED ON and OFF time values are zero</comment>
+  </data>
+  <data name="Manage_Send" xml:space="preserve">
+    <value>发送</value>
+    <comment>Button text to send a command to the device</comment>
+  </data>
+  <data name="Manage_CapabilityNotSupported" xml:space="preserve">
+    <value>该设备不支持 {0}.</value>
+    <comment>Message when device lacks a required capability. {0} = capability name</comment>
+  </data>
+  <data name="Manage_CapabilityAudioOutput" xml:space="preserve">
+    <value>音频输出</value>
+    <comment>Display name for the Audio Output capability</comment>
+  </data>
+  <data name="Manage_CapabilityLedControl" xml:space="preserve">
+    <value>LED控制</value>
+    <comment>Display name for the LED Control capability</comment>
   </data>
   <!-- Monitor Page -->
   <data name="Monitor_DeviceNotConnected" xml:space="preserve">
@@ -687,7 +787,7 @@
     <comment>Label for power status indicator</comment>
   </data>
   <data name="Supervision_CommunicationStatus" xml:space="preserve">
-    <value>Communication</value>
+    <value>交通</value>
     <comment>Label for communication status indicator</comment>
   </data>
   <data name="Supervision_Normal" xml:space="preserve">
@@ -733,5 +833,22 @@
   <data name="Supervision_ColumnStatus" xml:space="preserve">
     <value>现状</value>
     <comment>Column header for status in supervision history</comment>
+  </data>
+  <!-- Accessibility -->
+  <data name="Accessibility_PacketTrace" xml:space="preserve">
+    <value>数据包追踪</value>
+    <comment>Screen reader name for the packet trace data grid</comment>
+  </data>
+  <data name="Accessibility_CardReadHistory" xml:space="preserve">
+    <value>卡片阅读历史</value>
+    <comment>Screen reader name for the card read history data grid</comment>
+  </data>
+  <data name="Accessibility_ApplicationLogo" xml:space="preserve">
+    <value>应用标志</value>
+    <comment>Screen reader name for the application logo image</comment>
+  </data>
+  <data name="Accessibility_StatusIndicator" xml:space="preserve">
+    <value>状态指示器</value>
+    <comment>Screen reader name for LED status indicator</comment>
   </data>
 </root>
