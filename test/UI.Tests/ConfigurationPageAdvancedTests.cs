@@ -1,5 +1,6 @@
 using System.Windows;
 using System.Windows.Automation;
+using System.Windows.Controls;
 using System.Windows.Media;
 using NUnit.Framework;
 using OSDPBench.Core.Models;
@@ -25,6 +26,7 @@ public class ConfigurationPageAdvancedTests : UiTestBase
             var vm = TestApp.GetService<ConfigurationViewModel>();
             vm.IsConnectToPDSelected = true;
             vm.IsDiscoverModeSelected = true;
+            vm.UseSecureChannel = false;
             vm.UseDefaultKey = true;
             vm.SecurityKey = string.Empty;
         });
@@ -269,6 +271,274 @@ public class ConfigurationPageAdvancedTests : UiTestBase
 
         Assert.That(minWidth, Is.GreaterThanOrEqualTo(120),
             "Connect button should have MinWidth of at least 120.");
+    }
+
+    [Test]
+    public void PassiveSecurityKey_CanBeEdited_WhenDefaultKeyUnchecked()
+    {
+        // Switch to passive mode and uncheck default key
+        InvokeOnUI(() =>
+        {
+            var vm = TestApp.GetService<ConfigurationViewModel>();
+            vm.IsConnectToPDSelected = false;
+            vm.UseDefaultKey = false;
+        });
+
+        // Verify the text box is enabled and accepts input
+        var isEnabled = InvokeOnUI(() =>
+        {
+            var element = FindWpfElement<Wpf.Ui.Controls.TextBox>("PassiveSecurityKeyTextBox");
+            return element?.IsEnabled ?? false;
+        });
+
+        Assert.That(isEnabled, Is.True,
+            "Passive security key text box should be enabled when default key is unchecked.");
+
+        // Type into the text box via the ViewModel
+        InvokeOnUI(() =>
+        {
+            var vm = TestApp.GetService<ConfigurationViewModel>();
+            vm.SecurityKey = "0123456789ABCDEF";
+        });
+
+        var keyValue = InvokeOnUI(() => TestApp.GetService<ConfigurationViewModel>().SecurityKey);
+        Assert.That(keyValue, Is.EqualTo("0123456789ABCDEF"),
+            "Security key should be editable in passive mode.");
+    }
+
+    [Test]
+    public void PassiveSecurityKey_ShowsErrorBorder_WhenKeyInvalid()
+    {
+        // Switch to passive mode with an incomplete key
+        InvokeOnUI(() =>
+        {
+            var vm = TestApp.GetService<ConfigurationViewModel>();
+            vm.IsConnectToPDSelected = false;
+            vm.UseDefaultKey = false;
+            vm.SecurityKey = "0123456789ABCDEF"; // 16 chars, need 32
+        });
+
+        var borderBrush = InvokeOnUI(() =>
+        {
+            var element = FindWpfElement<Wpf.Ui.Controls.TextBox>("PassiveSecurityKeyTextBox");
+            return element?.BorderBrush;
+        });
+
+        var errorBrush = InvokeOnUI(() =>
+            Application.Current.FindResource("SemanticErrorBrush") as SolidColorBrush);
+
+        Assert.That(borderBrush, Is.Not.Null, "Border brush should be set.");
+        Assert.That(errorBrush, Is.Not.Null, "SemanticErrorBrush should exist.");
+        Assert.That(IsMatchingColor(borderBrush!, errorBrush!), Is.True,
+            "Border should be red (SemanticErrorBrush) when key is invalid.");
+    }
+
+    [Test]
+    public void PassiveSecurityKey_NoErrorBorder_WhenKeyValid()
+    {
+        // Switch to passive mode with a valid 32-char key
+        InvokeOnUI(() =>
+        {
+            var vm = TestApp.GetService<ConfigurationViewModel>();
+            vm.IsConnectToPDSelected = false;
+            vm.UseDefaultKey = false;
+            vm.SecurityKey = "0123456789ABCDEF0123456789ABCDEF";
+        });
+
+        var borderBrush = InvokeOnUI(() =>
+        {
+            var element = FindWpfElement<Wpf.Ui.Controls.TextBox>("PassiveSecurityKeyTextBox");
+            return element?.BorderBrush;
+        });
+
+        var errorBrush = InvokeOnUI(() =>
+            Application.Current.FindResource("SemanticErrorBrush") as SolidColorBrush);
+
+        Assert.That(IsMatchingColor(borderBrush, errorBrush), Is.False,
+            "Border should NOT be red when key is valid.");
+    }
+
+    [Test]
+    public void PassiveSecurityKey_CharacterCount_ShowsErrorColor_WhenInvalid()
+    {
+        // Switch to passive mode with an incomplete key
+        InvokeOnUI(() =>
+        {
+            var vm = TestApp.GetService<ConfigurationViewModel>();
+            vm.IsConnectToPDSelected = false;
+            vm.UseDefaultKey = false;
+            vm.SecurityKey = "0123456789ABCDEF";
+        });
+
+        var charCountForeground = InvokeOnUI(() =>
+        {
+            var textBox = FindWpfElement<Wpf.Ui.Controls.TextBox>("PassiveSecurityKeyTextBox");
+            if (textBox?.Parent is not StackPanel parent) return null;
+
+            foreach (var child in parent.Children)
+            {
+                if (child is TextBlock tb && tb.Text.Contains("/32"))
+                    return tb.Foreground;
+            }
+
+            return null;
+        });
+
+        var errorBrush = InvokeOnUI(() =>
+            Application.Current.FindResource("SemanticErrorBrush") as SolidColorBrush);
+
+        Assert.That(charCountForeground, Is.Not.Null, "Character count TextBlock should exist.");
+        Assert.That(IsMatchingColor(charCountForeground!, errorBrush!), Is.True,
+            "Character count should be red when key is invalid.");
+    }
+
+    [Test]
+    public void ActiveSecurityKey_ShowsErrorBorder_WhenKeyInvalid()
+    {
+        // Switch to manual mode with secure channel and invalid key
+        InvokeOnUI(() =>
+        {
+            var vm = TestApp.GetService<ConfigurationViewModel>();
+            vm.IsConnectToPDSelected = true;
+            vm.IsDiscoverModeSelected = false;
+            vm.UseSecureChannel = true;
+            vm.UseDefaultKey = false;
+            vm.SecurityKey = "0123";
+        });
+
+        var borderBrush = InvokeOnUI(() =>
+        {
+            var element = FindWpfElement<Wpf.Ui.Controls.TextBox>("SecurityKeyTextBox");
+            return element?.BorderBrush;
+        });
+
+        var errorBrush = InvokeOnUI(() =>
+            Application.Current.FindResource("SemanticErrorBrush") as SolidColorBrush);
+
+        Assert.That(borderBrush, Is.Not.Null, "Border brush should be set.");
+        Assert.That(errorBrush, Is.Not.Null, "SemanticErrorBrush should exist.");
+        Assert.That(IsMatchingColor(borderBrush!, errorBrush!), Is.True,
+            "Border should be red when key is invalid.");
+    }
+
+    [Test]
+    public void ActiveSecurityKey_NoErrorBorder_WhenKeyValid()
+    {
+        // Switch to manual mode with secure channel and valid key
+        InvokeOnUI(() =>
+        {
+            var vm = TestApp.GetService<ConfigurationViewModel>();
+            vm.IsConnectToPDSelected = true;
+            vm.IsDiscoverModeSelected = false;
+            vm.UseSecureChannel = true;
+            vm.UseDefaultKey = false;
+            vm.SecurityKey = "0123456789ABCDEF0123456789ABCDEF";
+        });
+
+        var borderBrush = InvokeOnUI(() =>
+        {
+            var element = FindWpfElement<Wpf.Ui.Controls.TextBox>("SecurityKeyTextBox");
+            return element?.BorderBrush;
+        });
+
+        var errorBrush = InvokeOnUI(() =>
+            Application.Current.FindResource("SemanticErrorBrush") as SolidColorBrush);
+
+        Assert.That(IsMatchingColor(borderBrush, errorBrush), Is.False,
+            "Border should NOT be red when key is valid.");
+    }
+
+    [Test]
+    public void ConnectButton_Disabled_WhenSecurityKeyInvalid()
+    {
+        // Ensure initialization is complete so we have a serial port
+        var viewModel = InvokeOnUI(() => TestApp.GetService<ConfigurationViewModel>());
+        viewModel.InitializationComplete.Wait(TimeSpan.FromSeconds(5));
+
+        // Switch to manual mode with secure channel and invalid key
+        InvokeOnUI(() =>
+        {
+            var vm = TestApp.GetService<ConfigurationViewModel>();
+            vm.IsConnectToPDSelected = true;
+            vm.IsDiscoverModeSelected = false;
+            vm.UseSecureChannel = true;
+            vm.UseDefaultKey = false;
+            vm.SecurityKey = "SHORT";
+        });
+
+        var canExecute = InvokeOnUI(() => viewModel.ConnectDeviceCommand.CanExecute(null));
+
+        Assert.That(canExecute, Is.False,
+            "Connect command should be disabled when security key is invalid.");
+    }
+
+    [Test]
+    public void ConnectButton_Enabled_WhenSecurityKeyValid()
+    {
+        // Ensure initialization is complete so we have a serial port
+        var viewModel = InvokeOnUI(() => TestApp.GetService<ConfigurationViewModel>());
+        viewModel.InitializationComplete.Wait(TimeSpan.FromSeconds(5));
+
+        // Switch to manual mode with secure channel and valid key
+        InvokeOnUI(() =>
+        {
+            var vm = TestApp.GetService<ConfigurationViewModel>();
+            vm.IsConnectToPDSelected = true;
+            vm.IsDiscoverModeSelected = false;
+            vm.UseSecureChannel = true;
+            vm.UseDefaultKey = false;
+            vm.SecurityKey = "0123456789ABCDEF0123456789ABCDEF";
+        });
+
+        var canExecute = InvokeOnUI(() => viewModel.ConnectDeviceCommand.CanExecute(null));
+
+        Assert.That(canExecute, Is.True,
+            "Connect command should be enabled when security key is valid.");
+    }
+
+    [Test]
+    public void StartPassiveMonitoringButton_Disabled_WhenSecurityKeyInvalid()
+    {
+        // Switch to passive mode with invalid key
+        InvokeOnUI(() =>
+        {
+            var vm = TestApp.GetService<ConfigurationViewModel>();
+            vm.IsConnectToPDSelected = false;
+            vm.UseDefaultKey = false;
+            vm.SecurityKey = "SHORT";
+        });
+
+        var canExecute = InvokeOnUI(() =>
+            TestApp.GetService<ConfigurationViewModel>().StartPassiveMonitoringCommand.CanExecute(null));
+
+        Assert.That(canExecute, Is.False,
+            "Start passive monitoring command should be disabled when security key is invalid.");
+    }
+
+    [Test]
+    public void StartPassiveMonitoringButton_Enabled_WhenSecurityKeyValid()
+    {
+        // Switch to passive mode with valid key
+        InvokeOnUI(() =>
+        {
+            var vm = TestApp.GetService<ConfigurationViewModel>();
+            vm.IsConnectToPDSelected = false;
+            vm.UseDefaultKey = false;
+            vm.SecurityKey = "0123456789ABCDEF0123456789ABCDEF";
+        });
+
+        var canExecute = InvokeOnUI(() =>
+            TestApp.GetService<ConfigurationViewModel>().StartPassiveMonitoringCommand.CanExecute(null));
+
+        Assert.That(canExecute, Is.True,
+            "Start passive monitoring command should be enabled when security key is valid.");
+    }
+
+    private static bool IsMatchingColor(Brush? actual, Brush? expected)
+    {
+        if (actual is SolidColorBrush actualSolid && expected is SolidColorBrush expectedSolid)
+            return actualSolid.Color == expectedSolid.Color;
+        return false;
     }
 
     /// <summary>

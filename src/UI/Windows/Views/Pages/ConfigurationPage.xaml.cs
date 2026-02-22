@@ -1,5 +1,7 @@
-﻿using System.Windows;
+﻿using System.Text.RegularExpressions;
+using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using OSDPBench.Core.ViewModels.Pages;
 using Wpf.Ui.Abstractions.Controls;
 using Wpf.Ui.Controls;
@@ -31,6 +33,30 @@ public partial class ConfigurationPage : INavigableView<ConfigurationViewModel>
         ViewModel.SelectedAddress = (byte)(AddressNumberBox.Value ?? 0);
     }
     
+    [GeneratedRegex("[^0-9a-fA-F]")]
+    private static partial Regex HexCharacterRegex();
+
+    private void SecurityKeyTextBox_OnPreviewTextInput(object sender, TextCompositionEventArgs e)
+    {
+        e.Handled = HexCharacterRegex().IsMatch(e.Text);
+    }
+
+    private void SecurityKeyTextBox_OnPasting(object sender, DataObjectPastingEventArgs e)
+    {
+        if (e.DataObject.GetDataPresent(typeof(string)))
+        {
+            var text = (string)e.DataObject.GetData(typeof(string))!;
+            if (HexCharacterRegex().IsMatch(text))
+            {
+                e.CancelCommand();
+            }
+        }
+        else
+        {
+            e.CancelCommand();
+        }
+    }
+
     private void OnConnectionGridSizeChanged(object sender, SizeChangedEventArgs e)
     {
         // Check if we have enough width for side-by-side layout

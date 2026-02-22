@@ -293,8 +293,12 @@
                                            AutomationProperties.AutomationId="SecurityKeyTextBox"
                                            Text="{Binding Path=ViewModel.SecurityKey, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                            PlaceholderText="{localization:Localize Connect_SecurityKeyPlaceholder}"
+                                           MaxLength="32"
+                                           CharacterCasing="Upper"
+                                           PreviewTextInput="SecurityKeyTextBox_OnPreviewTextInput"
+                                           DataObject.Pasting="SecurityKeyTextBox_OnPasting"
                                            MaxWidth="600"
-                                           HorizontalAlignment="Stretch">
+                                           HorizontalAlignment="Left">
                                     <ui:TextBox.Style>
                                         <Style TargetType="ui:TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
                                             <Setter Property="MinHeight" Value="{StaticResource Control.Height.Medium}"/>
@@ -309,10 +313,36 @@
                                                     </MultiDataTrigger.Conditions>
                                                     <Setter Property="IsEnabled" Value="True"/>
                                                 </MultiDataTrigger>
+                                                <MultiDataTrigger>
+                                                    <MultiDataTrigger.Conditions>
+                                                        <Condition Binding="{Binding ElementName=UseSecureChannelCheckBox, Path=IsChecked}" Value="True"/>
+                                                        <Condition Binding="{Binding ElementName=UseDefaultKeyCheckBox, Path=IsChecked}" Value="False"/>
+                                                        <Condition Binding="{Binding ViewModel.IsSecurityKeyInvalid}" Value="True"/>
+                                                    </MultiDataTrigger.Conditions>
+                                                    <Setter Property="BorderBrush" Value="{DynamicResource SemanticErrorBrush}"/>
+                                                    <Setter Property="BorderThickness" Value="2"/>
+                                                </MultiDataTrigger>
                                             </Style.Triggers>
                                         </Style>
                                     </ui:TextBox.Style>
                                 </ui:TextBox>
+                                <TextBlock Text="{Binding ViewModel.SecurityKeyCharacterCount}">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock" BasedOn="{StaticResource Text.Caption}">
+                                            <Setter Property="Margin" Value="0,2,0,0"/>
+                                            <Style.Triggers>
+                                                <MultiDataTrigger>
+                                                    <MultiDataTrigger.Conditions>
+                                                        <Condition Binding="{Binding ElementName=UseSecureChannelCheckBox, Path=IsChecked}" Value="True"/>
+                                                        <Condition Binding="{Binding ElementName=UseDefaultKeyCheckBox, Path=IsChecked}" Value="False"/>
+                                                        <Condition Binding="{Binding ViewModel.IsSecurityKeyInvalid}" Value="True"/>
+                                                    </MultiDataTrigger.Conditions>
+                                                    <Setter Property="Foreground" Value="{DynamicResource SemanticErrorBrush}"/>
+                                                </MultiDataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
                             </StackPanel>
                         </StackPanel>
                     </Border>
@@ -339,8 +369,12 @@
                                            AutomationProperties.AutomationId="PassiveSecurityKeyTextBox"
                                            Text="{Binding Path=ViewModel.SecurityKey, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                            PlaceholderText="{localization:Localize Connect_SecurityKeyPlaceholder}"
+                                           MaxLength="32"
+                                           CharacterCasing="Upper"
+                                           PreviewTextInput="SecurityKeyTextBox_OnPreviewTextInput"
+                                           DataObject.Pasting="SecurityKeyTextBox_OnPasting"
                                            MaxWidth="600"
-                                           HorizontalAlignment="Stretch">
+                                           HorizontalAlignment="Left">
                                     <ui:TextBox.Style>
                                         <Style TargetType="ui:TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
                                             <Setter Property="MinHeight" Value="{StaticResource Control.Height.Medium}"/>
@@ -351,10 +385,34 @@
                                                 <DataTrigger Binding="{Binding ElementName=PassiveUseDefaultKeyCheckBox, Path=IsChecked}" Value="False">
                                                     <Setter Property="IsEnabled" Value="True"/>
                                                 </DataTrigger>
+                                                <MultiDataTrigger>
+                                                    <MultiDataTrigger.Conditions>
+                                                        <Condition Binding="{Binding ElementName=PassiveUseDefaultKeyCheckBox, Path=IsChecked}" Value="False"/>
+                                                        <Condition Binding="{Binding ViewModel.IsSecurityKeyInvalid}" Value="True"/>
+                                                    </MultiDataTrigger.Conditions>
+                                                    <Setter Property="BorderBrush" Value="{DynamicResource SemanticErrorBrush}"/>
+                                                    <Setter Property="BorderThickness" Value="2"/>
+                                                </MultiDataTrigger>
                                             </Style.Triggers>
                                         </Style>
                                     </ui:TextBox.Style>
                                 </ui:TextBox>
+                                <TextBlock Text="{Binding ViewModel.SecurityKeyCharacterCount}">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock" BasedOn="{StaticResource Text.Caption}">
+                                            <Setter Property="Margin" Value="0,2,0,0"/>
+                                            <Style.Triggers>
+                                                <MultiDataTrigger>
+                                                    <MultiDataTrigger.Conditions>
+                                                        <Condition Binding="{Binding ElementName=PassiveUseDefaultKeyCheckBox, Path=IsChecked}" Value="False"/>
+                                                        <Condition Binding="{Binding ViewModel.IsSecurityKeyInvalid}" Value="True"/>
+                                                    </MultiDataTrigger.Conditions>
+                                                    <Setter Property="Foreground" Value="{DynamicResource SemanticErrorBrush}"/>
+                                                </MultiDataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
                             </StackPanel>
                         </StackPanel>
                     </Border>

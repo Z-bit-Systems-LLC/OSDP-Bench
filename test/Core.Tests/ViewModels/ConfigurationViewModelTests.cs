@@ -784,6 +784,138 @@ public class ConfigurationViewModelTests
 
     #endregion
 
+    #region Security Key Validation Tests
+
+    [Test]
+    public void IsSecurityKeyValid_ReturnsTrue_WhenUsingDefaultKey()
+    {
+        // Arrange
+        _viewModel.UseDefaultKey = true;
+        _viewModel.UseSecureChannel = true;
+        _viewModel.SecurityKey = "SHORT";
+
+        // Assert
+        Assert.That(_viewModel.IsSecurityKeyValid, Is.True);
+        Assert.That(_viewModel.IsSecurityKeyInvalid, Is.False);
+    }
+
+    [Test]
+    public void IsSecurityKeyValid_ReturnsTrue_WhenSecureChannelOff()
+    {
+        // Arrange - Connect to PD mode with secure channel off
+        _viewModel.IsConnectToPDSelected = true;
+        _viewModel.UseSecureChannel = false;
+        _viewModel.UseDefaultKey = false;
+        _viewModel.SecurityKey = "SHORT";
+
+        // Assert
+        Assert.That(_viewModel.IsSecurityKeyValid, Is.True);
+    }
+
+    [Test]
+    public void IsSecurityKeyValid_ReturnsFalse_WhenKeyTooShort()
+    {
+        // Arrange
+        _viewModel.UseSecureChannel = true;
+        _viewModel.UseDefaultKey = false;
+        _viewModel.SecurityKey = "0123456789ABCDEF"; // 16 chars, need 32
+
+        // Assert
+        Assert.That(_viewModel.IsSecurityKeyValid, Is.False);
+        Assert.That(_viewModel.IsSecurityKeyInvalid, Is.True);
+    }
+
+    [Test]
+    public void IsSecurityKeyValid_ReturnsTrue_WhenKeyExactly32HexChars()
+    {
+        // Arrange
+        _viewModel.UseSecureChannel = true;
+        _viewModel.UseDefaultKey = false;
+        _viewModel.SecurityKey = "0123456789ABCDEF0123456789ABCDEF";
+
+        // Assert
+        Assert.That(_viewModel.IsSecurityKeyValid, Is.True);
+        Assert.That(_viewModel.IsSecurityKeyInvalid, Is.False);
+    }
+
+    [Test]
+    public void IsValidHexKey_ReturnsFalse_WhenContainsNonHexChars()
+    {
+        // Assert
+        Assert.That(ConfigurationViewModel.IsValidHexKey("0123456789ABCDEF0123456789ABCDEG"), Is.False);
+    }
+
+    [Test]
+    public void IsValidHexKey_ReturnsTrue_ForValidLowercaseHex()
+    {
+        // Assert
+        Assert.That(ConfigurationViewModel.IsValidHexKey("0123456789abcdef0123456789abcdef"), Is.True);
+    }
+
+    [Test]
+    public void CanConnectDevice_ReturnsFalse_WhenNoSerialPort()
+    {
+        // Arrange
+        _viewModel.SelectedSerialPort = null;
+        _viewModel.UseSecureChannel = true;
+        _viewModel.UseDefaultKey = false;
+        _viewModel.SecurityKey = "0123456789ABCDEF0123456789ABCDEF";
+
+        // Assert
+        Assert.That(_viewModel.CanConnectDevice, Is.False);
+    }
+
+    [Test]
+    public void CanConnectDevice_ReturnsFalse_WhenKeyInvalid()
+    {
+        // Arrange
+        SelectTestSerialPortAndBaudRate();
+        _viewModel.UseSecureChannel = true;
+        _viewModel.UseDefaultKey = false;
+        _viewModel.SecurityKey = "SHORT";
+
+        // Assert
+        Assert.That(_viewModel.CanConnectDevice, Is.False);
+    }
+
+    [Test]
+    public void CanConnectDevice_ReturnsTrue_WhenPortSelectedAndKeyValid()
+    {
+        // Arrange
+        SelectTestSerialPortAndBaudRate();
+        _viewModel.UseSecureChannel = true;
+        _viewModel.UseDefaultKey = false;
+        _viewModel.SecurityKey = "0123456789ABCDEF0123456789ABCDEF";
+
+        // Assert
+        Assert.That(_viewModel.CanConnectDevice, Is.True);
+    }
+
+    [Test]
+    public void CanStartPassiveMonitoring_ReturnsFalse_WhenKeyInvalid()
+    {
+        // Arrange
+        _viewModel.IsConnectToPDSelected = false;
+        _viewModel.UseDefaultKey = false;
+        _viewModel.SecurityKey = "SHORT";
+
+        // Assert
+        Assert.That(_viewModel.CanStartPassiveMonitoring, Is.False);
+    }
+
+    [Test]
+    public void CanStartPassiveMonitoring_ReturnsTrue_WhenUsingDefaultKey()
+    {
+        // Arrange
+        _viewModel.IsConnectToPDSelected = false;
+        _viewModel.UseDefaultKey = true;
+
+        // Assert
+        Assert.That(_viewModel.CanStartPassiveMonitoring, Is.True);
+    }
+
+    #endregion
+
     #region Cancel Discovery Tests
 
     [Test]

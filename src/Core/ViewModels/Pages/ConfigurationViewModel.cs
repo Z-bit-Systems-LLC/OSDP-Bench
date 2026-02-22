@@ -207,16 +207,12 @@ public partial class ConfigurationViewModel : ObservableObject, IDisposable
     [ObservableProperty] private string _securityKey = string.Empty;
 
     /// <summary>
-    /// Called when UseDefaultKey property changes. In passive mode, prevents unchecking
-    /// unless a custom key is provided.
+    /// Called when UseDefaultKey property changes.
     /// </summary>
     partial void OnUseDefaultKeyChanged(bool value)
     {
-        // In passive mode, don't allow unchecking default key without a custom key
-        if (!value && IsPassiveMode && string.IsNullOrWhiteSpace(SecurityKey))
-        {
-            UseDefaultKey = true;
-        }
+        _ = value; // Intentionally unused - only triggering dependent property notification
+        NotifySecurityKeyValidationChanged();
     }
 
     /// <summary>
@@ -230,6 +226,79 @@ public partial class ConfigurationViewModel : ObservableObject, IDisposable
         {
             UseDefaultKey = true;
         }
+
+        OnPropertyChanged(nameof(SecurityKeyCharacterCount));
+        NotifySecurityKeyValidationChanged();
+    }
+
+    partial void OnUseSecureChannelChanged(bool value)
+    {
+        _ = value; // Intentionally unused - only triggering dependent property notification
+        NotifySecurityKeyValidationChanged();
+    }
+
+    /// <summary>
+    /// Gets the character count display for the security key field (e.g., "16/32").
+    /// </summary>
+    public string SecurityKeyCharacterCount => $"{SecurityKey.Length}/32";
+
+    /// <summary>
+    /// Gets a value indicating whether the security key is valid for the current configuration.
+    /// Returns true when using the default key, when secure channel is off, or when the key is exactly 32 hex chars.
+    /// </summary>
+    public bool IsSecurityKeyValid
+    {
+        get
+        {
+            // Default key or no secure channel means no custom key validation needed
+            if (UseDefaultKey) return true;
+            if (!UseSecureChannel && !IsPassiveMode) return true;
+
+            return IsValidHexKey(SecurityKey);
+        }
+    }
+
+    /// <summary>
+    /// Gets a value indicating whether the security key is invalid for the current configuration.
+    /// Inverse of <see cref="IsSecurityKeyValid"/> for convenient XAML DataTrigger binding.
+    /// </summary>
+    public bool IsSecurityKeyInvalid => !IsSecurityKeyValid;
+
+    /// <summary>
+    /// Gets a value indicating whether the device can be connected.
+    /// Requires a serial port to be available and the security key to be valid (or not needed).
+    /// </summary>
+    public bool CanConnectDevice => SelectedSerialPort != null && IsSecurityKeyValid;
+
+    /// <summary>
+    /// Gets a value indicating whether passive monitoring can be started.
+    /// Requires the security key to be valid (or using default key).
+    /// </summary>
+    public bool CanStartPassiveMonitoring => IsSecurityKeyValid;
+
+    /// <summary>
+    /// Checks whether the given string is a valid 32-character hexadecimal key.
+    /// </summary>
+    public static bool IsValidHexKey(string key)
+    {
+        if (key.Length != 32) return false;
+
+        foreach (var c in key)
+        {
+            if (!char.IsAsciiHexDigit(c)) return false;
+        }
+
+        return true;
+    }
+
+    private void NotifySecurityKeyValidationChanged()
+    {
+        OnPropertyChanged(nameof(IsSecurityKeyValid));
+        OnPropertyChanged(nameof(IsSecurityKeyInvalid));
+        OnPropertyChanged(nameof(CanConnectDevice));
+        OnPropertyChanged(nameof(CanStartPassiveMonitoring));
+        ConnectDeviceCommand.NotifyCanExecuteChanged();
+        StartPassiveMonitoringCommand.NotifyCanExecuteChanged();
     }
     
     [ObservableProperty] private DateTime _lastTxActiveTime;
@@ -332,6 +401,13 @@ public partial class ConfigurationViewModel : ObservableObject, IDisposable
     {
         _ = value; // Intentionally unused - only triggering dependent property notification
         NotifyButtonVisibilityChanged();
+    }
+
+    partial void OnSelectedSerialPortChanged(AvailableSerialPort? value)
+    {
+        _ = value; // Intentionally unused - only triggering dependent property notification
+        OnPropertyChanged(nameof(CanConnectDevice));
+        ConnectDeviceCommand.NotifyCanExecuteChanged();
     }
 
     private async Task InitializeSerialPorts()
@@ -462,7 +538,7 @@ public partial class ConfigurationViewModel : ObservableObject, IDisposable
         ConnectedBaudRate = result.Connection.BaudRate;
     }
 
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(CanConnectDevice))]
     private async Task ConnectDevice()
     {
         if (!ValidateSerialPort()) return;
@@ -525,7 +601,7 @@ public partial class ConfigurationViewModel : ObservableObject, IDisposable
         LastRxActiveTime = DateTime.MinValue;
     }
 
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(CanStartPassiveMonitoring))]
     private async Task StartPassiveMonitoring()
     {
         if (!ValidateSerialPort()) return;
