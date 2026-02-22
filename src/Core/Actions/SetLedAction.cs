@@ -1,6 +1,7 @@
-﻿using OSDP.Net;
+using OSDP.Net;
 using OSDP.Net.Model.CommandData;
 using OSDP.Net.Model.ReplyData;
+using OSDPBench.Core.Models;
 
 namespace OSDPBench.Core.Actions;
 
@@ -13,50 +14,32 @@ public class SetReaderLedAction : IDeviceAction
     public string Name => "Test LED";
 
     /// <inheritdoc />
-    public string PerformActionName => "Flash";
+    public string PerformActionName => Resources.Resources.GetString("Manage_Send");
 
     /// <inheritdoc />
     public CapabilityFunction? RequiredCapability => CapabilityFunction.ReaderLEDControl;
-    
-    /// <summary>
-    /// Available LED colors for selection
-    /// </summary>
-    public static readonly Dictionary<string, LedColor> AvailableColors = new()
-    {
-        { "Red", LedColor.Red },
-        { "Green", LedColor.Green },
-        { "Amber", LedColor.Amber },
-        { "Blue", LedColor.Blue }
-    };
 
     /// <inheritdoc />
     public async Task<object> PerformAction(ControlPanel panel, Guid connectionId, byte address, object? parameter)
     {
-        // Default to red if no color is specified
-        var selectedColor = LedColor.Red;
-        
-        // Parse the color parameter if provided
-        if (parameter is string colorName && AvailableColors.TryGetValue(colorName, out var color))
-        {
-            selectedColor = color;
-        }
+        var ledParams = parameter as LedParameters;
 
         var result = await panel.ReaderLedControl(connectionId, address,
             new ReaderLedControls([
                 new ReaderLedControl(
-                    0,                                          // LED number
-                    0,                                          // reader number
-                    TemporaryReaderControlCode.SetTemporaryAndStartTimer,
-                    10,                                         // temporary timer
-                    10,                                         // temporary timer count
-                    selectedColor,                              // temporary on color
-                    LedColor.Black,                            // temporary off color
-                    50,                                         // temporary blink rate
-                    PermanentReaderControlCode.Nop,
-                    0,                                          // permanent timer
-                    0,                                          // permanent timer count
-                    LedColor.Black,                            // permanent on color
-                    LedColor.Black                             // permanent off color
+                    ledParams?.ReaderNumber ?? 0,
+                    ledParams?.LedNumber ?? 0,
+                    ledParams?.TemporaryMode ?? TemporaryReaderControlCode.SetTemporaryAndStartTimer,
+                    ledParams?.TemporaryOnTime ?? 10,
+                    ledParams?.TemporaryOffTime ?? 10,
+                    ledParams?.TemporaryOnColor ?? LedColor.Red,
+                    ledParams?.TemporaryOffColor ?? LedColor.Black,
+                    ledParams?.TemporaryTimer ?? 50,
+                    ledParams?.PermanentMode ?? PermanentReaderControlCode.Nop,
+                    ledParams?.PermanentOnTime ?? 0,
+                    ledParams?.PermanentOffTime ?? 0,
+                    ledParams?.PermanentOnColor ?? LedColor.Black,
+                    ledParams?.PermanentOffColor ?? LedColor.Black
                 )
             ]));
 

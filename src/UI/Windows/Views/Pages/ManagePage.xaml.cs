@@ -208,12 +208,10 @@ public partial class ManagePage : INavigableView<ManageViewModel>
         PerformActionButton.Visibility = Visibility.Visible;
 
         var actionControl = new SetReaderLedControl();
-        actionControl.PropertyChanged += (_, args) =>
+        ViewModel.DeviceActionParameter = actionControl.GetLedParameters();
+        actionControl.PropertyChanged += (_, _) =>
         {
-            if (args.PropertyName == nameof(SetReaderLedControl.SelectedColor))
-            {
-                ViewModel.DeviceActionParameter = actionControl.SelectedColor;
-            }
+            ViewModel.DeviceActionParameter = actionControl.GetLedParameters();
         };
 
         DeviceActionControl.Children.Add(actionControl);
