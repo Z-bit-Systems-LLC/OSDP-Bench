@@ -277,6 +277,46 @@
     <value>Couleur des LED</value>
     <comment>Label for LED color selection</comment>
   </data>
+  <data name="Manage_LedReaderNumber" xml:space="preserve">
+    <value>Reader Number</value>
+    <comment>Label for LED reader number input</comment>
+  </data>
+  <data name="Manage_LedLedNumber" xml:space="preserve">
+    <value>LED Number</value>
+    <comment>Label for LED number input</comment>
+  </data>
+  <data name="Manage_LedTemporary" xml:space="preserve">
+    <value>Temporary</value>
+    <comment>Tab header for temporary LED settings</comment>
+  </data>
+  <data name="Manage_LedPermanent" xml:space="preserve">
+    <value>Permanent</value>
+    <comment>Tab header for permanent LED settings</comment>
+  </data>
+  <data name="Manage_LedMode" xml:space="preserve">
+    <value>Mode</value>
+    <comment>Label for LED control mode selection</comment>
+  </data>
+  <data name="Manage_LedOnColor" xml:space="preserve">
+    <value>ON Color</value>
+    <comment>Label for LED ON color selection</comment>
+  </data>
+  <data name="Manage_LedOffColor" xml:space="preserve">
+    <value>OFF Color</value>
+    <comment>Label for LED OFF color selection</comment>
+  </data>
+  <data name="Manage_LedOnTime" xml:space="preserve">
+    <value>ON Time (x 100ms)</value>
+    <comment>Label for LED ON time input in units of 100ms</comment>
+  </data>
+  <data name="Manage_LedOffTime" xml:space="preserve">
+    <value>OFF Time (x 100ms)</value>
+    <comment>Label for LED OFF time input in units of 100ms</comment>
+  </data>
+  <data name="Manage_LedTimer" xml:space="preserve">
+    <value>Timer (x 100ms)</value>
+    <comment>Label for LED timer duration input in units of 100ms</comment>
+  </data>
   <data name="Manage_SelectedFile" xml:space="preserve">
     <value>Fichier sélectionné</value>
     <comment>Label for file selection in file transfer</comment>
@@ -304,6 +344,50 @@
   <data name="Manage_PassiveMonitoringDetails" xml:space="preserve">
     <value>Déconnectez-vous de la surveillance passive pour effectuer des opérations de dispositif</value>
     <comment>Details for passive monitoring notice on Manage page</comment>
+  </data>
+  <data name="Manage_BuzzerToneCode" xml:space="preserve">
+    <value>Tone Code</value>
+    <comment>Label for buzzer tone code selection</comment>
+  </data>
+  <data name="Manage_BuzzerReaderNumber" xml:space="preserve">
+    <value>Reader Number</value>
+    <comment>Label for buzzer reader number input</comment>
+  </data>
+  <data name="Manage_BuzzerOnTime" xml:space="preserve">
+    <value>ON Time (x 100ms)</value>
+    <comment>Label for buzzer ON time input in units of 100ms</comment>
+  </data>
+  <data name="Manage_BuzzerOffTime" xml:space="preserve">
+    <value>OFF Time (x 100ms)</value>
+    <comment>Label for buzzer OFF time input in units of 100ms</comment>
+  </data>
+  <data name="Manage_BuzzerCount" xml:space="preserve">
+    <value>Count (0 = infinite)</value>
+    <comment>Label for buzzer repeat count input</comment>
+  </data>
+  <data name="Manage_BuzzerSignal" xml:space="preserve">
+    <value>Signal</value>
+    <comment>Group header for buzzer signal settings (tone code, reader number)</comment>
+  </data>
+  <data name="Manage_BuzzerTiming" xml:space="preserve">
+    <value>Timing</value>
+    <comment>Group header for buzzer timing settings (on/off time, count)</comment>
+  </data>
+  <data name="Manage_Send" xml:space="preserve">
+    <value>Send</value>
+    <comment>Button text to send a command to the device</comment>
+  </data>
+  <data name="Manage_CapabilityNotSupported" xml:space="preserve">
+    <value>This device does not support {0}.</value>
+    <comment>Message when device lacks a required capability. {0} = capability name</comment>
+  </data>
+  <data name="Manage_CapabilityAudioOutput" xml:space="preserve">
+    <value>Audio Output</value>
+    <comment>Display name for the Audio Output capability</comment>
+  </data>
+  <data name="Manage_CapabilityLedControl" xml:space="preserve">
+    <value>LED Control</value>
+    <comment>Display name for the LED Control capability</comment>
   </data>
   <!-- Monitor Page -->
   <data name="Monitor_DeviceNotConnected" xml:space="preserve">
