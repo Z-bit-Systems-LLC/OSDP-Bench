@@ -4,89 +4,100 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:controls="clr-namespace:OSDPBench.Windows.Views.Controls"
+             xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
              xmlns:localization="clr-namespace:ZBitSystems.Wpf.UI.Localization;assembly=ZBitSystems.Wpf.UI"
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance controls:ControlBuzzerControl}"
              d:DesignHeight="300" d:DesignWidth="400">
-    <StackPanel>
-        <!-- Signal Group -->
-        <TextBlock Text="{localization:Localize Manage_BuzzerSignal}"
-                   Style="{StaticResource Text.Body}"
-                   FontWeight="SemiBold"
-                   Margin="0,0,0,4"/>
-        <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="Auto"/>
-            </Grid.ColumnDefinitions>
-            <StackPanel Grid.Column="0"
-                        Style="{StaticResource Section.Container}">
-                <Label Content="{localization:Localize Manage_BuzzerToneCode}"
-                       Style="{StaticResource Label.Standard}"
-                       Target="{Binding ElementName=ToneCodeComboBox}" />
-                <ComboBox Name="ToneCodeComboBox"
-                          Style="{StaticResource ComboBox.Standard}"
-                          ItemsSource="{Binding AvailableToneCodes}"
-                          SelectedItem="{Binding SelectedToneCode}"
-                          HorizontalAlignment="Left" />
-            </StackPanel>
-            <StackPanel Grid.Column="1"
-                        Style="{StaticResource Section.Container}">
-                <Label Content="{localization:Localize Manage_BuzzerReaderNumber}"
-                       Style="{StaticResource Label.Standard}"
-                       Target="{Binding ElementName=ReaderNumberTextBox}" />
-                <TextBox Name="ReaderNumberTextBox"
-                         Style="{StaticResource TextBox.Standard}"
-                         Text="{Binding ReaderNumber, UpdateSourceTrigger=PropertyChanged}"
-                         HorizontalAlignment="Left"
-                         Width="80" />
-            </StackPanel>
-        </Grid>
+   <StackPanel>
+       <!-- Signal Group -->
+       <TextBlock Text="{localization:Localize Manage_BuzzerSignal}"
+                  Style="{StaticResource Text.Body}"
+                  FontWeight="SemiBold"
+                  Margin="0,0,0,4"/>
+       <WrapPanel Orientation="Horizontal">
+           <StackPanel Style="{StaticResource Section.Container}">
+               <Label Content="{localization:Localize Manage_BuzzerToneCode}"
+                      Style="{StaticResource Label.Standard}"
+                      Target="{Binding ElementName=ToneCodeComboBox}" />
+               <ComboBox Name="ToneCodeComboBox"
+                         Style="{StaticResource ComboBox.Standard}"
+                         ItemsSource="{Binding AvailableToneCodes}"
+                         SelectedItem="{Binding SelectedToneCode}"
+                         HorizontalAlignment="Left" />
+           </StackPanel>
+           <StackPanel Style="{StaticResource Section.Container}">
+               <Label Content="{localization:Localize Manage_BuzzerReaderNumber}"
+                      Style="{StaticResource Label.Standard}"
+                      Target="{Binding ElementName=ReaderNumberBox}" />
+               <ui:NumberBox Name="ReaderNumberBox"
+                             Style="{StaticResource NumberBox.Standard}"
+                             Value="{Binding ReaderNumber, Mode=TwoWay}"
+                             TextChanged="ReaderNumberBox_OnTextChanged"
+                             ValueChanged="ReaderNumberBox_OnValueChanged"
+                             Minimum="0"
+                             Maximum="255"
+                             Width="100"
+                             HorizontalAlignment="Left"/>
+           </StackPanel>
+       </WrapPanel>
 
-        <!-- Timing Group -->
-        <TextBlock Text="{localization:Localize Manage_BuzzerTiming}"
-                   Style="{StaticResource Text.Body}"
-                   FontWeight="SemiBold"
-                   Margin="0,8,0,4"/>
-        <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="Auto"/>
-            </Grid.ColumnDefinitions>
-            <StackPanel Grid.Column="0"
-                        Style="{StaticResource Section.Container}">
-                <Label Content="{localization:Localize Manage_BuzzerOnTime}"
-                       Style="{StaticResource Label.Standard}"
-                       Target="{Binding ElementName=OnTimeTextBox}" />
-                <TextBox Name="OnTimeTextBox"
-                         Style="{StaticResource TextBox.Standard}"
-                         Text="{Binding OnTime, UpdateSourceTrigger=PropertyChanged}"
-                         HorizontalAlignment="Left"
-                         Width="80" />
-            </StackPanel>
-            <StackPanel Grid.Column="1"
-                        Style="{StaticResource Section.Container}">
-                <Label Content="{localization:Localize Manage_BuzzerOffTime}"
-                       Style="{StaticResource Label.Standard}"
-                       Target="{Binding ElementName=OffTimeTextBox}" />
-                <TextBox Name="OffTimeTextBox"
-                         Style="{StaticResource TextBox.Standard}"
-                         Text="{Binding OffTime, UpdateSourceTrigger=PropertyChanged}"
-                         HorizontalAlignment="Left"
-                         Width="80" />
-            </StackPanel>
-            <StackPanel Grid.Column="2"
-                        Style="{StaticResource Section.Container}">
-                <Label Content="{localization:Localize Manage_BuzzerCount}"
-                       Style="{StaticResource Label.Standard}"
-                       Target="{Binding ElementName=CountTextBox}" />
-                <TextBox Name="CountTextBox"
-                         Style="{StaticResource TextBox.Standard}"
-                         Text="{Binding Count, UpdateSourceTrigger=PropertyChanged}"
-                         HorizontalAlignment="Left"
-                         Width="80" />
-            </StackPanel>
-        </Grid>
-    </StackPanel>
+       <!-- Timing Group -->
+       <TextBlock Text="{localization:Localize Manage_BuzzerTiming}"
+                  Style="{StaticResource Text.Body}"
+                  FontWeight="SemiBold"
+                  Margin="0,8,0,4"/>
+       <Grid>
+           <Grid.ColumnDefinitions>
+               <ColumnDefinition Width="Auto"/>
+               <ColumnDefinition Width="Auto"/>
+               <ColumnDefinition Width="Auto"/>
+           </Grid.ColumnDefinitions>
+           <StackPanel Grid.Column="0"
+                       Style="{StaticResource Section.Container}">
+               <Label Content="{localization:Localize Manage_BuzzerOnTime}"
+                      Style="{StaticResource Label.Standard}"
+                      Target="{Binding ElementName=OnTimeNumberBox}" />
+               <ui:NumberBox Name="OnTimeNumberBox"
+                             Style="{StaticResource NumberBox.Standard}"
+                             Value="{Binding OnTime, Mode=TwoWay}"
+                             TextChanged="OnTimeNumberBox_OnTextChanged"
+                             ValueChanged="OnTimeNumberBox_OnValueChanged"
+                             Minimum="0"
+                             Maximum="255"
+                             Width="100"
+                             HorizontalAlignment="Left"/>
+           </StackPanel>
+           <StackPanel Grid.Column="1"
+                       Style="{StaticResource Section.Container}">
+               <Label Content="{localization:Localize Manage_BuzzerOffTime}"
+                      Style="{StaticResource Label.Standard}"
+                      Target="{Binding ElementName=OffTimeNumberBox}" />
+               <ui:NumberBox Name="OffTimeNumberBox"
+                             Style="{StaticResource NumberBox.Standard}"
+                             Value="{Binding OffTime, Mode=TwoWay}"
+                             TextChanged="OffTimeNumberBox_OnTextChanged"
+                             ValueChanged="OffTimeNumberBox_OnValueChanged"
+                             Minimum="0"
+                             Maximum="255"
+                             Width="100"
+                             HorizontalAlignment="Left"/>
+           </StackPanel>
+           <StackPanel Grid.Column="2"
+                       Style="{StaticResource Section.Container}">
+               <Label Content="{localization:Localize Manage_BuzzerCount}"
+                      Style="{StaticResource Label.Standard}"
+                      Target="{Binding ElementName=CountNumberBox}" />
+               <ui:NumberBox Name="CountNumberBox"
+                             Style="{StaticResource NumberBox.Standard}"
+                             Value="{Binding Count, Mode=TwoWay}"
+                             TextChanged="CountNumberBox_OnTextChanged"
+                             ValueChanged="CountNumberBox_OnValueChanged"
+                             Minimum="0"
+                             Maximum="255"
+                             Width="100"
+                             HorizontalAlignment="Left"/>
+           </StackPanel>
+       </Grid>
+   </StackPanel>
 </UserControl>
