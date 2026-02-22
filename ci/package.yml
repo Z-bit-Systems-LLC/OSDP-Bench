@@ -6,23 +6,10 @@ steps:
       version: '10.x'
 
   - task: DotNetCoreCLI@2
-    displayName: 'dotnet restore'
-    inputs:
-      command: 'restore'
-      projects: 'src/Core/Core.csproj'
-
-  - task: DotNetCoreCLI@2
-    displayName: 'dotnet build Core library'
-    inputs:
-      command: 'build'
-      projects: 'src/Core/Core.csproj'
-      arguments: '--configuration $(buildConfiguration) --no-restore'
-
-  - task: DotNetCoreCLI@2
     displayName: 'dotnet pack Core library'
     inputs:
       command: 'pack'
-      arguments: '--configuration $(buildConfiguration) --no-build --output $(Build.ArtifactStagingDirectory)/nuget'
+      arguments: '--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)/nuget'
       packagesToPack: 'src/Core/Core.csproj'
 
   - task: PublishPipelineArtifact@1
