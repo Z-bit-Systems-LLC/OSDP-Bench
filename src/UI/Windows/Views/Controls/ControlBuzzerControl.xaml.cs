@@ -7,7 +7,7 @@ using Wpf.Ui.Controls;
 
 namespace OSDPBench.Windows.Views.Controls;
 
-public partial class ControlBuzzerControl
+public partial class ControlBuzzerControl : INotifyPropertyChanged
 {
     public event PropertyChangedEventHandler? PropertyChanged;
 

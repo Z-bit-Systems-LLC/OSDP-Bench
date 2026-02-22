@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:controls="clr-namespace:OSDPBench.Windows.Views.Controls"
              xmlns:converters="clr-namespace:OSDPBench.Windows.Converters"
+             xmlns:sharedConverters="clr-namespace:ZBitSystems.Wpf.UI.Converters;assembly=ZBitSystems.Wpf.UI"
              xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
              xmlns:localization="clr-namespace:ZBitSystems.Wpf.UI.Localization;assembly=ZBitSystems.Wpf.UI"
              mc:Ignorable="d"
@@ -12,6 +13,7 @@
              d:DesignHeight="400" d:DesignWidth="400">
     <UserControl.Resources>
         <converters:LedColorToBrushConverter x:Key="LedColorToBrushConverter" />
+        <sharedConverters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
         <DataTemplate x:Key="LedColorItemTemplate">
             <!-- ReSharper disable Xaml.BindingWithContextNotResolved -->
             <StackPanel Orientation="Horizontal">
@@ -121,16 +123,9 @@
                             <Label Content="{localization:Localize Manage_LedOnTime}"
                                    Style="{StaticResource Label.Standard}"
                                    Target="{Binding ElementName=TemporaryOnTimeBox}" />
-                            <ui:NumberBox Name="TemporaryOnTimeBox"
-                                          Value="{Binding TemporaryOnTime, Mode=TwoWay}"
-                                          TextChanged="TemporaryOnTimeBox_OnTextChanged"
-                                          ValueChanged="TemporaryOnTimeBox_OnValueChanged"
-                                          Minimum="0"
-                                          Maximum="255"
-                                          Width="100"
-                                          HorizontalAlignment="Left">
-                                <ui:NumberBox.Style>
-                                    <Style TargetType="ui:NumberBox" BasedOn="{StaticResource NumberBox.Standard}">
+                            <Border CornerRadius="4">
+                                <Border.Style>
+                                    <Style TargetType="Border">
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding IsTemporaryTimingInvalid}" Value="True">
                                                 <Setter Property="BorderBrush" Value="{DynamicResource SemanticErrorBrush}"/>
@@ -138,24 +133,26 @@
                                             </DataTrigger>
                                         </Style.Triggers>
                                     </Style>
-                                </ui:NumberBox.Style>
-                            </ui:NumberBox>
+                                </Border.Style>
+                                <ui:NumberBox Name="TemporaryOnTimeBox"
+                                              Style="{StaticResource NumberBox.Standard}"
+                                              Value="{Binding TemporaryOnTime, Mode=TwoWay}"
+                                              TextChanged="TemporaryOnTimeBox_OnTextChanged"
+                                              ValueChanged="TemporaryOnTimeBox_OnValueChanged"
+                                              Minimum="0"
+                                              Maximum="255"
+                                              Width="100"
+                                              HorizontalAlignment="Left"/>
+                            </Border>
                         </StackPanel>
                         <StackPanel Grid.Column="1"
                                     Style="{StaticResource Section.Container}">
                             <Label Content="{localization:Localize Manage_LedOffTime}"
                                    Style="{StaticResource Label.Standard}"
                                    Target="{Binding ElementName=TemporaryOffTimeBox}" />
-                            <ui:NumberBox Name="TemporaryOffTimeBox"
-                                          Value="{Binding TemporaryOffTime, Mode=TwoWay}"
-                                          TextChanged="TemporaryOffTimeBox_OnTextChanged"
-                                          ValueChanged="TemporaryOffTimeBox_OnValueChanged"
-                                          Minimum="0"
-                                          Maximum="255"
-                                          Width="100"
-                                          HorizontalAlignment="Left">
-                                <ui:NumberBox.Style>
-                                    <Style TargetType="ui:NumberBox" BasedOn="{StaticResource NumberBox.Standard}">
+                            <Border CornerRadius="4">
+                                <Border.Style>
+                                    <Style TargetType="Border">
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding IsTemporaryTimingInvalid}" Value="True">
                                                 <Setter Property="BorderBrush" Value="{DynamicResource SemanticErrorBrush}"/>
@@ -163,8 +160,17 @@
                                             </DataTrigger>
                                         </Style.Triggers>
                                     </Style>
-                                </ui:NumberBox.Style>
-                            </ui:NumberBox>
+                                </Border.Style>
+                                <ui:NumberBox Name="TemporaryOffTimeBox"
+                                              Style="{StaticResource NumberBox.Standard}"
+                                              Value="{Binding TemporaryOffTime, Mode=TwoWay}"
+                                              TextChanged="TemporaryOffTimeBox_OnTextChanged"
+                                              ValueChanged="TemporaryOffTimeBox_OnValueChanged"
+                                              Minimum="0"
+                                              Maximum="255"
+                                              Width="100"
+                                              HorizontalAlignment="Left"/>
+                            </Border>
                         </StackPanel>
                         <StackPanel Grid.Column="2"
                                     Style="{StaticResource Section.Container}">
@@ -182,6 +188,9 @@
                                           HorizontalAlignment="Left"/>
                         </StackPanel>
                     </Grid>
+                    <TextBlock Text="{localization:Localize Manage_LedTimingInvalid}"
+                               Style="{StaticResource Text.Validation.Error}"
+                               Visibility="{Binding IsTemporaryTimingInvalid, Converter={StaticResource BooleanToVisibilityConverter}}"/>
                 </StackPanel>
             </TabItem>
             <TabItem Header="{localization:Localize Manage_LedPermanent}">
@@ -237,16 +246,9 @@
                             <Label Content="{localization:Localize Manage_LedOnTime}"
                                    Style="{StaticResource Label.Standard}"
                                    Target="{Binding ElementName=PermanentOnTimeBox}" />
-                            <ui:NumberBox Name="PermanentOnTimeBox"
-                                          Value="{Binding PermanentOnTime, Mode=TwoWay}"
-                                          TextChanged="PermanentOnTimeBox_OnTextChanged"
-                                          ValueChanged="PermanentOnTimeBox_OnValueChanged"
-                                          Minimum="0"
-                                          Maximum="255"
-                                          Width="100"
-                                          HorizontalAlignment="Left">
-                                <ui:NumberBox.Style>
-                                    <Style TargetType="ui:NumberBox" BasedOn="{StaticResource NumberBox.Standard}">
+                            <Border CornerRadius="4">
+                                <Border.Style>
+                                    <Style TargetType="Border">
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding IsPermanentTimingInvalid}" Value="True">
                                                 <Setter Property="BorderBrush" Value="{DynamicResource SemanticErrorBrush}"/>
@@ -254,24 +256,26 @@
                                             </DataTrigger>
                                         </Style.Triggers>
                                     </Style>
-                                </ui:NumberBox.Style>
-                            </ui:NumberBox>
+                                </Border.Style>
+                                <ui:NumberBox Name="PermanentOnTimeBox"
+                                              Style="{StaticResource NumberBox.Standard}"
+                                              Value="{Binding PermanentOnTime, Mode=TwoWay}"
+                                              TextChanged="PermanentOnTimeBox_OnTextChanged"
+                                              ValueChanged="PermanentOnTimeBox_OnValueChanged"
+                                              Minimum="0"
+                                              Maximum="255"
+                                              Width="100"
+                                              HorizontalAlignment="Left"/>
+                            </Border>
                         </StackPanel>
                         <StackPanel Grid.Column="1"
                                     Style="{StaticResource Section.Container}">
                             <Label Content="{localization:Localize Manage_LedOffTime}"
                                    Style="{StaticResource Label.Standard}"
                                    Target="{Binding ElementName=PermanentOffTimeBox}" />
-                            <ui:NumberBox Name="PermanentOffTimeBox"
-                                          Value="{Binding PermanentOffTime, Mode=TwoWay}"
-                                          TextChanged="PermanentOffTimeBox_OnTextChanged"
-                                          ValueChanged="PermanentOffTimeBox_OnValueChanged"
-                                          Minimum="0"
-                                          Maximum="255"
-                                          Width="100"
-                                          HorizontalAlignment="Left">
-                                <ui:NumberBox.Style>
-                                    <Style TargetType="ui:NumberBox" BasedOn="{StaticResource NumberBox.Standard}">
+                            <Border CornerRadius="4">
+                                <Border.Style>
+                                    <Style TargetType="Border">
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding IsPermanentTimingInvalid}" Value="True">
                                                 <Setter Property="BorderBrush" Value="{DynamicResource SemanticErrorBrush}"/>
@@ -279,10 +283,22 @@
                                             </DataTrigger>
                                         </Style.Triggers>
                                     </Style>
-                                </ui:NumberBox.Style>
-                            </ui:NumberBox>
+                                </Border.Style>
+                                <ui:NumberBox Name="PermanentOffTimeBox"
+                                              Style="{StaticResource NumberBox.Standard}"
+                                              Value="{Binding PermanentOffTime, Mode=TwoWay}"
+                                              TextChanged="PermanentOffTimeBox_OnTextChanged"
+                                              ValueChanged="PermanentOffTimeBox_OnValueChanged"
+                                              Minimum="0"
+                                              Maximum="255"
+                                              Width="100"
+                                              HorizontalAlignment="Left"/>
+                            </Border>
                         </StackPanel>
                     </Grid>
+                    <TextBlock Text="{localization:Localize Manage_LedTimingInvalid}"
+                               Style="{StaticResource Text.Validation.Error}"
+                               Visibility="{Binding IsPermanentTimingInvalid, Converter={StaticResource BooleanToVisibilityConverter}}"/>
                 </StackPanel>
             </TabItem>
         </TabControl>

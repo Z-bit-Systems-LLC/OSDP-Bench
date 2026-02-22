@@ -381,6 +381,14 @@
     <value>Timing</value>
     <comment>Group header for buzzer timing settings (on/off time, count)</comment>
   </data>
+  <data name="Manage_BuzzerOnTimeRequired" xml:space="preserve">
+    <value>ON time must be greater than zero when tone is active.</value>
+    <comment>Validation message when buzzer ON time is zero with a non-Off tone code</comment>
+  </data>
+  <data name="Manage_LedTimingInvalid" xml:space="preserve">
+    <value>ON and OFF time cannot both be zero.</value>
+    <comment>Validation message when both LED ON and OFF time values are zero</comment>
+  </data>
   <data name="Manage_Send" xml:space="preserve">
     <value>Send</value>
     <comment>Button text to send a command to the device</comment>

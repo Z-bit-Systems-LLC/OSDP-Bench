@@ -7,7 +7,7 @@ using Wpf.Ui.Controls;
 
 namespace OSDPBench.Windows.Views.Controls;
 
-public partial class SetReaderLedControl
+public partial class SetReaderLedControl : INotifyPropertyChanged
 {
     public event PropertyChangedEventHandler? PropertyChanged;
 

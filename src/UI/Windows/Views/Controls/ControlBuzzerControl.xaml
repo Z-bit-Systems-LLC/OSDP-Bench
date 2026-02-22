@@ -8,7 +8,11 @@
              xmlns:localization="clr-namespace:ZBitSystems.Wpf.UI.Localization;assembly=ZBitSystems.Wpf.UI"
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance controls:ControlBuzzerControl}"
+             xmlns:converters="clr-namespace:ZBitSystems.Wpf.UI.Converters;assembly=ZBitSystems.Wpf.UI"
              d:DesignHeight="300" d:DesignWidth="400">
+   <UserControl.Resources>
+       <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+   </UserControl.Resources>
    <StackPanel>
        <!-- Signal Group -->
        <TextBlock Text="{localization:Localize Manage_BuzzerSignal}"
@@ -58,16 +62,9 @@
                <Label Content="{localization:Localize Manage_BuzzerOnTime}"
                       Style="{StaticResource Label.Standard}"
                       Target="{Binding ElementName=OnTimeNumberBox}" />
-               <ui:NumberBox Name="OnTimeNumberBox"
-                             Value="{Binding OnTime, Mode=TwoWay}"
-                             TextChanged="OnTimeNumberBox_OnTextChanged"
-                             ValueChanged="OnTimeNumberBox_OnValueChanged"
-                             Minimum="0"
-                             Maximum="255"
-                             Width="100"
-                             HorizontalAlignment="Left">
-                   <ui:NumberBox.Style>
-                       <Style TargetType="ui:NumberBox" BasedOn="{StaticResource NumberBox.Standard}">
+               <Border CornerRadius="4">
+                   <Border.Style>
+                       <Style TargetType="Border">
                            <Style.Triggers>
                                <DataTrigger Binding="{Binding IsOnTimeInvalid}" Value="True">
                                    <Setter Property="BorderBrush" Value="{DynamicResource SemanticErrorBrush}"/>
@@ -75,8 +72,17 @@
                                </DataTrigger>
                            </Style.Triggers>
                        </Style>
-                   </ui:NumberBox.Style>
-               </ui:NumberBox>
+                   </Border.Style>
+                   <ui:NumberBox Name="OnTimeNumberBox"
+                                 Style="{StaticResource NumberBox.Standard}"
+                                 Value="{Binding OnTime, Mode=TwoWay}"
+                                 TextChanged="OnTimeNumberBox_OnTextChanged"
+                                 ValueChanged="OnTimeNumberBox_OnValueChanged"
+                                 Minimum="0"
+                                 Maximum="255"
+                                 Width="100"
+                                 HorizontalAlignment="Left"/>
+               </Border>
            </StackPanel>
            <StackPanel Grid.Column="1"
                        Style="{StaticResource Section.Container}">
@@ -109,5 +115,8 @@
                              HorizontalAlignment="Left"/>
            </StackPanel>
        </Grid>
+       <TextBlock Text="{localization:Localize Manage_BuzzerOnTimeRequired}"
+                  Style="{StaticResource Text.Validation.Error}"
+                  Visibility="{Binding IsOnTimeInvalid, Converter={StaticResource BooleanToVisibilityConverter}}"/>
    </StackPanel>
 </UserControl>
