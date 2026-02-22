@@ -249,7 +249,7 @@
     <comment>Button text to connect to device</comment>
   </data>
   <data name="Connect_NoSerialPortsDetected" xml:space="preserve">
-    <value>No serial ports detected</value>
+    <value>Keine seriellen Anschlüsse erkannt</value>
     <comment>Warning message when no serial ports are available</comment>
   </data>
   <data name="Connect_SecurityKeyPlaceholder" xml:space="preserve">
@@ -278,23 +278,23 @@
     <comment>Label for LED color selection</comment>
   </data>
   <data name="Manage_LedReaderNumber" xml:space="preserve">
-    <value>Reader Number</value>
+    <value>Lesernummer</value>
     <comment>Label for LED reader number input</comment>
   </data>
   <data name="Manage_LedLedNumber" xml:space="preserve">
-    <value>LED Number</value>
+    <value>LED-Nummer</value>
     <comment>Label for LED number input</comment>
   </data>
   <data name="Manage_LedTemporary" xml:space="preserve">
-    <value>Temporary</value>
+    <value>Vorübergehend</value>
     <comment>Tab header for temporary LED settings</comment>
   </data>
   <data name="Manage_LedPermanent" xml:space="preserve">
-    <value>Permanent</value>
+    <value>Dauerhaft</value>
     <comment>Tab header for permanent LED settings</comment>
   </data>
   <data name="Manage_LedMode" xml:space="preserve">
-    <value>Mode</value>
+    <value>Modus</value>
     <comment>Label for LED control mode selection</comment>
   </data>
   <data name="Manage_LedOnColor" xml:space="preserve">
@@ -302,19 +302,19 @@
     <comment>Label for LED ON color selection</comment>
   </data>
   <data name="Manage_LedOffColor" xml:space="preserve">
-    <value>OFF Color</value>
+    <value>Anzüglich</value>
     <comment>Label for LED OFF color selection</comment>
   </data>
   <data name="Manage_LedOnTime" xml:space="preserve">
-    <value>ON Time (x 100ms)</value>
+    <value>AN-Zeit (x 100 ms)</value>
     <comment>Label for LED ON time input in units of 100ms</comment>
   </data>
   <data name="Manage_LedOffTime" xml:space="preserve">
-    <value>OFF Time (x 100ms)</value>
+    <value>OFF-Zeit (x 100 ms)</value>
     <comment>Label for LED OFF time input in units of 100ms</comment>
   </data>
   <data name="Manage_LedTimer" xml:space="preserve">
-    <value>Timer (x 100ms)</value>
+    <value>Timer (x 100 ms)</value>
     <comment>Label for LED timer duration input in units of 100ms</comment>
   </data>
   <data name="Manage_SelectedFile" xml:space="preserve">
@@ -346,23 +346,23 @@
     <comment>Details for passive monitoring notice on Manage page</comment>
   </data>
   <data name="Manage_BuzzerToneCode" xml:space="preserve">
-    <value>Tone Code</value>
+    <value>Toncode</value>
     <comment>Label for buzzer tone code selection</comment>
   </data>
   <data name="Manage_BuzzerReaderNumber" xml:space="preserve">
-    <value>Reader Number</value>
+    <value>Lesernummer</value>
     <comment>Label for buzzer reader number input</comment>
   </data>
   <data name="Manage_BuzzerOnTime" xml:space="preserve">
-    <value>ON Time (x 100ms)</value>
+    <value>AN-Zeit (x 100 ms)</value>
     <comment>Label for buzzer ON time input in units of 100ms</comment>
   </data>
   <data name="Manage_BuzzerOffTime" xml:space="preserve">
-    <value>OFF Time (x 100ms)</value>
+    <value>OFF-Zeit (x 100 ms)</value>
     <comment>Label for buzzer OFF time input in units of 100ms</comment>
   </data>
   <data name="Manage_BuzzerCount" xml:space="preserve">
-    <value>Count (0 = infinite)</value>
+    <value>Anzahl (0 = unendlich)</value>
     <comment>Label for buzzer repeat count input</comment>
   </data>
   <data name="Manage_BuzzerSignal" xml:space="preserve">
@@ -373,20 +373,28 @@
     <value>Timing</value>
     <comment>Group header for buzzer timing settings (on/off time, count)</comment>
   </data>
+  <data name="Manage_BuzzerOnTimeRequired" xml:space="preserve">
+    <value>ON time must be greater than zero when tone is active.</value>
+    <comment>Validation message when buzzer ON time is zero with a non-Off tone code</comment>
+  </data>
+  <data name="Manage_LedTimingInvalid" xml:space="preserve">
+    <value>ON and OFF time cannot both be zero.</value>
+    <comment>Validation message when both LED ON and OFF time values are zero</comment>
+  </data>
   <data name="Manage_Send" xml:space="preserve">
-    <value>Send</value>
+    <value>Senden</value>
     <comment>Button text to send a command to the device</comment>
   </data>
   <data name="Manage_CapabilityNotSupported" xml:space="preserve">
-    <value>This device does not support {0}.</value>
+    <value>Dieses Gerät unterstützt keine Unterstützung {0}.</value>
     <comment>Message when device lacks a required capability. {0} = capability name</comment>
   </data>
   <data name="Manage_CapabilityAudioOutput" xml:space="preserve">
-    <value>Audio Output</value>
+    <value>Audioausgabe</value>
     <comment>Display name for the Audio Output capability</comment>
   </data>
   <data name="Manage_CapabilityLedControl" xml:space="preserve">
-    <value>LED Control</value>
+    <value>LED-Steuerung</value>
     <comment>Display name for the LED Control capability</comment>
   </data>
   <!-- Monitor Page -->
@@ -779,7 +787,7 @@
     <comment>Label for power status indicator</comment>
   </data>
   <data name="Supervision_CommunicationStatus" xml:space="preserve">
-    <value>Communication</value>
+    <value>Kommunikation</value>
     <comment>Label for communication status indicator</comment>
   </data>
   <data name="Supervision_Normal" xml:space="preserve">
@@ -828,19 +836,19 @@
   </data>
   <!-- Accessibility -->
   <data name="Accessibility_PacketTrace" xml:space="preserve">
-    <value>Packet Trace</value>
+    <value>Paketverfolgung</value>
     <comment>Screen reader name for the packet trace data grid</comment>
   </data>
   <data name="Accessibility_CardReadHistory" xml:space="preserve">
-    <value>Card Read History</value>
+    <value>Kartenlese-Geschichte</value>
     <comment>Screen reader name for the card read history data grid</comment>
   </data>
   <data name="Accessibility_ApplicationLogo" xml:space="preserve">
-    <value>Application Logo</value>
+    <value>Anwendungslogo</value>
     <comment>Screen reader name for the application logo image</comment>
   </data>
   <data name="Accessibility_StatusIndicator" xml:space="preserve">
-    <value>Status Indicator</value>
+    <value>Statusanzeiger</value>
     <comment>Screen reader name for LED status indicator</comment>
   </data>
 </root>
