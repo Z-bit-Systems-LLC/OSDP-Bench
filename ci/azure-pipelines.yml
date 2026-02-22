@@ -23,51 +23,48 @@ variables:
   solution: 'OSDP-Bench.sln'
   buildConfiguration: 'Release'
 
-jobs:
-  - job: build
+stages:
+  - stage: Build
     displayName: 'Build, Test, and Inspect'
-    pool:
-      vmImage: 'windows-latest'
-    steps:
-      - checkout: self
-        submodules: true
-      - template: build.yml
+    jobs:
+      - job: build
+        displayName: 'Build, Test, and Inspect'
+        steps:
+          - checkout: self
+            submodules: true
+          - template: build.yml
 
-  - job: ui_tests
-    displayName: 'UI Smoke Tests'
-    pool:
-      vmImage: 'windows-latest'
-    dependsOn:
-      build
-    continueOnError: true
-    steps:
-      - checkout: self
-        submodules: true
-      - template: ui-tests-smoke.yml
+  - stage: Test
+    displayName: 'UI Tests'
+    dependsOn: Build
+    jobs:
+      - job: ui_tests_smoke
+        displayName: 'UI Smoke Tests'
+        continueOnError: true
+        steps:
+          - checkout: self
+            submodules: true
+          - template: ui-tests-smoke.yml
 
-  - job: ui_tests_full
-    displayName: 'UI Tests (Full)'
-    condition: or(eq(variables['Build.Reason'], 'Schedule'), startsWith(variables['Build.SourceBranch'], 'refs/tags/v'))
-    pool:
-      vmImage: 'windows-latest'
-    dependsOn:
-      build
-    continueOnError: true
-    steps:
-      - checkout: self
-        submodules: true
-      - template: ui-tests.yml
+      - job: ui_tests_full
+        displayName: 'UI Tests (Full)'
+        condition: or(eq(variables['Build.Reason'], 'Schedule'), eq(variables['Build.Reason'], 'Manual'), startsWith(variables['Build.SourceBranch'], 'refs/tags/v'))
+        continueOnError: true
+        steps:
+          - checkout: self
+            submodules: true
+          - template: ui-tests.yml
 
-  - job: package
+  - stage: Package
     displayName: 'Package and Publish'
+    dependsOn: Build
     condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/v'))
-    pool:
-      vmImage: 'windows-latest'
-    dependsOn:
-      build
-    steps:
-      - checkout: self
-        submodules: true
-        persistCredentials: true
-        clean: true
-      - template: package.yml
+    jobs:
+      - job: package
+        displayName: 'Package and Publish'
+        steps:
+          - checkout: self
+            submodules: true
+            persistCredentials: true
+            clean: true
+          - template: package.yml
