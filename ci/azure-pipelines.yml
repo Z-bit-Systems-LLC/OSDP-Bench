@@ -49,7 +49,6 @@ stages:
       - job: ui_tests_full
         displayName: 'UI Tests (Full)'
         condition: or(eq(variables['Build.Reason'], 'Schedule'), eq(variables['Build.Reason'], 'Manual'), startsWith(variables['Build.SourceBranch'], 'refs/tags/v'))
-        continueOnError: true
         steps:
           - checkout: self
             submodules: true
@@ -57,7 +56,9 @@ stages:
 
   - stage: Package
     displayName: 'Package and Publish'
-    dependsOn: Build
+    dependsOn:
+      - Build
+      - Test
     condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/v'))
     jobs:
       - job: package
