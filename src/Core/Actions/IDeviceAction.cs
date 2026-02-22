@@ -1,4 +1,5 @@
 ﻿using OSDP.Net;
+using OSDP.Net.Model.ReplyData;
 
 namespace OSDPBench.Core.Actions;
 
@@ -16,6 +17,11 @@ public interface IDeviceAction
     /// Gets the name of the action to be shown on the button.
     /// </summary>
     string PerformActionName { get; }
+
+    /// <summary>
+    /// Gets the capability function required for this action, or null if no capability check is needed.
+    /// </summary>
+    CapabilityFunction? RequiredCapability => null;
 
     /// <summary>
     /// Performs an action on a device.

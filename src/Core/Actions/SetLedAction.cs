@@ -1,5 +1,6 @@
 ﻿using OSDP.Net;
 using OSDP.Net.Model.CommandData;
+using OSDP.Net.Model.ReplyData;
 
 namespace OSDPBench.Core.Actions;
 
@@ -13,6 +14,9 @@ public class SetReaderLedAction : IDeviceAction
 
     /// <inheritdoc />
     public string PerformActionName => "Flash";
+
+    /// <inheritdoc />
+    public CapabilityFunction? RequiredCapability => CapabilityFunction.ReaderLEDControl;
     
     /// <summary>
     /// Available LED colors for selection

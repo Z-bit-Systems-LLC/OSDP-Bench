@@ -3,6 +3,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
+using OSDP.Net.Model.ReplyData;
 using OSDPBench.Core.Actions;
 using OSDPBench.Core.Models;
 using OSDPBench.Core.ViewModels.Pages;
@@ -33,12 +34,13 @@ public partial class ManagePage : INavigableView<ManageViewModel>
     private void DeviceActionsComboBox_OnSelectionChanged(object sender, SelectionChangedEventArgs eventArgs)
     {
         DeviceActionControl.Children.Clear();
-            
+        PerformActionButton.IsEnabled = true;
+
         if (ViewModel.ConnectedPortName == null)
         {
             return;
         }
-        
+
         var selectedAction = DeviceActionsComboBox.SelectedValue as IDeviceAction;
 
         switch (selectedAction)
@@ -46,32 +48,32 @@ public partial class ManagePage : INavigableView<ManageViewModel>
             case ControlBuzzerAction:
                 ControlBuzzerControl();
                 break;
-                
+
             case FileTransferAction:
                 FileTransferControl();
                 break;
-                
+
             case MonitoringAction monitoringAction:
                 switch (monitoringAction.MonitoringType)
                 {
                     case MonitoringType.CardReads:
                         MonitorCardReadsControl();
                         break;
-                        
+
                     case MonitoringType.KeypadReads:
                         MonitorKeypadReadsControl();
                         break;
                 }
                 break;
-                
+
             case ResetCypressDeviceAction:
                 ResetControl();
                 break;
-                
+
             case SetCommunicationAction:
                 SetCommunicationActionControl();
                 break;
-                
+
             case SetReaderLedAction:
                 SetReaderLedActionControl();
                 break;
@@ -80,13 +82,60 @@ public partial class ManagePage : INavigableView<ManageViewModel>
                 SupervisionControl();
                 break;
         }
+
+        CheckCapabilitySupport(selectedAction);
+    }
+
+    private void CheckCapabilitySupport(IDeviceAction? selectedAction)
+    {
+        if (selectedAction?.RequiredCapability == null || ViewModel.CapabilitiesLookup == null)
+        {
+            return;
+        }
+
+        bool isSupported = selectedAction.RequiredCapability switch
+        {
+            CapabilityFunction.ReaderAudibleOutput => ViewModel.CapabilitiesLookup.AudioOutput,
+            CapabilityFunction.ReaderLEDControl => ViewModel.CapabilitiesLookup.LedControl,
+            _ => true
+        };
+
+        if (isSupported) return;
+
+        string capabilityName = selectedAction.RequiredCapability switch
+        {
+            CapabilityFunction.ReaderAudibleOutput =>
+                Core.Resources.Resources.GetString("Manage_CapabilityAudioOutput"),
+            CapabilityFunction.ReaderLEDControl =>
+                Core.Resources.Resources.GetString("Manage_CapabilityLedControl"),
+            _ => selectedAction.RequiredCapability.ToString()!
+        };
+
+        string message = Core.Resources.Resources.GetString("Manage_CapabilityNotSupported")
+            .Replace("{0}", capabilityName);
+
+        var warningText = new TextBlock
+        {
+            Text = message,
+            TextWrapping = TextWrapping.Wrap,
+            Foreground = (System.Windows.Media.Brush)FindResource("SemanticWarningBrush"),
+            Margin = new Thickness(0, 4, 0, 0)
+        };
+
+        DeviceActionControl.Children.Add(warningText);
+        PerformActionButton.IsEnabled = false;
     }
 
     private void ControlBuzzerControl()
     {
         PerformActionButton.Visibility = Visibility.Visible;
-            
+
         var actionControl = new ControlBuzzerControl();
+        ViewModel.DeviceActionParameter = actionControl.GetBuzzerParameters();
+        actionControl.PropertyChanged += (_, _) =>
+        {
+            ViewModel.DeviceActionParameter = actionControl.GetBuzzerParameters();
+        };
 
         DeviceActionControl.Children.Add(actionControl);
     }

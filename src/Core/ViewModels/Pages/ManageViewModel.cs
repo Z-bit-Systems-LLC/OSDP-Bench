@@ -270,6 +270,7 @@ public partial class ManageViewModel : ObservableObject
     private void UpdateFields()
     {
         IdentityLookup = _deviceManagementService.IdentityLookup;
+        CapabilitiesLookup = _deviceManagementService.CapabilitiesLookup;
         ConnectedPortName = _deviceManagementService.PortName;
         ConnectedAddress = _deviceManagementService.Address;
         ConnectedBaudRate = _deviceManagementService.BaudRate;
@@ -384,6 +385,8 @@ public partial class ManageViewModel : ObservableObject
     [ObservableProperty] private uint _connectedBaudRate;
 
     [ObservableProperty] private IdentityLookup? _identityLookup;
+
+    [ObservableProperty] private CapabilitiesLookup? _capabilitiesLookup;
 
     [ObservableProperty] private StatusLevel _statusLevel = StatusLevel.Disconnected;
 

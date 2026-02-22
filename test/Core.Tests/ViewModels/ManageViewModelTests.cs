@@ -484,18 +484,40 @@ namespace OSDPBench.Core.Tests.ViewModels
             // Arrange
             const bool canSendResetCommand = true;
             const string testResetInstructions = "Test instructions";
-            
+
             SetupMockIdentityLookup(canSendResetCommand, testResetInstructions);
-            
+
             // Act
             _deviceManagementServiceMock.Raise(
                 d => d.DeviceLookupsChanged += null!,
                 EventArgs.Empty);
-                
+
             // Assert
             Assert.That(_viewModel.IdentityLookup, Is.Not.Null);
             Assert.That(_viewModel.IdentityLookup.CanSendResetCommand, Is.EqualTo(canSendResetCommand));
             Assert.That(_viewModel.IdentityLookup.ResetInstructions, Is.EqualTo(testResetInstructions));
+        }
+
+        [Test]
+        public void DeviceManagementServiceOnDeviceLookupsChanged_UpdatesCapabilitiesLookup()
+        {
+            // Arrange
+            var capabilities = new DeviceCapabilities(new[]
+            {
+                new DeviceCapability(CapabilityFunction.ReaderAudibleOutput, 2, 1)
+            });
+            var capabilitiesLookup = new CapabilitiesLookup(capabilities);
+            _deviceManagementServiceMock.Setup(x => x.CapabilitiesLookup).Returns(capabilitiesLookup);
+
+            // Act
+            _deviceManagementServiceMock.Raise(
+                d => d.DeviceLookupsChanged += null!,
+                EventArgs.Empty);
+
+            // Assert
+            Assert.That(_viewModel.CapabilitiesLookup, Is.Not.Null);
+            Assert.That(_viewModel.CapabilitiesLookup.AudioOutput, Is.True);
+            Assert.That(_viewModel.CapabilitiesLookup.AudioOutputComplianceLevel, Is.EqualTo(2));
         }
         
         #endregion
