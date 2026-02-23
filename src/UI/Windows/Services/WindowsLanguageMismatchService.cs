@@ -86,12 +86,21 @@ public class WindowsLanguageMismatchService : ILanguageMismatchService
             // Create the dialog content
             var message = _localizationService.GetString("Language_SystemMismatchMessage", systemLanguageName);
 
-            Window? dialogWindow = null;
-            var window = dialogWindow;
+            // Create the dialog window first so the callback can reference it
+            var dialogWindow = new Window
+            {
+                Title = _localizationService.GetString("Language_SystemMismatchTitle"),
+                SizeToContent = SizeToContent.WidthAndHeight,
+                ResizeMode = ResizeMode.NoResize,
+                WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                Owner = Application.Current.MainWindow,
+                ShowInTaskbar = false
+            };
+
             var viewModel = new LanguageMismatchDialogViewModel(message, (userChoice, dontAsk) =>
             {
                 tcs.TrySetResult((userChoice, dontAsk));
-                window?.Close();
+                dialogWindow.Close();
             });
 
             var dialogContent = new LanguageMismatchDialog
@@ -99,17 +108,10 @@ public class WindowsLanguageMismatchService : ILanguageMismatchService
                 DataContext = viewModel
             };
 
-            // Create and show the dialog window
-            dialogWindow = new Window
-            {
-                Title = _localizationService.GetString("Language_SystemMismatchTitle"),
-                Content = dialogContent,
-                SizeToContent = SizeToContent.WidthAndHeight,
-                ResizeMode = ResizeMode.NoResize,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner,
-                Owner = Application.Current.MainWindow,
-                ShowInTaskbar = false
-            };
+            dialogWindow.Content = dialogContent;
+
+            // Handle the case where the user closes the dialog via the X button
+            dialogWindow.Closed += (_, _) => tcs.TrySetResult((false, false));
 
             dialogWindow.ShowDialog();
         });

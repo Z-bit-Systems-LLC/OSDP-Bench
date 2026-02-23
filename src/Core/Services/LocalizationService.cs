@@ -17,23 +17,11 @@ public class LocalizationService : ILocalizationService
     public LocalizationService(IUserSettingsService? userSettingsService)
     {
         _userSettingsService = userSettingsService;
-        
-        // Initialize culture from settings or system default
-        if (_userSettingsService?.PreferredCulture != null)
-        {
-            try
-            {
-                _currentCulture = new CultureInfo(_userSettingsService.PreferredCulture);
-            }
-            catch
-            {
-                _currentCulture = CultureInfo.CurrentUICulture;
-            }
-        }
-        else
-        {
-            _currentCulture = CultureInfo.CurrentUICulture;
-        }
+
+        // Initialize to system default; the saved preference will be applied
+        // by ChangeCulture() during startup so that thread culture and resources
+        // are fully updated (not just the field)
+        _currentCulture = CultureInfo.CurrentUICulture;
         
         // Initialize supported cultures - start with English, more can be added later
         SupportedCultures = new List<CultureInfo>
