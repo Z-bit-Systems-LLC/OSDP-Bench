@@ -18,6 +18,8 @@ namespace OSDPBench.Windows.Views.Pages;
 public partial class ManagePage : INavigableView<ManageViewModel>
 {
     private static readonly FileTransferParameters FileTransferParameters = new();
+
+    private static readonly HttpClient VendorLookupClient = new();
         
     public ManagePage(ManageViewModel viewModel)
     {
@@ -234,11 +236,9 @@ public partial class ManagePage : INavigableView<ManageViewModel>
         string vendorCode = ((Run)((Hyperlink)sender).Inlines.FirstInline).Text;
         string url = $"https://macvendors.com/query/{vendorCode}";
 
-        using var client = new HttpClient();
-        
         try
         {
-            string result = await client.GetStringAsync(url);
+            string result = await VendorLookupClient.GetStringAsync(url);
 
             MessageBox.Show(result, Core.Resources.Resources.GetString("Dialog_VendorInformation_Title"));
         }
