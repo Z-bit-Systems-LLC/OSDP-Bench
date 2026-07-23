@@ -2,6 +2,7 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using OSDPBench.Core.Services;
 using OSDPBench.Core.ViewModels.Pages;
 using Wpf.Ui.Abstractions.Controls;
 using Wpf.Ui.Controls;
@@ -34,27 +35,41 @@ public partial class ConfigurationPage : INavigableView<ConfigurationViewModel>
     }
     
     [GeneratedRegex("[^0-9a-fA-F]")]
-    private static partial Regex HexCharacterRegex();
+    private static partial Regex NonHexCharacterRegex();
 
     private void SecurityKeyTextBox_OnPreviewTextInput(object sender, TextCompositionEventArgs e)
     {
-        e.Handled = HexCharacterRegex().IsMatch(e.Text);
+        e.Handled = NonHexCharacterRegex().IsMatch(e.Text);
     }
 
+    /// <summary>
+    /// Normalizes pasted text so a key copied in a delimited format (for example "00-11-22" or
+    /// "00:11:22") is accepted, with the delimiters removed. Stripping happens here rather than
+    /// after insertion because MaxLength is applied to the inserted text - a delimited 16-byte key
+    /// is 47 characters, so a later cleanup would have already lost the truncated tail.
+    /// </summary>
     private void SecurityKeyTextBox_OnPasting(object sender, DataObjectPastingEventArgs e)
     {
-        if (e.DataObject.GetDataPresent(typeof(string)))
-        {
-            var text = (string)e.DataObject.GetData(typeof(string))!;
-            if (HexCharacterRegex().IsMatch(text))
-            {
-                e.CancelCommand();
-            }
-        }
-        else
+        if (!e.DataObject.GetDataPresent(typeof(string)))
         {
             e.CancelCommand();
+            return;
         }
+
+        var original = (string)e.DataObject.GetData(typeof(string))!;
+        var hexOnly = HexConverter.NormalizeHexInput(original);
+        if (hexOnly.Length == 0)
+        {
+            e.CancelCommand();
+            return;
+        }
+
+        // Nothing was removed, so let the text box handle the paste unchanged
+        if (hexOnly == original) return;
+
+        var dataObject = new DataObject();
+        dataObject.SetData(DataFormats.UnicodeText, hexOnly);
+        e.DataObject = dataObject;
     }
 
     private void OnConnectionGridSizeChanged(object sender, SizeChangedEventArgs e)

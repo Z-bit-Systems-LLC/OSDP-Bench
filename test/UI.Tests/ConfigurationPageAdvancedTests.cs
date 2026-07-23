@@ -1,7 +1,9 @@
 using System.Windows;
 using System.Windows.Automation;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Threading;
 using NUnit.Framework;
 using OSDPBench.Core.Models;
 using OSDPBench.Core.ViewModels.Pages;
@@ -532,6 +534,149 @@ public class ConfigurationPageAdvancedTests : UiTestBase
 
         Assert.That(canExecute, Is.True,
             "Start passive monitoring command should be enabled when security key is valid.");
+    }
+
+    [Test]
+    public void SecurityKeyTextBox_PastingHyphenatedKey_StripsHyphens()
+    {
+        SwitchToManualModeWithCustomKey();
+
+        var pasted = PasteInto("SecurityKeyTextBox", "00-11-22-33-44-55-66-77-88-99-AA-BB-CC-DD-EE-FF");
+
+        var keyValue = InvokeOnUI(() => TestApp.GetService<ConfigurationViewModel>().SecurityKey);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(pasted, Is.EqualTo("00112233445566778899AABBCCDDEEFF"),
+                "Hyphens should be stripped from the pasted key.");
+            Assert.That(keyValue, Is.EqualTo("00112233445566778899AABBCCDDEEFF"),
+                "The stripped key should reach the view model.");
+        });
+    }
+
+    [Test]
+    public void SecurityKeyTextBox_PastingHyphenatedKey_IsValidWithoutTruncation()
+    {
+        SwitchToManualModeWithCustomKey();
+
+        // A hyphenated 16-byte key is 47 characters, well past the MaxLength of 32. Stripping has to
+        // happen during the paste, or the tail would be truncated away before it could be cleaned up.
+        PasteInto("SecurityKeyTextBox", "00-11-22-33-44-55-66-77-88-99-AA-BB-CC-DD-EE-FF");
+
+        var isValid = InvokeOnUI(() => TestApp.GetService<ConfigurationViewModel>().IsSecurityKeyValid);
+
+        Assert.That(isValid, Is.True,
+            "A pasted hyphenated key should produce a complete, valid 32 character key.");
+    }
+
+    [Test]
+    public void SecurityKeyTextBox_PastingUndelimitedKey_IsUnchanged()
+    {
+        SwitchToManualModeWithCustomKey();
+
+        var pasted = PasteInto("SecurityKeyTextBox", "00112233445566778899AABBCCDDEEFF");
+
+        Assert.That(pasted, Is.EqualTo("00112233445566778899AABBCCDDEEFF"),
+            "A key with no delimiters should paste unchanged.");
+    }
+
+    [Test]
+    public void SecurityKeyTextBox_PastingTextWithNoHexCharacters_IsRejected()
+    {
+        SwitchToManualModeWithCustomKey();
+
+        var pasted = PasteInto("SecurityKeyTextBox", "xyz");
+
+        Assert.That(pasted, Is.Empty,
+            "Text containing no hex characters should not be pasted at all.");
+    }
+
+    [Test]
+    public void PassiveSecurityKeyTextBox_PastingHyphenatedKey_StripsHyphens()
+    {
+        InvokeOnUI(() =>
+        {
+            var vm = TestApp.GetService<ConfigurationViewModel>();
+            vm.IsConnectToPDSelected = false;
+            vm.UseDefaultKey = false;
+        });
+        FlushBindings();
+
+        var pasted = PasteInto("PassiveSecurityKeyTextBox", "00-11-22-33-44-55-66-77-88-99-AA-BB-CC-DD-EE-FF");
+
+        Assert.That(pasted, Is.EqualTo("00112233445566778899AABBCCDDEEFF"),
+            "Hyphens should be stripped in passive monitoring mode as well.");
+    }
+
+    /// <summary>
+    /// Puts the page into manual connection mode with secure channel on and the default key off,
+    /// which is the state that enables the custom security key text box.
+    /// </summary>
+    private void SwitchToManualModeWithCustomKey()
+    {
+        InvokeOnUI(() =>
+        {
+            var vm = TestApp.GetService<ConfigurationViewModel>();
+            vm.IsConnectToPDSelected = true;
+            vm.IsDiscoverModeSelected = false;
+            vm.UseSecureChannel = true;
+            vm.UseDefaultKey = false;
+            vm.SecurityKey = string.Empty;
+        });
+        FlushBindings();
+    }
+
+    /// <summary>
+    /// Pastes text into the named text box through the real paste pipeline, so the
+    /// DataObject.Pasting handler on the page runs, and returns the resulting text box content.
+    /// </summary>
+    private string PasteInto(string automationId, string clipboardText)
+    {
+        return InvokeOnUI(() =>
+        {
+            var textBox = FindWpfElement<Wpf.Ui.Controls.TextBox>(automationId);
+            Assert.That(textBox, Is.Not.Null, $"{automationId} should exist.");
+            Assert.That(textBox!.IsEnabled, Is.True, $"{automationId} should be enabled to accept a paste.");
+
+            textBox.Clear();
+            SetClipboardText(clipboardText);
+
+            // Target the text box directly rather than relying on keyboard focus, which is not
+            // reliably available to a test window
+            ApplicationCommands.Paste.Execute(null, textBox);
+
+            return textBox.Text;
+        });
+    }
+
+    /// <summary>
+    /// Sets the clipboard, retrying briefly because the clipboard is a shared OS resource that
+    /// another process can hold open.
+    /// </summary>
+    private static void SetClipboardText(string text)
+    {
+        for (var attempt = 0; ; attempt++)
+        {
+            try
+            {
+                Clipboard.SetDataObject(text, true);
+                return;
+            }
+            catch (Exception) when (attempt < 9)
+            {
+                Thread.Sleep(50);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Waits for pending data binding work to be applied. Bindings are processed at DataBind
+    /// priority, which is lower than the Normal priority used by <see cref="UiTestBase.InvokeOnUI(Action)"/>,
+    /// so a plain invoke would otherwise observe stale trigger state such as IsEnabled.
+    /// </summary>
+    private void FlushBindings()
+    {
+        TestApp.Dispatcher.Invoke(() => { }, DispatcherPriority.Background);
     }
 
     private static bool IsMatchingColor(Brush? actual, Brush? expected)

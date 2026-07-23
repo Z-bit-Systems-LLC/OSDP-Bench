@@ -240,10 +240,6 @@
     <value>使用默认安全密钥</value>
     <comment>Checkbox text to enable decryption with default OSDP key</comment>
   </data>
-  <data name="Connect_CustomKey" xml:space="preserve">
-    <value>自定义密钥</value>
-    <comment>Label for custom security key input in passive monitoring mode</comment>
-  </data>
   <data name="Connect_Connect" xml:space="preserve">
     <value>连接</value>
     <comment>Button text to connect to device</comment>

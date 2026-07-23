@@ -240,10 +240,6 @@
     <value>Verwenden Sie den Standard-Sicherheitsschlüssel</value>
     <comment>Checkbox text to enable decryption with default OSDP key</comment>
   </data>
-  <data name="Connect_CustomKey" xml:space="preserve">
-    <value>Benutzerdefinierter Schlüssel</value>
-    <comment>Label for custom security key input in passive monitoring mode</comment>
-  </data>
   <data name="Connect_Connect" xml:space="preserve">
     <value>Verbinden</value>
     <comment>Button text to connect to device</comment>

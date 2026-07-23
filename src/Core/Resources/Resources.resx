@@ -247,10 +247,6 @@
     <value>Use Default Secure Key</value>
     <comment>Checkbox text to enable decryption with default OSDP key</comment>
   </data>
-  <data name="Connect_CustomKey" xml:space="preserve">
-    <value>Custom Key</value>
-    <comment>Label for custom security key input in passive monitoring mode</comment>
-  </data>
   <data name="Connect_Connect" xml:space="preserve">
     <value>Connect</value>
     <comment>Button text to connect to device</comment>

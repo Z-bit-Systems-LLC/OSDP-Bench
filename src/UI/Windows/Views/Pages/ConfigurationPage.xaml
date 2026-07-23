@@ -301,7 +301,7 @@
                                            CharacterCasing="Upper"
                                            PreviewTextInput="SecurityKeyTextBox_OnPreviewTextInput"
                                            DataObject.Pasting="SecurityKeyTextBox_OnPasting"
-                                           MaxWidth="600"
+                                           Width="360"
                                            HorizontalAlignment="Left">
                                     <ui:TextBox.Style>
                                         <Style TargetType="ui:TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
@@ -366,7 +366,7 @@
                                       Margin="0,0,0,8"/>
 
                             <StackPanel Orientation="Vertical">
-                                <Label Content="{localization:Localize Connect_CustomKey}"
+                                <Label Content="{localization:Localize Connect_SecurityKey}"
                                        Style="{StaticResource Label.Standard}"
                                        Target="{Binding ElementName=PassiveSecurityKeyTextBox}" />
                                 <ui:TextBox Name="PassiveSecurityKeyTextBox"
@@ -377,7 +377,7 @@
                                            CharacterCasing="Upper"
                                            PreviewTextInput="SecurityKeyTextBox_OnPreviewTextInput"
                                            DataObject.Pasting="SecurityKeyTextBox_OnPasting"
-                                           MaxWidth="600"
+                                           Width="360"
                                            HorizontalAlignment="Left">
                                     <ui:TextBox.Style>
                                         <Style TargetType="ui:TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
