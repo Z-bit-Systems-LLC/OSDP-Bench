@@ -15,9 +15,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
-    <PackageReference Include="OSDP.Net" Version="5.0.38" />
-    <PackageReference Update="Microsoft.SourceLink.GitHub" Version="10.0.103" />
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
+    <PackageReference Include="OSDP.Net" Version="5.0.52" />
+    <PackageReference Update="Microsoft.SourceLink.GitHub" Version="10.0.301" />
   </ItemGroup>
 
   <ItemGroup>

@@ -471,17 +471,17 @@ namespace OSDPBench.Core.Tests.Services
             connectionMock.Setup(x => x.BaudRate).Returns(9600);
             connectionMock.Setup(x => x.Open());
 
-            ConnectionStatus? receivedStatus = null;
+            var statusSource = new TaskCompletionSource<ConnectionStatus>();
             _deviceManagementService.ConnectionStatusChange += (_, status) =>
             {
-                receivedStatus = status;
+                if (status == ConnectionStatus.PassiveMonitoring) statusSource.TrySetResult(status);
             };
 
             // Act
             await _deviceManagementService.StartPassiveMonitoring(connectionMock.Object);
 
             // Assert
-            Assert.That(receivedStatus, Is.EqualTo(ConnectionStatus.PassiveMonitoring));
+            Assert.That(await WaitForStatus(statusSource), Is.EqualTo(ConnectionStatus.PassiveMonitoring));
 
             // Cleanup
             await _deviceManagementService.StopPassiveMonitoring();
@@ -497,17 +497,28 @@ namespace OSDPBench.Core.Tests.Services
 
             await _deviceManagementService.StartPassiveMonitoring(connectionMock.Object);
 
-            ConnectionStatus? receivedStatus = null;
+            var statusSource = new TaskCompletionSource<ConnectionStatus>();
             _deviceManagementService.ConnectionStatusChange += (_, status) =>
             {
-                receivedStatus = status;
+                if (status == ConnectionStatus.Disconnected) statusSource.TrySetResult(status);
             };
 
             // Act
             await _deviceManagementService.StopPassiveMonitoring();
 
             // Assert
-            Assert.That(receivedStatus, Is.EqualTo(ConnectionStatus.Disconnected));
+            Assert.That(await WaitForStatus(statusSource), Is.EqualTo(ConnectionStatus.Disconnected));
+        }
+
+        /// <summary>
+        /// Waits for a connection status event to be delivered. Status changes are posted to the
+        /// synchronization context captured by the service, so delivery is asynchronous and cannot
+        /// be observed immediately after the awaited call returns.
+        /// </summary>
+        private static async Task<ConnectionStatus?> WaitForStatus(TaskCompletionSource<ConnectionStatus> source)
+        {
+            var completed = await Task.WhenAny(source.Task, Task.Delay(TimeSpan.FromSeconds(5)));
+            return completed == source.Task ? await source.Task : null;
         }
 
         [Test]
