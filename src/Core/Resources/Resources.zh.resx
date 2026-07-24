@@ -370,11 +370,11 @@
     <comment>Group header for buzzer timing settings (on/off time, count)</comment>
   </data>
   <data name="Manage_BuzzerOnTimeRequired" xml:space="preserve">
-    <value>ON time must be greater than zero when tone is active.</value>
+    <value>当音调激活时，开通时间必须大于零。</value>
     <comment>Validation message when buzzer ON time is zero with a non-Off tone code</comment>
   </data>
   <data name="Manage_LedTimingInvalid" xml:space="preserve">
-    <value>ON and OFF time cannot both be zero.</value>
+    <value>开时间和关闭时间不可能同时为零。</value>
     <comment>Validation message when both LED ON and OFF time values are zero</comment>
   </data>
   <data name="Manage_Send" xml:space="preserve">
@@ -745,9 +745,17 @@
     <value>出口</value>
     <comment>Export button text</comment>
   </data>
+  <data name="Export_SelectDestination" xml:space="preserve">
+    <value>选择导出的追踪文件的目的地</value>
+    <comment>Title of the destination selection dialog for the trace export</comment>
+  </data>
+  <data name="Export_TraceFilesToolTip" xml:space="preserve">
+    <value>将追踪导出为OSDP捕获（.osdpcap）和解析文本（.txt）文件</value>
+    <comment>Tooltip for the export button</comment>
+  </data>
   <data name="Export_Success" xml:space="preserve">
     <value>追踪成功导出</value>
-    <comment>Success message after export</comment>
+    <comment>Success message after export, followed by the list of exported file names</comment>
   </data>
   <data name="Export_NoData" xml:space="preserve">
     <value>没有可导出的痕迹数据</value>
