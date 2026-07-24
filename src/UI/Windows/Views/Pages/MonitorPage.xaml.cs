@@ -4,7 +4,6 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Media;
 using OSDPBench.Core.ViewModels.Pages;
 using Wpf.Ui.Abstractions.Controls;
-using Button = Wpf.Ui.Controls.Button;
 using Wpf.Ui.Controls;
 
 namespace OSDPBench.Windows.Views.Pages;
@@ -20,15 +19,6 @@ public partial class MonitorPage : INavigableView<MonitorViewModel>
     }
 
     public MonitorViewModel ViewModel { get; }
-
-    private void ExportButton_Click(object sender, RoutedEventArgs e)
-    {
-        if (sender is Button button && button.ContextMenu != null)
-        {
-            button.ContextMenu.PlacementTarget = button;
-            button.ContextMenu.IsOpen = true;
-        }
-    }
 
     private void DataGrid_PreviewMouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
     {

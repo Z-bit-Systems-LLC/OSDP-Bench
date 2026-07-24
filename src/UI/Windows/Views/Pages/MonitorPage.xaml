@@ -114,22 +114,15 @@
 									           Text="{Binding ViewModel.BufferUsagePercentage, StringFormat={}{0:F0}%, Mode=OneWay}"/>
 								</WrapPanel>
 
-								<!-- Export Button with Dropdown -->
+								<!-- Export Button - writes both .osdpcap and .txt files -->
 								<ui:Button Grid.Column="1"
 								           x:Name="ExportButton"
 								           Content="{localization:Localize Monitor_Export}"
-								           Click="ExportButton_Click">
+								           ToolTip="{localization:Localize Export_TraceFilesToolTip}"
+								           Command="{Binding ViewModel.ExportTraceCommand}">
 									<ui:Button.Icon>
 										<ui:SymbolIcon Symbol="ArrowDownload24"/>
 									</ui:Button.Icon>
-									<ui:Button.ContextMenu>
-										<ContextMenu>
-											<MenuItem Header="{localization:Localize Export_OsdpCapture}"
-											          Command="{Binding ViewModel.ExportOsdpCaptureCommand}"/>
-											<MenuItem Header="{localization:Localize Export_ParsedText}"
-											          Command="{Binding ViewModel.ExportParsedTextCommand}"/>
-										</ContextMenu>
-									</ui:Button.ContextMenu>
 								</ui:Button>
 							</Grid>
 						</StackPanel>

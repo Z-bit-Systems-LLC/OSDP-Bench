@@ -766,21 +766,17 @@
     <value>Export</value>
     <comment>Export button text</comment>
   </data>
-  <data name="Export_SelectFormat" xml:space="preserve">
-    <value>Select Export Format</value>
-    <comment>Dialog title for export format selection</comment>
+  <data name="Export_SelectDestination" xml:space="preserve">
+    <value>Select the destination for the exported trace files</value>
+    <comment>Title of the destination selection dialog for the trace export</comment>
   </data>
-  <data name="Export_OsdpCapture" xml:space="preserve">
-    <value>OSDP Capture (.osdpcap)</value>
-    <comment>Format option for OSDP capture file</comment>
-  </data>
-  <data name="Export_ParsedText" xml:space="preserve">
-    <value>Parsed Text (.txt)</value>
-    <comment>Format option for parsed text file</comment>
+  <data name="Export_TraceFilesToolTip" xml:space="preserve">
+    <value>Export the trace as both an OSDP capture (.osdpcap) and a parsed text (.txt) file</value>
+    <comment>Tooltip for the export button</comment>
   </data>
   <data name="Export_Success" xml:space="preserve">
     <value>Trace exported successfully</value>
-    <comment>Success message after export</comment>
+    <comment>Success message after export, followed by the list of exported file names</comment>
   </data>
   <data name="Export_NoData" xml:space="preserve">
     <value>No trace data to export</value>

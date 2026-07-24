@@ -745,18 +745,6 @@
     <value>出口</value>
     <comment>Export button text</comment>
   </data>
-  <data name="Export_SelectFormat" xml:space="preserve">
-    <value>选择导出格式</value>
-    <comment>Dialog title for export format selection</comment>
-  </data>
-  <data name="Export_OsdpCapture" xml:space="preserve">
-    <value>OSDP 捕获（.osdpcap）</value>
-    <comment>Format option for OSDP capture file</comment>
-  </data>
-  <data name="Export_ParsedText" xml:space="preserve">
-    <value>解析文本（.txt）</value>
-    <comment>Format option for parsed text file</comment>
-  </data>
   <data name="Export_Success" xml:space="preserve">
     <value>追踪成功导出</value>
     <comment>Success message after export</comment>

@@ -117,8 +117,7 @@ public partial class MonitorViewModel : ObservableObject
         // Notify buffer and export changes
         OnPropertyChanged(nameof(BufferUsagePercentage));
         OnPropertyChanged(nameof(TotalPacketsCaptured));
-        ExportOsdpCaptureCommand.NotifyCanExecuteChanged();
-        ExportParsedTextCommand.NotifyCanExecuteChanged();
+        ExportTraceCommand.NotifyCanExecuteChanged();
     }
 
     private void OnDeviceManagementServiceOnTraceEntryReceived(object? _, TraceEntry traceEntry)
@@ -322,8 +321,7 @@ public partial class MonitorViewModel : ObservableObject
         // Notify UI of changes
         if (_allTraceEntries.Count == 1)
         {
-            ExportOsdpCaptureCommand.NotifyCanExecuteChanged();
-            ExportParsedTextCommand.NotifyCanExecuteChanged();
+            ExportTraceCommand.NotifyCanExecuteChanged();
         }
         OnPropertyChanged(nameof(BufferUsagePercentage));
         OnPropertyChanged(nameof(TotalPacketsCaptured));
@@ -350,26 +348,10 @@ public partial class MonitorViewModel : ObservableObject
     public bool CanExport => _allTraceEntries.Count > 0;
 
     /// <summary>
-    /// Exports the current trace data to OSDP Capture format (.osdpcap).
+    /// Exports the current trace data to every supported format, using a common base file name.
     /// </summary>
     [RelayCommand(CanExecute = nameof(CanExport))]
-    private async Task ExportOsdpCaptureAsync()
-    {
-        var exporter = _exporters.First(e => e.FileExtension == ".osdpcap");
-        await ExportWithExporterAsync(exporter);
-    }
-
-    /// <summary>
-    /// Exports the current trace data to parsed text format (.txt).
-    /// </summary>
-    [RelayCommand(CanExecute = nameof(CanExport))]
-    private async Task ExportParsedTextAsync()
-    {
-        var exporter = _exporters.First(e => e.FileExtension == ".txt");
-        await ExportWithExporterAsync(exporter);
-    }
-
-    private async Task ExportWithExporterAsync(IPacketExporter exporter)
+    private async Task ExportTraceAsync()
     {
         if (_allTraceEntries.Count == 0)
         {
@@ -380,32 +362,35 @@ public partial class MonitorViewModel : ObservableObject
             return;
         }
 
-        // Show save file dialog with single format
-        var defaultFileName = $"osdp-trace-{DateTime.Now:yyyyMMdd-HHmmss}";
-        var filters = new List<(string DisplayName, string FileExtension)>
-        {
-            (exporter.DisplayName, exporter.FileExtension)
-        };
-
-        var filePath = await _dialogService.ShowSaveFileDialogAsync(
-            Resources.Resources.GetString("Export_SelectFormat"),
-            defaultFileName,
-            filters);
-
-        if (string.IsNullOrEmpty(filePath))
-        {
-            return; // User cancelled
-        }
-
         try
         {
-            // Export all captured trace data (not just displayed entries)
-            var data = await exporter.ExportAsync(_allTraceEntries);
-            await File.WriteAllBytesAsync(filePath, data);
+            // One file per supported format, sharing a common base name
+            var baseFileName = $"osdp-trace-{DateTime.Now:yyyyMMdd-HHmmss}";
+            var files = new List<(string FileName, byte[] Data)>();
+
+            foreach (var exporter in _exporters)
+            {
+                // Export all captured trace data (not just displayed entries)
+                var data = await exporter.ExportAsync(_allTraceEntries);
+                files.Add((baseFileName + exporter.FileExtension, data));
+            }
+
+            // The platform decides where the files are persisted
+            var saved = await _dialogService.SaveFilesWithDataAsync(
+                Resources.Resources.GetString("Export_SelectDestination"), files);
+
+            if (!saved)
+            {
+                return; // User cancelled
+            }
+
+            var message = Resources.Resources.GetString("Export_Success") +
+                          Environment.NewLine + Environment.NewLine +
+                          string.Join(Environment.NewLine, files.Select(file => file.FileName));
 
             await _dialogService.ShowMessageDialog(
                 Resources.Resources.GetString("Monitor_Export"),
-                Resources.Resources.GetString("Export_Success"),
+                message,
                 MessageIcon.Information);
         }
         catch (Exception ex)
@@ -417,7 +402,6 @@ public partial class MonitorViewModel : ObservableObject
     partial void OnTraceEntriesViewChanged(ObservableCollection<PacketTraceEntry> value)
     {
         _ = value; // Required by source generator signature
-        ExportOsdpCaptureCommand.NotifyCanExecuteChanged();
-        ExportParsedTextCommand.NotifyCanExecuteChanged();
+        ExportTraceCommand.NotifyCanExecuteChanged();
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.IO;
+using System.Windows;
 using Microsoft.Win32;
 using OSDPBench.Core.Services;
 
@@ -45,21 +46,32 @@ internal class WindowsDialogService : IDialogService
     }
 
     /// <inheritdoc/>
-    public Task<string?> ShowSaveFileDialogAsync(string title, string defaultFileName,
-        IEnumerable<(string DisplayName, string Extension)> filters)
+    public async Task<bool> SaveFilesWithDataAsync(string title, IEnumerable<(string FileName, byte[] Data)> files)
     {
-        var filterList = filters.ToList();
-        var filterString = string.Join("|", filterList.Select(f => $"{f.DisplayName}|*{f.Extension}"));
+        var fileList = files.ToList();
+        if (fileList.Count == 0)
+        {
+            return false;
+        }
 
-        var dialog = new SaveFileDialog
+        // On Windows the user picks a destination folder and every file is written into it
+        var dialog = new OpenFolderDialog
         {
             Title = title,
-            FileName = defaultFileName,
-            Filter = filterString,
-            DefaultExt = filterList.FirstOrDefault().Extension ?? ".txt"
+            Multiselect = false
         };
 
-        return Task.FromResult(dialog.ShowDialog() == true ? dialog.FileName : null);
+        if (dialog.ShowDialog() != true)
+        {
+            return false;
+        }
+
+        foreach (var (fileName, data) in fileList)
+        {
+            await File.WriteAllBytesAsync(Path.Combine(dialog.FolderName, fileName), data);
+        }
+
+        return true;
     }
 
     private static string FormatExceptionMessage(Exception exception)

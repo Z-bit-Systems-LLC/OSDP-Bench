@@ -1,4 +1,7 @@
 using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Moq;
 using NUnit.Framework;
@@ -61,17 +64,10 @@ public class MonitorViewModelTests
     #region Export Command Tests
 
     [Test]
-    public void ExportOsdpCaptureCommand_WhenNoData_CannotExecute()
+    public void ExportTraceCommand_WhenNoData_CannotExecute()
     {
         // Assert - Command should not be executable when no data
-        Assert.That(_viewModel.ExportOsdpCaptureCommand.CanExecute(null), Is.False);
-    }
-
-    [Test]
-    public void ExportParsedTextCommand_WhenNoData_CannotExecute()
-    {
-        // Assert - Command should not be executable when no data
-        Assert.That(_viewModel.ExportParsedTextCommand.CanExecute(null), Is.False);
+        Assert.That(_viewModel.ExportTraceCommand.CanExecute(null), Is.False);
     }
 
     [Test]
@@ -92,54 +88,66 @@ public class MonitorViewModelTests
     }
 
     [Test]
-    public async Task ExportOsdpCapture_WithData_ShowsSaveDialog()
+    public async Task ExportTrace_WithData_PromptsForDestination()
     {
         // Arrange
         RaiseTraceEntry(_deviceManagementServiceMock, TraceDirection.Output, ValidPollPacket);
-        _dialogServiceMock.Setup(x => x.ShowSaveFileDialogAsync(
-                It.IsAny<string>(), It.IsAny<string>(), It.IsAny<System.Collections.Generic.List<(string, string)>>()))
-            .ReturnsAsync(string.Empty); // User cancels
+        _dialogServiceMock.Setup(x => x.SaveFilesWithDataAsync(
+                It.IsAny<string>(), It.IsAny<IEnumerable<(string, byte[])>>()))
+            .ReturnsAsync(false); // User cancels
 
         // Act
-        await _viewModel.ExportOsdpCaptureCommand.ExecuteAsync(null);
+        await _viewModel.ExportTraceCommand.ExecuteAsync(null);
 
         // Assert
-        _dialogServiceMock.Verify(x => x.ShowSaveFileDialogAsync(
-            It.IsAny<string>(), It.IsAny<string>(), It.IsAny<System.Collections.Generic.List<(string, string)>>()), Times.Once);
+        _dialogServiceMock.Verify(x => x.SaveFilesWithDataAsync(
+            It.IsAny<string>(), It.IsAny<IEnumerable<(string, byte[])>>()), Times.Once);
     }
 
     [Test]
-    public async Task ExportOsdpCapture_UserCancels_DoesNotWriteFile()
+    public async Task ExportTrace_UserCancels_DoesNotReportSuccess()
     {
         // Arrange
         RaiseTraceEntry(_deviceManagementServiceMock, TraceDirection.Output, ValidPollPacket);
-        _dialogServiceMock.Setup(x => x.ShowSaveFileDialogAsync(
-                It.IsAny<string>(), It.IsAny<string>(), It.IsAny<System.Collections.Generic.List<(string, string)>>()))
-            .ReturnsAsync(string.Empty); // User cancels
+        _dialogServiceMock.Setup(x => x.SaveFilesWithDataAsync(
+                It.IsAny<string>(), It.IsAny<IEnumerable<(string, byte[])>>()))
+            .ReturnsAsync(false); // User cancels
 
         // Act
-        await _viewModel.ExportOsdpCaptureCommand.ExecuteAsync(null);
+        await _viewModel.ExportTraceCommand.ExecuteAsync(null);
 
-        // Assert - No success or error dialog shown means file was not written
+        // Assert
         _dialogServiceMock.Verify(x => x.ShowMessageDialog(
             It.IsAny<string>(), It.IsAny<string>(), MessageIcon.Information), Times.Never);
     }
 
     [Test]
-    public async Task ExportParsedText_WithData_ShowsSaveDialog()
+    public async Task ExportTrace_WithData_SavesBothCaptureAndParsedFiles()
     {
         // Arrange
+        var savedFiles = new List<(string FileName, byte[] Data)>();
+
         RaiseTraceEntry(_deviceManagementServiceMock, TraceDirection.Output, ValidPollPacket);
-        _dialogServiceMock.Setup(x => x.ShowSaveFileDialogAsync(
-                It.IsAny<string>(), It.IsAny<string>(), It.IsAny<System.Collections.Generic.List<(string, string)>>()))
-            .ReturnsAsync(string.Empty); // User cancels
+        _dialogServiceMock.Setup(x => x.SaveFilesWithDataAsync(
+                It.IsAny<string>(), It.IsAny<IEnumerable<(string, byte[])>>()))
+            .Callback<string, IEnumerable<(string FileName, byte[] Data)>>((_, files) => savedFiles.AddRange(files))
+            .ReturnsAsync(true);
 
         // Act
-        await _viewModel.ExportParsedTextCommand.ExecuteAsync(null);
+        await _viewModel.ExportTraceCommand.ExecuteAsync(null);
 
-        // Assert
-        _dialogServiceMock.Verify(x => x.ShowSaveFileDialogAsync(
-            It.IsAny<string>(), It.IsAny<string>(), It.IsAny<System.Collections.Generic.List<(string, string)>>()), Times.Once);
+        // Assert - Both formats handed to the platform in a single save, sharing one base name
+        Assert.Multiple(() =>
+        {
+            Assert.That(savedFiles, Has.Count.EqualTo(2));
+            Assert.That(savedFiles.Select(file => Path.GetExtension(file.FileName)),
+                Is.EquivalentTo(new[] { ".osdpcap", ".txt" }));
+            Assert.That(savedFiles.Select(file => Path.GetFileNameWithoutExtension(file.FileName)).Distinct().Count(),
+                Is.EqualTo(1), "Both files should share the same base name.");
+            Assert.That(savedFiles.Select(file => file.Data), Is.All.Not.Empty);
+        });
+        _dialogServiceMock.Verify(x => x.ShowMessageDialog(
+            It.IsAny<string>(), It.IsAny<string>(), MessageIcon.Information), Times.Once);
     }
 
     #endregion

@@ -31,14 +31,14 @@ public interface IDialogService
     Task ShowExceptionDialog(string title, Exception exception);
 
     /// <summary>
-    /// Shows a save file dialog to allow the user to select a file path for saving.
+    /// Saves one or more files using the platform's preferred mechanism, prompting the user for a
+    /// destination once. The platform owns where and how the data is persisted, so callers do not
+    /// need a writable file system path.
     /// </summary>
-    /// <param name="title">The title of the save file dialog.</param>
-    /// <param name="defaultFileName">The default file name to suggest.</param>
-    /// <param name="filters">The file type filters to display (DisplayName and Extension pairs).</param>
-    /// <returns>The selected file path, or null if the user cancelled.</returns>
-    Task<string?> ShowSaveFileDialogAsync(string title, string defaultFileName,
-        IEnumerable<(string DisplayName, string Extension)> filters);
+    /// <param name="title">The title of the destination selection dialog.</param>
+    /// <param name="files">The files to save, as file name and content pairs.</param>
+    /// <returns>True if the files were saved, false if the user cancelled.</returns>
+    Task<bool> SaveFilesWithDataAsync(string title, IEnumerable<(string FileName, byte[] Data)> files);
 }
 
 /// <summary>
