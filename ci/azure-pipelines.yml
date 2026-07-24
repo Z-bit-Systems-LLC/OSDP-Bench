@@ -53,19 +53,3 @@ stages:
           - checkout: self
             submodules: true
           - template: ui-tests.yml
-
-  - stage: Package
-    displayName: 'Package and Publish'
-    dependsOn:
-      - Build
-      - Test
-    condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/v'))
-    jobs:
-      - job: package
-        displayName: 'Package and Publish'
-        steps:
-          - checkout: self
-            submodules: true
-            persistCredentials: true
-            clean: true
-          - template: package.yml

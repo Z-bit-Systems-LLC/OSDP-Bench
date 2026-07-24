@@ -101,7 +101,6 @@ $sarif.runs[0].results | Where-Object { $_.level -eq 'warning' } | ForEach-Objec
   - Run build and tests
   - Run code inspection
   - Create Windows binaries (x64 and ARM64)
-  - Create NuGet package
 - Requirements:
   - Must be on main branch
   - No uncommitted changes

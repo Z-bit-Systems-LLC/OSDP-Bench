@@ -107,6 +107,5 @@ Write-Host "The CI pipeline will automatically:" -ForegroundColor Green
 Write-Host "  1. Run build and tests" -ForegroundColor Green
 Write-Host "  2. Run code inspection" -ForegroundColor Green
 Write-Host "  3. Create Windows binaries (x64 and ARM64)" -ForegroundColor Green
-Write-Host "  4. Create NuGet package" -ForegroundColor Green
 Write-Host ""
 Write-Host "You can monitor the release progress in Azure DevOps." -ForegroundColor Green

@@ -10,7 +10,6 @@
     <Description>Core functionality for OSDP Bench.</Description>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <LangVersion>default</LangVersion>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Platforms>AnyCPU;ARM64;x64</Platforms>
   </PropertyGroup>
 
