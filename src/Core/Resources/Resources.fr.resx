@@ -370,11 +370,11 @@
     <comment>Group header for buzzer timing settings (on/off time, count)</comment>
   </data>
   <data name="Manage_BuzzerOnTimeRequired" xml:space="preserve">
-    <value>ON time must be greater than zero when tone is active.</value>
+    <value>Le temps ON doit être supérieur à zéro lorsque le signal est actif.</value>
     <comment>Validation message when buzzer ON time is zero with a non-Off tone code</comment>
   </data>
   <data name="Manage_LedTimingInvalid" xml:space="preserve">
-    <value>ON and OFF time cannot both be zero.</value>
+    <value>Le temps ALLUMÉ et ÉTEINT ne peut pas être à zéro.</value>
     <comment>Validation message when both LED ON and OFF time values are zero</comment>
   </data>
   <data name="Manage_Send" xml:space="preserve">
@@ -745,9 +745,17 @@
     <value>Exportation</value>
     <comment>Export button text</comment>
   </data>
+  <data name="Export_SelectDestination" xml:space="preserve">
+    <value>Sélectionnez la destination des fichiers de trace exportés</value>
+    <comment>Title of the destination selection dialog for the trace export</comment>
+  </data>
+  <data name="Export_TraceFilesToolTip" xml:space="preserve">
+    <value>Exportez la trace à la fois comme une capture OSDP (.osdpcap) et un fichier texte analysé (.txt)</value>
+    <comment>Tooltip for the export button</comment>
+  </data>
   <data name="Export_Success" xml:space="preserve">
     <value>Trace exportée avec succès</value>
-    <comment>Success message after export</comment>
+    <comment>Success message after export, followed by the list of exported file names</comment>
   </data>
   <data name="Export_NoData" xml:space="preserve">
     <value>Aucune trace à exporter</value>
