@@ -17,4 +17,19 @@ public class AppSettings : UserSettings
     /// Gets or sets whether to skip language mismatch checking
     /// </summary>
     public bool SkipLanguageMismatchCheck { get; set; }
+
+    /// <summary>
+    /// Gets or sets the last selected serial port name, restored on the next launch when still present.
+    /// </summary>
+    public string? LastSerialPortName { get; set; }
+
+    /// <summary>
+    /// Gets or sets the last selected baud rate.
+    /// </summary>
+    public int LastBaudRate { get; set; } = 9600;
+
+    /// <summary>
+    /// Gets or sets the last selected device address.
+    /// </summary>
+    public byte LastAddress { get; set; }
 }

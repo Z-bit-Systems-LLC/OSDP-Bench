@@ -44,6 +44,24 @@ public class AppUserSettingsService : IUserSettingsService
         await _inner.SaveAsync();
     }
 
+    /// <inheritdoc />
+    public string? LastSerialPortName => _inner.Settings.LastSerialPortName;
+
+    /// <inheritdoc />
+    public int LastBaudRate => _inner.Settings.LastBaudRate;
+
+    /// <inheritdoc />
+    public byte LastAddress => _inner.Settings.LastAddress;
+
+    /// <inheritdoc />
+    public async Task UpdateConnectionSettingsAsync(string? serialPortName, int baudRate, byte address)
+    {
+        _inner.Settings.LastSerialPortName = serialPortName;
+        _inner.Settings.LastBaudRate = baudRate;
+        _inner.Settings.LastAddress = address;
+        await _inner.SaveAsync();
+    }
+
     /// <summary>
     /// Saves the current settings to storage
     /// </summary>

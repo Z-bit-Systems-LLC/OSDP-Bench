@@ -116,6 +116,117 @@ public class ConfigurationViewModelTests
         Assert.That(newViewModel.StatusLevel, Is.EqualTo(StatusLevel.NotReady));
     }
 
+    #region Settings Persistence Tests
+
+    [Test]
+    public async Task ConfigurationViewModel_RestoresSavedPortBaudAndAddress()
+    {
+        // Arrange
+        SetupSerialPortMockWithPorts(CreateTestSerialPorts());
+
+        var settingsMock = new Mock<IUserSettingsService>();
+        settingsMock.SetupGet(s => s.LastSerialPortName).Returns("test2");
+        settingsMock.SetupGet(s => s.LastBaudRate).Returns(115200);
+        settingsMock.SetupGet(s => s.LastAddress).Returns(7);
+
+        // Act
+        using var viewModel = new ConfigurationViewModel(
+            _dialogServiceMock.Object,
+            _deviceManagementServiceMock.Object,
+            _serialPortConnectionServiceMock.Object,
+            null,
+            settingsMock.Object);
+        await viewModel.InitializationComplete;
+
+        // Assert
+        Assert.That(viewModel.SelectedSerialPort?.Name, Is.EqualTo("test2"));
+        Assert.That(viewModel.SelectedBaudRate, Is.EqualTo(115200));
+        Assert.That(viewModel.SelectedAddress, Is.EqualTo((byte)7));
+    }
+
+    [Test]
+    public async Task ConfigurationViewModel_FallsBackToFirstPort_WhenSavedPortMissing()
+    {
+        // Arrange - saved port is not among the available ports (e.g. adapter unplugged)
+        SetupSerialPortMockWithPorts(CreateTestSerialPorts());
+
+        var settingsMock = new Mock<IUserSettingsService>();
+        settingsMock.SetupGet(s => s.LastSerialPortName).Returns("COM_REMOVED");
+        settingsMock.SetupGet(s => s.LastBaudRate).Returns(19200);
+        settingsMock.SetupGet(s => s.LastAddress).Returns(3);
+
+        // Act
+        using var viewModel = new ConfigurationViewModel(
+            _dialogServiceMock.Object,
+            _deviceManagementServiceMock.Object,
+            _serialPortConnectionServiceMock.Object,
+            null,
+            settingsMock.Object);
+        await viewModel.InitializationComplete;
+
+        // Assert - port falls back to first available, but baud/address still restored
+        Assert.That(viewModel.SelectedSerialPort?.Name, Is.EqualTo("test1"));
+        Assert.That(viewModel.SelectedBaudRate, Is.EqualTo(19200));
+        Assert.That(viewModel.SelectedAddress, Is.EqualTo((byte)3));
+    }
+
+    [Test]
+    public async Task ConfigurationViewModel_IgnoresSavedBaudRate_WhenNotAnAvailableOption()
+    {
+        // Arrange
+        SetupSerialPortMockWithPorts(CreateTestSerialPorts());
+
+        var settingsMock = new Mock<IUserSettingsService>();
+        settingsMock.SetupGet(s => s.LastSerialPortName).Returns((string)null);
+        settingsMock.SetupGet(s => s.LastBaudRate).Returns(12345); // not a valid option
+        settingsMock.SetupGet(s => s.LastAddress).Returns(0);
+
+        // Act
+        using var viewModel = new ConfigurationViewModel(
+            _dialogServiceMock.Object,
+            _deviceManagementServiceMock.Object,
+            _serialPortConnectionServiceMock.Object,
+            null,
+            settingsMock.Object);
+        await viewModel.InitializationComplete;
+
+        // Assert - default baud rate (9600) retained
+        Assert.That(viewModel.SelectedBaudRate, Is.EqualTo(9600));
+    }
+
+    [Test]
+    public async Task ConfigurationViewModel_PersistsConnectionSettings_OnManualConnect()
+    {
+        // Arrange
+        var availablePorts = CreateTestSerialPorts();
+        SetupSerialPortMockWithPorts(availablePorts);
+
+        var settingsMock = new Mock<IUserSettingsService>();
+        settingsMock.SetupGet(s => s.LastSerialPortName).Returns((string)null);
+        settingsMock.SetupGet(s => s.LastBaudRate).Returns(9600);
+        settingsMock.SetupGet(s => s.LastAddress).Returns(0);
+
+        using var viewModel = new ConfigurationViewModel(
+            _dialogServiceMock.Object,
+            _deviceManagementServiceMock.Object,
+            _serialPortConnectionServiceMock.Object,
+            null,
+            settingsMock.Object);
+        await viewModel.InitializationComplete;
+
+        viewModel.SelectedSerialPort = availablePorts[0];
+        viewModel.SelectedBaudRate = 38400;
+        viewModel.SelectedAddress = 5;
+
+        // Act
+        await viewModel.ConnectDeviceCommand.ExecuteAsync(null);
+
+        // Assert
+        settingsMock.Verify(s => s.UpdateConnectionSettingsAsync("test1", 38400, 5), Times.Once);
+    }
+
+    #endregion
+
     #region DiscoverDevice Tests
     
     [Test]

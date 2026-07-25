@@ -19,6 +19,7 @@ public partial class ConfigurationViewModel : ObservableObject, IDisposable
     private readonly IDialogService _dialogService;
     private readonly IDeviceManagementService _deviceManagementService;
     private readonly IUsbDeviceMonitorService? _usbDeviceMonitorService;
+    private readonly IUserSettingsService? _userSettingsService;
     
     private ISerialPortConnectionService _serialPortConnectionService;
     private readonly PacketTraceEntryBuilder _traceEntryBuilder = new();
@@ -38,7 +39,8 @@ public partial class ConfigurationViewModel : ObservableObject, IDisposable
     /// ViewModel for the Configuration page.
     /// </summary>
     public ConfigurationViewModel(IDialogService dialogService, IDeviceManagementService deviceManagementService,
-        ISerialPortConnectionService serialPortConnectionService, IUsbDeviceMonitorService? usbDeviceMonitorService = null)
+        ISerialPortConnectionService serialPortConnectionService, IUsbDeviceMonitorService? usbDeviceMonitorService = null,
+        IUserSettingsService? userSettingsService = null)
     {
         _dialogService = dialogService ??
                          throw new ArgumentNullException(nameof(dialogService));
@@ -47,6 +49,7 @@ public partial class ConfigurationViewModel : ObservableObject, IDisposable
         _serialPortConnectionService = serialPortConnectionService ??
                                        throw new ArgumentNullException(nameof(serialPortConnectionService));
         _usbDeviceMonitorService = usbDeviceMonitorService;
+        _userSettingsService = userSettingsService;
         
         _deviceManagementService.ConnectionStatusChange += DeviceManagementServiceOnConnectionStatusChange;
         _deviceManagementService.NakReplyReceived += DeviceManagementServiceOnNakReplyReceived;
@@ -414,23 +417,31 @@ public partial class ConfigurationViewModel : ObservableObject, IDisposable
     {
         try
         {
+            // Restore saved baud rate and address (independent of which ports are present)
+            ApplySavedConnectionSettings();
+
             var foundPorts = await _serialPortConnectionService.FindAvailableSerialPorts();
-            
+
             foreach (var port in foundPorts)
             {
                 AvailableSerialPorts.Add(port);
             }
-            
+
             if (AvailableSerialPorts.Count > 0)
             {
-                SelectedSerialPort = AvailableSerialPorts.First();
+                // Reselect the saved port if it is still present, otherwise fall back to the first available port
+                var savedPortName = _userSettingsService?.LastSerialPortName;
+                var savedPort = string.IsNullOrEmpty(savedPortName)
+                    ? null
+                    : AvailableSerialPorts.FirstOrDefault(p => p.Name == savedPortName);
+                SelectedSerialPort = savedPort ?? AvailableSerialPorts.First();
                 StatusLevel = StatusLevel.Ready;
             }
             else
             {
                 StatusLevel = StatusLevel.NotReady;
             }
-            
+
             _initializationComplete.SetResult(true);
         }
         catch (Exception ex)
@@ -441,13 +452,46 @@ public partial class ConfigurationViewModel : ObservableObject, IDisposable
         }
     }
 
+    /// <summary>
+    /// Applies the saved baud rate and address from user settings. The saved baud rate is only
+    /// applied when it is one of the available options; the address is applied as-is.
+    /// </summary>
+    private void ApplySavedConnectionSettings()
+    {
+        if (_userSettingsService == null) return;
+
+        var savedBaudRate = _userSettingsService.LastBaudRate;
+        if (AvailableBaudRates.Contains(savedBaudRate))
+        {
+            SelectedBaudRate = savedBaudRate;
+        }
+
+        SelectedAddress = _userSettingsService.LastAddress;
+    }
+
+    /// <summary>
+    /// Persists the currently selected serial port, baud rate, and address so they can be
+    /// restored on the next launch.
+    /// </summary>
+    private async Task PersistConnectionSettings()
+    {
+        if (_userSettingsService == null) return;
+
+        await _userSettingsService.UpdateConnectionSettingsAsync(
+            SelectedSerialPort?.Name,
+            SelectedBaudRate,
+            SelectedAddress);
+    }
+
     [RelayCommand(IncludeCancelCommand = true)]
     private async Task DiscoverDevice(CancellationToken token)
     {
         if (!ValidateSerialPort()) return;
-        
+
         StatusLevel = StatusLevel.Discovering;
         NakText = string.Empty;
+
+        await PersistConnectionSettings();
 
         var progress = new DiscoveryProgress(UpdateDiscoveryStatus);
         var connections = _serialPortConnectionService.GetConnectionsForDiscovery(
@@ -547,6 +591,8 @@ public partial class ConfigurationViewModel : ObservableObject, IDisposable
         StatusLevel = StatusLevel.ConnectingManually;
         StatusText = Resources.Resources.GetString("Status_AttemptingToConnectManually");
 
+        await PersistConnectionSettings();
+
         byte[]? securityKey = await GetSecurityKey();
         if (securityKey == null && !UseDefaultKey) return;
 
@@ -609,6 +655,8 @@ public partial class ConfigurationViewModel : ObservableObject, IDisposable
         string serialPortName = SelectedSerialPort?.Name ?? string.Empty;
         StatusLevel = StatusLevel.PassiveMonitoring;
         StatusText = Resources.Resources.GetString("Status_PassiveMonitoring");
+
+        await PersistConnectionSettings();
 
         // For passive monitoring, always decrypt:
         // - UseDefaultKey checked → decrypt with default key
