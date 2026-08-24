@@ -25,6 +25,7 @@ public sealed class DeviceManagementService : IDeviceManagementService
 
     private Guid _connectionId;
     private bool _isDiscovering;
+    private bool _isPortInUse;
     private bool _invalidSecurityKey;
     private byte[]? _securityKey;
 
@@ -128,6 +129,23 @@ public sealed class DeviceManagementService : IDeviceManagementService
     public bool IsPassiveMonitoring => _passiveMonitoringTask != null && !_passiveMonitoringTask.IsCompleted;
 
     /// <inheritdoc />
+    public bool IsPortInUse => _isPortInUse;
+
+    /// <inheritdoc />
+    public event EventHandler? PortInUseChanged;
+
+    /// <summary>
+    /// Records whether a port is held, from the moment one is opened until it is released.
+    /// </summary>
+    private void SetPortInUse(bool inUse)
+    {
+        if (_isPortInUse == inUse) return;
+
+        _isPortInUse = inUse;
+        RaiseEvent(PortInUseChanged);
+    }
+
+    /// <inheritdoc />
     public async Task Connect(IOsdpConnection connection, byte address, bool useSecureChannel,
         bool useDefaultSecurityKey, byte[]? securityKey)
     {
@@ -142,6 +160,8 @@ public sealed class DeviceManagementService : IDeviceManagementService
         _connectionId = _panel.StartConnection(connection, _defaultPollInterval, Tracer);
         _panel.AddDevice(_connectionId, address, true, useSecureChannel, 
             useDefaultSecurityKey ? null : securityKey);
+
+        SetPortInUse(true);
     }
     
     private void Tracer(TraceEntry traceEntry)
@@ -160,6 +180,8 @@ public sealed class DeviceManagementService : IDeviceManagementService
         await Shutdown();
 
         _isDiscovering = true;
+        SetPortInUse(true);
+        bool connectionStarted = false;
         DiscoveryResult results;
         try
         {
@@ -185,12 +207,18 @@ public sealed class DeviceManagementService : IDeviceManagementService
             _connectionId = _panel.StartConnection(results.Connection, _defaultPollInterval, Tracer);
             // Use 5-parameter overload to explicitly disable secure channel after discovery
             _panel.AddDevice(_connectionId, Address, CapabilitiesLookup.CRC, false);
+            connectionStarted = true;
 
             return results;
         }
         finally
         {
             _isDiscovering = false;
+
+            // A sweep that found nothing, was cancelled, or threw leaves no connection behind, so
+            // the port goes back on the shelf. Only a sweep that went on to start a connection
+            // still holds one.
+            SetPortInUse(connectionStarted);
         }
     }
 
@@ -244,6 +272,8 @@ public sealed class DeviceManagementService : IDeviceManagementService
         CapabilitiesLookup = null;
 
         await _panel.Shutdown();
+
+        SetPortInUse(false);
 
         if (waitForOffline)
         {
@@ -360,6 +390,8 @@ public sealed class DeviceManagementService : IDeviceManagementService
         _panel.AddDevice(_connectionId, Address, true, IsUsingSecureChannel,
             UsesDefaultSecurityKey ? null : _securityKey);
 
+        SetPortInUse(true);
+
         // Wait for the connection to fully establish before returning
         await WaitUntilDeviceIsOnline();
     }
@@ -381,6 +413,7 @@ public sealed class DeviceManagementService : IDeviceManagementService
         UsesDefaultSecurityKey = useDefaultSecurityKey;
 
         // Notify that passive monitoring is starting
+        SetPortInUse(true);
         RaiseEvent(ConnectionStatusChange, ConnectionStatus.PassiveMonitoring);
 
         // Start the background monitoring task
@@ -424,6 +457,7 @@ public sealed class DeviceManagementService : IDeviceManagementService
         }
 
         _passiveMonitoringTask = null;
+        SetPortInUse(false);
         RaiseEvent(ConnectionStatusChange, ConnectionStatus.Disconnected);
     }
 

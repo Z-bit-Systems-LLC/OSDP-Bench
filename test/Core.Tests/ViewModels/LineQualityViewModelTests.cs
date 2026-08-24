@@ -150,7 +150,7 @@ namespace OSDPBench.Core.Tests.ViewModels
         public async Task StartTest_DoesNotRunWhenTheUserDeclinesToDisconnect()
         {
             var viewModel = await CreateViewModel();
-            _deviceManagementServiceMock.Setup(service => service.IsConnected).Returns(true);
+            _deviceManagementServiceMock.Setup(service => service.IsPortInUse).Returns(true);
             _dialogServiceMock.Setup(dialog => dialog.ShowConfirmationDialog(
                 It.IsAny<string>(), It.IsAny<string>(), It.IsAny<MessageIcon>())).ReturnsAsync(false);
 
@@ -166,7 +166,7 @@ namespace OSDPBench.Core.Tests.ViewModels
         public async Task StartTest_ShutsDownAConnectedDeviceOnceTheUserAgrees()
         {
             var viewModel = await CreateViewModel();
-            _deviceManagementServiceMock.Setup(service => service.IsConnected).Returns(true);
+            _deviceManagementServiceMock.Setup(service => service.IsPortInUse).Returns(true);
             _dialogServiceMock.Setup(dialog => dialog.ShowConfirmationDialog(
                 It.IsAny<string>(), It.IsAny<string>(), It.IsAny<MessageIcon>())).ReturnsAsync(true);
             _lineQualityServiceMock

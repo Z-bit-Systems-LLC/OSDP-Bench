@@ -47,6 +47,95 @@ namespace OSDPBench.Core.Tests.Services
             await _deviceManagementService.Shutdown();
         }
 
+        #region Port In Use Tests
+
+        [Test]
+        public void IsPortInUse_Initially_ReturnsFalse()
+        {
+            Assert.That(_deviceManagementService.IsPortInUse, Is.False);
+        }
+
+        [Test]
+        public async Task Connect_HoldsThePortEvenBeforeADeviceAnswers()
+        {
+            // The distinction that matters: a manual connection to an address nothing answers on
+            // never sets IsConnected, but the bus polls on and keeps the port for as long as it
+            // runs. Anything that needs the port to itself has to see that.
+            await _deviceManagementService.Connect(_connectionMock.Object, _testAddress, false, true, null);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(_deviceManagementService.IsConnected, Is.False,
+                    "Nothing has answered, so the device is not connected.");
+                Assert.That(_deviceManagementService.IsPortInUse, Is.True,
+                    "The port is held regardless.");
+            });
+        }
+
+        [Test]
+        public async Task Shutdown_ReleasesThePort()
+        {
+            await _deviceManagementService.Connect(_connectionMock.Object, _testAddress, false, true, null);
+            Assert.That(_deviceManagementService.IsPortInUse, Is.True, "Precondition: port held.");
+
+            await _deviceManagementService.Shutdown();
+
+            Assert.That(_deviceManagementService.IsPortInUse, Is.False);
+        }
+
+        [Test]
+        public async Task PortInUseChanged_AnnouncesBothTakingAndReleasingThePort()
+        {
+            // Like the other events on this service, delivery is posted to the captured
+            // synchronization context, so it cannot be observed the instant the call returns.
+            var taken = new TaskCompletionSource<bool>();
+            var released = new TaskCompletionSource<bool>();
+            _deviceManagementService.PortInUseChanged += (_, _) =>
+            {
+                if (_deviceManagementService.IsPortInUse) taken.TrySetResult(true);
+                else released.TrySetResult(true);
+            };
+
+            await _deviceManagementService.Connect(_connectionMock.Object, _testAddress, false, true, null);
+            Assert.That(await WaitForFlag(taken), Is.True, "Taking the port should be announced.");
+
+            await _deviceManagementService.Shutdown();
+            Assert.That(await WaitForFlag(released), Is.True, "Releasing it should be announced too.");
+        }
+
+        [Test]
+        public async Task DiscoverDevice_ReleasesThePortWhenTheSweepFindsNothing()
+        {
+            // A sweep opens a port at every candidate rate. One that ends without starting a
+            // connection has to put it back, or the line quality page stays locked out for good.
+            var connections = new List<IOsdpConnection> { _connectionMock.Object };
+            var progress = new DiscoveryProgress(UpdateStatus);
+
+            try
+            {
+                await _deviceManagementService.DiscoverDevice(connections, progress, CancellationToken.None);
+            }
+            catch (Exception)
+            {
+                // A sweep against a mock that never answers does not succeed; the port is what
+                // this test is about.
+            }
+
+            Assert.That(_deviceManagementService.IsPortInUse, Is.False);
+        }
+
+        [Test]
+        public async Task StartPassiveMonitoring_HoldsThePortAndStoppingReleasesIt()
+        {
+            await _deviceManagementService.StartPassiveMonitoring(_connectionMock.Object);
+            Assert.That(_deviceManagementService.IsPortInUse, Is.True);
+
+            await _deviceManagementService.StopPassiveMonitoring();
+            Assert.That(_deviceManagementService.IsPortInUse, Is.False);
+        }
+
+        #endregion
+
         #region Constructor Tests
 
         [Test]
@@ -508,6 +597,15 @@ namespace OSDPBench.Core.Tests.Services
 
             // Assert
             Assert.That(await WaitForStatus(statusSource), Is.EqualTo(ConnectionStatus.Disconnected));
+        }
+
+        /// <summary>
+        /// Waits for a posted event to set a flag, on the same terms as <see cref="WaitForStatus"/>.
+        /// </summary>
+        private static async Task<bool> WaitForFlag(TaskCompletionSource<bool> source)
+        {
+            var completed = await Task.WhenAny(source.Task, Task.Delay(TimeSpan.FromSeconds(5)));
+            return completed == source.Task && await source.Task;
         }
 
         /// <summary>

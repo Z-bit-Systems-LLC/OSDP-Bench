@@ -165,6 +165,42 @@ public interface IDeviceManagementService
     bool IsPassiveMonitoring { get; }
 
     /// <summary>
+    /// Gets a value indicating whether this service is holding a serial port open.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Wider than <see cref="IsConnected"/>, and deliberately so. The port is opened the moment a
+    /// discovery sweep or a manual connection begins, but <see cref="IsConnected"/> only becomes
+    /// true once a device answers. A manual connection to the wrong address or baud rate never
+    /// connects at all, yet the bus polls on regardless and keeps the port for as long as it runs.
+    /// Anything that needs the port to itself has to ask this question, not the other one.
+    /// </para>
+    /// <para>
+    /// The default is the narrow answer, for the benefit of any implementation that predates this
+    /// member. It is correct as far as it goes, but it does not cover the connecting window.
+    /// </para>
+    /// </remarks>
+    bool IsPortInUse => IsConnected || IsPassiveMonitoring;
+
+    /// <summary>
+    /// Occurs when <see cref="IsPortInUse"/> changes.
+    /// </summary>
+    /// <remarks>
+    /// Separate from <see cref="ConnectionStatusChange"/> because the two answer different
+    /// questions: that one reports what the device is doing, this one reports whether the port is
+    /// available. They change at different moments. The default implementation never fires, so a
+    /// subscriber should treat it as a supplement to <see cref="ConnectionStatusChange"/> rather
+    /// than a replacement for it.
+    /// </remarks>
+    event EventHandler? PortInUseChanged
+    {
+        // A default that accepts subscribers and never calls them. An implementation predating
+        // this member keeps compiling, and its subscribers fall back on ConnectionStatusChange.
+        add { _ = value; }
+        remove { _ = value; }
+    }
+
+    /// <summary>
     /// Starts passive monitoring on the specified connection.
     /// Passive monitoring listens to OSDP traffic without sending any commands,
     /// allowing debugging of third-party systems.

@@ -41,6 +41,7 @@ public partial class MainWindowViewModel : ObservableObject, IDisposable
 
         LanguageViewModel = new LanguageSelectionViewModel(localizationService);
 
+        _deviceManagementService.PortInUseChanged += OnPortInUseChanged;
         _deviceManagementService.ConnectionStatusChange += OnConnectionStatusChange;
         _lineQualityService.BusyChanged += OnLineQualityBusyChanged;
 
@@ -61,8 +62,9 @@ public partial class MainWindowViewModel : ObservableObject, IDisposable
     /// Gets a value indicating whether the Line Quality page can be reached.
     /// </summary>
     /// <remarks>
-    /// False while a device connection or passive monitoring session holds the port, because the
-    /// line quality test needs it to itself.
+    /// False from the moment a discovery sweep or a manual connection opens the port, not merely
+    /// once a device answers. A manual connection to the wrong address never answers at all, and
+    /// the bus goes on holding the port regardless.
     /// </remarks>
     [ObservableProperty] private bool _isLineQualityEnabled = true;
 
@@ -80,6 +82,13 @@ public partial class MainWindowViewModel : ObservableObject, IDisposable
         ? null
         : Resources.Resources.GetString("Navigation_LineQualityNeedsPort");
 
+    private void OnPortInUseChanged(object? sender, EventArgs args) => UpdateNavigationState();
+
+    /// <remarks>
+    /// Listened to as well as <see cref="IDeviceManagementService.PortInUseChanged"/>, because that
+    /// member carries a default implementation that never fires. An implementation that has not
+    /// adopted it still gets the narrower answer refreshed here rather than never at all.
+    /// </remarks>
     private void OnConnectionStatusChange(object? sender, ConnectionStatus status)
     {
         // The status enum is not consulted: the service is the authority on whether it still holds
@@ -93,8 +102,7 @@ public partial class MainWindowViewModel : ObservableObject, IDisposable
     private void UpdateNavigationState()
     {
         IsNavigationEnabled = !_lineQualityService.IsBusy;
-        IsLineQualityEnabled = !_deviceManagementService.IsConnected &&
-                               !_deviceManagementService.IsPassiveMonitoring;
+        IsLineQualityEnabled = !_deviceManagementService.IsPortInUse;
     }
 
     partial void OnIsNavigationEnabledChanged(bool value)
@@ -115,6 +123,7 @@ public partial class MainWindowViewModel : ObservableObject, IDisposable
         if (_isDisposed) return;
         _isDisposed = true;
 
+        _deviceManagementService.PortInUseChanged -= OnPortInUseChanged;
         _deviceManagementService.ConnectionStatusChange -= OnConnectionStatusChange;
         _lineQualityService.BusyChanged -= OnLineQualityBusyChanged;
 

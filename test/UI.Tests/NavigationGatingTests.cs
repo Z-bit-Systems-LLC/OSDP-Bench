@@ -1,5 +1,4 @@
 using NUnit.Framework;
-using OSDPBench.Core.Models;
 using OSDPBench.Core.ViewModels.Windows;
 
 namespace OSDPBench.UI.Tests;
@@ -19,8 +18,9 @@ public class NavigationGatingTests : UiTestBase
         TestApp.MockLineQuality.Setup(service => service.IsBusy).Returns(false);
         TestApp.MockDeviceManagement.Setup(service => service.IsConnected).Returns(false);
         TestApp.MockDeviceManagement.Setup(service => service.IsPassiveMonitoring).Returns(false);
+        TestApp.MockDeviceManagement.Setup(service => service.IsPortInUse).Returns(false);
         RaiseLineQualityBusyChanged();
-        RaiseConnectionStatusChange(ConnectionStatus.Disconnected);
+        RaisePortInUseChanged();
     }
 
     [Test]
@@ -59,7 +59,8 @@ public class NavigationGatingTests : UiTestBase
     public void AConnectedDeviceClosesTheLineQualityPage()
     {
         TestApp.MockDeviceManagement.Setup(service => service.IsConnected).Returns(true);
-        RaiseConnectionStatusChange(ConnectionStatus.Connected);
+        TestApp.MockDeviceManagement.Setup(service => service.IsPortInUse).Returns(true);
+        RaisePortInUseChanged();
 
         Assert.Multiple(() =>
         {
@@ -71,10 +72,13 @@ public class NavigationGatingTests : UiTestBase
     }
 
     [Test]
-    public void PassiveMonitoringAlsoClosesTheLineQualityPage()
+    public void ADiscoverySweepAlsoClosesTheLineQualityPage()
     {
-        TestApp.MockDeviceManagement.Setup(service => service.IsPassiveMonitoring).Returns(true);
-        RaiseConnectionStatusChange(ConnectionStatus.PassiveMonitoring);
+        // A sweep holds the port with IsConnected still false, which is exactly the case the
+        // narrower check used to miss.
+        TestApp.MockDeviceManagement.Setup(service => service.IsConnected).Returns(false);
+        TestApp.MockDeviceManagement.Setup(service => service.IsPortInUse).Returns(true);
+        RaisePortInUseChanged();
 
         Assert.That(IsNavItemEnabled("NavItem_LineQuality"), Is.False);
     }
@@ -84,8 +88,8 @@ public class NavigationGatingTests : UiTestBase
     {
         var viewModel = InvokeOnUI(() => TestApp.GetService<MainWindowViewModel>());
 
-        TestApp.MockDeviceManagement.Setup(service => service.IsConnected).Returns(true);
-        RaiseConnectionStatusChange(ConnectionStatus.Connected);
+        TestApp.MockDeviceManagement.Setup(service => service.IsPortInUse).Returns(true);
+        RaisePortInUseChanged();
 
         Assert.That(InvokeOnUI(() => viewModel.LineQualityDisabledReason),
             Is.Not.Null.And.Not.Empty,
@@ -108,7 +112,7 @@ public class NavigationGatingTests : UiTestBase
         TestApp.MockLineQuality.Raise(service => service.BusyChanged += null,
             TestApp.MockLineQuality.Object, EventArgs.Empty));
 
-    private void RaiseConnectionStatusChange(ConnectionStatus status) => InvokeOnUI(() =>
-        TestApp.MockDeviceManagement.Raise(service => service.ConnectionStatusChange += null!,
-            TestApp.MockDeviceManagement.Object, status));
+    private void RaisePortInUseChanged() => InvokeOnUI(() =>
+        TestApp.MockDeviceManagement.Raise(service => service.PortInUseChanged += null,
+            TestApp.MockDeviceManagement.Object, EventArgs.Empty));
 }

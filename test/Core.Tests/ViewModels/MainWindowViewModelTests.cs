@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using Moq;
 using NUnit.Framework;
-using OSDPBench.Core.Models;
 using OSDPBench.Core.Services;
 using OSDPBench.Core.ViewModels.Windows;
 
@@ -50,7 +49,7 @@ namespace OSDPBench.Core.Tests.ViewModels
         [Test]
         public void LineQualityIsUnreachableWhileADeviceIsConnected()
         {
-            _deviceManagementServiceMock.Setup(service => service.IsConnected).Returns(true);
+            _deviceManagementServiceMock.Setup(service => service.IsPortInUse).Returns(true);
 
             var viewModel = CreateViewModel();
 
@@ -66,11 +65,13 @@ namespace OSDPBench.Core.Tests.ViewModels
         }
 
         [Test]
-        public void LineQualityIsUnreachableWhilePassivelyMonitoring()
+        public void LineQualityIsUnreachableWhileTheBusHoldsThePortWithNothingAnswering()
         {
-            // Passive monitoring holds the port just as firmly as a connection does, even though
-            // it never sends anything.
-            _deviceManagementServiceMock.Setup(service => service.IsPassiveMonitoring).Returns(true);
+            // The case the narrower IsConnected check missed: a discovery sweep, or a manual
+            // connection to an address nothing answers on, holds the port with IsConnected false.
+            _deviceManagementServiceMock.Setup(service => service.IsConnected).Returns(false);
+            _deviceManagementServiceMock.Setup(service => service.IsPassiveMonitoring).Returns(false);
+            _deviceManagementServiceMock.Setup(service => service.IsPortInUse).Returns(true);
 
             var viewModel = CreateViewModel();
 
@@ -80,15 +81,13 @@ namespace OSDPBench.Core.Tests.ViewModels
         [Test]
         public void LineQualityBecomesReachableAgainOnDisconnect()
         {
-            _deviceManagementServiceMock.Setup(service => service.IsConnected).Returns(true);
+            _deviceManagementServiceMock.Setup(service => service.IsPortInUse).Returns(true);
             var viewModel = CreateViewModel();
-            Assert.That(viewModel.IsLineQualityEnabled, Is.False, "Precondition: connected.");
+            Assert.That(viewModel.IsLineQualityEnabled, Is.False, "Precondition: port held.");
 
-            _deviceManagementServiceMock.Setup(service => service.IsConnected).Returns(false);
-            _deviceManagementServiceMock.Raise(
-                service => service.ConnectionStatusChange += null!,
-                _deviceManagementServiceMock.Object,
-                ConnectionStatus.Disconnected);
+            _deviceManagementServiceMock.Setup(service => service.IsPortInUse).Returns(false);
+            _deviceManagementServiceMock.Raise(service => service.PortInUseChanged += null,
+                _deviceManagementServiceMock.Object, EventArgs.Empty);
 
             Assert.Multiple(() =>
             {
@@ -131,11 +130,9 @@ namespace OSDPBench.Core.Tests.ViewModels
             _lineQualityServiceMock.Setup(service => service.IsBusy).Returns(true);
             _lineQualityServiceMock.Raise(service => service.BusyChanged += null,
                 _lineQualityServiceMock.Object, EventArgs.Empty);
-            _deviceManagementServiceMock.Setup(service => service.IsConnected).Returns(true);
-            _deviceManagementServiceMock.Raise(
-                service => service.ConnectionStatusChange += null!,
-                _deviceManagementServiceMock.Object,
-                ConnectionStatus.Connected);
+            _deviceManagementServiceMock.Setup(service => service.IsPortInUse).Returns(true);
+            _deviceManagementServiceMock.Raise(service => service.PortInUseChanged += null,
+                _deviceManagementServiceMock.Object, EventArgs.Empty);
 
             Assert.Multiple(() =>
             {

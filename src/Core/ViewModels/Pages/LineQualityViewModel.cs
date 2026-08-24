@@ -492,7 +492,7 @@ public partial class LineQualityViewModel : ObservableObject, IDisposable
 
         // The test drives the port directly, so the polling bus cannot be running on it. Ask
         // rather than tearing down a connection the user may still want.
-        if (!_deviceManagementService.IsConnected && !_deviceManagementService.IsPassiveMonitoring)
+        if (!_deviceManagementService.IsPortInUse)
         {
             return true;
         }
