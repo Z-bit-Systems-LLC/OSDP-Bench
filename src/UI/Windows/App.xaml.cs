@@ -159,6 +159,9 @@ public partial class App
             lineQualityViewModel.Dispose();
         }
 
+        var mainWindowViewModel = _host.Services.GetService<MainWindowViewModel>();
+        mainWindowViewModel?.Dispose();
+
         var usbMonitor = _host.Services.GetService<IUsbDeviceMonitorService>();
         usbMonitor?.Dispose();
 

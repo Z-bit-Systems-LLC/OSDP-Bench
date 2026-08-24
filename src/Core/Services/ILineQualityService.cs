@@ -25,9 +25,24 @@ public interface ILineQualityService
     bool IsResponderRunning { get; }
 
     /// <summary>
+    /// Gets a value indicating whether either role currently owns a serial port.
+    /// </summary>
+    bool IsBusy { get; }
+
+    /// <summary>
     /// Gets the baud rate the responder is currently answering at, or zero when it is not running.
     /// </summary>
     int ResponderBaudRate { get; }
+
+    /// <summary>
+    /// Occurs when <see cref="IsBusy"/> changes.
+    /// </summary>
+    /// <remarks>
+    /// The shell listens to this to lock navigation for as long as a port is held. Neither role
+    /// can be interrupted halfway without leaving the responder stranded at whatever rate it was
+    /// last moved to.
+    /// </remarks>
+    event EventHandler? BusyChanged;
 
     /// <summary>
     /// Occurs after the responder completes an exchange.

@@ -2,6 +2,7 @@ using System.Windows;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Moq;
+using OSDP.Net.LineQuality;
 using OSDPBench.Core.Models;
 using OSDPBench.Core.Services;
 using OSDPBench.Windows;
@@ -40,8 +41,31 @@ public class TestApp : App
         ConfigureMockDefaults();
     }
 
+    /// <summary>
+    /// Restores the line quality mock's default behaviour.
+    /// </summary>
+    /// <remarks>
+    /// Tests that reconfigure this mock must call this rather than <c>Mock.Reset()</c>. Reset also
+    /// discards the event subscriptions the mock is holding, and MainWindowViewModel subscribes to
+    /// BusyChanged once at startup: reset it and navigation gating silently stops working for
+    /// every test that runs afterwards.
+    /// </remarks>
+    public void RestoreLineQualityDefaults()
+    {
+        MockLineQuality.Setup(s => s.IsBusy).Returns(false);
+        MockLineQuality.Setup(s => s.IsTestRunning).Returns(false);
+        MockLineQuality.Setup(s => s.IsResponderRunning).Returns(false);
+        MockLineQuality.Setup(s => s.IsSupported(It.IsAny<string>())).Returns(true);
+        MockLineQuality
+            .Setup(s => s.RunTestAsync(It.IsAny<string>(), It.IsAny<LineQualityOptions>(),
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(() => throw new OperationCanceledException());
+    }
+
     private void ConfigureMockDefaults()
     {
+        RestoreLineQualityDefaults();
+
         MockSerialPortConnection
             .Setup(s => s.FindAvailableSerialPorts())
             .ReturnsAsync(new List<AvailableSerialPort>

@@ -1124,4 +1124,14 @@
     <value>Line Quality Results</value>
     <comment>Screen reader name for the line quality results data grid</comment>
   </data>
+
+  <!-- Navigation availability -->
+  <data name="Navigation_BusyWithLineQuality" xml:space="preserve">
+    <value>Unavailable while a line quality test is running</value>
+    <comment>Tooltip on navigation items disabled during a line quality run</comment>
+  </data>
+  <data name="Navigation_LineQualityNeedsPort" xml:space="preserve">
+    <value>Unavailable while connected to a device. Disconnect to run a line quality test.</value>
+    <comment>Tooltip on the Line Quality navigation item when a connection holds the serial port</comment>
+  </data>
 </root>

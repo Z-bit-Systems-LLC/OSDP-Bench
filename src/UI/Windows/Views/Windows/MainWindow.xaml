@@ -27,24 +27,36 @@
                            PaneDisplayMode="LeftFluent" >
             <ui:NavigationView.MenuItems>
                 <ui:NavigationViewItem AutomationProperties.AutomationId="NavItem_Connect"
+                                      IsEnabled="{Binding ViewModel.IsNavigationEnabled}"
+                                      ToolTip="{Binding ViewModel.NavigationDisabledReason}"
+                                      ToolTipService.ShowOnDisabled="True"
                                       Content="{localization:Localize Navigation_ConnectToPD}" TargetPageType="{x:Type pages:ConfigurationPage}" NavigationCacheMode="Required">
                     <ui:NavigationViewItem.Icon>
                         <ui:SymbolIcon Symbol="Connector24" />
                     </ui:NavigationViewItem.Icon>
                 </ui:NavigationViewItem>
                 <ui:NavigationViewItem AutomationProperties.AutomationId="NavItem_Manage"
+                                      IsEnabled="{Binding ViewModel.IsNavigationEnabled}"
+                                      ToolTip="{Binding ViewModel.NavigationDisabledReason}"
+                                      ToolTipService.ShowOnDisabled="True"
                                       Content="{localization:Localize Navigation_ManagePD}" TargetPageType="{x:Type pages:ManagePage}" NavigationCacheMode="Required">
                     <ui:NavigationViewItem.Icon>
                         <ui:SymbolIcon Symbol="Toolbox24" />
                     </ui:NavigationViewItem.Icon>
                 </ui:NavigationViewItem>
                 <ui:NavigationViewItem AutomationProperties.AutomationId="NavItem_Monitor"
+                                      IsEnabled="{Binding ViewModel.IsNavigationEnabled}"
+                                      ToolTip="{Binding ViewModel.NavigationDisabledReason}"
+                                      ToolTipService.ShowOnDisabled="True"
                                       Content="{localization:Localize Navigation_Monitor}" TargetPageType="{x:Type pages:MonitorPage}" NavigationCacheMode="Required">
                     <ui:NavigationViewItem.Icon>
                         <ui:SymbolIcon Symbol="Tv24" />
                     </ui:NavigationViewItem.Icon>
                 </ui:NavigationViewItem>
                 <ui:NavigationViewItem AutomationProperties.AutomationId="NavItem_LineQuality"
+                                      IsEnabled="{Binding ViewModel.IsLineQualityEnabled}"
+                                      ToolTip="{Binding ViewModel.LineQualityDisabledReason}"
+                                      ToolTipService.ShowOnDisabled="True"
                                       Content="{localization:Localize Navigation_LineQuality}" TargetPageType="{x:Type pages:LineQualityPage}" NavigationCacheMode="Required">
                     <ui:NavigationViewItem.Icon>
                         <ui:SymbolIcon Symbol="Pulse24" />
@@ -53,6 +65,9 @@
             </ui:NavigationView.MenuItems>
             <ui:NavigationView.FooterMenuItems>
                 <ui:NavigationViewItem AutomationProperties.AutomationId="NavItem_Info"
+                                      IsEnabled="{Binding ViewModel.IsNavigationEnabled}"
+                                      ToolTip="{Binding ViewModel.NavigationDisabledReason}"
+                                      ToolTipService.ShowOnDisabled="True"
                                       Content="{localization:Localize Navigation_Info}" TargetPageType="{x:Type pages:InfoPage}">
                     <ui:NavigationViewItem.Icon>
                         <ui:SymbolIcon Symbol="Info24" />

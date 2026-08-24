@@ -22,6 +22,8 @@ public sealed class LineQualityService : ILineQualityService
     private Task? _responderTask;
     private IRetunableOsdpConnection? _responderConnection;
     private LineQualityResponder? _responder;
+    private bool _isTestRunning;
+    private bool _isResponderRunning;
 
     /// <summary>
     /// Initializes the service.
@@ -39,13 +41,24 @@ public sealed class LineQualityService : ILineQualityService
     }
 
     /// <inheritdoc />
-    public bool IsTestRunning { get; private set; }
+    public bool IsTestRunning => _isTestRunning;
 
     /// <inheritdoc />
-    public bool IsResponderRunning => _responderTask is { IsCompleted: false };
+    /// <remarks>
+    /// Tracked explicitly rather than derived from the responder task, because the task completing
+    /// is not the moment the port is free: it is released a little earlier, and callers that ask
+    /// whether the port is available need the answer to change at that moment, not at the other.
+    /// </remarks>
+    public bool IsResponderRunning => _isResponderRunning;
+
+    /// <inheritdoc />
+    public bool IsBusy => _isTestRunning || _isResponderRunning;
 
     /// <inheritdoc />
     public int ResponderBaudRate => _responder?.CurrentBaudRate ?? 0;
+
+    /// <inheritdoc />
+    public event EventHandler? BusyChanged;
 
     /// <inheritdoc />
     public event EventHandler<LineQualityExchangeEventArgs>? ResponderExchangeCompleted;
@@ -76,7 +89,7 @@ public sealed class LineQualityService : ILineQualityService
         EnsurePortIsFree();
 
         var connection = CreateConnection(portName);
-        IsTestRunning = true;
+        SetTestRunning(true);
         try
         {
             var test = new LineQualityTest(connection);
@@ -84,8 +97,8 @@ public sealed class LineQualityService : ILineQualityService
         }
         finally
         {
-            IsTestRunning = false;
             await CloseQuietly(connection);
+            SetTestRunning(false);
         }
     }
 
@@ -104,6 +117,7 @@ public sealed class LineQualityService : ILineQualityService
         _responderConnection = connection;
         _responder = responder;
         _responderCancellation = cancellation;
+        SetResponderRunning(true);
         _responderTask = RunResponder(responder, cancellation.Token);
 
         return Task.CompletedTask;
@@ -169,9 +183,28 @@ public sealed class LineQualityService : ILineQualityService
             {
                 await CloseQuietly(connection);
             }
+
+            // Flipped last, so nothing can claim the port until it has actually been released.
+            SetResponderRunning(false);
         }
 
         RaiseEvent(ResponderStopped, failure);
+    }
+
+    private void SetTestRunning(bool running)
+    {
+        if (_isTestRunning == running) return;
+
+        _isTestRunning = running;
+        RaiseEvent(BusyChanged);
+    }
+
+    private void SetResponderRunning(bool running)
+    {
+        if (_isResponderRunning == running) return;
+
+        _isResponderRunning = running;
+        RaiseEvent(BusyChanged);
     }
 
     private void OnResponderExchangeCompleted(object? sender, LineQualityExchangeEventArgs args) =>
@@ -213,6 +246,20 @@ public sealed class LineQualityService : ILineQualityService
         finally
         {
             connection.Dispose();
+        }
+    }
+
+    private void RaiseEvent(EventHandler? eventHandler)
+    {
+        if (eventHandler == null) return;
+
+        if (_synchronizationContext != null)
+        {
+            _synchronizationContext.Post(_ => eventHandler.Invoke(this, EventArgs.Empty), null);
+        }
+        else
+        {
+            eventHandler.Invoke(this, EventArgs.Empty);
         }
     }
 

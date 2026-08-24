@@ -93,7 +93,7 @@ public class LineQualityPageTests : UiTestBase
         }
         finally
         {
-            TestApp.MockLineQuality.Reset();
+            TestApp.RestoreLineQualityDefaults();
         }
     }
 
@@ -171,7 +171,7 @@ public class LineQualityPageTests : UiTestBase
         }
         finally
         {
-            TestApp.MockLineQuality.Reset();
+            TestApp.RestoreLineQualityDefaults();
         }
     }
 
