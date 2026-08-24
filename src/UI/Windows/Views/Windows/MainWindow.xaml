@@ -44,6 +44,12 @@
                         <ui:SymbolIcon Symbol="Tv24" />
                     </ui:NavigationViewItem.Icon>
                 </ui:NavigationViewItem>
+                <ui:NavigationViewItem AutomationProperties.AutomationId="NavItem_LineQuality"
+                                      Content="{localization:Localize Navigation_LineQuality}" TargetPageType="{x:Type pages:LineQualityPage}" NavigationCacheMode="Required">
+                    <ui:NavigationViewItem.Icon>
+                        <ui:SymbolIcon Symbol="Pulse24" />
+                    </ui:NavigationViewItem.Icon>
+                </ui:NavigationViewItem>
             </ui:NavigationView.MenuItems>
             <ui:NavigationView.FooterMenuItems>
                 <ui:NavigationViewItem AutomationProperties.AutomationId="NavItem_Info"

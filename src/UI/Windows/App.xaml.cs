@@ -66,11 +66,14 @@ public partial class App
         services.AddSingleton<ManageViewModel>();
         services.AddSingleton<MonitorPage>();
         services.AddSingleton<MonitorViewModel>();
+        services.AddSingleton<LineQualityPage>();
+        services.AddSingleton<LineQualityViewModel>();
         services.AddSingleton<InfoPage>();
 
         services.AddSingleton<IDeviceManagementService, DeviceManagementService>();
         services.AddSingleton<IDialogService, WindowsDialogService>();
         services.AddSingleton<ISerialPortConnectionService, WindowsSerialPortConnectionService>();
+        services.AddSingleton<ILineQualityService, LineQualityService>();
         services.AddSingleton<IUsbDeviceMonitorService, WindowsUsbDeviceMonitorService>();
         services.AddSingleton<AppUserSettingsService>();
         services.AddSingleton<IUserSettingsService>(sp => sp.GetRequiredService<AppUserSettingsService>());
@@ -147,6 +150,14 @@ public partial class App
         // Dispose of services that need explicit cleanup
         var configurationViewModel = _host.Services.GetService<ConfigurationViewModel>();
         configurationViewModel?.Dispose();
+
+        var lineQualityViewModel = _host.Services.GetService<LineQualityViewModel>();
+        if (lineQualityViewModel != null)
+        {
+            // Releases the port if the responder is still answering on it.
+            await lineQualityViewModel.StopResponderCommand.ExecuteAsync(null);
+            lineQualityViewModel.Dispose();
+        }
 
         var usbMonitor = _host.Services.GetService<IUsbDeviceMonitorService>();
         usbMonitor?.Dispose();

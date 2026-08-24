@@ -29,4 +29,20 @@ public interface ISerialPortConnectionService : IOsdpConnection
     /// <param name="baudRate">The baud rate for the serial port.</param>
     /// <returns>An ISerialPortConnectionService object representing the serial port connection.</returns>
     ISerialPortConnectionService GetConnection(string portName, int baudRate);
+
+    /// <summary>
+    /// Retrieves a connection whose baud rate can be changed while it stays open, or null when
+    /// the platform's serial implementation cannot do that.
+    /// </summary>
+    /// <param name="portName">The name of the serial port.</param>
+    /// <param name="baudRate">The baud rate to open the port at.</param>
+    /// <returns>A retunable connection, or null when the platform does not support retuning.</returns>
+    /// <remarks>
+    /// The line quality test sweeps baud rates and must retune the port in place; closing and
+    /// reopening between rates is slow, can leave the handle briefly unavailable, and toggles the
+    /// control lines in a way that disturbs the bus. Platforms whose connection cannot do this
+    /// return null and the caller reports the feature as unavailable rather than failing later.
+    /// </remarks>
+    IRetunableOsdpConnection? GetRetunableConnection(string portName, int baudRate) =>
+        GetConnection(portName, baudRate) as IRetunableOsdpConnection;
 }

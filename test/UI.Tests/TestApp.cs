@@ -23,6 +23,7 @@ public class TestApp : App
     public Mock<ILanguageMismatchService> MockLanguageMismatch { get; } = new();
     public Mock<IUserSettingsService> MockUserSettings { get; } = new();
     public Mock<ILocalizationService> MockLocalization { get; } = new();
+    public Mock<ILineQualityService> MockLineQuality { get; } = new();
 
     private IHost? _testHost;
 
@@ -116,6 +117,7 @@ public class TestApp : App
             services.AddSingleton(MockLanguageMismatch.Object);
             services.AddSingleton(MockUserSettings.Object);
             services.AddSingleton(MockLocalization.Object);
+            services.AddSingleton(MockLineQuality.Object);
         });
 
         _testHost.Start();

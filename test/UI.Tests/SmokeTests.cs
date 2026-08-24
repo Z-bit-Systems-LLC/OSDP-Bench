@@ -19,6 +19,7 @@ public class SmokeTests : UiTestBase
         var connectNav = FindByAutomationId("NavItem_Connect");
         var manageNav = FindByAutomationId("NavItem_Manage");
         var monitorNav = FindByAutomationId("NavItem_Monitor");
+        var lineQualityNav = FindByAutomationId("NavItem_LineQuality");
         var infoNav = FindByAutomationId("NavItem_Info");
 
         Assert.Multiple(() =>
@@ -26,6 +27,7 @@ public class SmokeTests : UiTestBase
             Assert.That(connectNav, Is.Not.Null, "Connect navigation item should exist.");
             Assert.That(manageNav, Is.Not.Null, "Manage navigation item should exist.");
             Assert.That(monitorNav, Is.Not.Null, "Monitor navigation item should exist.");
+            Assert.That(lineQualityNav, Is.Not.Null, "Line Quality navigation item should exist.");
             Assert.That(infoNav, Is.Not.Null, "Info navigation item should exist.");
         });
     }
@@ -33,7 +35,7 @@ public class SmokeTests : UiTestBase
     [Test]
     public void NavigateToEachPage()
     {
-        var navIds = new[] { "NavItem_Manage", "NavItem_Monitor", "NavItem_Info", "NavItem_Connect" };
+        var navIds = new[] { "NavItem_Manage", "NavItem_Monitor", "NavItem_LineQuality", "NavItem_Info", "NavItem_Connect" };
 
         foreach (var navId in navIds)
         {

@@ -1,0 +1,423 @@
+﻿<Page x:Class="OSDPBench.Windows.Views.Pages.LineQualityPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+      xmlns:local="clr-namespace:OSDPBench.Windows.Views.Pages"
+      xmlns:converters="clr-namespace:ZBitSystems.Wpf.UI.Converters;assembly=ZBitSystems.Wpf.UI"
+      xmlns:appConverters="clr-namespace:OSDPBench.Windows.Converters"
+      xmlns:localization="clr-namespace:ZBitSystems.Wpf.UI.Localization;assembly=ZBitSystems.Wpf.UI"
+      mc:Ignorable="d"
+      d:DataContext="{d:DesignInstance local:LineQualityPage, IsDesignTimeCreatable=False}"
+      d:DesignHeight="450" d:DesignWidth="800"
+      Title="{localization:Localize Page_LineQuality}">
+
+    <Page.Resources>
+        <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+        <converters:InverseBoolConverter x:Key="InverseBoolConverter" />
+        <converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
+        <appConverters:LineQualityVerdictConverter x:Key="VerdictConverter" />
+    </Page.Resources>
+
+    <StackPanel Style="{StaticResource Page.Container}">
+
+        <ContentControl Content="{Binding RelativeSource={RelativeSource AncestorType=Page}, Path=Title}"
+                        Template="{StaticResource Template.PageHeader}" />
+
+        <!-- Role and port selection -->
+        <ui:Card Style="{StaticResource Card.Standard}">
+            <StackPanel Orientation="Vertical">
+                <ui:TextBlock Style="{StaticResource Section.Header}"
+                              Text="{localization:Localize LineQuality_Role}" />
+
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                    <RadioButton Content="{localization:Localize LineQuality_RoleController}"
+                                 AutomationProperties.AutomationId="LineQuality_RoleController"
+                                 IsChecked="{Binding ViewModel.IsControllerMode, Mode=TwoWay}"
+                                 IsEnabled="{Binding ViewModel.IsBusy, Converter={StaticResource InverseBoolConverter}}"
+                                 GroupName="LineQualityRole"
+                                 Style="{StaticResource ToggleButton.Segmented}" />
+                    <RadioButton Content="{localization:Localize LineQuality_RoleResponder}"
+                                 AutomationProperties.AutomationId="LineQuality_RoleResponder"
+                                 IsChecked="{Binding ViewModel.IsControllerMode, Mode=OneWay, Converter={StaticResource InverseBoolConverter}}"
+                                 IsEnabled="{Binding ViewModel.IsBusy, Converter={StaticResource InverseBoolConverter}}"
+                                 GroupName="LineQualityRole"
+                                 Style="{StaticResource ToggleButton.Segmented}"
+                                 Margin="4,0,0,0" />
+                </StackPanel>
+
+                <ui:TextBlock Style="{StaticResource Text.Body}"
+                              TextWrapping="Wrap"
+                              Margin="0,0,0,12"
+                              Text="{localization:Localize LineQuality_Introduction}"
+                              Visibility="{Binding ViewModel.IsControllerMode, Converter={StaticResource BooleanToVisibilityConverter}}" />
+
+                <ui:TextBlock Style="{StaticResource Text.Body}"
+                              TextWrapping="Wrap"
+                              Margin="0,0,0,12"
+                              Text="{localization:Localize LineQuality_ResponderIntroduction}"
+                              Visibility="{Binding ViewModel.IsResponderMode, Converter={StaticResource BooleanToVisibilityConverter}}" />
+
+                <WrapPanel Orientation="Horizontal">
+                    <StackPanel Style="{StaticResource Section.Container}" MinWidth="180">
+                        <Label Content="{localization:Localize LineQuality_SerialPort}"
+                               Style="{StaticResource Label.Standard}"
+                               Target="{Binding ElementName=SerialPortComboBox}" />
+                        <ComboBox Name="SerialPortComboBox"
+                                  AutomationProperties.AutomationId="LineQuality_SerialPort"
+                                  Style="{StaticResource ComboBox.Standard}"
+                                  ItemsSource="{Binding ViewModel.AvailableSerialPorts}"
+                                  SelectedItem="{Binding ViewModel.SelectedSerialPort, Mode=TwoWay}"
+                                  IsEnabled="{Binding ViewModel.IsBusy, Converter={StaticResource InverseBoolConverter}}"
+                                  DisplayMemberPath="Name" />
+                    </StackPanel>
+
+                    <StackPanel Style="{StaticResource Section.Container}"
+                                MinWidth="220"
+                                Visibility="{Binding ViewModel.IsControllerMode, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <Label Content="{localization:Localize LineQuality_Profile}"
+                               Style="{StaticResource Label.Standard}"
+                               Target="{Binding ElementName=ProfileComboBox}" />
+                        <ComboBox Name="ProfileComboBox"
+                                  AutomationProperties.AutomationId="LineQuality_Profile"
+                                  Style="{StaticResource ComboBox.Standard}"
+                                  ItemsSource="{Binding ViewModel.AvailableProfiles}"
+                                  SelectedItem="{Binding ViewModel.SelectedProfile, Mode=TwoWay}"
+                                  IsEnabled="{Binding ViewModel.IsBusy, Converter={StaticResource InverseBoolConverter}}"
+                                  DisplayMemberPath="Name" />
+                    </StackPanel>
+
+                    <StackPanel Style="{StaticResource Section.Container}" MinWidth="140">
+                        <Label Content="{localization:Localize LineQuality_Address}"
+                               Style="{StaticResource Label.Standard}"
+                               Target="{Binding ElementName=AddressNumberBox}" />
+                        <ui:NumberBox Name="AddressNumberBox"
+                                      AutomationProperties.AutomationId="LineQuality_Address"
+                                      Style="{StaticResource NumberBox.Standard}"
+                                      Value="{Binding ViewModel.AddressValue, Mode=TwoWay}"
+                                      IsEnabled="{Binding ViewModel.IsBusy, Converter={StaticResource InverseBoolConverter}}"
+                                      Minimum="0"
+                                      Maximum="126" />
+                    </StackPanel>
+                </WrapPanel>
+
+                <!-- The profile decides what a PASS actually proves, so it is stated next to the choice. -->
+                <ui:TextBlock Style="{StaticResource Text.Caption}"
+                              TextWrapping="Wrap"
+                              Margin="0,4,0,0"
+                              Text="{Binding ViewModel.ProfileDetail}"
+                              Visibility="{Binding ViewModel.IsControllerMode, Converter={StaticResource BooleanToVisibilityConverter}}" />
+            </StackPanel>
+        </ui:Card>
+
+        <!-- Controller: baud rate selection and run controls -->
+        <ui:Card Style="{StaticResource Card.Standard}"
+                 Visibility="{Binding ViewModel.IsControllerMode, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <StackPanel Orientation="Vertical">
+                <ui:TextBlock Style="{StaticResource Section.Header}"
+                              Text="{localization:Localize LineQuality_BaudRates}" />
+
+                <ItemsControl ItemsSource="{Binding ViewModel.BaudRateOptions}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel Orientation="Horizontal" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <CheckBox Content="{Binding BaudRate}"
+                                      IsChecked="{Binding IsSelected, Mode=TwoWay}"
+                                      Margin="0,0,16,0" />
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <StackPanel Orientation="Horizontal" Margin="{StaticResource Margin.Card}">
+                    <ui:Button Name="StartTestButton"
+                               AutomationProperties.AutomationId="LineQuality_StartTest"
+                               Content="{localization:Localize LineQuality_StartTest}"
+                               Appearance="Primary"
+                               Command="{Binding ViewModel.StartTestCommand}"
+                               Visibility="{Binding ViewModel.IsTestRunning, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=Invert}">
+                        <ui:Button.Icon>
+                            <ui:SymbolIcon Symbol="Play24" />
+                        </ui:Button.Icon>
+                    </ui:Button>
+
+                    <ui:Button Name="CancelTestButton"
+                               AutomationProperties.AutomationId="LineQuality_CancelTest"
+                               Content="{localization:Localize LineQuality_CancelTest}"
+                               Command="{Binding ViewModel.StartTestCancelCommand}"
+                               Visibility="{Binding ViewModel.IsTestRunning, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <ui:Button.Icon>
+                            <ui:SymbolIcon Symbol="Stop24" />
+                        </ui:Button.Icon>
+                    </ui:Button>
+                </StackPanel>
+
+                <!-- Progress -->
+                <StackPanel Orientation="Vertical" Margin="0,8,0,0">
+                    <ProgressBar Value="{Binding ViewModel.ProgressPercent, Mode=OneWay}"
+                                 Minimum="0"
+                                 Maximum="100"
+                                 Height="8"
+                                 Visibility="{Binding ViewModel.IsTestRunning, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                    <TextBlock Style="{StaticResource Text.Caption}"
+                               Margin="0,6,0,0"
+                               TextWrapping="Wrap"
+                               Text="{Binding ViewModel.ProgressMessage}" />
+                </StackPanel>
+            </StackPanel>
+        </ui:Card>
+
+        <!-- Controller: results -->
+        <ui:Card Style="{StaticResource Card.Standard}"
+                 Visibility="{Binding ViewModel.HasResults, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <StackPanel Orientation="Vertical">
+                <ui:TextBlock Style="{StaticResource Section.Header}"
+                              Text="{localization:Localize LineQuality_Results}" />
+
+                <WrapPanel Orientation="Horizontal" Margin="0,0,0,12">
+                    <StackPanel Orientation="Vertical" Margin="0,0,24,0">
+                        <TextBlock Text="{localization:Localize LineQuality_OverallVerdict}"
+                                   Style="{StaticResource Text.Stat.Label}" />
+                        <TextBlock Text="{Binding ViewModel.OverallVerdict}"
+                                   Style="{StaticResource Text.Stat.Value}"
+                                   Foreground="{Binding ViewModel.OverallVerdict, Converter={StaticResource VerdictConverter}}" />
+                    </StackPanel>
+
+                    <StackPanel Orientation="Vertical" Margin="0,0,24,0">
+                        <TextBlock Text="{localization:Localize LineQuality_RecommendedBaudRate}"
+                                   Style="{StaticResource Text.Stat.Label}" />
+                        <TextBlock Text="{Binding ViewModel.RecommendedBaudRateText}"
+                                   Style="{StaticResource Text.Stat.Value}" />
+                    </StackPanel>
+
+                    <StackPanel Orientation="Vertical">
+                        <TextBlock Text="{localization:Localize LineQuality_Duration}"
+                                   Style="{StaticResource Text.Stat.Label}" />
+                        <TextBlock Text="{Binding ViewModel.TestDurationText}"
+                                   Style="{StaticResource Text.Stat.Value}" />
+                    </StackPanel>
+                </WrapPanel>
+
+                <DataGrid x:Name="ResultsDataGrid"
+                          ItemsSource="{Binding ViewModel.Results}"
+                          AutoGenerateColumns="False"
+                          CanUserAddRows="False"
+                          IsReadOnly="True"
+                          HeadersVisibility="Column"
+                          AutomationProperties.Name="{localization:Localize Accessibility_LineQualityResults}">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="{localization:Localize LineQuality_ColumnBaudRate}"
+                                            Binding="{Binding BaudRate}" />
+                        <DataGridTemplateColumn Header="{localization:Localize LineQuality_ColumnVerdict}">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Verdict}"
+                                               FontWeight="SemiBold"
+                                               Foreground="{Binding Verdict, Converter={StaticResource VerdictConverter}}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTextColumn Header="{localization:Localize LineQuality_ColumnSent}"
+                                            Binding="{Binding PacketsSent}" />
+                        <DataGridTextColumn Header="{localization:Localize LineQuality_ColumnSuccess}"
+                                            Binding="{Binding SuccessRatePercent, StringFormat={}{0:F2}%}" />
+                        <DataGridTextColumn Header="{localization:Localize LineQuality_ColumnTimeouts}"
+                                            Binding="{Binding Timeouts}" />
+                        <DataGridTextColumn Header="{localization:Localize LineQuality_ColumnIntegrity}"
+                                            Binding="{Binding IntegrityErrors}" />
+                        <DataGridTextColumn Header="{localization:Localize LineQuality_ColumnNaks}"
+                                            Binding="{Binding Naks}" />
+                        <DataGridTextColumn Header="{localization:Localize LineQuality_ColumnMismatches}"
+                                            Binding="{Binding PatternMismatches}" />
+                        <DataGridTextColumn Header="{localization:Localize LineQuality_ColumnMaxResponse}"
+                                            Binding="{Binding MaxResponseTimeMs, StringFormat={}{0:F1} ms}" />
+                        <DataGridTextColumn Header="{localization:Localize LineQuality_ColumnDetectionLimit}"
+                                            Binding="{Binding DetectionLimitPercent, StringFormat={}{0:F2}%}" />
+                        <DataGridTemplateColumn Header="{localization:Localize LineQuality_ColumnReason}"
+                                                Width="*">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Vertical">
+                                        <TextBlock Text="{Binding FailureReason}"
+                                                   TextWrapping="Wrap"
+                                                   Visibility="{Binding FailureReason, Converter={StaticResource NullToVisibilityConverter}}" />
+                                        <TextBlock Text="{Binding SkipReason}"
+                                                   TextWrapping="Wrap"
+                                                   Visibility="{Binding SkipReason, Converter={StaticResource NullToVisibilityConverter}}" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+
+                <ui:TextBlock Style="{StaticResource Text.Caption}"
+                              Margin="0,8,0,0"
+                              TextWrapping="Wrap"
+                              Text="{localization:Localize LineQuality_TimingCaveat}" />
+            </StackPanel>
+        </ui:Card>
+
+        <!-- Controller: report metadata and export -->
+        <ui:Card Style="{StaticResource Card.Standard}"
+                 Visibility="{Binding ViewModel.HasResults, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <StackPanel Orientation="Vertical">
+                <ui:TextBlock Style="{StaticResource Section.Header}"
+                              Text="{localization:Localize LineQuality_ReportDetails}" />
+
+                <ui:TextBlock Style="{StaticResource Text.Caption}"
+                              TextWrapping="Wrap"
+                              Margin="0,0,0,8"
+                              Text="{localization:Localize LineQuality_ReportDetailsHint}" />
+
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <StackPanel Grid.Row="0" Grid.Column="0" Style="{StaticResource Section.Container}">
+                        <Label Content="{localization:Localize LineQuality_TesterName}"
+                               Style="{StaticResource Label.Standard}"
+                               Target="{Binding ElementName=TesterNameTextBox}" />
+                        <TextBox Name="TesterNameTextBox"
+                                 Style="{StaticResource TextBox.Standard}"
+                                 Text="{Binding ViewModel.TesterName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                    </StackPanel>
+
+                    <StackPanel Grid.Row="0" Grid.Column="1" Style="{StaticResource Section.Container}">
+                        <Label Content="{localization:Localize LineQuality_InstallationLocation}"
+                               Style="{StaticResource Label.Standard}"
+                               Target="{Binding ElementName=LocationTextBox}" />
+                        <TextBox Name="LocationTextBox"
+                                 Style="{StaticResource TextBox.Standard}"
+                                 Text="{Binding ViewModel.InstallationLocation, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                    </StackPanel>
+
+                    <StackPanel Grid.Row="1" Grid.Column="0" Style="{StaticResource Section.Container}">
+                        <Label Content="{localization:Localize LineQuality_CableDescription}"
+                               Style="{StaticResource Label.Standard}"
+                               Target="{Binding ElementName=CableTextBox}" />
+                        <TextBox Name="CableTextBox"
+                                 Style="{StaticResource TextBox.Standard}"
+                                 Text="{Binding ViewModel.CableDescription, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                    </StackPanel>
+
+                    <StackPanel Grid.Row="1" Grid.Column="1" Style="{StaticResource Section.Container}">
+                        <Label Content="{localization:Localize LineQuality_AdapterDescription}"
+                               Style="{StaticResource Label.Standard}"
+                               Target="{Binding ElementName=AdapterTextBox}" />
+                        <TextBox Name="AdapterTextBox"
+                                 Style="{StaticResource TextBox.Standard}"
+                                 Text="{Binding ViewModel.AdapterDescription, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                    </StackPanel>
+
+                    <StackPanel Grid.Row="2" Grid.Column="0" Style="{StaticResource Section.Container}">
+                        <Label Content="{localization:Localize LineQuality_AcuDescription}"
+                               Style="{StaticResource Label.Standard}"
+                               Target="{Binding ElementName=AcuTextBox}" />
+                        <TextBox Name="AcuTextBox"
+                                 Style="{StaticResource TextBox.Standard}"
+                                 Text="{Binding ViewModel.AcuDescription, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                    </StackPanel>
+
+                    <StackPanel Grid.Row="2" Grid.Column="1" Style="{StaticResource Section.Container}">
+                        <Label Content="{localization:Localize LineQuality_PdDescription}"
+                               Style="{StaticResource Label.Standard}"
+                               Target="{Binding ElementName=PdTextBox}" />
+                        <TextBox Name="PdTextBox"
+                                 Style="{StaticResource TextBox.Standard}"
+                                 Text="{Binding ViewModel.PdDescription, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                    </StackPanel>
+                </Grid>
+
+                <StackPanel Style="{StaticResource Section.Container}">
+                    <Label Content="{localization:Localize LineQuality_Notes}"
+                           Style="{StaticResource Label.Standard}"
+                           Target="{Binding ElementName=NotesTextBox}" />
+                    <TextBox Name="NotesTextBox"
+                             Style="{StaticResource TextBox.Standard}"
+                             AcceptsReturn="True"
+                             TextWrapping="Wrap"
+                             MinLines="2"
+                             Text="{Binding ViewModel.Notes, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                </StackPanel>
+
+                <CheckBox Content="{localization:Localize LineQuality_LatencyTimerAdjusted}"
+                          AutomationProperties.AutomationId="LineQuality_LatencyTimerAdjusted"
+                          IsChecked="{Binding ViewModel.AdapterLatencyTimerAdjusted, Mode=TwoWay}"
+                          Margin="0,4,0,0" />
+
+                <ui:Button Name="SaveReportButton"
+                           AutomationProperties.AutomationId="LineQuality_SaveReport"
+                           Content="{localization:Localize LineQuality_SaveReport}"
+                           Margin="{StaticResource Margin.Card}"
+                           HorizontalAlignment="Left"
+                           Command="{Binding ViewModel.SaveReportCommand}">
+                    <ui:Button.Icon>
+                        <ui:SymbolIcon Symbol="ArrowDownload24" />
+                    </ui:Button.Icon>
+                </ui:Button>
+            </StackPanel>
+        </ui:Card>
+
+        <!-- Responder -->
+        <ui:Card Style="{StaticResource Card.Standard}"
+                 Visibility="{Binding ViewModel.IsResponderMode, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <StackPanel Orientation="Vertical">
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                    <ui:Button Name="StartResponderButton"
+                               AutomationProperties.AutomationId="LineQuality_StartResponder"
+                               Content="{localization:Localize LineQuality_StartResponder}"
+                               Appearance="Primary"
+                               Command="{Binding ViewModel.StartResponderCommand}"
+                               Visibility="{Binding ViewModel.IsResponderRunning, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=Invert}">
+                        <ui:Button.Icon>
+                            <ui:SymbolIcon Symbol="Play24" />
+                        </ui:Button.Icon>
+                    </ui:Button>
+
+                    <ui:Button Name="StopResponderButton"
+                               AutomationProperties.AutomationId="LineQuality_StopResponder"
+                               Content="{localization:Localize LineQuality_StopResponder}"
+                               Command="{Binding ViewModel.StopResponderCommand}"
+                               Visibility="{Binding ViewModel.IsResponderRunning, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <ui:Button.Icon>
+                            <ui:SymbolIcon Symbol="Stop24" />
+                        </ui:Button.Icon>
+                    </ui:Button>
+                </StackPanel>
+
+                <WrapPanel Orientation="Horizontal">
+                    <StackPanel Orientation="Vertical" Margin="0,0,24,0">
+                        <TextBlock Text="{localization:Localize LineQuality_ResponderBaudRate}"
+                                   Style="{StaticResource Text.Stat.Label}" />
+                        <TextBlock Text="{Binding ViewModel.ResponderBaudRate}"
+                                   Style="{StaticResource Text.Stat.Value}" />
+                    </StackPanel>
+
+                    <StackPanel Orientation="Vertical">
+                        <TextBlock Text="{localization:Localize LineQuality_ResponderExchanges}"
+                                   Style="{StaticResource Text.Stat.Label}" />
+                        <TextBlock Text="{Binding ViewModel.ResponderExchangeCount}"
+                                   Style="{StaticResource Text.Stat.Value}" />
+                    </StackPanel>
+                </WrapPanel>
+
+                <TextBlock Style="{StaticResource Text.Caption}"
+                           Margin="0,8,0,0"
+                           TextWrapping="Wrap"
+                           Text="{Binding ViewModel.ResponderStatus}" />
+            </StackPanel>
+        </ui:Card>
+    </StackPanel>
+</Page>
