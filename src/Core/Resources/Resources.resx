@@ -1127,11 +1127,11 @@
 
   <!-- Navigation availability -->
   <data name="Navigation_BusyWithLineQuality" xml:space="preserve">
-    <value>Unavailable while a line quality test is running</value>
-    <comment>Tooltip on navigation items disabled during a line quality run</comment>
+    <value>Unavailable while a line quality test or responder is running</value>
+    <comment>Tooltip on navigation items disabled while either line quality role holds the serial port</comment>
   </data>
   <data name="Navigation_LineQualityNeedsPort" xml:space="preserve">
-    <value>Unavailable while connected to a device. Disconnect to run a line quality test.</value>
-    <comment>Tooltip on the Line Quality navigation item when a connection holds the serial port</comment>
+    <value>Unavailable while the serial port is in use. Disconnect, or cancel discovery, to run a line quality test.</value>
+    <comment>Tooltip on the Line Quality navigation item while a connection, discovery sweep, or monitoring session holds the serial port</comment>
   </data>
 </root>
