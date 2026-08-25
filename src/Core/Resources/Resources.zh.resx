@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -842,5 +842,271 @@
   <data name="Accessibility_StatusIndicator" xml:space="preserve">
     <value>状态指示器</value>
     <comment>Screen reader name for LED status indicator</comment>
+  </data>
+  <!-- Line Quality Test -->
+  <data name="Page_LineQuality" xml:space="preserve">
+    <value>Line Quality</value>
+    <comment>Title for the Line Quality page</comment>
+  </data>
+  <data name="Navigation_LineQuality" xml:space="preserve">
+    <value>Line Quality</value>
+    <comment>Navigation menu item for the Line Quality page</comment>
+  </data>
+  <data name="LineQuality_Title" xml:space="preserve">
+    <value>Line Quality Test</value>
+    <comment>Dialog title for line quality test messages</comment>
+  </data>
+  <data name="LineQuality_Introduction" xml:space="preserve">
+    <value>Measures RS-485 cable quality by bouncing test patterns off a responder at each baud rate. The port is driven directly, so nothing else can be connected to it while a test runs.</value>
+    <comment>Explanation shown at the top of the Line Quality page</comment>
+  </data>
+  <data name="LineQuality_Role" xml:space="preserve">
+    <value>Role</value>
+    <comment>Label for the controller/responder role selector</comment>
+  </data>
+  <data name="LineQuality_RoleController" xml:space="preserve">
+    <value>Run test (controller)</value>
+    <comment>Role option that measures the line</comment>
+  </data>
+  <data name="LineQuality_RoleResponder" xml:space="preserve">
+    <value>Answer test (responder)</value>
+    <comment>Role option that answers test traffic from another controller</comment>
+  </data>
+  <data name="LineQuality_SerialPort" xml:space="preserve">
+    <value>Serial Port</value>
+    <comment>Label for the serial port selector on the Line Quality page</comment>
+  </data>
+  <data name="LineQuality_Profile" xml:space="preserve">
+    <value>Profile</value>
+    <comment>Label for the test profile selector</comment>
+  </data>
+  <data name="LineQuality_Profile_Screening" xml:space="preserve">
+    <value>Screening</value>
+    <comment>Name of the fast test profile</comment>
+  </data>
+  <data name="LineQuality_Profile_Qualification" xml:space="preserve">
+    <value>Qualification</value>
+    <comment>Name of the commissioning test profile</comment>
+  </data>
+  <data name="LineQuality_Profile_Extended" xml:space="preserve">
+    <value>Extended</value>
+    <comment>Name of the longest test profile</comment>
+  </data>
+  <data name="LineQuality_ProfileDetail" xml:space="preserve">
+    <value>{0} packets per baud rate, detecting packet loss above {1}%</value>
+    <comment>Summary of a profile; {0} is the packet count and {1} the detection limit percentage</comment>
+  </data>
+  <data name="LineQuality_Address" xml:space="preserve">
+    <value>Responder Address</value>
+    <comment>Label for the line quality responder address</comment>
+  </data>
+  <data name="LineQuality_BaudRates" xml:space="preserve">
+    <value>Baud Rates to Test</value>
+    <comment>Label for the baud rate selection list</comment>
+  </data>
+  <data name="LineQuality_StartTest" xml:space="preserve">
+    <value>Start Test</value>
+    <comment>Button that starts the line quality test</comment>
+  </data>
+  <data name="LineQuality_CancelTest" xml:space="preserve">
+    <value>Cancel Test</value>
+    <comment>Button that abandons a running line quality test</comment>
+  </data>
+  <data name="LineQuality_Starting" xml:space="preserve">
+    <value>Looking for a responder...</value>
+    <comment>Progress message shown before the first exchange</comment>
+  </data>
+  <data name="LineQuality_Complete" xml:space="preserve">
+    <value>Test complete</value>
+    <comment>Progress message shown when the run finishes</comment>
+  </data>
+  <data name="LineQuality_Cancelled" xml:space="preserve">
+    <value>Test cancelled</value>
+    <comment>Progress message shown when the user abandons the run</comment>
+  </data>
+  <data name="LineQuality_Failed" xml:space="preserve">
+    <value>Test failed</value>
+    <comment>Progress message shown when the run could not complete</comment>
+  </data>
+  <data name="LineQuality_NotSupported" xml:space="preserve">
+    <value>The line quality test needs a serial connection whose baud rate can be changed while the port stays open, which this platform does not provide.</value>
+    <comment>Message shown when the platform cannot retune a serial port in place</comment>
+  </data>
+  <data name="LineQuality_DisconnectRequired" xml:space="preserve">
+    <value>The line quality test needs exclusive use of the serial port. Disconnect from the current device and continue?</value>
+    <comment>Confirmation shown when a device is already connected</comment>
+  </data>
+  <data name="LineQuality_Results" xml:space="preserve">
+    <value>Results</value>
+    <comment>Heading for the results table</comment>
+  </data>
+  <data name="LineQuality_OverallVerdict" xml:space="preserve">
+    <value>Overall</value>
+    <comment>Label for the overall verdict of a run</comment>
+  </data>
+  <data name="LineQuality_RecommendedBaudRate" xml:space="preserve">
+    <value>Recommended Rate</value>
+    <comment>Label for the highest baud rate that passed</comment>
+  </data>
+  <data name="LineQuality_NoRecommendedBaudRate" xml:space="preserve">
+    <value>None</value>
+    <comment>Shown when no baud rate passed</comment>
+  </data>
+  <data name="LineQuality_Duration" xml:space="preserve">
+    <value>Duration</value>
+    <comment>Label for how long a run took</comment>
+  </data>
+  <data name="LineQuality_ColumnBaudRate" xml:space="preserve">
+    <value>Baud Rate</value>
+    <comment>Results column header</comment>
+  </data>
+  <data name="LineQuality_ColumnVerdict" xml:space="preserve">
+    <value>Verdict</value>
+    <comment>Results column header</comment>
+  </data>
+  <data name="LineQuality_ColumnSent" xml:space="preserve">
+    <value>Sent</value>
+    <comment>Results column header for packets sent</comment>
+  </data>
+  <data name="LineQuality_ColumnSuccess" xml:space="preserve">
+    <value>Success</value>
+    <comment>Results column header for the success rate</comment>
+  </data>
+  <data name="LineQuality_ColumnTimeouts" xml:space="preserve">
+    <value>Timeouts</value>
+    <comment>Results column header</comment>
+  </data>
+  <data name="LineQuality_ColumnIntegrity" xml:space="preserve">
+    <value>Integrity</value>
+    <comment>Results column header for integrity errors</comment>
+  </data>
+  <data name="LineQuality_ColumnNaks" xml:space="preserve">
+    <value>NAKs</value>
+    <comment>Results column header</comment>
+  </data>
+  <data name="LineQuality_ColumnMismatches" xml:space="preserve">
+    <value>Mismatches</value>
+    <comment>Results column header for pattern mismatches</comment>
+  </data>
+  <data name="LineQuality_ColumnMaxResponse" xml:space="preserve">
+    <value>Max Response</value>
+    <comment>Results column header for the longest response time</comment>
+  </data>
+  <data name="LineQuality_ColumnDetectionLimit" xml:space="preserve">
+    <value>Detection Limit</value>
+    <comment>Results column header for the smallest loss rate the run could rule out</comment>
+  </data>
+  <data name="LineQuality_ColumnReason" xml:space="preserve">
+    <value>Reason</value>
+    <comment>Results column header explaining a failed or untested rate</comment>
+  </data>
+  <data name="LineQuality_TimingCaveat" xml:space="preserve">
+    <value>Response times include the serial adapter's latency timer, commonly 16 ms in each direction. Treat them as a pass or fail against the 200 ms reply window rather than as a measurement of the cable.</value>
+    <comment>Caveat shown beneath the results table</comment>
+  </data>
+  <data name="LineQuality_ReportDetails" xml:space="preserve">
+    <value>Report Details</value>
+    <comment>Heading for the optional report metadata form</comment>
+  </data>
+  <data name="LineQuality_ReportDetailsHint" xml:space="preserve">
+    <value>Optional. Anything left blank appears as a blank in the report for completion by hand.</value>
+    <comment>Hint explaining that report metadata fields are optional</comment>
+  </data>
+  <data name="LineQuality_TesterName" xml:space="preserve">
+    <value>Tester</value>
+    <comment>Report metadata field for who ran the test</comment>
+  </data>
+  <data name="LineQuality_InstallationLocation" xml:space="preserve">
+    <value>Location</value>
+    <comment>Report metadata field for where the installation is</comment>
+  </data>
+  <data name="LineQuality_CableDescription" xml:space="preserve">
+    <value>Cable</value>
+    <comment>Report metadata field for the cable type and length</comment>
+  </data>
+  <data name="LineQuality_AcuDescription" xml:space="preserve">
+    <value>Controller</value>
+    <comment>Report metadata field for the controller model and firmware</comment>
+  </data>
+  <data name="LineQuality_PdDescription" xml:space="preserve">
+    <value>Responder</value>
+    <comment>Report metadata field for the responder model and firmware</comment>
+  </data>
+  <data name="LineQuality_AdapterDescription" xml:space="preserve">
+    <value>Adapter</value>
+    <comment>Report metadata field for the host platform and serial adapter</comment>
+  </data>
+  <data name="LineQuality_LatencyTimerAdjusted" xml:space="preserve">
+    <value>Adapter latency timer lowered before this run</value>
+    <comment>Checkbox recording whether the serial adapter latency timer was reduced</comment>
+  </data>
+  <data name="LineQuality_Notes" xml:space="preserve">
+    <value>Notes</value>
+    <comment>Report metadata field for free-form notes</comment>
+  </data>
+  <data name="LineQuality_SaveReport" xml:space="preserve">
+    <value>Save Report</value>
+    <comment>Button that writes the Markdown commissioning report</comment>
+  </data>
+  <data name="LineQuality_SelectReportDestination" xml:space="preserve">
+    <value>Select the destination for the line quality report</value>
+    <comment>Title of the destination selection dialog for the report</comment>
+  </data>
+  <data name="LineQuality_ReportSaved" xml:space="preserve">
+    <value>Report saved as {0}</value>
+    <comment>Confirmation after saving; {0} is the file name</comment>
+  </data>
+  <data name="LineQuality_ResponderIntroduction" xml:space="preserve">
+    <value>Answers line quality test traffic from a controller on the other end of the cable. Starts at 9600 baud and follows the controller through rate changes, reverting to 9600 after 30 seconds of silence.</value>
+    <comment>Explanation shown in responder mode</comment>
+  </data>
+  <data name="LineQuality_StartResponder" xml:space="preserve">
+    <value>Start Responder</value>
+    <comment>Button that starts answering test traffic</comment>
+  </data>
+  <data name="LineQuality_StopResponder" xml:space="preserve">
+    <value>Stop Responder</value>
+    <comment>Button that stops answering test traffic</comment>
+  </data>
+  <data name="LineQuality_ResponderListening" xml:space="preserve">
+    <value>Listening for test traffic</value>
+    <comment>Status shown once the responder is running</comment>
+  </data>
+  <data name="LineQuality_ResponderStopped" xml:space="preserve">
+    <value>Responder stopped</value>
+    <comment>Status shown once the responder has released the port</comment>
+  </data>
+  <data name="LineQuality_ResponderFailed" xml:space="preserve">
+    <value>Responder stopped: {0}</value>
+    <comment>Status shown when the responder stopped because of an error; {0} is the reason</comment>
+  </data>
+  <data name="LineQuality_ResponderRetuned" xml:space="preserve">
+    <value>Switched to {0} baud</value>
+    <comment>Status shown when the controller moved the responder to a new rate; {0} is the rate</comment>
+  </data>
+  <data name="LineQuality_ResponderReverted" xml:space="preserve">
+    <value>Idle timeout: reverted to {0} baud</value>
+    <comment>Status shown when the responder returned to the baseline rate on its own; {0} is the rate</comment>
+  </data>
+  <data name="LineQuality_ResponderExchanges" xml:space="preserve">
+    <value>Exchanges Answered</value>
+    <comment>Label for the count of exchanges the responder has answered</comment>
+  </data>
+  <data name="LineQuality_ResponderBaudRate" xml:space="preserve">
+    <value>Current Rate</value>
+    <comment>Label for the rate the responder is answering at</comment>
+  </data>
+  <data name="Accessibility_LineQualityResults" xml:space="preserve">
+    <value>Line Quality Results</value>
+    <comment>Screen reader name for the line quality results data grid</comment>
+  </data>
+  <!-- Navigation availability -->
+  <data name="Navigation_BusyWithLineQuality" xml:space="preserve">
+    <value>Unavailable while a line quality test or responder is running</value>
+    <comment>Tooltip on navigation items disabled while either line quality role holds the serial port</comment>
+  </data>
+  <data name="Navigation_LineQualityNeedsPort" xml:space="preserve">
+    <value>Unavailable while the serial port is in use. Disconnect, or cancel discovery, to run a line quality test.</value>
+    <comment>Tooltip on the Line Quality navigation item while a connection, discovery sweep, or monitoring session holds the serial port</comment>
   </data>
 </root>
