@@ -43,18 +43,6 @@ public class LineQualityUserSettings
     /// <summary>Gets or sets the last tester name.</summary>
     public string? TesterName { get; set; }
 
-    /// <summary>Gets or sets the last host platform and serial adapter description.</summary>
-    public string? AdapterDescription { get; set; }
-
-    /// <summary>Gets or sets the last controller-side model and firmware description.</summary>
-    public string? AcuDescription { get; set; }
-
-    /// <summary>Gets or sets the last responder-side model and firmware description.</summary>
-    public string? PdDescription { get; set; }
-
-    /// <summary>Gets or sets whether the adapter's latency timer was recorded as lowered.</summary>
-    public bool AdapterLatencyTimerAdjusted { get; set; }
-
     /// <summary>Gets or sets the last installation location.</summary>
     public string? InstallationLocation { get; set; }
 

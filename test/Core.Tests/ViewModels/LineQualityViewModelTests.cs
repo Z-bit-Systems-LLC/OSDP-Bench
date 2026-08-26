@@ -350,10 +350,6 @@ namespace OSDPBench.Core.Tests.ViewModels
                 BaudRates = [19200, 57600],
                 Address = 42,
                 TesterName = "A. Tech",
-                AdapterDescription = "FTDI FT232R",
-                AcuDescription = "Controller 1.2",
-                PdDescription = "Reader 3.4",
-                AdapterLatencyTimerAdjusted = true,
                 InstallationLocation = "Panel 3, Drop 2",
                 CableDescription = "22 AWG, 150 m"
             });
@@ -365,10 +361,6 @@ namespace OSDPBench.Core.Tests.ViewModels
                     .Select(option => option.BaudRate), Is.EqualTo(new[] { 19200, 57600 }));
                 Assert.That(viewModel.Address, Is.EqualTo(42));
                 Assert.That(viewModel.TesterName, Is.EqualTo("A. Tech"));
-                Assert.That(viewModel.AdapterDescription, Is.EqualTo("FTDI FT232R"));
-                Assert.That(viewModel.AcuDescription, Is.EqualTo("Controller 1.2"));
-                Assert.That(viewModel.PdDescription, Is.EqualTo("Reader 3.4"));
-                Assert.That(viewModel.AdapterLatencyTimerAdjusted, Is.True);
                 Assert.That(viewModel.InstallationLocation, Is.EqualTo("Panel 3, Drop 2"));
                 Assert.That(viewModel.CableDescription, Is.EqualTo("22 AWG, 150 m"));
             });

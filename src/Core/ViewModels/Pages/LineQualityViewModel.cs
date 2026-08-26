@@ -416,34 +416,14 @@ public partial class LineQualityViewModel : ObservableObject, IDisposable
 
     #endregion
 
-    #region Tester and equipment
+    #region Tester
 
-    // These describe the rig rather than the line: the same technician, laptop, adapter and pair of
-    // devices measure every drop on a job. They are carried across launches so they are filled in
-    // once, and they are shown before the run rather than with the results so they can be entered
-    // while the first sweep is still going.
+    // The technician describes the job rather than the line: the same person measures every drop.
+    // The name is carried across launches so it is filled in once, and it is shown before the run
+    // rather than with the results so it can be entered while the first sweep is still going.
 
     /// <summary>Gets or sets who ran the test, for the report header.</summary>
     [ObservableProperty] private string _testerName = string.Empty;
-
-    /// <summary>Gets or sets the controller-side model and firmware, for the report header.</summary>
-    [ObservableProperty] private string _acuDescription = string.Empty;
-
-    /// <summary>Gets or sets the responder-side model and firmware, for the report header.</summary>
-    [ObservableProperty] private string _pdDescription = string.Empty;
-
-    /// <summary>Gets or sets the host platform and serial adapter, for the report header.</summary>
-    [ObservableProperty] private string _adapterDescription = string.Empty;
-
-    /// <summary>
-    /// Gets or sets whether the adapter's latency timer was lowered before the run.
-    /// </summary>
-    /// <remarks>
-    /// Recorded because it decides whether the response times mean anything. A USB adapter left at
-    /// its default 16 ms latency timer dominates the measurement at every rate above about 19200,
-    /// so a report that does not say either way cannot be read as a timing result.
-    /// </remarks>
-    [ObservableProperty] private bool _adapterLatencyTimerAdjusted;
 
     #endregion
 
@@ -547,10 +527,6 @@ public partial class LineQualityViewModel : ObservableObject, IDisposable
         TesterName = NullIfBlank(TesterName),
         InstallationLocation = NullIfBlank(InstallationLocation),
         CableDescription = NullIfBlank(CableDescription),
-        AcuDescription = NullIfBlank(AcuDescription),
-        PdDescription = NullIfBlank(PdDescription),
-        AdapterDescription = NullIfBlank(AdapterDescription),
-        AdapterLatencyTimerAdjusted = AdapterLatencyTimerAdjusted,
         Notes = NullIfBlank(Notes)
     };
 
@@ -621,10 +597,6 @@ public partial class LineQualityViewModel : ObservableObject, IDisposable
         IsControllerMode = saved.IsControllerMode;
 
         TesterName = saved.TesterName ?? string.Empty;
-        AdapterDescription = saved.AdapterDescription ?? string.Empty;
-        AcuDescription = saved.AcuDescription ?? string.Empty;
-        PdDescription = saved.PdDescription ?? string.Empty;
-        AdapterLatencyTimerAdjusted = saved.AdapterLatencyTimerAdjusted;
 
         InstallationLocation = saved.InstallationLocation ?? string.Empty;
         CableDescription = saved.CableDescription ?? string.Empty;
@@ -674,10 +646,6 @@ public partial class LineQualityViewModel : ObservableObject, IDisposable
                 Address = Address,
                 IsControllerMode = IsControllerMode,
                 TesterName = NullIfBlank(TesterName),
-                AdapterDescription = NullIfBlank(AdapterDescription),
-                AcuDescription = NullIfBlank(AcuDescription),
-                PdDescription = NullIfBlank(PdDescription),
-                AdapterLatencyTimerAdjusted = AdapterLatencyTimerAdjusted,
                 InstallationLocation = NullIfBlank(InstallationLocation),
                 CableDescription = NullIfBlank(CableDescription),
                 ReportDestination = _reportDestination
