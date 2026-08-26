@@ -3,6 +3,7 @@ using System.Text;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using OSDP.Net.LineQuality;
+using OSDP.Net.Tracing;
 using OSDPBench.Core.Models;
 using OSDPBench.Core.Services;
 
@@ -72,6 +73,7 @@ public partial class LineQualityViewModel : ObservableObject, IDisposable
         _lineQualityService.ResponderExchangeCompleted += OnResponderExchangeCompleted;
         _lineQualityService.ResponderBaudRateChanged += OnResponderBaudRateChanged;
         _lineQualityService.ResponderStopped += OnResponderStopped;
+        _lineQualityService.TrafficObserved += OnTrafficObserved;
 
         if (_usbDeviceMonitorService != null)
         {
@@ -478,6 +480,35 @@ public partial class LineQualityViewModel : ObservableObject, IDisposable
 
     #endregion
 
+    #region Line activity
+
+    // The page header carries the same Tx and Rx indicators as every other page, but the ones
+    // elsewhere are fed by the panel's trace and this test does not go through the panel. They are
+    // driven from the connection the run owns instead.
+
+    /// <summary>Gets when the line last carried traffic out, for the header's Tx indicator.</summary>
+    [ObservableProperty] private DateTime _lastTxActiveTime = DateTime.MinValue;
+
+    /// <summary>Gets when the line last carried traffic in, for the header's Rx indicator.</summary>
+    [ObservableProperty] private DateTime _lastRxActiveTime = DateTime.MinValue;
+
+    private void OnTrafficObserved(object? sender, TraceDirection direction)
+    {
+        _ = sender;
+
+        switch (direction)
+        {
+            case TraceDirection.Output:
+                LastTxActiveTime = DateTime.Now;
+                break;
+            case TraceDirection.Input or TraceDirection.Trace:
+                LastRxActiveTime = DateTime.Now;
+                break;
+        }
+    }
+
+    #endregion
+
     #region Line details
 
     // These describe the one line that was just measured, and are the fields that have to change
@@ -808,6 +839,7 @@ public partial class LineQualityViewModel : ObservableObject, IDisposable
         _lineQualityService.ResponderExchangeCompleted -= OnResponderExchangeCompleted;
         _lineQualityService.ResponderBaudRateChanged -= OnResponderBaudRateChanged;
         _lineQualityService.ResponderStopped -= OnResponderStopped;
+        _lineQualityService.TrafficObserved -= OnTrafficObserved;
 
         foreach (var option in BaudRateOptions)
         {

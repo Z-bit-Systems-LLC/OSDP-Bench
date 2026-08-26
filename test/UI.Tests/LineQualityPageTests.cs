@@ -1,13 +1,16 @@
-using System.Drawing;
+using System.Windows;
 using System.Windows.Controls.Primitives;
+using System.Windows.Media;
 using FlaUI.Core.AutomationElements;
 using FlaUI.Core.Definitions;
 using FlaUI.Core.Input;
 using Moq;
 using NUnit.Framework;
 using OSDP.Net.LineQuality;
+using OSDP.Net.Tracing;
 using OSDPBench.Core.ViewModels.Pages;
 using OSDPBench.UI.Tests.Helpers;
+using OSDPBench.Windows.Views.Controls;
 using OSDPBench.Windows.Views.Pages;
 
 namespace OSDPBench.UI.Tests;
@@ -192,7 +195,7 @@ public class LineQualityPageTests : UiTestBase
             // Deliberately the far end of the row, well clear of the check box and its label,
             // which is what proves the whole row is the hit area.
             var rowBounds = list!.AsListBox().Items[0].BoundingRectangle;
-            var farEdge = new Point(rowBounds.Right - 10, rowBounds.Top + rowBounds.Height / 2);
+            var farEdge = new System.Drawing.Point(rowBounds.Right - 10, rowBounds.Top + rowBounds.Height / 2);
 
             Mouse.Click(farEdge);
             Assert.That(AssemblySetup.Retry(
@@ -363,5 +366,74 @@ public class LineQualityPageTests : UiTestBase
         });
 
         InvokeOnUI(() => viewModel.IsControllerMode = true);
+    }
+
+    [Test]
+    public void TrafficLightsTheHeaderIndicators()
+    {
+        // The header's indicators are bound by the shared page header template, which every page
+        // uses. This page had no properties behind that binding until the run reported its own
+        // traffic, so the proof is that the value reaches the indicator, not just the view model.
+        var viewModel = InvokeOnUI(() => TestApp.GetService<LineQualityViewModel>());
+        var leds = InvokeOnUI(() => FindLeds(TestApp.GetService<LineQualityPage>()));
+
+        Assert.That(leds, Has.Count.EqualTo(2), "The header should carry a Tx and an Rx indicator.");
+
+        try
+        {
+            InvokeOnUI(() => TestApp.MockLineQuality.Raise(
+                service => service.TrafficObserved += null,
+                TestApp.MockLineQuality.Object,
+                TraceDirection.Output));
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(InvokeOnUI(() => leds[0].LastActivityTime), Is.Not.EqualTo(DateTime.MinValue),
+                    "Outgoing traffic should reach the Tx indicator.");
+                Assert.That(InvokeOnUI(() => leds[1].LastActivityTime), Is.EqualTo(DateTime.MinValue),
+                    "Outgoing traffic should leave the Rx indicator dark.");
+            });
+
+            InvokeOnUI(() => TestApp.MockLineQuality.Raise(
+                service => service.TrafficObserved += null,
+                TestApp.MockLineQuality.Object,
+                TraceDirection.Input));
+
+            Assert.That(InvokeOnUI(() => leds[1].LastActivityTime), Is.Not.EqualTo(DateTime.MinValue),
+                "Incoming traffic should reach the Rx indicator.");
+        }
+        finally
+        {
+            InvokeOnUI(() =>
+            {
+                viewModel.LastTxActiveTime = DateTime.MinValue;
+                viewModel.LastRxActiveTime = DateTime.MinValue;
+            });
+        }
+    }
+
+    /// <summary>
+    /// Collects the activity indicators the page header renders, in the order the template lays
+    /// them out: transmit first, then receive.
+    /// </summary>
+    private static List<LedControl> FindLeds(DependencyObject root)
+    {
+        var found = new List<LedControl>();
+
+        for (int child = 0; child < VisualTreeHelper.GetChildrenCount(root); child++)
+        {
+            var candidate = VisualTreeHelper.GetChild(root, child);
+
+            if (candidate is LedControl led)
+            {
+                found.Add(led);
+            }
+            else
+            {
+                found.AddRange(FindLeds(candidate));
+            }
+        }
+
+        return found;
     }
 }

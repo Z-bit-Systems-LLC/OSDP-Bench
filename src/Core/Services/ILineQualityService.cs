@@ -1,4 +1,5 @@
 using OSDP.Net.LineQuality;
+using OSDP.Net.Tracing;
 
 namespace OSDPBench.Core.Services;
 
@@ -59,6 +60,16 @@ public interface ILineQualityService
     /// Occurs when the responder stops on its own, which normally means the port failed.
     /// </summary>
     event EventHandler<Exception?>? ResponderStopped;
+
+    /// <summary>
+    /// Occurs when traffic passes on the line, in whichever role currently owns the port.
+    /// </summary>
+    /// <remarks>
+    /// Reports that the line is busy rather than what was sent: it is raised a few times a second
+    /// in each direction at most, not once per packet, and is meant for activity indicators rather
+    /// than for anything that needs to account for traffic.
+    /// </remarks>
+    event EventHandler<TraceDirection>? TrafficObserved;
 
     /// <summary>
     /// Determines whether the platform's serial connection can be retuned in place, which both

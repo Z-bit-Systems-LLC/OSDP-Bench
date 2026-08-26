@@ -1,5 +1,6 @@
 using OSDP.Net.Connections;
 using OSDP.Net.LineQuality;
+using OSDP.Net.Tracing;
 
 namespace OSDPBench.Core.Services;
 
@@ -68,6 +69,9 @@ public sealed class LineQualityService : ILineQualityService
 
     /// <inheritdoc />
     public event EventHandler<Exception?>? ResponderStopped;
+
+    /// <inheritdoc />
+    public event EventHandler<TraceDirection>? TrafficObserved;
 
     /// <inheritdoc />
     public bool IsSupported(string portName)
@@ -213,15 +217,29 @@ public sealed class LineQualityService : ILineQualityService
     private void OnResponderBaudRateChanged(object? sender, LineQualityBaudRateChangedEventArgs args) =>
         RaiseEvent(ResponderBaudRateChanged, args);
 
+    /// <summary>
+    /// Opens the port for a run, wrapped so that the traffic it carries reaches subscribers.
+    /// </summary>
+    /// <remarks>
+    /// Wrapped here rather than in each role, so that the controller and the responder report the
+    /// line the same way without either of them knowing anything about it.
+    /// </remarks>
     private IRetunableOsdpConnection CreateConnection(string portName)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(portName);
 
-        return _serialPortConnectionService.GetRetunableConnection(portName, BaselineBaudRate) ??
-               throw new PlatformNotSupportedException(
-                   "This platform's serial connection cannot change baud rate while it stays open, " +
-                   "which the line quality test requires.");
+        var connection = _serialPortConnectionService.GetRetunableConnection(portName, BaselineBaudRate) ??
+                         throw new PlatformNotSupportedException(
+                             "This platform's serial connection cannot change baud rate while it stays open, " +
+                             "which the line quality test requires.");
+
+        var reporting = new ActivityReportingConnection(connection);
+        reporting.ActivityObserved += OnActivityObserved;
+        return reporting;
     }
+
+    private void OnActivityObserved(object? sender, TraceDirection direction) =>
+        RaiseEvent(TrafficObserved, direction);
 
     private void EnsurePortIsFree()
     {
@@ -232,8 +250,14 @@ public sealed class LineQualityService : ILineQualityService
         }
     }
 
-    private static async Task CloseQuietly(IOsdpConnection connection)
+    private async Task CloseQuietly(IOsdpConnection connection)
     {
+        // Detached before the port goes, so a late report cannot arrive from a run that is over.
+        if (connection is ActivityReportingConnection reporting)
+        {
+            reporting.ActivityObserved -= OnActivityObserved;
+        }
+
         try
         {
             await connection.Close();

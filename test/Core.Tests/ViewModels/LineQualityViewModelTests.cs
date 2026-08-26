@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Moq;
 using NUnit.Framework;
 using OSDP.Net.LineQuality;
+using OSDP.Net.Tracing;
 using OSDPBench.Core.Models;
 using OSDPBench.Core.Services;
 using OSDPBench.Core.ViewModels.Pages;
@@ -166,6 +167,42 @@ namespace OSDPBench.Core.Tests.ViewModels
                 Assert.That(viewModel.SelectAllBaudRatesCommand.CanExecute(null), Is.False);
                 Assert.That(viewModel.ClearBaudRatesCommand.CanExecute(null), Is.False);
             });
+        }
+
+        [Test]
+        public async Task TrafficObserved_LightsTheIndicatorForItsOwnDirection()
+        {
+            var viewModel = await CreateViewModel();
+
+            _lineQualityServiceMock.Raise(service => service.TrafficObserved += null,
+                _lineQualityServiceMock.Object, TraceDirection.Output);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(viewModel.LastTxActiveTime, Is.Not.EqualTo(DateTime.MinValue),
+                    "Outgoing traffic should light the Tx indicator.");
+                Assert.That(viewModel.LastRxActiveTime, Is.EqualTo(DateTime.MinValue),
+                    "Outgoing traffic should leave the Rx indicator alone.");
+            });
+
+            _lineQualityServiceMock.Raise(service => service.TrafficObserved += null,
+                _lineQualityServiceMock.Object, TraceDirection.Input);
+
+            Assert.That(viewModel.LastRxActiveTime, Is.Not.EqualTo(DateTime.MinValue),
+                "Incoming traffic should light the Rx indicator.");
+        }
+
+        [Test]
+        public async Task TrafficObserved_IsIgnoredOnceThePageIsDisposed()
+        {
+            var viewModel = await CreateViewModel();
+            viewModel.Dispose();
+
+            _lineQualityServiceMock.Raise(service => service.TrafficObserved += null,
+                _lineQualityServiceMock.Object, TraceDirection.Output);
+
+            Assert.That(viewModel.LastTxActiveTime, Is.EqualTo(DateTime.MinValue),
+                "A disposed page should no longer be listening to the line.");
         }
 
         [Test]
