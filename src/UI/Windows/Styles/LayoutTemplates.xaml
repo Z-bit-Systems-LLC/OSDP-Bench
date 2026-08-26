@@ -47,20 +47,14 @@
                         <!-- Connection Status - Active Mode (Address at BaudRate) -->
                         <TextBlock Style="{StaticResource ConnectionStatusText}"
                                    VerticalAlignment="Center"
-                                   Margin="0,0,16,0">
-                            <TextBlock.Text>
-                                <MultiBinding StringFormat="{localization:Localize Status_ConnectionFormat}">
-                                    <Binding Path="ViewModel.ConnectedAddress" />
-                                    <Binding Path="ViewModel.ConnectedBaudRate" />
-                                </MultiBinding>
-                            </TextBlock.Text>
-                        </TextBlock>
+                                   Margin="0,0,16,0"
+                                   Text="{localization:LocalizeFormat Status_ConnectionFormat, Paths='ViewModel.ConnectedAddress,ViewModel.ConnectedBaudRate'}" />
 
                         <!-- Connection Status - Passive Monitoring (BaudRate only) -->
                         <TextBlock VerticalAlignment="Center"
                                    Margin="0,0,16,0"
                                    FontWeight="Bold"
-                                   Text="{Binding Path=ViewModel.ConnectedBaudRate, StringFormat={localization:Localize Status_PassiveMonitoringFormat}}">
+                                   Text="{localization:LocalizeFormat Status_PassiveMonitoringFormat, Paths=ViewModel.ConnectedBaudRate}">
                             <TextBlock.Style>
                                 <Style TargetType="TextBlock" BasedOn="{StaticResource Text.Body}">
                                     <Setter Property="Visibility" Value="Collapsed"/>
