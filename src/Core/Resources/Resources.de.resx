@@ -1004,13 +1004,25 @@
     <value>Response times include the serial adapter's latency timer, commonly 16 ms in each direction. Treat them as a pass or fail against the 200 ms reply window rather than as a measurement of the cable.</value>
     <comment>Caveat shown beneath the results table</comment>
   </data>
-  <data name="LineQuality_ReportDetails" xml:space="preserve">
-    <value>Report Details</value>
-    <comment>Heading for the optional report metadata form</comment>
+  <data name="LineQuality_TesterEquipment" xml:space="preserve">
+    <value>Tester and Equipment</value>
+    <comment>Heading for the collapsible section holding the report fields that describe the test rig</comment>
   </data>
-  <data name="LineQuality_ReportDetailsHint" xml:space="preserve">
-    <value>Optional. Anything left blank appears as a blank in the report for completion by hand.</value>
-    <comment>Hint explaining that report metadata fields are optional</comment>
+  <data name="LineQuality_TesterEquipmentHint" xml:space="preserve">
+    <value>These describe your test rig rather than the line, so they are remembered between runs and between launches. Fill them in once for the job.</value>
+    <comment>Hint explaining that the tester and equipment fields are remembered</comment>
+  </data>
+  <data name="LineQuality_LineDetails" xml:space="preserve">
+    <value>Line Details</value>
+    <comment>Heading for the report fields that describe the single line just measured</comment>
+  </data>
+  <data name="LineQuality_LineDetailsHint" xml:space="preserve">
+    <value>These describe the line just measured. The location and cable are kept for the next drop; the notes are cleared when the next test starts.</value>
+    <comment>Hint explaining which line detail fields carry over to the next run</comment>
+  </data>
+  <data name="LineQuality_ClearLineDetails" xml:space="preserve">
+    <value>Clear Line Details</value>
+    <comment>Button that empties the location, cable and notes before testing an unrelated line</comment>
   </data>
   <data name="LineQuality_TesterName" xml:space="preserve">
     <value>Tester</value>
