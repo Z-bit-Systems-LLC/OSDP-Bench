@@ -3,7 +3,7 @@
 A professional tool for configuring and troubleshooting OSDP devices.
 
 [![.NET](https://img.shields.io/badge/.NET-10.0-blue)](https://dotnet.microsoft.com/)
-[![License](https://img.shields.io/badge/License-Eclipse%202.0-green.svg)](LICENSE)
+[![License](https://img.shields.io/badge/License-Apache%202.0-green.svg)](LICENSE)
 
 ## About
 
@@ -112,7 +112,7 @@ The CI pipeline will automatically handle version bumping and release creation.
 
 ## License
 
-This project is licensed under the Eclipse Public License 2.0 - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.
 
 ## Contact
 
