@@ -1,15 +1,34 @@
 #!/usr/bin/env pwsh
 
 # OSDP-Bench Release Script
-# Creates a version tag to trigger CI release pipeline
+# Creates a version tag to trigger CI release pipeline and opens a matching
+# draft release on GitHub
 
 param(
-    [string]$Version
+    [string]$Version,
+    [string]$NotesFile
 )
 
 Write-Host "OSDP-Bench Release Process" -ForegroundColor Cyan
 Write-Host "==========================" -ForegroundColor Cyan
 Write-Host ""
+
+# Check the GitHub CLI before anything is changed, so a missing tool costs nothing
+if (-not (Get-Command gh -ErrorAction SilentlyContinue)) {
+    Write-Host "Error: GitHub CLI (gh) is not installed. Install it from https://cli.github.com/" -ForegroundColor Red
+    exit 1
+}
+
+gh auth status *> $null
+if ($LASTEXITCODE -ne 0) {
+    Write-Host "Error: GitHub CLI is not authenticated. Run 'gh auth login' first." -ForegroundColor Red
+    exit 1
+}
+
+if ($NotesFile -and -not (Test-Path $NotesFile)) {
+    Write-Host "Error: Release notes file not found: $NotesFile" -ForegroundColor Red
+    exit 1
+}
 
 # Ensure we have latest changes
 Write-Host "Fetching latest changes..." -ForegroundColor Yellow
@@ -82,6 +101,87 @@ if ($confirm -ne "y") {
     exit 0
 }
 
+# Write the release notes before anything is pushed, so backing out stays cheap
+$previousTag = git describe --tags --abbrev=0
+$repositoryUrl = (git remote get-url origin) -replace '\.git$', ''
+
+if ($NotesFile) {
+    $notesSource = $NotesFile
+} else {
+    $notesSource = Join-Path ([System.IO.Path]::GetTempPath()) "osdp-bench-release-v$Version.md"
+    $commits = git log --pretty=format:'- %s' "$previousTag..HEAD"
+    $template = @"
+## OSDP-Bench $Version
+
+<!--
+Write the release notes above and below, then save the file and close the editor.
+Anything inside an HTML comment is stripped before the release is created.
+
+Lead with a short paragraph on what this release is about, then group the details
+under headings such as "### New", "### Changes" or "### Fixes". Write for someone
+using OSDP-Bench, not for someone reading the commit log.
+
+Style reference: https://github.com/Z-bit-Systems-LLC/OSDP.Net/releases
+
+The commits since $previousTag are listed below as a starting point. Rewrite them
+into user-facing notes and delete the ones that do not matter to a user.
+-->
+
+### Changes
+
+$($commits -join "`n")
+
+**Full changelog:** $repositoryUrl/compare/$previousTag...v$Version
+"@
+    Set-Content -Path $notesSource -Value $template
+
+    # Split the configured editor into an executable and its arguments and start it
+    # with -Wait, because PowerShell does not wait for a GUI editor on its own
+    $editor = (git var GIT_EDITOR) -replace '\\\\', '\'
+    if ($editor -match '^\s*"([^"]+)"\s*(.*)$' -or $editor -match '^\s*(\S+)\s*(.*)$') {
+        $editorExe = $matches[1]
+        $editorArgs = @($matches[2].Split(' ') | Where-Object { $_ }) + $notesSource
+    } else {
+        $editorExe = $editor
+        $editorArgs = @($notesSource)
+    }
+
+    Write-Host ""
+    Write-Host "Opening the release notes in $editorExe..." -ForegroundColor Yellow
+    Write-Host "  $notesSource"
+    try {
+        Start-Process -FilePath $editorExe -ArgumentList $editorArgs -Wait -ErrorAction Stop
+    } catch {
+        Write-Host "Could not start the editor. Edit the file listed above by hand." -ForegroundColor Yellow
+    }
+    Read-Host "Press Enter once the notes are saved" | Out-Null
+}
+
+# Strip the instructions and keep the result in its own file, so a supplied
+# notes file is never rewritten
+$notes = ((Get-Content $notesSource -Raw) -replace '(?s)<!--.*?-->', '') -replace '(\r?\n){3,}', "`n`n"
+$notes = $notes.Trim()
+if (-not $notes) {
+    Write-Host "Error: The release notes are empty. Release cancelled." -ForegroundColor Red
+    exit 1
+}
+
+$notesPath = Join-Path ([System.IO.Path]::GetTempPath()) "osdp-bench-release-v$Version-final.md"
+Set-Content -Path $notesPath -Value $notes -NoNewline
+
+Write-Host ""
+Write-Host "Release notes:" -ForegroundColor Green
+Write-Host "----------------------------------------"
+Write-Host $notes
+Write-Host "----------------------------------------"
+Write-Host ""
+
+$confirmNotes = Read-Host "Release with these notes? (y/n)"
+if ($confirmNotes -ne "y") {
+    Write-Host "Release cancelled. Notes kept at $notesSource" -ForegroundColor Yellow
+    exit 0
+}
+
 # Update version in Directory.Build.props
 Write-Host "Updating version in $propsFile..." -ForegroundColor Yellow
 $propsContent = $propsContent -replace '<VersionPrefix>.*?</VersionPrefix>', "<VersionPrefix>$Version</VersionPrefix>"
@@ -101,11 +201,25 @@ Write-Host "Pushing to remote..." -ForegroundColor Yellow
 git push origin main
 git push origin "v$Version"
 
+# Open the draft release for the tag that was just pushed
+Write-Host "Creating draft GitHub release..." -ForegroundColor Yellow
+gh release create "v$Version" --draft --verify-tag --title "v$Version" --notes-file $notesPath
+if ($LASTEXITCODE -ne 0) {
+    Write-Host ""
+    Write-Host "Error: The tag was pushed but the GitHub release could not be created." -ForegroundColor Red
+    Write-Host "Retry with:" -ForegroundColor Yellow
+    Write-Host "  gh release create v$Version --draft --verify-tag --title v$Version --notes-file `"$notesPath`"" -ForegroundColor Yellow
+    exit 1
+}
+
 Write-Host ""
 Write-Host "Release process completed successfully!" -ForegroundColor Green
 Write-Host "The CI pipeline will automatically:" -ForegroundColor Green
 Write-Host "  1. Run build and tests" -ForegroundColor Green
 Write-Host "  2. Run code inspection" -ForegroundColor Green
-Write-Host "  3. Create Windows binaries (x64 and ARM64)" -ForegroundColor Green
+Write-Host "  3. Run the full UI test suite" -ForegroundColor Green
+Write-Host ""
+Write-Host "The GitHub release is a draft. Review it and publish when the pipeline is green:" -ForegroundColor Green
+Write-Host "  $repositoryUrl/releases" -ForegroundColor Green
 Write-Host ""
 Write-Host "You can monitor the release progress in Azure DevOps." -ForegroundColor Green

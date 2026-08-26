@@ -97,14 +97,23 @@ $sarif.runs[0].results | Where-Object { $_.level -eq 'warning' } | ForEach-Objec
   - Commits the version change
   - Creates version tag (`vX.Y.Z`)
   - Pushes commit and tag to trigger release pipeline
+  - Opens a draft GitHub release for the tag
+- Release notes:
+  - The script writes a starter file listing the commits since the last tag and opens it in your Git editor
+  - Rewrite it into user-facing notes — lead with a paragraph on what the release is about, then group details under `### New`, `### Changes` or `### Fixes`
+  - Follow the style of [OSDP.Net releases](https://github.com/Z-bit-Systems-LLC/OSDP.Net/releases)
+  - Anything inside an HTML comment is stripped before the release is created
+  - Pass `-NotesFile <path>` to supply notes that are already written and skip the editor
+  - The release is created as a **draft** — review it on GitHub and publish it once the pipeline is green
 - The Azure DevOps pipeline will automatically:
   - Run build and tests
   - Run code inspection
-  - Create Windows binaries (x64 and ARM64)
+  - Run the full UI test suite
 - Requirements:
   - Must be on main branch
   - No uncommitted changes
   - Version must follow semantic versioning (e.g., 3.0.14)
+  - GitHub CLI (`gh`) installed and authenticated (`gh auth login`)
 
 ## Code Style Guidelines
 - Use C# 8.0+ features with async/await patterns for asynchronous operations
