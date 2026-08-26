@@ -845,284 +845,284 @@
   </data>
   <!-- Line Quality Test -->
   <data name="Page_LineQuality" xml:space="preserve">
-    <value>Line Quality</value>
+    <value>线路质量</value>
     <comment>Title for the Line Quality page</comment>
   </data>
   <data name="Navigation_LineQuality" xml:space="preserve">
-    <value>Line Quality</value>
+    <value>线路质量</value>
     <comment>Navigation menu item for the Line Quality page</comment>
   </data>
   <data name="LineQuality_Title" xml:space="preserve">
-    <value>Line Quality Test</value>
+    <value>线路质量测试</value>
     <comment>Dialog title for line quality test messages</comment>
   </data>
   <data name="LineQuality_Introduction" xml:space="preserve">
-    <value>Measures RS-485 cable quality by bouncing test patterns off a responder at each baud rate. The port is driven directly, so nothing else can be connected to it while a test runs.</value>
+    <value>通过在每个波特率下将测试图案与响应者反射来测量RS-485电缆质量。端口是直接驱动的，所以测试运行时不能再连接其他设备。</value>
     <comment>Explanation shown at the top of the Line Quality page</comment>
   </data>
   <data name="LineQuality_Role" xml:space="preserve">
-    <value>Role</value>
+    <value>职责</value>
     <comment>Label for the controller/responder role selector</comment>
   </data>
   <data name="LineQuality_RoleController" xml:space="preserve">
-    <value>Run test (controller)</value>
+    <value>运行测试（控制器）</value>
     <comment>Role option that measures the line</comment>
   </data>
   <data name="LineQuality_RoleResponder" xml:space="preserve">
-    <value>Answer test (responder)</value>
+    <value>答题测试（响应器）</value>
     <comment>Role option that answers test traffic from another controller</comment>
   </data>
   <data name="LineQuality_SerialPort" xml:space="preserve">
-    <value>Serial Port</value>
+    <value>串口</value>
     <comment>Label for the serial port selector on the Line Quality page</comment>
   </data>
   <data name="LineQuality_Profile" xml:space="preserve">
-    <value>Profile</value>
+    <value>简介</value>
     <comment>Label for the test profile selector</comment>
   </data>
   <data name="LineQuality_Profile_Screening" xml:space="preserve">
-    <value>Screening</value>
+    <value>放映</value>
     <comment>Name of the fast test profile</comment>
   </data>
   <data name="LineQuality_Profile_Qualification" xml:space="preserve">
-    <value>Qualification</value>
+    <value>资格</value>
     <comment>Name of the commissioning test profile</comment>
   </data>
   <data name="LineQuality_Profile_Extended" xml:space="preserve">
-    <value>Extended</value>
+    <value>扩展版</value>
     <comment>Name of the longest test profile</comment>
   </data>
   <data name="LineQuality_ProfileDetail" xml:space="preserve">
-    <value>{0} packets per baud rate, detecting packet loss above {1}%</value>
+    <value>{0} 每波特率的数据包，检测到以上的数据包丢失 {1}%</value>
     <comment>Summary of a profile; {0} is the packet count and {1} the detection limit percentage</comment>
   </data>
   <data name="LineQuality_Address" xml:space="preserve">
-    <value>Responder Address</value>
+    <value>响应者地址</value>
     <comment>Label for the line quality responder address</comment>
   </data>
   <data name="LineQuality_BaudRates" xml:space="preserve">
-    <value>Baud Rates to Test</value>
+    <value>波特率测试</value>
     <comment>Label for the baud rate selection list</comment>
   </data>
   <data name="LineQuality_SelectAllBaudRates" xml:space="preserve">
-    <value>Select All</value>
+    <value>全部选择</value>
     <comment>Button that includes every offered baud rate in the sweep</comment>
   </data>
   <data name="LineQuality_SelectNoBaudRates" xml:space="preserve">
-    <value>Select None</value>
+    <value>选择无</value>
     <comment>Button that clears every baud rate so a single one can be picked</comment>
   </data>
   <data name="LineQuality_BaudRateAccessibleName" xml:space="preserve">
-    <value>{0} baud</value>
+    <value>{0} 波特</value>
     <comment>Screen reader name for a baud rate checkbox, where {0} is the rate</comment>
   </data>
   <data name="LineQuality_BaudRatePlaceholder" xml:space="preserve">
-    <value>No baud rates chosen</value>
+    <value>未选择波特率</value>
     <comment>Shown inside the baud rate box when nothing has been chosen yet</comment>
   </data>
   <data name="LineQuality_BaudRatePicker" xml:space="preserve">
-    <value>Choose baud rates</value>
+    <value>选择波特率</value>
     <comment>Screen reader name for the control that opens the baud rate picker</comment>
   </data>
   <data name="LineQuality_RemoveBaudRate" xml:space="preserve">
-    <value>Remove {0} baud</value>
+    <value>删除 {0} 波特</value>
     <comment>Screen reader name for the button that drops one rate, where {0} is the rate</comment>
   </data>
   <data name="LineQuality_StartTest" xml:space="preserve">
-    <value>Start Test</value>
+    <value>开始测试</value>
     <comment>Button that starts the line quality test</comment>
   </data>
   <data name="LineQuality_CancelTest" xml:space="preserve">
-    <value>Cancel Test</value>
+    <value>取消测试</value>
     <comment>Button that abandons a running line quality test</comment>
   </data>
   <data name="LineQuality_Starting" xml:space="preserve">
-    <value>Looking for a responder...</value>
+    <value>寻找回应者......</value>
     <comment>Progress message shown before the first exchange</comment>
   </data>
   <data name="LineQuality_Complete" xml:space="preserve">
-    <value>Test complete</value>
+    <value>测试完成</value>
     <comment>Progress message shown when the run finishes</comment>
   </data>
   <data name="LineQuality_Cancelled" xml:space="preserve">
-    <value>Test cancelled</value>
+    <value>测试取消</value>
     <comment>Progress message shown when the user abandons the run</comment>
   </data>
   <data name="LineQuality_Failed" xml:space="preserve">
-    <value>Test failed</value>
+    <value>测试失败</value>
     <comment>Progress message shown when the run could not complete</comment>
   </data>
   <data name="LineQuality_NotSupported" xml:space="preserve">
-    <value>The line quality test needs a serial connection whose baud rate can be changed while the port stays open, which this platform does not provide.</value>
+    <value>线路质量测试需要一个串行连接，其波特率可在端口保持开启时调整，而该平台不支持。</value>
     <comment>Message shown when the platform cannot retune a serial port in place</comment>
   </data>
   <data name="LineQuality_DisconnectRequired" xml:space="preserve">
-    <value>The line quality test needs exclusive use of the serial port. Disconnect from the current device and continue?</value>
+    <value>线路质量测试需要专用串口。断开当前设备继续？</value>
     <comment>Confirmation shown when a device is already connected</comment>
   </data>
   <data name="LineQuality_Results" xml:space="preserve">
-    <value>Results</value>
+    <value>选举结果</value>
     <comment>Heading for the results table</comment>
   </data>
   <data name="LineQuality_OverallVerdict" xml:space="preserve">
-    <value>Overall</value>
+    <value>总体评价</value>
     <comment>Label for the overall verdict of a run</comment>
   </data>
   <data name="LineQuality_RecommendedBaudRate" xml:space="preserve">
-    <value>Recommended Rate</value>
+    <value>推荐利率</value>
     <comment>Label for the highest baud rate that passed</comment>
   </data>
   <data name="LineQuality_NoRecommendedBaudRate" xml:space="preserve">
-    <value>None</value>
+    <value>没有</value>
     <comment>Shown when no baud rate passed</comment>
   </data>
   <data name="LineQuality_Duration" xml:space="preserve">
-    <value>Duration</value>
+    <value>持续时间</value>
     <comment>Label for how long a run took</comment>
   </data>
   <data name="LineQuality_ColumnBaudRate" xml:space="preserve">
-    <value>Baud Rate</value>
+    <value>波特率</value>
     <comment>Results column header</comment>
   </data>
   <data name="LineQuality_ColumnVerdict" xml:space="preserve">
-    <value>Verdict</value>
+    <value>结论</value>
     <comment>Results column header</comment>
   </data>
   <data name="LineQuality_ColumnSent" xml:space="preserve">
-    <value>Sent</value>
+    <value>已发送</value>
     <comment>Results column header for packets sent</comment>
   </data>
   <data name="LineQuality_ColumnSuccess" xml:space="preserve">
-    <value>Success</value>
+    <value>成功</value>
     <comment>Results column header for the success rate</comment>
   </data>
   <data name="LineQuality_ColumnTimeouts" xml:space="preserve">
-    <value>Timeouts</value>
+    <value>暂停</value>
     <comment>Results column header</comment>
   </data>
   <data name="LineQuality_ColumnIntegrity" xml:space="preserve">
-    <value>Integrity</value>
+    <value>完整性</value>
     <comment>Results column header for integrity errors</comment>
   </data>
   <data name="LineQuality_ColumnNaks" xml:space="preserve">
-    <value>NAKs</value>
+    <value>NAKs（国家级建筑）</value>
     <comment>Results column header</comment>
   </data>
   <data name="LineQuality_ColumnMismatches" xml:space="preserve">
-    <value>Mismatches</value>
+    <value>不匹配</value>
     <comment>Results column header for pattern mismatches</comment>
   </data>
   <data name="LineQuality_ColumnMaxResponse" xml:space="preserve">
-    <value>Max Response</value>
+    <value>最大响应</value>
     <comment>Results column header for the longest response time</comment>
   </data>
   <data name="LineQuality_ColumnDetectionLimit" xml:space="preserve">
-    <value>Detection Limit</value>
+    <value>检测极限</value>
     <comment>Results column header for the smallest loss rate the run could rule out</comment>
   </data>
   <data name="LineQuality_ColumnReason" xml:space="preserve">
-    <value>Reason</value>
+    <value>原因</value>
     <comment>Results column header explaining a failed or untested rate</comment>
   </data>
   <data name="LineQuality_TimingCaveat" xml:space="preserve">
-    <value>Response times include the serial adapter's latency timer, commonly 16 ms in each direction. Treat them as a pass or fail against the 200 ms reply window rather than as a measurement of the cable.</value>
+    <value>响应时间包括串行适配器的延迟定时器，通常双向16毫秒。把它们当作200毫秒回复窗口的合格或不通过，而不是线缆的测量值。</value>
     <comment>Caveat shown beneath the results table</comment>
   </data>
   <data name="LineQuality_LineDetails" xml:space="preserve">
-    <value>Line Details</value>
+    <value>线路详情</value>
     <comment>Heading for the report fields that describe the single line just measured</comment>
   </data>
   <data name="LineQuality_LineDetailsHint" xml:space="preserve">
-    <value>These describe the line just measured. The location and cable are kept for the next drop; the notes are cleared when the next test starts.</value>
+    <value>这些描述了刚刚测量的线。位置和电缆会被保留到下一次投放;下一次考试开始时，这些记录会被清除。</value>
     <comment>Hint explaining which line detail fields carry over to the next run</comment>
   </data>
   <data name="LineQuality_ClearLineDetails" xml:space="preserve">
-    <value>Clear Line Details</value>
+    <value>清线详情</value>
     <comment>Button that empties the location, cable and notes before testing an unrelated line</comment>
   </data>
   <data name="LineQuality_TesterName" xml:space="preserve">
-    <value>Tester</value>
+    <value>测试仪</value>
     <comment>Report metadata field for who ran the test</comment>
   </data>
   <data name="LineQuality_TesterHint" xml:space="preserve">
-    <value>Remembered between runs and between launches, so fill it in once for the job.</value>
+    <value>在运行间隙和发射间记得，所以任务中只填一次。</value>
     <comment>Hint explaining that the tester name is carried over to the next run</comment>
   </data>
   <data name="LineQuality_InstallationLocation" xml:space="preserve">
-    <value>Location</value>
+    <value>位置</value>
     <comment>Report metadata field for where the installation is</comment>
   </data>
   <data name="LineQuality_CableDescription" xml:space="preserve">
-    <value>Cable</value>
+    <value>有线电视</value>
     <comment>Report metadata field for the cable type and length</comment>
   </data>
   <data name="LineQuality_Notes" xml:space="preserve">
-    <value>Notes</value>
+    <value>注释</value>
     <comment>Report metadata field for free-form notes</comment>
   </data>
   <data name="LineQuality_SaveReport" xml:space="preserve">
-    <value>Save Report</value>
+    <value>存档报告</value>
     <comment>Button that writes the Markdown commissioning report</comment>
   </data>
   <data name="LineQuality_SelectReportDestination" xml:space="preserve">
-    <value>Select the destination for the line quality report</value>
+    <value>选择目的地以获取线路质量报告</value>
     <comment>Title of the destination selection dialog for the report</comment>
   </data>
   <data name="LineQuality_ReportSaved" xml:space="preserve">
-    <value>Report saved as {0}</value>
+    <value>报告保存为 {0}</value>
     <comment>Confirmation after saving; {0} is the file name</comment>
   </data>
   <data name="LineQuality_ResponderIntroduction" xml:space="preserve">
-    <value>Answers line quality test traffic from a controller on the other end of the cable. Starts at 9600 baud and follows the controller through rate changes, reverting to 9600 after 30 seconds of silence.</value>
+    <value>Answer 会通过线缆另一端的控制器进行线路质量测试流量。从9600波特开始，跟随控制器的速率变化，静音30秒后恢复为9600波特。</value>
     <comment>Explanation shown in responder mode</comment>
   </data>
   <data name="LineQuality_StartResponder" xml:space="preserve">
-    <value>Start Responder</value>
+    <value>启动响应器</value>
     <comment>Button that starts answering test traffic</comment>
   </data>
   <data name="LineQuality_StopResponder" xml:space="preserve">
-    <value>Stop Responder</value>
+    <value>拦截响应者</value>
     <comment>Button that stops answering test traffic</comment>
   </data>
   <data name="LineQuality_ResponderListening" xml:space="preserve">
-    <value>Listening for test traffic</value>
+    <value>监听测试流量</value>
     <comment>Status shown once the responder is running</comment>
   </data>
   <data name="LineQuality_ResponderStopped" xml:space="preserve">
-    <value>Responder stopped</value>
+    <value>救援人员停下</value>
     <comment>Status shown once the responder has released the port</comment>
   </data>
   <data name="LineQuality_ResponderFailed" xml:space="preserve">
-    <value>Responder stopped: {0}</value>
+    <value>响应者停下： {0}</value>
     <comment>Status shown when the responder stopped because of an error; {0} is the reason</comment>
   </data>
   <data name="LineQuality_ResponderRetuned" xml:space="preserve">
-    <value>Switched to {0} baud</value>
+    <value>切换到 {0} 波特</value>
     <comment>Status shown when the controller moved the responder to a new rate; {0} is the rate</comment>
   </data>
   <data name="LineQuality_ResponderReverted" xml:space="preserve">
-    <value>Idle timeout: reverted to {0} baud</value>
+    <value>空闲超时：恢复为 {0} 波特</value>
     <comment>Status shown when the responder returned to the baseline rate on its own; {0} is the rate</comment>
   </data>
   <data name="LineQuality_ResponderExchanges" xml:space="preserve">
-    <value>Exchanges Answered</value>
+    <value>交换已答</value>
     <comment>Label for the count of exchanges the responder has answered</comment>
   </data>
   <data name="LineQuality_ResponderBaudRate" xml:space="preserve">
-    <value>Current Rate</value>
+    <value>当前利率</value>
     <comment>Label for the rate the responder is answering at</comment>
   </data>
   <data name="Accessibility_LineQualityResults" xml:space="preserve">
-    <value>Line Quality Results</value>
+    <value>线路质量结果</value>
     <comment>Screen reader name for the line quality results data grid</comment>
   </data>
   <!-- Navigation availability -->
   <data name="Navigation_BusyWithLineQuality" xml:space="preserve">
-    <value>Unavailable while a line quality test or responder is running</value>
+    <value>线路质量测试或响应器运行时不可用</value>
     <comment>Tooltip on navigation items disabled while either line quality role holds the serial port</comment>
   </data>
   <data name="Navigation_LineQualityNeedsPort" xml:space="preserve">
-    <value>Unavailable while the serial port is in use. Disconnect, or cancel discovery, to run a line quality test.</value>
+    <value>串口使用时不可用。断开连接或取消发现，以进行线路质量测试。</value>
     <comment>Tooltip on the Line Quality navigation item while a connection, discovery sweep, or monitoring session holds the serial port</comment>
   </data>
 </root>
