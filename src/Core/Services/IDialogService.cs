@@ -37,8 +37,18 @@ public interface IDialogService
     /// </summary>
     /// <param name="title">The title of the destination selection dialog.</param>
     /// <param name="files">The files to save, as file name and content pairs.</param>
-    /// <returns>True if the files were saved, false if the user cancelled.</returns>
-    Task<bool> SaveFilesWithDataAsync(string title, IEnumerable<(string FileName, byte[] Data)> files);
+    /// <param name="initialDirectory">
+    /// Where the dialog should open, or null for the platform's own choice. A directory that no
+    /// longer exists is ignored rather than treated as an error.
+    /// </param>
+    /// <returns>
+    /// An opaque identifier for the destination the files were written to, or null if the user
+    /// cancelled. Callers may hand it back as <paramref name="initialDirectory"/> to reopen the
+    /// dialog where it left off, but must not otherwise interpret it: a platform that does not
+    /// save to a file system path is free to return anything it understands.
+    /// </returns>
+    Task<string?> SaveFilesWithDataAsync(string title, IEnumerable<(string FileName, byte[] Data)> files,
+        string? initialDirectory = null);
 }
 
 /// <summary>

@@ -111,6 +111,85 @@
             </StackPanel>
         </ui:Card>
 
+        <!--
+            Controller: the test rig. Collapsed by default because it is filled in once for a job
+            rather than once for a line, and deliberately left enabled while a test runs so it can
+            be completed during the first sweep instead of after it.
+        -->
+        <ui:CardExpander Margin="{StaticResource Margin.Card}"
+                         AutomationProperties.AutomationId="LineQuality_TesterEquipment"
+                         Visibility="{Binding ViewModel.IsControllerMode, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <ui:CardExpander.Header>
+                <StackPanel Orientation="Vertical">
+                    <ui:TextBlock Style="{StaticResource Section.Header}"
+                                  Margin="0"
+                                  Text="{localization:Localize LineQuality_TesterEquipment}" />
+                    <ui:TextBlock Style="{StaticResource Text.Caption}"
+                                  TextWrapping="Wrap"
+                                  Margin="0,4,0,0"
+                                  Text="{localization:Localize LineQuality_TesterEquipmentHint}" />
+                </StackPanel>
+            </ui:CardExpander.Header>
+
+            <StackPanel Orientation="Vertical">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <StackPanel Grid.Row="0" Grid.Column="0" Style="{StaticResource Section.Container}">
+                        <Label Content="{localization:Localize LineQuality_TesterName}"
+                               Style="{StaticResource Label.Standard}"
+                               Target="{Binding ElementName=TesterNameTextBox}" />
+                        <TextBox Name="TesterNameTextBox"
+                                 AutomationProperties.AutomationId="LineQuality_TesterName"
+                                 Style="{StaticResource TextBox.Standard}"
+                                 Text="{Binding ViewModel.TesterName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                    </StackPanel>
+
+                    <StackPanel Grid.Row="0" Grid.Column="1" Style="{StaticResource Section.Container}">
+                        <Label Content="{localization:Localize LineQuality_AdapterDescription}"
+                               Style="{StaticResource Label.Standard}"
+                               Target="{Binding ElementName=AdapterTextBox}" />
+                        <TextBox Name="AdapterTextBox"
+                                 AutomationProperties.AutomationId="LineQuality_AdapterDescription"
+                                 Style="{StaticResource TextBox.Standard}"
+                                 Text="{Binding ViewModel.AdapterDescription, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                    </StackPanel>
+
+                    <StackPanel Grid.Row="1" Grid.Column="0" Style="{StaticResource Section.Container}">
+                        <Label Content="{localization:Localize LineQuality_AcuDescription}"
+                               Style="{StaticResource Label.Standard}"
+                               Target="{Binding ElementName=AcuTextBox}" />
+                        <TextBox Name="AcuTextBox"
+                                 AutomationProperties.AutomationId="LineQuality_AcuDescription"
+                                 Style="{StaticResource TextBox.Standard}"
+                                 Text="{Binding ViewModel.AcuDescription, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                    </StackPanel>
+
+                    <StackPanel Grid.Row="1" Grid.Column="1" Style="{StaticResource Section.Container}">
+                        <Label Content="{localization:Localize LineQuality_PdDescription}"
+                               Style="{StaticResource Label.Standard}"
+                               Target="{Binding ElementName=PdTextBox}" />
+                        <TextBox Name="PdTextBox"
+                                 AutomationProperties.AutomationId="LineQuality_PdDescription"
+                                 Style="{StaticResource TextBox.Standard}"
+                                 Text="{Binding ViewModel.PdDescription, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                    </StackPanel>
+                </Grid>
+
+                <CheckBox Content="{localization:Localize LineQuality_LatencyTimerAdjusted}"
+                          AutomationProperties.AutomationId="LineQuality_LatencyTimerAdjusted"
+                          IsChecked="{Binding ViewModel.AdapterLatencyTimerAdjusted, Mode=TwoWay}"
+                          Margin="0,4,0,0" />
+            </StackPanel>
+        </ui:CardExpander>
+
         <!-- Controller: baud rate selection and run controls -->
         <ui:Card Style="{StaticResource Card.Standard}"
                  Visibility="{Binding ViewModel.IsControllerMode, Converter={StaticResource BooleanToVisibilityConverter}}">
@@ -262,17 +341,17 @@
             </StackPanel>
         </ui:Card>
 
-        <!-- Controller: report metadata and export -->
+        <!-- Controller: the line just measured, and the report it produces -->
         <ui:Card Style="{StaticResource Card.Standard}"
                  Visibility="{Binding ViewModel.HasResults, Converter={StaticResource BooleanToVisibilityConverter}}">
             <StackPanel Orientation="Vertical">
                 <ui:TextBlock Style="{StaticResource Section.Header}"
-                              Text="{localization:Localize LineQuality_ReportDetails}" />
+                              Text="{localization:Localize LineQuality_LineDetails}" />
 
                 <ui:TextBlock Style="{StaticResource Text.Caption}"
                               TextWrapping="Wrap"
                               Margin="0,0,0,8"
-                              Text="{localization:Localize LineQuality_ReportDetailsHint}" />
+                              Text="{localization:Localize LineQuality_LineDetailsHint}" />
 
                 <Grid>
                     <Grid.ColumnDefinitions>
@@ -281,62 +360,26 @@
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
 
                     <StackPanel Grid.Row="0" Grid.Column="0" Style="{StaticResource Section.Container}">
-                        <Label Content="{localization:Localize LineQuality_TesterName}"
-                               Style="{StaticResource Label.Standard}"
-                               Target="{Binding ElementName=TesterNameTextBox}" />
-                        <TextBox Name="TesterNameTextBox"
-                                 Style="{StaticResource TextBox.Standard}"
-                                 Text="{Binding ViewModel.TesterName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                    </StackPanel>
-
-                    <StackPanel Grid.Row="0" Grid.Column="1" Style="{StaticResource Section.Container}">
                         <Label Content="{localization:Localize LineQuality_InstallationLocation}"
                                Style="{StaticResource Label.Standard}"
                                Target="{Binding ElementName=LocationTextBox}" />
                         <TextBox Name="LocationTextBox"
+                                 AutomationProperties.AutomationId="LineQuality_InstallationLocation"
                                  Style="{StaticResource TextBox.Standard}"
                                  Text="{Binding ViewModel.InstallationLocation, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                     </StackPanel>
 
-                    <StackPanel Grid.Row="1" Grid.Column="0" Style="{StaticResource Section.Container}">
+                    <StackPanel Grid.Row="0" Grid.Column="1" Style="{StaticResource Section.Container}">
                         <Label Content="{localization:Localize LineQuality_CableDescription}"
                                Style="{StaticResource Label.Standard}"
                                Target="{Binding ElementName=CableTextBox}" />
                         <TextBox Name="CableTextBox"
+                                 AutomationProperties.AutomationId="LineQuality_CableDescription"
                                  Style="{StaticResource TextBox.Standard}"
                                  Text="{Binding ViewModel.CableDescription, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                    </StackPanel>
-
-                    <StackPanel Grid.Row="1" Grid.Column="1" Style="{StaticResource Section.Container}">
-                        <Label Content="{localization:Localize LineQuality_AdapterDescription}"
-                               Style="{StaticResource Label.Standard}"
-                               Target="{Binding ElementName=AdapterTextBox}" />
-                        <TextBox Name="AdapterTextBox"
-                                 Style="{StaticResource TextBox.Standard}"
-                                 Text="{Binding ViewModel.AdapterDescription, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                    </StackPanel>
-
-                    <StackPanel Grid.Row="2" Grid.Column="0" Style="{StaticResource Section.Container}">
-                        <Label Content="{localization:Localize LineQuality_AcuDescription}"
-                               Style="{StaticResource Label.Standard}"
-                               Target="{Binding ElementName=AcuTextBox}" />
-                        <TextBox Name="AcuTextBox"
-                                 Style="{StaticResource TextBox.Standard}"
-                                 Text="{Binding ViewModel.AcuDescription, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                    </StackPanel>
-
-                    <StackPanel Grid.Row="2" Grid.Column="1" Style="{StaticResource Section.Container}">
-                        <Label Content="{localization:Localize LineQuality_PdDescription}"
-                               Style="{StaticResource Label.Standard}"
-                               Target="{Binding ElementName=PdTextBox}" />
-                        <TextBox Name="PdTextBox"
-                                 Style="{StaticResource TextBox.Standard}"
-                                 Text="{Binding ViewModel.PdDescription, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                     </StackPanel>
                 </Grid>
 
@@ -345,6 +388,7 @@
                            Style="{StaticResource Label.Standard}"
                            Target="{Binding ElementName=NotesTextBox}" />
                     <TextBox Name="NotesTextBox"
+                             AutomationProperties.AutomationId="LineQuality_Notes"
                              Style="{StaticResource TextBox.Standard}"
                              AcceptsReturn="True"
                              TextWrapping="Wrap"
@@ -352,21 +396,27 @@
                              Text="{Binding ViewModel.Notes, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                 </StackPanel>
 
-                <CheckBox Content="{localization:Localize LineQuality_LatencyTimerAdjusted}"
-                          AutomationProperties.AutomationId="LineQuality_LatencyTimerAdjusted"
-                          IsChecked="{Binding ViewModel.AdapterLatencyTimerAdjusted, Mode=TwoWay}"
-                          Margin="0,4,0,0" />
+                <StackPanel Orientation="Horizontal" Margin="{StaticResource Margin.Card}">
+                    <ui:Button Name="SaveReportButton"
+                               AutomationProperties.AutomationId="LineQuality_SaveReport"
+                               Content="{localization:Localize LineQuality_SaveReport}"
+                               Appearance="Primary"
+                               Command="{Binding ViewModel.SaveReportCommand}">
+                        <ui:Button.Icon>
+                            <ui:SymbolIcon Symbol="ArrowDownload24" />
+                        </ui:Button.Icon>
+                    </ui:Button>
 
-                <ui:Button Name="SaveReportButton"
-                           AutomationProperties.AutomationId="LineQuality_SaveReport"
-                           Content="{localization:Localize LineQuality_SaveReport}"
-                           Margin="{StaticResource Margin.Card}"
-                           HorizontalAlignment="Left"
-                           Command="{Binding ViewModel.SaveReportCommand}">
-                    <ui:Button.Icon>
-                        <ui:SymbolIcon Symbol="ArrowDownload24" />
-                    </ui:Button.Icon>
-                </ui:Button>
+                    <ui:Button Name="ClearLineDetailsButton"
+                               AutomationProperties.AutomationId="LineQuality_ClearLineDetails"
+                               Content="{localization:Localize LineQuality_ClearLineDetails}"
+                               Margin="8,0,0,0"
+                               Command="{Binding ViewModel.ClearLineDetailsCommand}">
+                        <ui:Button.Icon>
+                            <ui:SymbolIcon Symbol="Eraser24" />
+                        </ui:Button.Icon>
+                    </ui:Button>
+                </StackPanel>
             </StackPanel>
         </ui:Card>
 

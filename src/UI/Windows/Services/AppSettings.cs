@@ -1,3 +1,4 @@
+using OSDPBench.Core.Models;
 using ZBitSystems.Wpf.UI.Settings;
 
 namespace OSDPBench.Windows.Services;
@@ -32,4 +33,9 @@ public class AppSettings : UserSettings
     /// Gets or sets the last selected device address.
     /// </summary>
     public byte LastAddress { get; set; }
+
+    /// <summary>
+    /// Gets or sets the Line Quality page settings carried over between launches.
+    /// </summary>
+    public LineQualityUserSettings LineQuality { get; set; } = new();
 }

@@ -31,6 +31,12 @@ public partial class LineQualityViewModel : ObservableObject, IDisposable
     private bool _isDisposed;
 
     /// <summary>
+    /// Where the last report was saved, handed back to the save dialog so a job's reports land in
+    /// one folder without walking the same path back on every drop.
+    /// </summary>
+    private string? _reportDestination;
+
+    /// <summary>
     /// Initializes the view model.
     /// </summary>
     /// <param name="dialogService">Used to report failures and to prompt before taking the port.</param>
@@ -54,7 +60,9 @@ public partial class LineQualityViewModel : ObservableObject, IDisposable
         _usbDeviceMonitorService = usbDeviceMonitorService;
         _userSettingsService = userSettingsService;
 
-        SelectedProfile = AvailableProfiles.First(option => option.Profile == TestProfile.Screening);
+        // Applied before the options are subscribed to, so restoring a saved selection does not
+        // read as the user changing it.
+        ApplySavedSettings();
 
         foreach (var option in BaudRateOptions)
         {
@@ -224,6 +232,8 @@ public partial class LineQualityViewModel : ObservableObject, IDisposable
         string portName = SelectedSerialPort?.Name ?? string.Empty;
         if (!await PrepareForExclusiveUse(portName)) return;
 
+        await PersistSettings();
+
         var options = new LineQualityOptions
         {
             Profile = SelectedProfile.Profile,
@@ -272,6 +282,12 @@ public partial class LineQualityViewModel : ObservableObject, IDisposable
         OverallVerdict = LineQualityVerdict.Untested;
         RecommendedBaudRate = null;
         TestDuration = TimeSpan.Zero;
+
+        // The notes describe the measurement that was just discarded, so carrying them into the
+        // next run would attach one line's observation to another line's numbers. The location and
+        // cable are left alone: the next drop on the same job is usually described the same way,
+        // and the page offers an explicit way to clear them.
+        Notes = string.Empty;
 
         OnPropertyChanged(nameof(HasResults));
         SaveReportCommand.NotifyCanExecuteChanged();
@@ -340,6 +356,8 @@ public partial class LineQualityViewModel : ObservableObject, IDisposable
         string portName = SelectedSerialPort?.Name ?? string.Empty;
         if (!await PrepareForExclusiveUse(portName)) return;
 
+        await PersistSettings();
+
         try
         {
             await _lineQualityService.StartResponderAsync(portName, Address);
@@ -398,16 +416,15 @@ public partial class LineQualityViewModel : ObservableObject, IDisposable
 
     #endregion
 
-    #region Report metadata
+    #region Tester and equipment
+
+    // These describe the rig rather than the line: the same technician, laptop, adapter and pair of
+    // devices measure every drop on a job. They are carried across launches so they are filled in
+    // once, and they are shown before the run rather than with the results so they can be entered
+    // while the first sweep is still going.
 
     /// <summary>Gets or sets who ran the test, for the report header.</summary>
     [ObservableProperty] private string _testerName = string.Empty;
-
-    /// <summary>Gets or sets where the installation is, for the report header.</summary>
-    [ObservableProperty] private string _installationLocation = string.Empty;
-
-    /// <summary>Gets or sets the cable type and length, for the report header.</summary>
-    [ObservableProperty] private string _cableDescription = string.Empty;
 
     /// <summary>Gets or sets the controller-side model and firmware, for the report header.</summary>
     [ObservableProperty] private string _acuDescription = string.Empty;
@@ -428,8 +445,69 @@ public partial class LineQualityViewModel : ObservableObject, IDisposable
     /// </remarks>
     [ObservableProperty] private bool _adapterLatencyTimerAdjusted;
 
+    #endregion
+
+    #region Line details
+
+    // These describe the one line that was just measured, and are the fields that have to change
+    // between drops. They stay filled in after a run so the next drop can be described as a small
+    // edit of the last one, and the page offers an explicit way to empty them.
+
+    /// <summary>Gets or sets where the installation is, for the report header.</summary>
+    [ObservableProperty] private string _installationLocation = string.Empty;
+
+    /// <summary>Gets or sets the cable type and length, for the report header.</summary>
+    [ObservableProperty] private string _cableDescription = string.Empty;
+
     /// <summary>Gets or sets free-form notes to include in the report.</summary>
     [ObservableProperty] private string _notes = string.Empty;
+
+    /// <summary>
+    /// Gets a value indicating whether any line detail is filled in and so can be cleared.
+    /// </summary>
+    public bool HasLineDetails => !string.IsNullOrWhiteSpace(InstallationLocation) ||
+                                  !string.IsNullOrWhiteSpace(CableDescription) ||
+                                  !string.IsNullOrWhiteSpace(Notes);
+
+    /// <summary>
+    /// Empties the details of the line just measured, for a technician moving to a drop that is
+    /// not a variation on the last one.
+    /// </summary>
+    [RelayCommand(CanExecute = nameof(HasLineDetails))]
+    private void ClearLineDetails()
+    {
+        InstallationLocation = string.Empty;
+        CableDescription = string.Empty;
+        Notes = string.Empty;
+    }
+
+    partial void OnInstallationLocationChanged(string value)
+    {
+        _ = value;
+        NotifyLineDetailsChanged();
+    }
+
+    partial void OnCableDescriptionChanged(string value)
+    {
+        _ = value;
+        NotifyLineDetailsChanged();
+    }
+
+    partial void OnNotesChanged(string value)
+    {
+        _ = value;
+        NotifyLineDetailsChanged();
+    }
+
+    private void NotifyLineDetailsChanged()
+    {
+        OnPropertyChanged(nameof(HasLineDetails));
+        ClearLineDetailsCommand.NotifyCanExecuteChanged();
+    }
+
+    #endregion
+
+    #region Report
 
     [RelayCommand(CanExecute = nameof(HasResults))]
     private async Task SaveReport()
@@ -442,13 +520,20 @@ public partial class LineQualityViewModel : ObservableObject, IDisposable
             async () =>
             {
                 string markdown = LineQualityMarkdownReport.Render(_report, BuildMetadata());
-                string fileName = $"line-quality-{DateTime.Now:yyyyMMdd-HHmmss}.md";
+                string fileName = LineQualityReportFileName.Build(InstallationLocation, DateTime.Now);
 
-                bool saved = await _dialogService.SaveFilesWithDataAsync(
+                string? destination = await _dialogService.SaveFilesWithDataAsync(
                     Resources.Resources.GetString("LineQuality_SelectReportDestination"),
-                    [(fileName, Encoding.UTF8.GetBytes(markdown))]);
+                    [(fileName, Encoding.UTF8.GetBytes(markdown))],
+                    _reportDestination);
 
-                if (!saved) return;
+                if (destination == null) return;
+
+                // The metadata has just been committed to a report, which is the strongest signal
+                // that it is worth carrying to the next drop, and the destination is where the rest
+                // of the job's reports belong.
+                _reportDestination = destination;
+                await PersistSettings();
 
                 await _dialogService.ShowMessageDialog(
                     Resources.Resources.GetString("LineQuality_SaveReport"),
@@ -512,6 +597,99 @@ public partial class LineQualityViewModel : ObservableObject, IDisposable
         await _deviceManagementService.Shutdown();
         return true;
     }
+
+    #region Persistence
+
+    /// <summary>
+    /// Restores the settings carried over from the last session, so a technician working through a
+    /// run of drops does not set the page up again on every launch.
+    /// </summary>
+    private void ApplySavedSettings()
+    {
+        var saved = _userSettingsService?.LineQualitySettings;
+
+        SelectedProfile = (saved != null && Enum.TryParse<TestProfile>(saved.Profile, out var profile)
+                              ? AvailableProfiles.FirstOrDefault(option => option.Profile == profile)
+                              : null) ??
+                          AvailableProfiles.First(option => option.Profile == TestProfile.Screening);
+
+        if (saved == null) return;
+
+        ApplySavedBaudRates(saved.BaudRates);
+
+        Address = saved.Address ?? LineQualityProtocol.TestAddress;
+        IsControllerMode = saved.IsControllerMode;
+
+        TesterName = saved.TesterName ?? string.Empty;
+        AdapterDescription = saved.AdapterDescription ?? string.Empty;
+        AcuDescription = saved.AcuDescription ?? string.Empty;
+        PdDescription = saved.PdDescription ?? string.Empty;
+        AdapterLatencyTimerAdjusted = saved.AdapterLatencyTimerAdjusted;
+
+        InstallationLocation = saved.InstallationLocation ?? string.Empty;
+        CableDescription = saved.CableDescription ?? string.Empty;
+
+        _reportDestination = saved.ReportDestination;
+    }
+
+    /// <summary>
+    /// Restores which baud rates were included in the last sweep.
+    /// </summary>
+    /// <remarks>
+    /// A saved set that no longer names any offered rate, because the library changed its defaults
+    /// or the settings file was edited by hand, is discarded rather than applied. Applying it would
+    /// leave every rate cleared, and a Start button that can never enable with nothing on the page
+    /// to explain why.
+    /// </remarks>
+    private void ApplySavedBaudRates(int[]? savedBaudRates)
+    {
+        if (savedBaudRates is not { Length: > 0 }) return;
+        if (!BaudRateOptions.Any(option => savedBaudRates.Contains(option.BaudRate))) return;
+
+        foreach (var option in BaudRateOptions)
+        {
+            option.IsSelected = savedBaudRates.Contains(option.BaudRate);
+        }
+    }
+
+    /// <summary>
+    /// Records the current setup so the next launch starts where this one left off.
+    /// </summary>
+    /// <remarks>
+    /// Written when a run starts and when a report is saved, rather than on every keystroke, and a
+    /// failure is swallowed: a settings file that cannot be written is not a reason to refuse to
+    /// test a line.
+    /// </remarks>
+    private async Task PersistSettings()
+    {
+        if (_userSettingsService == null) return;
+
+        try
+        {
+            await _userSettingsService.UpdateLineQualitySettingsAsync(new LineQualityUserSettings
+            {
+                Profile = SelectedProfile.Profile.ToString(),
+                BaudRates = BaudRateOptions.Where(option => option.IsSelected)
+                    .Select(option => option.BaudRate).ToArray(),
+                Address = Address,
+                IsControllerMode = IsControllerMode,
+                TesterName = NullIfBlank(TesterName),
+                AdapterDescription = NullIfBlank(AdapterDescription),
+                AcuDescription = NullIfBlank(AcuDescription),
+                PdDescription = NullIfBlank(PdDescription),
+                AdapterLatencyTimerAdjusted = AdapterLatencyTimerAdjusted,
+                InstallationLocation = NullIfBlank(InstallationLocation),
+                CableDescription = NullIfBlank(CableDescription),
+                ReportDestination = _reportDestination
+            });
+        }
+        catch (Exception)
+        {
+            // Carrying the setup forward is a convenience; losing it must not interrupt the run.
+        }
+    }
+
+    #endregion
 
     private async Task InitializeSerialPorts()
     {

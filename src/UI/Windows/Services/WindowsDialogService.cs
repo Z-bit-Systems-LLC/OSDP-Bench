@@ -46,12 +46,13 @@ internal class WindowsDialogService : IDialogService
     }
 
     /// <inheritdoc/>
-    public async Task<bool> SaveFilesWithDataAsync(string title, IEnumerable<(string FileName, byte[] Data)> files)
+    public async Task<string?> SaveFilesWithDataAsync(string title,
+        IEnumerable<(string FileName, byte[] Data)> files, string? initialDirectory = null)
     {
         var fileList = files.ToList();
         if (fileList.Count == 0)
         {
-            return false;
+            return null;
         }
 
         // On Windows the user picks a destination folder and every file is written into it
@@ -61,9 +62,17 @@ internal class WindowsDialogService : IDialogService
             Multiselect = false
         };
 
+        // A remembered folder that has since been deleted or unmounted, which is what a job folder
+        // on a removable drive looks like on the next visit, is left to the dialog's own default
+        // rather than opened on a path that no longer resolves.
+        if (!string.IsNullOrWhiteSpace(initialDirectory) && Directory.Exists(initialDirectory))
+        {
+            dialog.InitialDirectory = initialDirectory;
+        }
+
         if (dialog.ShowDialog() != true)
         {
-            return false;
+            return null;
         }
 
         foreach (var (fileName, data) in fileList)
@@ -71,7 +80,7 @@ internal class WindowsDialogService : IDialogService
             await File.WriteAllBytesAsync(Path.Combine(dialog.FolderName, fileName), data);
         }
 
-        return true;
+        return dialog.FolderName;
     }
 
     private static string FormatExceptionMessage(Exception exception)

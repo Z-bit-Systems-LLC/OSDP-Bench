@@ -1,3 +1,5 @@
+using OSDPBench.Core.Models;
+
 namespace OSDPBench.Core.Services;
 
 /// <summary>
@@ -52,4 +54,16 @@ public interface IUserSettingsService
     /// <param name="address">The selected device address.</param>
     /// <returns>Task representing the async operation</returns>
     Task UpdateConnectionSettingsAsync(string? serialPortName, int baudRate, byte address) => Task.CompletedTask;
+
+    /// <summary>
+    /// Gets the Line Quality page settings carried over from the last run.
+    /// </summary>
+    LineQualityUserSettings LineQualitySettings => new();
+
+    /// <summary>
+    /// Updates the Line Quality page settings and saves.
+    /// </summary>
+    /// <param name="settings">The settings to carry over to the next run.</param>
+    /// <returns>Task representing the async operation</returns>
+    Task UpdateLineQualitySettingsAsync(LineQualityUserSettings settings) => Task.CompletedTask;
 }

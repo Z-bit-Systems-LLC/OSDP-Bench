@@ -376,10 +376,10 @@ public partial class MonitorViewModel : ObservableObject
             }
 
             // The platform decides where the files are persisted
-            var saved = await _dialogService.SaveFilesWithDataAsync(
+            var destination = await _dialogService.SaveFilesWithDataAsync(
                 Resources.Resources.GetString("Export_SelectDestination"), files);
 
-            if (!saved)
+            if (destination == null)
             {
                 return; // User cancelled
             }

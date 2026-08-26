@@ -93,15 +93,15 @@ public class MonitorViewModelTests
         // Arrange
         RaiseTraceEntry(_deviceManagementServiceMock, TraceDirection.Output, ValidPollPacket);
         _dialogServiceMock.Setup(x => x.SaveFilesWithDataAsync(
-                It.IsAny<string>(), It.IsAny<IEnumerable<(string, byte[])>>()))
-            .ReturnsAsync(false); // User cancels
+                It.IsAny<string>(), It.IsAny<IEnumerable<(string, byte[])>>(), It.IsAny<string>()))
+            .ReturnsAsync((string)null); // User cancels
 
         // Act
         await _viewModel.ExportTraceCommand.ExecuteAsync(null);
 
         // Assert
         _dialogServiceMock.Verify(x => x.SaveFilesWithDataAsync(
-            It.IsAny<string>(), It.IsAny<IEnumerable<(string, byte[])>>()), Times.Once);
+            It.IsAny<string>(), It.IsAny<IEnumerable<(string, byte[])>>(), It.IsAny<string>()), Times.Once);
     }
 
     [Test]
@@ -110,8 +110,8 @@ public class MonitorViewModelTests
         // Arrange
         RaiseTraceEntry(_deviceManagementServiceMock, TraceDirection.Output, ValidPollPacket);
         _dialogServiceMock.Setup(x => x.SaveFilesWithDataAsync(
-                It.IsAny<string>(), It.IsAny<IEnumerable<(string, byte[])>>()))
-            .ReturnsAsync(false); // User cancels
+                It.IsAny<string>(), It.IsAny<IEnumerable<(string, byte[])>>(), It.IsAny<string>()))
+            .ReturnsAsync((string)null); // User cancels
 
         // Act
         await _viewModel.ExportTraceCommand.ExecuteAsync(null);
@@ -129,9 +129,10 @@ public class MonitorViewModelTests
 
         RaiseTraceEntry(_deviceManagementServiceMock, TraceDirection.Output, ValidPollPacket);
         _dialogServiceMock.Setup(x => x.SaveFilesWithDataAsync(
-                It.IsAny<string>(), It.IsAny<IEnumerable<(string, byte[])>>()))
-            .Callback<string, IEnumerable<(string FileName, byte[] Data)>>((_, files) => savedFiles.AddRange(files))
-            .ReturnsAsync(true);
+                It.IsAny<string>(), It.IsAny<IEnumerable<(string, byte[])>>(), It.IsAny<string>()))
+            .Callback<string, IEnumerable<(string FileName, byte[] Data)>, string>(
+                (_, files, _) => savedFiles.AddRange(files))
+            .ReturnsAsync(@"C:\reports");
 
         // Act
         await _viewModel.ExportTraceCommand.ExecuteAsync(null);

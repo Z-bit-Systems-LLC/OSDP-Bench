@@ -1,3 +1,4 @@
+using OSDPBench.Core.Models;
 using OSDPBench.Core.Services;
 using ZBitSystems.Wpf.UI.Settings;
 
@@ -59,6 +60,16 @@ public class AppUserSettingsService : IUserSettingsService
         _inner.Settings.LastSerialPortName = serialPortName;
         _inner.Settings.LastBaudRate = baudRate;
         _inner.Settings.LastAddress = address;
+        await _inner.SaveAsync();
+    }
+
+    /// <inheritdoc />
+    public LineQualityUserSettings LineQualitySettings => _inner.Settings.LineQuality;
+
+    /// <inheritdoc />
+    public async Task UpdateLineQualitySettingsAsync(LineQualityUserSettings settings)
+    {
+        _inner.Settings.LineQuality = settings;
         await _inner.SaveAsync();
     }
 
