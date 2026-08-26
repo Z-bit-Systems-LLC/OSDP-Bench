@@ -1004,14 +1004,6 @@
     <value>Response times include the serial adapter's latency timer, commonly 16 ms in each direction. Treat them as a pass or fail against the 200 ms reply window rather than as a measurement of the cable.</value>
     <comment>Caveat shown beneath the results table</comment>
   </data>
-  <data name="LineQuality_TesterEquipment" xml:space="preserve">
-    <value>Tester and Equipment</value>
-    <comment>Heading for the collapsible section holding the report fields that describe the test rig</comment>
-  </data>
-  <data name="LineQuality_TesterEquipmentHint" xml:space="preserve">
-    <value>These describe your test rig rather than the line, so they are remembered between runs and between launches. Fill them in once for the job.</value>
-    <comment>Hint explaining that the tester and equipment fields are remembered</comment>
-  </data>
   <data name="LineQuality_LineDetails" xml:space="preserve">
     <value>Line Details</value>
     <comment>Heading for the report fields that describe the single line just measured</comment>
@@ -1028,6 +1020,10 @@
     <value>Tester</value>
     <comment>Report metadata field for who ran the test</comment>
   </data>
+  <data name="LineQuality_TesterHint" xml:space="preserve">
+    <value>Remembered between runs and between launches, so fill it in once for the job.</value>
+    <comment>Hint explaining that the tester name is carried over to the next run</comment>
+  </data>
   <data name="LineQuality_InstallationLocation" xml:space="preserve">
     <value>Location</value>
     <comment>Report metadata field for where the installation is</comment>
@@ -1035,22 +1031,6 @@
   <data name="LineQuality_CableDescription" xml:space="preserve">
     <value>Cable</value>
     <comment>Report metadata field for the cable type and length</comment>
-  </data>
-  <data name="LineQuality_AcuDescription" xml:space="preserve">
-    <value>Controller</value>
-    <comment>Report metadata field for the controller model and firmware</comment>
-  </data>
-  <data name="LineQuality_PdDescription" xml:space="preserve">
-    <value>Responder</value>
-    <comment>Report metadata field for the responder model and firmware</comment>
-  </data>
-  <data name="LineQuality_AdapterDescription" xml:space="preserve">
-    <value>Adapter</value>
-    <comment>Report metadata field for the host platform and serial adapter</comment>
-  </data>
-  <data name="LineQuality_LatencyTimerAdjusted" xml:space="preserve">
-    <value>Adapter latency timer lowered before this run</value>
-    <comment>Checkbox recording whether the serial adapter latency timer was reduced</comment>
   </data>
   <data name="LineQuality_Notes" xml:space="preserve">
     <value>Notes</value>
