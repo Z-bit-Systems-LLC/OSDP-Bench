@@ -7,6 +7,7 @@
       xmlns:local="clr-namespace:OSDPBench.Windows.Views.Pages"
       xmlns:converters="clr-namespace:ZBitSystems.Wpf.UI.Converters;assembly=ZBitSystems.Wpf.UI"
       xmlns:appConverters="clr-namespace:OSDPBench.Windows.Converters"
+      xmlns:lineQuality="clr-namespace:OSDP.Net.LineQuality;assembly=OSDP.Net"
       xmlns:localization="clr-namespace:ZBitSystems.Wpf.UI.Localization;assembly=ZBitSystems.Wpf.UI"
       mc:Ignorable="d"
       d:DataContext="{d:DesignInstance local:LineQualityPage, IsDesignTimeCreatable=False}"
@@ -332,6 +333,7 @@
                           CanUserAddRows="False"
                           IsReadOnly="True"
                           HeadersVisibility="Column"
+                          RowDetailsVisibilityMode="Visible"
                           AutomationProperties.Name="{localization:Localize Accessibility_LineQualityResults}">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="{localization:Localize LineQuality_ColumnBaudRate}"
@@ -361,22 +363,55 @@
                                             Binding="{Binding MaxResponseTimeMs, StringFormat={}{0:F1} ms}" />
                         <DataGridTextColumn Header="{localization:Localize LineQuality_ColumnDetectionLimit}"
                                             Binding="{Binding DetectionLimitPercent, StringFormat={}{0:F2}%}" />
-                        <DataGridTemplateColumn Header="{localization:Localize LineQuality_ColumnReason}"
-                                                Width="*">
-                            <DataGridTemplateColumn.CellTemplate>
-                                <DataTemplate>
-                                    <StackPanel Orientation="Vertical">
-                                        <TextBlock Text="{Binding FailureReason}"
-                                                   TextWrapping="Wrap"
-                                                   Visibility="{Binding FailureReason, Converter={StaticResource NullToVisibilityConverter}}" />
-                                        <TextBlock Text="{Binding SkipReason}"
-                                                   TextWrapping="Wrap"
-                                                   Visibility="{Binding SkipReason, Converter={StaticResource NullToVisibilityConverter}}" />
-                                    </StackPanel>
-                                </DataTemplate>
-                            </DataGridTemplateColumn.CellTemplate>
-                        </DataGridTemplateColumn>
                     </DataGrid.Columns>
+
+                    <!--
+                        The reason a rate failed is a sentence, and the ten measurement columns
+                        already use the full width of the card. As a column of its own it was left
+                        with the grid's minimum width and wrapped one word at a time; under the row
+                        it has the whole width to wrap into, and only the rows that have a reason
+                        show one.
+                    -->
+                    <DataGrid.RowDetailsTemplate>
+                        <DataTemplate DataType="{x:Type lineQuality:BaudRateResult}">
+                            <Grid Margin="8,0,8,6"
+                                  AutomationProperties.AutomationId="LineQuality_RowReason">
+                                <Grid.Style>
+                                    <!-- A rate that came through cleanly has nothing to explain. -->
+                                    <Style TargetType="Grid">
+                                        <Style.Triggers>
+                                            <MultiDataTrigger>
+                                                <MultiDataTrigger.Conditions>
+                                                    <Condition Binding="{Binding FailureReason}" Value="{x:Null}" />
+                                                    <Condition Binding="{Binding SkipReason}" Value="{x:Null}" />
+                                                </MultiDataTrigger.Conditions>
+                                                <Setter Property="Visibility" Value="Collapsed" />
+                                            </MultiDataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Grid.Style>
+
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock Grid.Column="0"
+                                           Margin="0,0,8,0"
+                                           FontWeight="SemiBold"
+                                           Text="{localization:Localize LineQuality_ColumnReason}" />
+
+                                <StackPanel Grid.Column="1" Orientation="Vertical">
+                                    <TextBlock Text="{Binding FailureReason}"
+                                               TextWrapping="Wrap"
+                                               Visibility="{Binding FailureReason, Converter={StaticResource NullToVisibilityConverter}}" />
+                                    <TextBlock Text="{Binding SkipReason}"
+                                               TextWrapping="Wrap"
+                                               Visibility="{Binding SkipReason, Converter={StaticResource NullToVisibilityConverter}}" />
+                                </StackPanel>
+                            </Grid>
+                        </DataTemplate>
+                    </DataGrid.RowDetailsTemplate>
                 </DataGrid>
 
                 <ui:TextBlock Style="{StaticResource Text.Caption}"
