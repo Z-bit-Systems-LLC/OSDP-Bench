@@ -904,6 +904,30 @@
     <value>Baud Rates to Test</value>
     <comment>Label for the baud rate selection list</comment>
   </data>
+  <data name="LineQuality_SelectAllBaudRates" xml:space="preserve">
+    <value>Select All</value>
+    <comment>Button that includes every offered baud rate in the sweep</comment>
+  </data>
+  <data name="LineQuality_SelectNoBaudRates" xml:space="preserve">
+    <value>Select None</value>
+    <comment>Button that clears every baud rate so a single one can be picked</comment>
+  </data>
+  <data name="LineQuality_BaudRateAccessibleName" xml:space="preserve">
+    <value>{0} baud</value>
+    <comment>Screen reader name for a baud rate checkbox, where {0} is the rate</comment>
+  </data>
+  <data name="LineQuality_BaudRatePlaceholder" xml:space="preserve">
+    <value>No baud rates chosen</value>
+    <comment>Shown inside the baud rate box when nothing has been chosen yet</comment>
+  </data>
+  <data name="LineQuality_BaudRatePicker" xml:space="preserve">
+    <value>Choose baud rates</value>
+    <comment>Screen reader name for the control that opens the baud rate picker</comment>
+  </data>
+  <data name="LineQuality_RemoveBaudRate" xml:space="preserve">
+    <value>Remove {0} baud</value>
+    <comment>Screen reader name for the button that drops one rate, where {0} is the rate</comment>
+  </data>
   <data name="LineQuality_StartTest" xml:space="preserve">
     <value>Start Test</value>
     <comment>Button that starts the line quality test</comment>
