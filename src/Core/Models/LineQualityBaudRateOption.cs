@@ -24,6 +24,20 @@ public partial class LineQualityBaudRateOption : ObservableObject
     public int BaudRate { get; }
 
     /// <summary>
+    /// Gets the localized name a screen reader announces for the option, because the visible
+    /// label is a bare number that does not say what it sets.
+    /// </summary>
+    public string AccessibleName => Resources.Resources.GetString("LineQuality_BaudRateAccessibleName")
+        .Replace("{0}", BaudRate.ToString());
+
+    /// <summary>
+    /// Gets the localized name a screen reader announces for the affordance that drops this rate
+    /// from the sweep, because every tag carries the same bare remove icon.
+    /// </summary>
+    public string RemoveAccessibleName => Resources.Resources.GetString("LineQuality_RemoveBaudRate")
+        .Replace("{0}", BaudRate.ToString());
+
+    /// <summary>
     /// Gets or sets a value indicating whether the rate is included in the sweep.
     /// </summary>
     [ObservableProperty] private bool _isSelected;

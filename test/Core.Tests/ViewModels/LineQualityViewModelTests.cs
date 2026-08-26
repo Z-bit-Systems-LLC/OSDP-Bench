@@ -118,6 +118,57 @@ namespace OSDPBench.Core.Tests.ViewModels
         }
 
         [Test]
+        public async Task ClearBaudRates_EmptiesTheSweepAndSaysWhyStartIsDisabled()
+        {
+            var viewModel = await CreateViewModel();
+
+            viewModel.ClearBaudRatesCommand.Execute(null);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(viewModel.BaudRateOptions.Any(option => option.IsSelected), Is.False);
+                Assert.That(viewModel.HasNoBaudRateSelected, Is.True);
+                Assert.That(viewModel.CanStartTest, Is.False);
+                Assert.That(viewModel.ClearBaudRatesCommand.CanExecute(null), Is.False);
+                Assert.That(viewModel.SelectAllBaudRatesCommand.CanExecute(null), Is.True);
+            });
+        }
+
+        [Test]
+        public async Task SelectAllBaudRates_PutsEveryOfferedRateBackInTheSweep()
+        {
+            var viewModel = await CreateViewModel();
+
+            viewModel.ClearBaudRatesCommand.Execute(null);
+            viewModel.SelectAllBaudRatesCommand.Execute(null);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(viewModel.BaudRateOptions.All(option => option.IsSelected), Is.True);
+                Assert.That(viewModel.HasNoBaudRateSelected, Is.False);
+                Assert.That(viewModel.CanStartTest, Is.True);
+                Assert.That(viewModel.SelectAllBaudRatesCommand.CanExecute(null), Is.False);
+                Assert.That(viewModel.ClearBaudRatesCommand.CanExecute(null), Is.True);
+            });
+        }
+
+        [Test]
+        public async Task BulkBaudRateSelection_IsRefusedWhileTheResponderOwnsThePort()
+        {
+            var viewModel = await CreateViewModel();
+
+            viewModel.IsControllerMode = false;
+            await viewModel.StartResponderCommand.ExecuteAsync(null);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(viewModel.IsBusy, Is.True);
+                Assert.That(viewModel.SelectAllBaudRatesCommand.CanExecute(null), Is.False);
+                Assert.That(viewModel.ClearBaudRatesCommand.CanExecute(null), Is.False);
+            });
+        }
+
+        [Test]
         public async Task CanStartTest_IsFalseInResponderMode()
         {
             var viewModel = await CreateViewModel();

@@ -168,6 +168,57 @@ public partial class LineQualityViewModel : ObservableObject, IDisposable
     /// <summary>Gets a description of what the selected profile costs and what it proves.</summary>
     public string ProfileDetail => SelectedProfile.Description;
 
+    /// <summary>
+    /// Gets a value indicating whether any offered rate is still left out of the sweep, and so
+    /// there is something for "select all" to do.
+    /// </summary>
+    public bool CanSelectAllBaudRates => !IsBusy && BaudRateOptions.Any(option => !option.IsSelected);
+
+    /// <summary>
+    /// Gets a value indicating whether any rate is included, and so there is something for
+    /// "select none" to clear.
+    /// </summary>
+    public bool CanClearBaudRates => !IsBusy && BaudRateOptions.Any(option => option.IsSelected);
+
+    /// <summary>
+    /// Gets a value indicating whether the sweep currently has no rate to run.
+    /// </summary>
+    /// <remarks>
+    /// Surfaced so the page can say why Start is disabled. Clearing every rate is a legitimate
+    /// step on the way to picking one, so it is explained rather than prevented.
+    /// </remarks>
+    public bool HasNoBaudRateSelected => !BaudRateOptions.Any(option => option.IsSelected);
+
+    /// <summary>
+    /// Includes every offered rate in the sweep.
+    /// </summary>
+    [RelayCommand(CanExecute = nameof(CanSelectAllBaudRates))]
+    private void SelectAllBaudRates() => SetAllBaudRates(true);
+
+    /// <summary>
+    /// Leaves every offered rate out of the sweep, so a single rate can be picked from empty
+    /// rather than by clearing the five that are not wanted.
+    /// </summary>
+    [RelayCommand(CanExecute = nameof(CanClearBaudRates))]
+    private void ClearBaudRates() => SetAllBaudRates(false);
+
+    /// <summary>
+    /// Leaves one rate out of the sweep, for the remove affordance each chosen rate carries.
+    /// </summary>
+    [RelayCommand]
+    private void RemoveBaudRate(LineQualityBaudRateOption? option)
+    {
+        if (option != null) option.IsSelected = false;
+    }
+
+    private void SetAllBaudRates(bool isSelected)
+    {
+        foreach (var option in BaudRateOptions)
+        {
+            option.IsSelected = isSelected;
+        }
+    }
+
     private void OnBaudRateOptionChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs args)
     {
         _ = sender;
@@ -711,10 +762,15 @@ public partial class LineQualityViewModel : ObservableObject, IDisposable
     {
         OnPropertyChanged(nameof(CanStartTest));
         OnPropertyChanged(nameof(CanStartResponder));
+        OnPropertyChanged(nameof(CanSelectAllBaudRates));
+        OnPropertyChanged(nameof(CanClearBaudRates));
+        OnPropertyChanged(nameof(HasNoBaudRateSelected));
         StartTestCommand.NotifyCanExecuteChanged();
         StartResponderCommand.NotifyCanExecuteChanged();
         StopResponderCommand.NotifyCanExecuteChanged();
         SaveReportCommand.NotifyCanExecuteChanged();
+        SelectAllBaudRatesCommand.NotifyCanExecuteChanged();
+        ClearBaudRatesCommand.NotifyCanExecuteChanged();
     }
 
     partial void OnIsTestRunningChanged(bool value)

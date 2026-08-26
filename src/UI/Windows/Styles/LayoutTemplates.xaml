@@ -258,4 +258,115 @@
         <Setter Property="Margin" Value="0,0,0,16"/>
     </Style>
 
+    <!--
+        Compact inline action. Borderless and sized to caption text so bulk actions can sit on a
+        section header row as text rather than as buttons competing with the primary button below.
+    -->
+    <Style x:Key="Button.Compact" TargetType="ui:Button" BasedOn="{StaticResource Button.Transparent}">
+        <Setter Property="Margin" Value="0"/>
+        <Setter Property="Padding" Value="{StaticResource Padding.Control}"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="MinWidth" Value="0"/>
+        <Setter Property="MinHeight" Value="0"/>
+        <Setter Property="FontSize" Value="{StaticResource FontSize.Caption}"/>
+    </Style>
+
+    <!--
+        Checkable list, for a set of options expected to grow past what a row of check boxes can
+        hold. The row carries the selection and the check box in the item template is only the
+        indicator, so the hit area is a whole row rather than a glyph and the two can never
+        disagree. A themed check box is only hit tested over the glyph and label it paints, so
+        stretching one across the row would not widen the target.
+
+        The stock row chrome is deliberately replaced rather than restyled: a themed list fills
+        the whole row with the accent colour when an item is selected, which on a list where most
+        items are usually checked reads as a solid block instead of a set of choices.
+
+        Items must expose a two-way IsSelected property and a read-only AccessibleName: the row is
+        what a screen reader lands on, and it would otherwise announce the item type name.
+    -->
+    <Style x:Key="ListBoxItem.CheckList" TargetType="ListBoxItem" BasedOn="{StaticResource {x:Type ListBoxItem}}">
+        <Setter Property="Padding" Value="{StaticResource Padding.Control}"/>
+        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+        <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}"/>
+        <Setter Property="AutomationProperties.Name" Value="{Binding AccessibleName}"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ListBoxItem">
+                    <!-- Transparent rather than unset: an unpainted row is not hit tested. -->
+                    <Border Background="Transparent" Padding="{TemplateBinding Padding}">
+                        <ContentPresenter HorizontalAlignment="Stretch"/>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="ListBox.CheckList" TargetType="ListBox" BasedOn="{StaticResource {x:Type ListBox}}">
+        <Setter Property="SelectionMode" Value="Multiple"/>
+        <Setter Property="HorizontalAlignment" Value="Left"/>
+        <Setter Property="MinWidth" Value="{StaticResource Control.Width.Small}"/>
+        <!-- Tall enough for the six OSDP rates; a seventh option starts it scrolling. -->
+        <Setter Property="MaxHeight" Value="270"/>
+        <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
+        <Setter Property="ItemContainerStyle" Value="{StaticResource ListBoxItem.CheckList}"/>
+    </Style>
+
+    <!--
+        Tag input: a box that reads as a text field but holds the current choices as removable
+        tags, with a picker for everything else. Used where the option list is long enough that a
+        row of check boxes would dominate the page, and where what matters at a glance is what has
+        been chosen rather than what is on offer.
+    -->
+    <Style x:Key="TagInput.Container" TargetType="Border">
+        <Setter Property="Background" Value="{DynamicResource ControlFillColorDefaultBrush}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource ControlElevationBorderBrush}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="CornerRadius" Value="{StaticResource CornerRadius.Small}"/>
+        <Setter Property="Padding" Value="{StaticResource Padding.Control}"/>
+        <Setter Property="MinHeight" Value="{StaticResource Control.Height.Large}"/>
+    </Style>
+
+    <Style x:Key="Tag.Container" TargetType="Border">
+        <Setter Property="Background" Value="{DynamicResource AccentFillColorDefaultBrush}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource AccentFillColorDefaultBrush}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="CornerRadius" Value="{StaticResource CornerRadius.Medium}"/>
+        <Setter Property="Padding" Value="8,1"/>
+        <Setter Property="Margin" Value="0,2,6,2"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+    </Style>
+
+    <Style x:Key="Tag.Text" TargetType="TextBlock" BasedOn="{StaticResource Text.Body}">
+        <Setter Property="Foreground" Value="{DynamicResource TextOnAccentFillColorPrimaryBrush}"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+    </Style>
+
+    <!-- The tag's own remove affordance, kept small enough not to outweigh the tag holding it. -->
+    <Style x:Key="Tag.Remove" TargetType="ui:Button" BasedOn="{StaticResource Button.Compact}">
+        <Setter Property="Foreground" Value="{DynamicResource TextOnAccentFillColorPrimaryBrush}"/>
+        <Setter Property="Padding" Value="2,0"/>
+        <Setter Property="Margin" Value="4,0,-4,0"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+    </Style>
+
+    <Style x:Key="TagInput.Placeholder" TargetType="TextBlock" BasedOn="{StaticResource Text.Caption}">
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="Margin" Value="2,0,0,0"/>
+    </Style>
+
+    <!--
+        Surface for content that floats above the page. A popup is not inside the page's visual
+        ground, so it has to carry its own background and edge or it renders over whatever
+        happens to be behind it.
+    -->
+    <Style x:Key="Popup.Surface" TargetType="Border">
+        <Setter Property="Background" Value="{DynamicResource ApplicationBackgroundBrush}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource ControlElevationBorderBrush}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="CornerRadius" Value="{StaticResource CornerRadius.Medium}"/>
+        <Setter Property="Padding" Value="{StaticResource Thickness.Small}"/>
+    </Style>
+
 </ResourceDictionary>
+

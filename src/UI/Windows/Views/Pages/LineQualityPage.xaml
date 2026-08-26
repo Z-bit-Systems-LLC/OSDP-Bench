@@ -142,20 +142,120 @@
                 <ui:TextBlock Style="{StaticResource Section.Header}"
                               Text="{localization:Localize LineQuality_BaudRates}" />
 
-                <ItemsControl ItemsSource="{Binding ViewModel.BaudRateOptions}">
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <WrapPanel Orientation="Horizontal" />
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <CheckBox Content="{Binding BaudRate}"
-                                      IsChecked="{Binding IsSelected, Mode=TwoWay}"
-                                      Margin="0,0,16,0" />
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
+                <!--
+                    The chosen rates are shown as tags and the rest live behind the picker, so the
+                    section stays the same size as the list of offered rates grows.
+                -->
+                <Border Name="BaudRateInput"
+                        Style="{StaticResource TagInput.Container}"
+                        IsEnabled="{Binding ViewModel.IsBusy, Converter={StaticResource InverseBoolConverter}}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Grid.Column="0"
+                                   AutomationProperties.AutomationId="LineQuality_BaudRatePlaceholder"
+                                   Style="{StaticResource TagInput.Placeholder}"
+                                   Text="{localization:Localize LineQuality_BaudRatePlaceholder}"
+                                   Visibility="{Binding ViewModel.HasNoBaudRateSelected, Converter={StaticResource BooleanToVisibilityConverter}}" />
+
+                        <ItemsControl Grid.Column="0"
+                                      AutomationProperties.AutomationId="LineQuality_BaudRateTags"
+                                      ItemsSource="{Binding ViewModel.BaudRateOptions}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel Orientation="Horizontal" />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <!-- Every rate has a tag; only the chosen ones take up room. -->
+                                    <Border Style="{StaticResource Tag.Container}"
+                                            Visibility="{Binding IsSelected, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Style="{StaticResource Tag.Text}"
+                                                       Text="{Binding BaudRate}" />
+                                            <ui:Button Style="{StaticResource Tag.Remove}"
+                                                       AutomationProperties.Name="{Binding RemoveAccessibleName}"
+                                                       Command="{Binding ViewModel.RemoveBaudRateCommand, RelativeSource={RelativeSource AncestorType=local:LineQualityPage}}"
+                                                       CommandParameter="{Binding}">
+                                                <ui:Button.Icon>
+                                                    <ui:SymbolIcon Symbol="Dismiss12" />
+                                                </ui:Button.Icon>
+                                            </ui:Button>
+                                        </StackPanel>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+
+                        <!--
+                            The picker closes itself when a press lands outside it, and this toggle
+                            is outside it. Taking the toggle out of hit testing while the picker is
+                            open stops that same press being read as a request to open it again,
+                            which would leave the picker impossible to close from here.
+                        -->
+                        <ToggleButton Grid.Column="1"
+                                      Name="BaudRatePickerToggle"
+                                      AutomationProperties.AutomationId="LineQuality_BaudRatePicker"
+                                      AutomationProperties.Name="{localization:Localize LineQuality_BaudRatePicker}"
+                                      IsHitTestVisible="{Binding IsOpen, ElementName=BaudRatePickerPopup, Converter={StaticResource InverseBoolConverter}}"
+                                      Background="Transparent"
+                                      BorderThickness="0"
+                                      Padding="4,0"
+                                      VerticalAlignment="Center">
+                            <ui:SymbolIcon Symbol="ChevronDown24" />
+                        </ToggleButton>
+
+                        <!-- A popup takes no room in the grid; the column is stated only to say so. -->
+                        <Popup Grid.Column="0"
+                               Name="BaudRatePickerPopup"
+                               IsOpen="{Binding IsChecked, ElementName=BaudRatePickerToggle, Mode=TwoWay}"
+                               PlacementTarget="{Binding ElementName=BaudRateInput}"
+                               Placement="Bottom"
+                               StaysOpen="False"
+                               AllowsTransparency="True"
+                               PopupAnimation="None">
+                            <Border Style="{StaticResource Popup.Surface}"
+                                    MinWidth="{Binding ActualWidth, ElementName=BaudRateInput}">
+                                <StackPanel Orientation="Vertical">
+                                    <!-- The bulk actions belong with the full list, not on the page. -->
+                                    <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
+                                        <ui:Button Name="SelectAllBaudRatesButton"
+                                                   AutomationProperties.AutomationId="LineQuality_SelectAllBaudRates"
+                                                   Style="{StaticResource Button.Compact}"
+                                                   Margin="{StaticResource Margin.Control}"
+                                                   Content="{localization:Localize LineQuality_SelectAllBaudRates}"
+                                                   Command="{Binding ViewModel.SelectAllBaudRatesCommand}" />
+
+                                        <ui:Button Name="SelectNoBaudRatesButton"
+                                                   AutomationProperties.AutomationId="LineQuality_SelectNoBaudRates"
+                                                   Style="{StaticResource Button.Compact}"
+                                                   Content="{localization:Localize LineQuality_SelectNoBaudRates}"
+                                                   Command="{Binding ViewModel.ClearBaudRatesCommand}" />
+                                    </StackPanel>
+
+                                    <ListBox Name="BaudRateList"
+                                             AutomationProperties.AutomationId="LineQuality_BaudRateList"
+                                             Style="{StaticResource ListBox.CheckList}"
+                                             ItemsSource="{Binding ViewModel.BaudRateOptions}">
+                                        <ListBox.ItemTemplate>
+                                            <DataTemplate>
+                                                <!-- Indicator only: the row it sits in owns the click. -->
+                                                <CheckBox Content="{Binding BaudRate}"
+                                                          IsChecked="{Binding IsSelected, Mode=OneWay}"
+                                                          IsHitTestVisible="False"
+                                                          Focusable="False" />
+                                            </DataTemplate>
+                                        </ListBox.ItemTemplate>
+                                    </ListBox>
+                                </StackPanel>
+                            </Border>
+                        </Popup>
+                    </Grid>
+                </Border>
 
                 <StackPanel Orientation="Horizontal" Margin="{StaticResource Margin.Card}">
                     <ui:Button Name="StartTestButton"
