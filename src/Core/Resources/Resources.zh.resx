@@ -498,10 +498,6 @@
     <value>许可证信息</value>
     <comment>Header for license information section</comment>
   </data>
-  <data name="Info_EPLLicense" xml:space="preserve">
-    <value>英超 2.0</value>
-    <comment>Eclipse Public License 2.0 header</comment>
-  </data>
   <data name="Info_ApacheLicense" xml:space="preserve">
     <value>Apache 2.0 版本</value>
     <comment>Apache License 2.0 header</comment>
