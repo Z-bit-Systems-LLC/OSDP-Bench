@@ -28,6 +28,7 @@ public partial class LineQualityViewModel : ObservableObject, IDisposable
     private readonly IUserSettingsService? _userSettingsService;
 
     private readonly TaskCompletionSource<bool> _initializationComplete = new();
+    private readonly SynchronizationContext? _synchronizationContext;
     private LineQualityReport? _report;
     private bool _isDisposed;
 
@@ -79,6 +80,10 @@ public partial class LineQualityViewModel : ObservableObject, IDisposable
         {
             _usbDeviceMonitorService.UsbDeviceChanged += OnUsbDeviceChanged;
         }
+
+        // Captured so the first port scan, which runs on a worker thread, can put its result back
+        // on the thread the page binds on.
+        _synchronizationContext = SynchronizationContext.Current;
 
         Task.Run(async () => await InitializeSerialPorts());
     }
@@ -746,13 +751,49 @@ public partial class LineQualityViewModel : ObservableObject, IDisposable
         try
         {
             var foundPorts = await _serialPortConnectionService.FindAvailableSerialPorts();
-            ReplaceSerialPorts(foundPorts.ToList());
+            await OnCreatingThread(() => ReplaceSerialPorts(foundPorts.ToList()));
             _initializationComplete.SetResult(true);
         }
         catch (Exception exception)
         {
             _initializationComplete.SetException(exception);
         }
+    }
+
+    /// <summary>
+    /// Runs an update on the thread the view model was created on.
+    /// </summary>
+    /// <remarks>
+    /// Rebuilding the port list resets the collection the port selector binds to, and a bound
+    /// collection may only be reset from the thread that owns the control. The first scan runs on
+    /// a worker thread, so it has to come back here before it touches the list: left on the worker
+    /// thread it throws, the page is left with no ports to choose from, and a run started against
+    /// that empty selection does nothing at all.
+    /// </remarks>
+    private Task OnCreatingThread(Action update)
+    {
+        if (_synchronizationContext == null || _synchronizationContext == SynchronizationContext.Current)
+        {
+            update();
+            return Task.CompletedTask;
+        }
+
+        var completion = new TaskCompletionSource<bool>();
+
+        _synchronizationContext.Post(_ =>
+        {
+            try
+            {
+                update();
+                completion.SetResult(true);
+            }
+            catch (Exception exception)
+            {
+                completion.SetException(exception);
+            }
+        }, null);
+
+        return completion.Task;
     }
 
     private void ReplaceSerialPorts(IReadOnlyList<AvailableSerialPort> ports)

@@ -23,8 +23,16 @@ public class LineQualityPageTests : UiTestBase
     {
         NavigateToPage("NavItem_LineQuality", "LineQuality_StartTest");
 
-        // Each test starts from the controller role, which is the page's default.
         var viewModel = InvokeOnUI(() => TestApp.GetService<LineQualityViewModel>());
+
+        // The page renders before the port scan lands, and a run started with no port selected
+        // does nothing at all, so every test waits for the list rather than racing it.
+        Assert.That(viewModel.InitializationComplete.Wait(TimeSpan.FromSeconds(5)), Is.True,
+            "The serial port scan should finish before a test drives the page.");
+        Assert.That(InvokeOnUI(() => viewModel.SelectedSerialPort), Is.Not.Null,
+            "The scan should leave a port selected for the run to use.");
+
+        // Each test starts from the controller role, which is the page's default.
         InvokeOnUI(() => viewModel.IsControllerMode = true);
     }
 
