@@ -29,11 +29,31 @@ public partial class ManagePage : INavigableView<ManageViewModel>
         InitializeComponent();
             
         viewModel.SelectedDeviceAction = viewModel.AvailableDeviceActions.OfType<SetReaderLedAction>().FirstOrDefault();
+
+        // The default action is selected before any device is connected, so the action controls
+        // must be rebuilt once connection details arrive rather than only on a selection change
+        viewModel.PropertyChanged += (_, eventArgs) =>
+        {
+            switch (eventArgs.PropertyName)
+            {
+                case nameof(ManageViewModel.ConnectedPortName):
+                case nameof(ManageViewModel.ConnectedBaudRate):
+                case nameof(ManageViewModel.ConnectedAddress):
+                case nameof(ManageViewModel.CapabilitiesLookup):
+                    RefreshDeviceActionControl();
+                    break;
+            }
+        };
     }
 
     public ManageViewModel ViewModel { get; }
 
     private void DeviceActionsComboBox_OnSelectionChanged(object sender, SelectionChangedEventArgs eventArgs)
+    {
+        RefreshDeviceActionControl();
+    }
+
+    private void RefreshDeviceActionControl()
     {
         DeviceActionControl.Children.Clear();
         PerformActionButton.IsEnabled = true;
