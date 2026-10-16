@@ -381,6 +381,14 @@
     <value>送信</value>
     <comment>Button text to send a command to the device</comment>
   </data>
+  <data name="Manage_ActionAcknowledged" xml:space="preserve">
+    <value>Command acknowledged by device</value>
+    <comment>Brief confirmation shown after an LED or buzzer command is acknowledged</comment>
+  </data>
+  <data name="Manage_ActionNotAcknowledged" xml:space="preserve">
+    <value>Device did not acknowledge the command</value>
+    <comment>Brief message shown when an LED or buzzer command is not acknowledged</comment>
+  </data>
   <data name="Manage_CapabilityNotSupported" xml:space="preserve">
     <value>このデバイスはサポートしていません {0}.</value>
     <comment>Message when device lacks a required capability. {0} = capability name</comment>
