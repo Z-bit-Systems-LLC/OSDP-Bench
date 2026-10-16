@@ -382,11 +382,11 @@
     <comment>Button text to send a command to the device</comment>
   </data>
   <data name="Manage_ActionAcknowledged" xml:space="preserve">
-    <value>Command acknowledged by device</value>
+    <value>Befehl vom Gerät bestätigt</value>
     <comment>Brief confirmation shown after an LED or buzzer command is acknowledged</comment>
   </data>
   <data name="Manage_ActionNotAcknowledged" xml:space="preserve">
-    <value>Device did not acknowledge the command</value>
+    <value>Das Gerät bestätigte den Befehl nicht</value>
     <comment>Brief message shown when an LED or buzzer command is not acknowledged</comment>
   </data>
   <data name="Manage_CapabilityNotSupported" xml:space="preserve">
