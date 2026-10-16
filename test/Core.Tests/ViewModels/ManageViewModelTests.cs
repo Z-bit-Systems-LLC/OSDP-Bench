@@ -127,6 +127,73 @@ namespace OSDPBench.Core.Tests.ViewModels
         }
 
         [Test]
+        public async Task ExecuteDeviceAction_ForLedAction_WhenAcknowledged_ShowsSuccessMessage()
+        {
+            // Arrange
+            var ledAction = new SetReaderLedAction();
+            _deviceManagementServiceMock.Setup(x => x.ExecuteDeviceAction(ledAction, It.IsAny<object>()))
+                .ReturnsAsync(true);
+            _viewModel.SelectedDeviceAction = ledAction;
+
+            // Act
+            await _viewModel.ExecuteDeviceActionCommand.ExecuteAsync(null);
+
+            // Assert
+            Assert.That(_viewModel.ActionResultSucceeded, Is.True);
+            Assert.That(_viewModel.ActionResultMessage, Is.EqualTo("Command acknowledged by device"));
+        }
+
+        [Test]
+        public async Task ExecuteDeviceAction_ForBuzzerAction_WhenNotAcknowledged_ShowsFailureMessage()
+        {
+            // Arrange
+            var buzzerAction = new ControlBuzzerAction();
+            _deviceManagementServiceMock.Setup(x => x.ExecuteDeviceAction(buzzerAction, It.IsAny<object>()))
+                .ReturnsAsync(false);
+            _viewModel.SelectedDeviceAction = buzzerAction;
+
+            // Act
+            await _viewModel.ExecuteDeviceActionCommand.ExecuteAsync(null);
+
+            // Assert
+            Assert.That(_viewModel.ActionResultSucceeded, Is.False);
+            Assert.That(_viewModel.ActionResultMessage, Is.EqualTo("Device did not acknowledge the command"));
+        }
+
+        [Test]
+        public async Task ExecuteDeviceAction_ForOtherAction_ReturningBool_DoesNotShowMessage()
+        {
+            // Arrange
+            var mockAction = new Mock<IDeviceAction>();
+            _deviceManagementServiceMock.Setup(x => x.ExecuteDeviceAction(mockAction.Object, It.IsAny<object>()))
+                .ReturnsAsync(true);
+            _viewModel.SelectedDeviceAction = mockAction.Object;
+
+            // Act
+            await _viewModel.ExecuteDeviceActionCommand.ExecuteAsync(null);
+
+            // Assert
+            Assert.That(_viewModel.ActionResultMessage, Is.Empty);
+        }
+
+        [Test]
+        public async Task SelectedDeviceAction_WhenChanged_ClearsActionResultMessage()
+        {
+            // Arrange
+            var ledAction = new SetReaderLedAction();
+            _deviceManagementServiceMock.Setup(x => x.ExecuteDeviceAction(ledAction, It.IsAny<object>()))
+                .ReturnsAsync(true);
+            _viewModel.SelectedDeviceAction = ledAction;
+            await _viewModel.ExecuteDeviceActionCommand.ExecuteAsync(null);
+
+            // Act
+            _viewModel.SelectedDeviceAction = new ControlBuzzerAction();
+
+            // Assert
+            Assert.That(_viewModel.ActionResultMessage, Is.Empty);
+        }
+
+        [Test]
         public async Task ExecuteDeviceAction_ForSetCommunicationAction_WithChangedParameters_ReconnectsWithNewSettings()
         {
             // Arrange

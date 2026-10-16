@@ -27,6 +27,7 @@ public partial class ManageViewModel : ObservableObject
     private PacketTraceEntry? _lastPacketEntry;
     private byte[]? _lastConfiguredSecurityKey;
     private bool _securityKeyConfigured;
+    private Timer? _actionResultTimer;
 
     /// <inheritdoc />
     public ManageViewModel(IDialogService dialogService, IDeviceManagementService deviceManagementService, ISerialPortConnectionService serialPortConnectionService)
@@ -66,7 +67,11 @@ public partial class ManageViewModel : ObservableObject
             }
 
             var result = await ExecuteSelectedDeviceAction();
-            if (result != null && SelectedDeviceAction is SetCommunicationAction)
+            if (SelectedDeviceAction is ControlBuzzerAction or SetReaderLedAction && result is bool acknowledged)
+            {
+                ShowActionResult(acknowledged);
+            }
+            else if (result != null && SelectedDeviceAction is SetCommunicationAction)
             {
                 await ExceptionHelper.ExecuteSafelyAsync(
                     _dialogService,
@@ -88,6 +93,25 @@ public partial class ManageViewModel : ObservableObject
             Resources.Resources.GetString("Dialog_PerformingAction_Title"), 
             async () => await _deviceManagementService.ExecuteDeviceAction(SelectedDeviceAction!, DeviceActionParameter),
             null);
+    }
+
+    private void ShowActionResult(bool acknowledged)
+    {
+        ActionResultSucceeded = acknowledged;
+        ActionResultMessage = Resources.Resources.GetString(acknowledged
+            ? "Manage_ActionAcknowledged"
+            : "Manage_ActionNotAcknowledged");
+
+        // Clear the result after a few seconds so a repeated send shows fresh feedback
+        _actionResultTimer?.Dispose();
+        _actionResultTimer = new Timer(_ => ActionResultMessage = string.Empty, null, TimeSpan.FromSeconds(3), Timeout.InfiniteTimeSpan);
+    }
+
+    partial void OnSelectedDeviceActionChanged(IDeviceAction? value)
+    {
+        _ = value; // Required by source generator signature
+        _actionResultTimer?.Dispose();
+        ActionResultMessage = string.Empty;
     }
 
     private async Task HandleSetCommunicationAction(object result)
@@ -416,6 +440,16 @@ public partial class ManageViewModel : ObservableObject
     [ObservableProperty] private IDeviceAction? _selectedDeviceAction;
 
     [ObservableProperty] private object? _deviceActionParameter;
+
+    /// <summary>
+    /// Gets the short-lived confirmation shown after sending an LED or buzzer command, or empty when there is none.
+    /// </summary>
+    [ObservableProperty] private string _actionResultMessage = string.Empty;
+
+    /// <summary>
+    /// Gets whether the device acknowledged the command reported by <see cref="ActionResultMessage"/>.
+    /// </summary>
+    [ObservableProperty] private bool _actionResultSucceeded;
     
     [ObservableProperty] private DateTime _lastTxActiveTime;
 

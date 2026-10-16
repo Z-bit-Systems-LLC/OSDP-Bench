@@ -137,11 +137,25 @@
                     <Grid Name="DeviceActionControl"
                           Margin="{StaticResource Margin.Card}" />
 
-                    <ui:Button Name="PerformActionButton"
-                        Content="{Binding ViewModel.SelectedDeviceAction.PerformActionName}"
-                                Margin="{StaticResource Margin.Card}"
-                                HorizontalAlignment="Left"
-                                Command="{Binding ViewModel.ExecuteDeviceActionCommand}"/>
+                    <WrapPanel Orientation="Horizontal">
+                        <ui:Button Name="PerformActionButton"
+                                   Content="{Binding ViewModel.SelectedDeviceAction.PerformActionName}"
+                                   Margin="{StaticResource Margin.Card}"
+                                   Command="{Binding ViewModel.ExecuteDeviceActionCommand}"/>
+                        <TextBlock Text="{Binding ViewModel.ActionResultMessage}"
+                                   VerticalAlignment="Center"
+                                   TextWrapping="Wrap">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock" BasedOn="{StaticResource Text.Success}">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding ViewModel.ActionResultSucceeded}" Value="False">
+                                            <Setter Property="Foreground" Value="{DynamicResource SemanticErrorBrush}"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                    </WrapPanel>
                 </StackPanel>
             </ui:Card>
         </StackPanel>
