@@ -7,28 +7,30 @@
              xmlns:localization="clr-namespace:ZBitSystems.Wpf.UI.Localization;assembly=ZBitSystems.Wpf.UI"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
-    <Grid>
-        <Grid>
-            <StackPanel Orientation="Vertical">
-                <Label Content="{localization:Localize Monitor_KeypadEntries}"
-                       Style="{StaticResource Label.Standard}"
-                       Target="{Binding ElementName=KeypadTextBox}" />
-                <StackPanel Orientation="Horizontal">
-                    <TextBox Name="KeypadTextBox"
-                             MinWidth="200"
-                             IsReadOnly="True"
-                             FontFamily="Consolas"
-                             Style="{StaticResource TextBox.Standard}"
-                             MinHeight="0"
-                             Height="Auto"
-                             VerticalAlignment="Center"
-                             Margin="0,0,20,0"/>
-                    <ui:Button Name="ClearButton"
-                               Content="{localization:Localize Monitor_Clear}"
-                               Style="{StaticResource Button.Secondary}"
-                               Click="ClearButton_OnClick"/>
-                </StackPanel>
-            </StackPanel>
-        </Grid>
-    </Grid>
+    <StackPanel Orientation="Vertical">
+        <DockPanel Margin="0,0,20,5">
+            <Label Content="{localization:Localize Monitor_KeypadEntries}"
+                   Style="{StaticResource Label.Standard}"
+                   Target="{Binding ElementName=KeypadTextBox}"
+                   VerticalAlignment="Bottom"
+                   DockPanel.Dock="Left" />
+            <ui:Button Name="ClearButton"
+                       Content="{localization:Localize Monitor_Clear}"
+                       Style="{StaticResource Button.Secondary}"
+                       DockPanel.Dock="Right"
+                       HorizontalAlignment="Right"
+                       Click="ClearButton_OnClick"/>
+        </DockPanel>
+        <!-- Stretches to the available width instead of growing with its content, so the
+             copy button inside the box stays visible as entries accumulate -->
+        <TextBox Name="KeypadTextBox"
+                 IsReadOnly="True"
+                 FontFamily="Consolas"
+                 Style="{StaticResource TextBox.Standard}"
+                 MinHeight="0"
+                 Height="Auto"
+                 VerticalAlignment="Center"
+                 Margin="0,0,20,0"
+                 TextChanged="KeypadTextBox_OnTextChanged"/>
+    </StackPanel>
 </UserControl>

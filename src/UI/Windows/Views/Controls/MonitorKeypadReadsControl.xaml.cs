@@ -16,4 +16,10 @@ public partial class MonitorKeypadReadsControl
         var bindingExpression = KeypadTextBox.GetBindingExpression(TextBox.TextProperty);
         bindingExpression?.UpdateSource();
     }
+
+    private void KeypadTextBox_OnTextChanged(object sender, TextChangedEventArgs e)
+    {
+        // Keep the most recent entries in view once the text is wider than the box
+        KeypadTextBox.ScrollToHorizontalOffset(double.MaxValue);
+    }
 }
