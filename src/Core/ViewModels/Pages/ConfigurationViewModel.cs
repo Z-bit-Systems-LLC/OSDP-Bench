@@ -158,15 +158,15 @@ public partial class ConfigurationViewModel : ObservableObject, IDisposable
             StatusLevel = StatusLevel.PassiveMonitoring;
             ConnectedBaudRate = (int)_deviceManagementService.BaudRate;
         }
-        else if (StatusLevel == StatusLevel.Discovered)
-        {
-            StatusText = Resources.Resources.GetString("Status_AttemptingToConnect");
-            StatusLevel = StatusLevel.Connecting;
-        }
         else if (connectionStatus == ConnectionStatus.InvalidSecurityKey)
         {
             StatusText = Resources.Resources.GetString("Status_InvalidSecurityKey");
             StatusLevel = StatusLevel.Error;
+        }
+        else if (StatusLevel == StatusLevel.Discovered)
+        {
+            StatusText = Resources.Resources.GetString("Status_AttemptingToConnect");
+            StatusLevel = StatusLevel.Connecting;
         }
         else
         {

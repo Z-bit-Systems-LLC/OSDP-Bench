@@ -2,6 +2,7 @@
 using System.Text;
 using OSDP.Net;
 using OSDP.Net.Connections;
+using OSDP.Net.Messages;
 using OSDP.Net.Model.ReplyData;
 using OSDP.Net.PanelCommands.DeviceDiscover;
 using OSDP.Net.Tracing;
@@ -28,7 +29,8 @@ public sealed class DeviceManagementService : IDeviceManagementService
     private bool _isPortInUse;
     private bool _invalidSecurityKey;
     private bool _isRestartingInClearText;
-    private bool _isClearTextFallback;
+    private bool _isSecurityKeyRejected;
+    private int _clientCryptogramReplies;
     private byte[]? _securityKey;
     private IOsdpConnection? _connection;
 
@@ -49,9 +51,10 @@ public sealed class DeviceManagementService : IDeviceManagementService
         {
             if (_isDiscovering || _isRestartingInClearText) return;
 
-            // A clear text fallback only exists to read the ID, a PD answering it is not a connection
-            if (_isClearTextFallback && args.IsConnected) return;
+            // Once the PD has rejected the security key, the link only exists to read the ID
+            if (_isSecurityKeyRejected && args.IsConnected) return;
 
+            _clientCryptogramReplies = 0;
             IsConnected = args.IsConnected;
             if (IsConnected)
             {
@@ -80,11 +83,9 @@ public sealed class DeviceManagementService : IDeviceManagementService
         _panel.NakReplyReceived += (_, args) =>
         {
             RaiseEvent(NakReplyReceived, ToFormattedText(args.Nak.ErrorCode));
-            if (args.Nak.ErrorCode == ErrorCode.CommunicationSecurityNotMet && !_invalidSecurityKey)
+            if (args.Nak.ErrorCode == ErrorCode.CommunicationSecurityNotMet)
             {
-                _invalidSecurityKey = true;
-                RaiseEvent(ConnectionStatusChange, ConnectionStatus.InvalidSecurityKey);
-                Task.Run(ReadIdentityWithoutSecurityKey);
+                OnSecurityKeyRejected();
             }
         };
 
@@ -167,15 +168,34 @@ public sealed class DeviceManagementService : IDeviceManagementService
     }
 
     /// <summary>
+    /// Reports an invalid security key and reads the device identity when the PD rejects the
+    /// security of a link that has not come online.
+    /// </summary>
+    private void OnSecurityKeyRejected()
+    {
+        // Discovery expects a rejection while it checks for the default key
+        if (_isDiscovering || IsConnected || _invalidSecurityKey) return;
+
+        // Only the first rejection is on a secure channel link, later ones are on the clear text fallback
+        bool restartInClearText = IsUsingSecureChannel && !_isSecurityKeyRejected;
+
+        _invalidSecurityKey = true;
+        _isSecurityKeyRejected = true;
+        RaiseEvent(ConnectionStatusChange, ConnectionStatus.InvalidSecurityKey);
+        Task.Run(() => ReadIdentityWithoutSecurityKey(restartInClearText));
+    }
+
+    /// <summary>
     /// Reads the device identity after the PD has rejected the security key. A secure channel
     /// connection keeps retrying the handshake and never sends the ID request, so it is restarted
     /// in clear text first. The secure channel settings are kept so a reconnect tries them again.
     /// </summary>
-    private async Task ReadIdentityWithoutSecurityKey()
+    /// <param name="restartInClearText">Restart the connection in clear text before reading the ID.</param>
+    private async Task ReadIdentityWithoutSecurityKey(bool restartInClearText)
     {
         try
         {
-            if (IsUsingSecureChannel && !_isClearTextFallback && _connection != null)
+            if (restartInClearText && _connection != null)
             {
                 var connectionId = _connectionId;
                 _isRestartingInClearText = true;
@@ -186,7 +206,6 @@ public sealed class DeviceManagementService : IDeviceManagementService
                     // The user disconnected or started another connection in the meantime
                     if (_connectionId != connectionId || !_isPortInUse) return;
 
-                    _isClearTextFallback = true;
                     _connectionId = _panel.StartConnection(_connection, _defaultPollInterval, Tracer);
                     _panel.AddDevice(_connectionId, Address, true, false);
                 }
@@ -209,6 +228,29 @@ public sealed class DeviceManagementService : IDeviceManagementService
     private void Tracer(TraceEntry traceEntry)
     {
         RaiseEvent(TraceEntryReceived, traceEntry);
+
+        // A matching key establishes the secure channel on the first osdp_CCRYPT. OSDP.Net discards
+        // one with a mismatched cryptogram and challenges again, without any NAK from the PD.
+        if (traceEntry.Direction == TraceDirection.Input && IsUsingSecureChannel && !_isSecurityKeyRejected &&
+            IsClientCryptogramReply(traceEntry.Data) && ++_clientCryptogramReplies > 1)
+        {
+            OnSecurityKeyRejected();
+        }
+    }
+
+    /// <summary>
+    /// Determines whether a packet is an osdp_CCRYPT reply, which is never encrypted so its reply
+    /// code directly follows the security control block.
+    /// </summary>
+    private static bool IsClientCryptogramReply(byte[] packet)
+    {
+        const int controlIndex = 4;
+        const byte securityControlBlockFlag = 0x08;
+
+        if (packet.Length <= controlIndex + 1 || (packet[controlIndex] & securityControlBlockFlag) == 0) return false;
+
+        int replyCodeIndex = controlIndex + 1 + packet[controlIndex + 1];
+        return replyCodeIndex < packet.Length && packet[replyCodeIndex] == (byte)ReplyType.CrypticData;
     }
 
     /// <inheritdoc />
@@ -312,7 +354,8 @@ public sealed class DeviceManagementService : IDeviceManagementService
     {
         IdentityLookup = null;
         CapabilitiesLookup = null;
-        _isClearTextFallback = false;
+        _isSecurityKeyRejected = false;
+        _clientCryptogramReplies = 0;
 
         await _panel.Shutdown();
 

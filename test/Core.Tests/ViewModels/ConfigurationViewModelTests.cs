@@ -432,7 +432,23 @@ public class ConfigurationViewModelTests
         Assert.That(_viewModel.StatusText, Is.EqualTo("Attempting to connect"));
         Assert.That(_viewModel.StatusLevel, Is.EqualTo(StatusLevel.Connecting));
     }
-    
+
+    [Test]
+    public async Task ConfigurationViewModel_DeviceManagementServiceOnConnectionStatusChange_InvalidSecurityKeyAfterDiscovery()
+    {
+        // Arrange
+        await _viewModel.InitializationComplete;
+
+        _viewModel.StatusLevel = StatusLevel.Discovered;
+
+        // Act
+        RaiseConnectionStatusEvent(ConnectionStatus.InvalidSecurityKey);
+
+        // Assert
+        Assert.That(_viewModel.StatusText, Is.EqualTo("Invalid security key"));
+        Assert.That(_viewModel.StatusLevel, Is.EqualTo(StatusLevel.Error));
+    }
+
     [Test]
     public void ConfigurationViewModel_DeviceManagementServiceOnNakReplyReceived()
     {
