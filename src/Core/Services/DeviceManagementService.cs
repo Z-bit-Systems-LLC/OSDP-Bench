@@ -27,7 +27,10 @@ public sealed class DeviceManagementService : IDeviceManagementService
     private bool _isDiscovering;
     private bool _isPortInUse;
     private bool _invalidSecurityKey;
+    private bool _isRestartingInClearText;
+    private bool _isClearTextFallback;
     private byte[]? _securityKey;
+    private IOsdpConnection? _connection;
 
     // Passive monitoring state
     private CancellationTokenSource? _passiveMonitoringCts;
@@ -44,7 +47,10 @@ public sealed class DeviceManagementService : IDeviceManagementService
         
         _panel.ConnectionStatusChanged += (_, args) =>
         {
-            if (_isDiscovering) return;
+            if (_isDiscovering || _isRestartingInClearText) return;
+
+            // A clear text fallback only exists to read the ID, a PD answering it is not a connection
+            if (_isClearTextFallback && args.IsConnected) return;
 
             IsConnected = args.IsConnected;
             if (IsConnected)
@@ -78,12 +84,7 @@ public sealed class DeviceManagementService : IDeviceManagementService
             {
                 _invalidSecurityKey = true;
                 RaiseEvent(ConnectionStatusChange, ConnectionStatus.InvalidSecurityKey);
-                Task.Run(async () =>
-                {
-                    IdentityLookup = new IdentityLookup(await _panel.IdReport(_connectionId, Address));
-
-                    RaiseEvent(DeviceLookupsChanged);
-                });
+                Task.Run(ReadIdentityWithoutSecurityKey);
             }
         };
 
@@ -156,14 +157,55 @@ public sealed class DeviceManagementService : IDeviceManagementService
         IsUsingSecureChannel = useSecureChannel;
         UsesDefaultSecurityKey = useDefaultSecurityKey;
         _securityKey = securityKey;
+        _connection = connection;
 
         _connectionId = _panel.StartConnection(connection, _defaultPollInterval, Tracer);
-        _panel.AddDevice(_connectionId, address, true, useSecureChannel, 
+        _panel.AddDevice(_connectionId, address, true, useSecureChannel,
             useDefaultSecurityKey ? null : securityKey);
 
         SetPortInUse(true);
     }
-    
+
+    /// <summary>
+    /// Reads the device identity after the PD has rejected the security key. A secure channel
+    /// connection keeps retrying the handshake and never sends the ID request, so it is restarted
+    /// in clear text first. The secure channel settings are kept so a reconnect tries them again.
+    /// </summary>
+    private async Task ReadIdentityWithoutSecurityKey()
+    {
+        try
+        {
+            if (IsUsingSecureChannel && !_isClearTextFallback && _connection != null)
+            {
+                var connectionId = _connectionId;
+                _isRestartingInClearText = true;
+                try
+                {
+                    await _panel.Shutdown();
+
+                    // The user disconnected or started another connection in the meantime
+                    if (_connectionId != connectionId || !_isPortInUse) return;
+
+                    _isClearTextFallback = true;
+                    _connectionId = _panel.StartConnection(_connection, _defaultPollInterval, Tracer);
+                    _panel.AddDevice(_connectionId, Address, true, false);
+                }
+                finally
+                {
+                    _isRestartingInClearText = false;
+                }
+            }
+
+            IdentityLookup = new IdentityLookup(await _panel.IdReport(_connectionId, Address));
+
+            RaiseEvent(DeviceLookupsChanged);
+        }
+        catch (Exception)
+        {
+            // Some PDs refuse to identify themselves without a secure channel
+        }
+    }
+
     private void Tracer(TraceEntry traceEntry)
     {
         RaiseEvent(TraceEntryReceived, traceEntry);
@@ -270,6 +312,7 @@ public sealed class DeviceManagementService : IDeviceManagementService
     {
         IdentityLookup = null;
         CapabilitiesLookup = null;
+        _isClearTextFallback = false;
 
         await _panel.Shutdown();
 
