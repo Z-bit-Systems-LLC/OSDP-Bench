@@ -851,7 +851,7 @@ namespace OSDPBench.Core.Tests.ViewModels
                     0xCA, 0x44, 0x6C, // Vendor code (Cypress)
                     1, // Model number 
                     1, // Version
-                    0, 0, 0, 1, // Serial number (1)
+                    0, 0, 0, 1, // Serial number (0x01000000, LSB first)
                     1, 0, 0 // Firmware version 1.0.0
                 };
                 
