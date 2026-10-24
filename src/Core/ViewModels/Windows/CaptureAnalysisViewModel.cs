@@ -1,7 +1,9 @@
 using System.Collections.ObjectModel;
+using System.Text;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using OSDPBench.Core.Models;
+using OSDPBench.Core.Services;
 using OSDPBench.Core.Services.Analysis;
 
 namespace OSDPBench.Core.ViewModels.Windows;
@@ -13,17 +15,26 @@ namespace OSDPBench.Core.ViewModels.Windows;
 public partial class CaptureAnalysisViewModel : ObservableObject, IDisposable
 {
     private readonly ICaptureAnalysisService _analysisService;
+    private readonly IDialogService _dialogService;
     private CaptureForAnalysis? _capture;
     private CancellationTokenSource? _cancellation;
+    private DateTime _analyzedAt;
+    private string? _saveDestination;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CaptureAnalysisViewModel"/> class.
     /// </summary>
     /// <param name="analysisService">The service that analyzes captures.</param>
-    public CaptureAnalysisViewModel(ICaptureAnalysisService analysisService)
+    /// <param name="dialogService">The service that saves the analysis and reports how that went.</param>
+    public CaptureAnalysisViewModel(ICaptureAnalysisService analysisService, IDialogService dialogService)
     {
         _analysisService = analysisService ?? throw new ArgumentNullException(nameof(analysisService));
-        Exchanges.CollectionChanged += (_, _) => OnPropertyChanged(nameof(HasExchanges));
+        _dialogService = dialogService ?? throw new ArgumentNullException(nameof(dialogService));
+        Exchanges.CollectionChanged += (_, _) =>
+        {
+            OnPropertyChanged(nameof(HasExchanges));
+            SaveCommand.NotifyCanExecuteChanged();
+        };
     }
 
     /// <summary>
@@ -172,7 +183,7 @@ public partial class CaptureAnalysisViewModel : ObservableObject, IDisposable
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsWorking))]
     [NotifyCanExecuteChangedFor(nameof(SignInCommand), nameof(SignOutCommand), nameof(AnalyzeCommand),
-        nameof(AskCommand), nameof(StopCommand))]
+        nameof(AskCommand), nameof(StopCommand), nameof(SaveCommand))]
     private bool _isBusy;
 
     /// <summary>
@@ -282,6 +293,7 @@ public partial class CaptureAnalysisViewModel : ObservableObject, IDisposable
         Exchanges.Clear();
         Summary = null;
         AnalysisId = null;
+        _analyzedAt = DateTime.Now;
 
         await StreamAnswerAsync(new CaptureAnalysisExchange(request.Question),
             cancellationToken => _analysisService.AnalyzeAsync(request, cancellationToken),
@@ -310,6 +322,86 @@ public partial class CaptureAnalysisViewModel : ObservableObject, IDisposable
     private void Stop()
     {
         _cancellation?.Cancel();
+    }
+
+    private bool CanSave() => !IsBusy && HasExchanges;
+
+    /// <summary>
+    /// Saves the analysis and its follow-up questions and answers as a Markdown file.
+    /// </summary>
+    [RelayCommand(CanExecute = nameof(CanSave))]
+    private async Task SaveAsync()
+    {
+        var title = Resources.Resources.GetString("CaptureAnalysis_Save");
+        var baseName = Path.GetFileNameWithoutExtension(FileName);
+        var fileName = $"{(baseName.Length > 0 ? baseName : "capture")}-analysis-{DateTime.Now:yyyyMMdd-HHmmss}.md";
+        try
+        {
+            var destination = await _dialogService.SaveFilesWithDataAsync(
+                Resources.Resources.GetString("CaptureAnalysis_SaveDestination"),
+                [(fileName, Encoding.UTF8.GetBytes(ToMarkdown()))], _saveDestination);
+            if (destination == null) return; // User cancelled
+
+            _saveDestination = destination;
+            await _dialogService.ShowMessageDialog(title,
+                Resources.Resources.GetString("CaptureAnalysis_Saved").Replace("{0}", fileName), MessageIcon.Information);
+        }
+        catch (Exception exception)
+        {
+            await _dialogService.ShowExceptionDialog(title, exception);
+        }
+    }
+
+    /// <summary>
+    /// Writes the analysis as Markdown: what was analyzed, then the report and each follow-up question and answer, in
+    /// the order they were asked.
+    /// </summary>
+    /// <returns>The Markdown.</returns>
+    public string ToMarkdown()
+    {
+        var markdown = new StringBuilder();
+        markdown.AppendLine($"# {Resources.Resources.GetString("CaptureAnalysis_Title")}: {FileName}").AppendLine();
+        markdown.AppendLine(Resources.Resources.GetString("CaptureAnalysis_AnalyzedBy")
+            .Replace("{0}", ServiceName)
+            .Replace("{1}", _analyzedAt.ToString("g")));
+
+        if (Summary != null)
+        {
+            markdown.AppendLine().AppendLine(string.Join(" · ", new[] { SummaryText, ChecksText }.Where(text => text.Length > 0)));
+            if (IsCaptureTruncated)
+            {
+                markdown.AppendLine().AppendLine($"*{Resources.Resources.GetString("CaptureAnalysis_CaptureTruncated")}*");
+            }
+        }
+
+        for (var index = 0; index < Exchanges.Count; index++)
+        {
+            var exchange = Exchanges[index];
+
+            // The report's own sections use ## headings, so a rule rather than a heading separates the follow-ups.
+            if (index > 0) markdown.AppendLine().AppendLine("---");
+            if (exchange.HasQuestion)
+            {
+                var label = Resources.Resources.GetString(index == 0
+                    ? "CaptureAnalysis_QuestionLabel"
+                    : "CaptureAnalysis_FollowUpLabel");
+                markdown.AppendLine().AppendLine($"> **{label}:** " +
+                                                 exchange.Question!.Trim().ReplaceLineEndings(Environment.NewLine + "> "));
+            }
+
+            markdown.AppendLine().AppendLine(exchange.Answer.Trim());
+            if (exchange.IsTruncated)
+            {
+                markdown.AppendLine().AppendLine($"*{Resources.Resources.GetString("CaptureAnalysis_AnswerTruncated")}*");
+            }
+
+            if (exchange.WasStopped)
+            {
+                markdown.AppendLine().AppendLine($"*{Resources.Resources.GetString("CaptureAnalysis_AnswerStopped")}*");
+            }
+        }
+
+        return markdown.ToString().ReplaceLineEndings();
     }
 
     /// <summary>

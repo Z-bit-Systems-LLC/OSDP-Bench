@@ -75,7 +75,7 @@ public static class MarkdownDocument
 
     private static void Render(RichTextBox textBox)
     {
-        var document = new FlowDocument { PagePadding = new Thickness(0) };
+        var document = new FlowDocument { PagePadding = new Thickness(0), TextAlignment = TextAlignment.Left };
         document.SetBinding(TextElement.FontFamilyProperty, new System.Windows.Data.Binding(nameof(Control.FontFamily)) { Source = textBox });
         document.SetBinding(TextElement.FontSizeProperty, new System.Windows.Data.Binding(nameof(Control.FontSize)) { Source = textBox });
         document.SetResourceReference(TextElement.ForegroundProperty, "TextFillColorPrimaryBrush");
@@ -84,6 +84,9 @@ public static class MarkdownDocument
         if (!string.IsNullOrEmpty(markdown))
         {
             document.Blocks.AddRange(Markdown.Parse(markdown, Pipeline).Select(ToBlock).OfType<Block>().ToList());
+
+            // Space above a heading separates it from what came before, not from the top of the answer.
+            if (document.Blocks.FirstBlock is { } first) first.Margin = first.Margin with { Top = 0 };
         }
 
         textBox.Document = document;
@@ -110,7 +113,7 @@ public static class MarkdownDocument
     {
         var paragraph = WithInlines(new Paragraph
         {
-            Margin = new Thickness(0, heading.Level == 1 ? 4 : 8, 0, 6),
+            Margin = new Thickness(0, heading.Level <= 2 ? 24 : 16, 0, heading.Level <= 2 ? 10 : 6),
             FontWeight = FontWeights.SemiBold
         }, heading.Inline);
         paragraph.SetResourceReference(TextElement.FontSizeProperty, heading.Level switch
@@ -137,8 +140,8 @@ public static class MarkdownDocument
             var listItem = new ListItem();
             foreach (var child in item.Select(ToBlock).OfType<Block>())
             {
-                // Tight lists: no gap under each item's paragraph.
-                if (child is Paragraph paragraph) paragraph.Margin = new Thickness(0, 0, 0, 2);
+                // Tight lists: a small gap under each item's paragraph, enough to tell wrapped items apart.
+                if (child is Paragraph paragraph) paragraph.Margin = new Thickness(0, 0, 0, 4);
                 listItem.Blocks.Add(child);
             }
 
@@ -184,7 +187,11 @@ public static class MarkdownDocument
         foreach (var row in table.OfType<Markdig.Extensions.Tables.TableRow>())
         {
             var tableRow = new TableRow();
-            if (row.IsHeader) tableRow.FontWeight = FontWeights.SemiBold;
+            if (row.IsHeader)
+            {
+                tableRow.FontWeight = FontWeights.SemiBold;
+                tableRow.SetResourceReference(TextElement.BackgroundProperty, "ControlFillColorSecondaryBrush");
+            }
 
             foreach (var cell in row.OfType<Markdig.Extensions.Tables.TableCell>())
             {
@@ -222,7 +229,8 @@ public static class MarkdownDocument
             case LiteralInline literal:
                 return new Run(literal.Content.ToString());
             case CodeInline code:
-                var run = new Run(code.Content) { FontFamily = CodeFont };
+                // Non-breaking spaces keep bytes such as `53 00 08` on one line.
+                var run = new Run(code.Content.Replace(' ', ' ')) { FontFamily = CodeFont };
                 run.SetResourceReference(TextElement.BackgroundProperty, "ControlFillColorSecondaryBrush");
                 return run;
             case LineBreakInline lineBreak:

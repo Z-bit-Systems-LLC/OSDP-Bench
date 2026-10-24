@@ -21,38 +21,51 @@
     <ui:FluentWindow.Resources>
         <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
 
+        <!-- One question and its answer; each section of the answer (Verdict, Findings, ...) gets its own card -->
         <DataTemplate x:Key="ExchangeTemplate" DataType="{x:Type models:CaptureAnalysisExchange}">
-            <ui:Card Style="{StaticResource Card.Standard}">
-                <StackPanel>
-                    <TextBlock Style="{StaticResource Text.Subtitle}"
-                               TextWrapping="Wrap"
-                               Margin="0 0 0 8"
-                               Text="{Binding Question}"
-                               Visibility="{Binding HasQuestion, Converter={StaticResource BooleanToVisibilityConverter}}" />
+            <StackPanel Margin="{StaticResource Margin.Section}">
+                <Border HorizontalAlignment="Right"
+                        MaxWidth="560"
+                        Margin="48 5 10 5"
+                        Padding="{StaticResource Padding.Button}"
+                        CornerRadius="{StaticResource CornerRadius.Medium}"
+                        BorderThickness="1"
+                        BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}"
+                        Background="{DynamicResource ControlFillColorSecondaryBrush}"
+                        Visibility="{Binding HasQuestion, Converter={StaticResource BooleanToVisibilityConverter}}">
+                    <TextBlock Style="{StaticResource Text.Body}" TextWrapping="Wrap" Text="{Binding Question}" />
+                </Border>
+                <ItemsControl helpers:MarkdownSections.Markdown="{Binding Answer}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate DataType="{x:Type helpers:MarkdownSection}">
+                            <Border Style="{StaticResource Card.Bordered}">
+                                <RichTextBox IsReadOnly="True"
+                                             IsDocumentEnabled="True"
+                                             Background="Transparent"
+                                             BorderThickness="0"
+                                             Padding="0"
+                                             Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                             VerticalScrollBarVisibility="Disabled"
+                                             helpers:MarkdownDocument.Markdown="{Binding Markdown}" />
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+                <StackPanel Margin="{StaticResource Margin.Card}">
                     <ui:ProgressRing IsIndeterminate="True"
                                      HorizontalAlignment="Left"
                                      Width="20" Height="20"
                                      Visibility="{Binding IsInProgress, Converter={StaticResource BooleanToVisibilityConverter}}" />
-                    <RichTextBox IsReadOnly="True"
-                                 IsDocumentEnabled="True"
-                                 Background="Transparent"
-                                 BorderThickness="0"
-                                 Padding="0"
-                                 Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                 VerticalScrollBarVisibility="Disabled"
-                                 helpers:MarkdownDocument.Markdown="{Binding Answer}" />
                     <TextBlock Style="{StaticResource Text.Warning}"
                                TextWrapping="Wrap"
-                               Margin="0 8 0 0"
                                Text="{localization:Localize CaptureAnalysis_AnswerTruncated}"
                                Visibility="{Binding IsTruncated, Converter={StaticResource BooleanToVisibilityConverter}}" />
                     <TextBlock Style="{StaticResource Text.Caption}"
                                TextWrapping="Wrap"
-                               Margin="0 8 0 0"
                                Text="{localization:Localize CaptureAnalysis_AnswerStopped}"
                                Visibility="{Binding WasStopped, Converter={StaticResource BooleanToVisibilityConverter}}" />
                 </StackPanel>
-            </ui:Card>
+            </StackPanel>
         </DataTemplate>
     </ui:FluentWindow.Resources>
 
@@ -164,6 +177,15 @@
                                        Visibility="{Binding ViewModel.IsWorking, Converter={StaticResource BooleanToVisibilityConverter}}">
                                 <ui:Button.Icon>
                                     <ui:SymbolIcon Symbol="Stop24" />
+                                </ui:Button.Icon>
+                            </ui:Button>
+                            <ui:Button x:Name="SaveButton"
+                                       Style="{StaticResource Button.Secondary}"
+                                       Content="{localization:Localize CaptureAnalysis_Save}"
+                                       Command="{Binding ViewModel.SaveCommand}"
+                                       Visibility="{Binding ViewModel.HasExchanges, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                <ui:Button.Icon>
+                                    <ui:SymbolIcon Symbol="Save24" />
                                 </ui:Button.Icon>
                             </ui:Button>
                             <TextBlock Style="{StaticResource Text.Caption}"

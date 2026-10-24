@@ -1288,6 +1288,30 @@
     <value>Couldn't open a web browser to sign in. Check that a default browser is set, then try again.</value>
     <comment>Shown when the sign-in page can't be opened in a browser</comment>
   </data>
+  <data name="CaptureAnalysis_Save" xml:space="preserve">
+    <value>Save as Markdown</value>
+    <comment>Button in the capture analysis window that saves the report and follow-up answers as a Markdown file</comment>
+  </data>
+  <data name="CaptureAnalysis_SaveDestination" xml:space="preserve">
+    <value>Choose where to save the analysis</value>
+    <comment>Title of the dialog for picking where to save the capture analysis</comment>
+  </data>
+  <data name="CaptureAnalysis_Saved" xml:space="preserve">
+    <value>The analysis was saved as {0}.</value>
+    <comment>Shown after saving the capture analysis; {0} is the file name</comment>
+  </data>
+  <data name="CaptureAnalysis_AnalyzedBy" xml:space="preserve">
+    <value>Analyzed by {0} on {1}</value>
+    <comment>Line at the top of a saved capture analysis; {0} is the analysis service's name, {1} the date and time</comment>
+  </data>
+  <data name="CaptureAnalysis_QuestionLabel" xml:space="preserve">
+    <value>Question</value>
+    <comment>Label in a saved capture analysis for the question the analysis was asked to focus on</comment>
+  </data>
+  <data name="CaptureAnalysis_FollowUpLabel" xml:space="preserve">
+    <value>Follow-up question</value>
+    <comment>Label in a saved capture analysis for a follow-up question asked after the report</comment>
+  </data>
   <data name="SignIn_Page_SignedIn" xml:space="preserve">
     <value>You're signed in</value>
     <comment>Heading of the browser page shown after signing in to OSDP Bench</comment>

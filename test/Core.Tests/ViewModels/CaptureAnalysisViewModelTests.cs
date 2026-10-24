@@ -2,9 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Moq;
 using NUnit.Framework;
+using OSDPBench.Core.Services;
 using OSDPBench.Core.Services.Analysis;
 using OSDPBench.Core.ViewModels.Windows;
 
@@ -16,13 +19,15 @@ public class CaptureAnalysisViewModelTests
     private static readonly byte[] CustomKey = Enumerable.Range(0, 16).Select(i => (byte)i).ToArray();
 
     private FakeAnalysisService _service;
+    private Mock<IDialogService> _dialogService;
     private CaptureAnalysisViewModel _viewModel;
 
     [SetUp]
     public void Setup()
     {
         _service = new FakeAnalysisService();
-        _viewModel = new CaptureAnalysisViewModel(_service);
+        _dialogService = new Mock<IDialogService>();
+        _viewModel = new CaptureAnalysisViewModel(_service, _dialogService.Object);
         _viewModel.Load(new CaptureForAnalysis("trace.osdpcap", [1, 2, 3], CustomKey));
     }
 
@@ -207,6 +212,92 @@ public class CaptureAnalysisViewModelTests
         Assert.That(_viewModel.Exchanges[1].Answer, Is.EqualTo("Because."));
         Assert.That(_service.LastQuestion, Is.EqualTo(("abc", "Why?")));
         Assert.That(_viewModel.FollowUpQuestion, Is.Empty);
+    }
+
+    [Test]
+    public void Save_BeforeAnalysis_CannotExecute()
+    {
+        Assert.That(_viewModel.SaveCommand.CanExecute(null), Is.False);
+    }
+
+    [Test]
+    public async Task Save_WritesReportAndFollowUpsAsMarkdown()
+    {
+        await SignInAsync();
+        _viewModel.Question = "Why no LED?";
+        _service.Events =
+        [
+            new CaptureAnalysisEvent.Started("abc",
+                new CaptureAnalysisSummary("trace.osdpcap", 1234, false, [new CaptureAnalysisCheck("NAK replies", 3)])),
+            new CaptureAnalysisEvent.TextReceived("## Verdict\n**Faulty.**\n"),
+            new CaptureAnalysisEvent.Completed(false, null)
+        ];
+        await _viewModel.AnalyzeCommand.ExecuteAsync(null);
+        _service.Events = [new CaptureAnalysisEvent.Started("abc", null), new CaptureAnalysisEvent.TextReceived("Because."), new CaptureAnalysisEvent.Completed(true, null)];
+        _viewModel.FollowUpQuestion = "Which command?";
+        await _viewModel.AskCommand.ExecuteAsync(null);
+
+        List<(string FileName, byte[] Data)> saved = null;
+        _dialogService.Setup(x => x.SaveFilesWithDataAsync(
+                It.IsAny<string>(), It.IsAny<IEnumerable<(string, byte[])>>(), It.IsAny<string>()))
+            .Callback<string, IEnumerable<(string, byte[])>, string>((_, files, _) => saved = files.ToList())
+            .ReturnsAsync(@"C:\Reports");
+
+        Assert.That(_viewModel.SaveCommand.CanExecute(null), Is.True);
+        await _viewModel.SaveCommand.ExecuteAsync(null);
+
+        Assert.That(saved, Has.Count.EqualTo(1));
+        Assert.That(saved[0].FileName, Does.StartWith("trace-analysis-").And.EndWith(".md"));
+        var lines = Encoding.UTF8.GetString(saved[0].Data).Split(Environment.NewLine);
+        Assert.That(lines, Is.SupersetOf((string[])
+        [
+            "# Capture Analysis: trace.osdpcap",
+            "> **Question:** Why no LED?",
+            "## Verdict",
+            "**Faulty.**",
+            "---",
+            "> **Follow-up question:** Which command?",
+            "Because.",
+            "*This answer reached its length limit and was cut short.*"
+        ]));
+        Assert.That(lines, Has.Some.StartWith("Analyzed by Fake Analyzer on "));
+        Assert.That(lines, Has.Some.Contains("NAK replies (3)"));
+        Assert.That(Array.IndexOf(lines, "## Verdict"), Is.LessThan(Array.IndexOf(lines, "Because.")));
+        _dialogService.Verify(x => x.ShowMessageDialog(
+            It.IsAny<string>(), It.Is<string>(message => message.Contains(saved[0].FileName)), MessageIcon.Information));
+
+        await _viewModel.SaveCommand.ExecuteAsync(null);
+
+        _dialogService.Verify(x => x.SaveFilesWithDataAsync(
+            It.IsAny<string>(), It.IsAny<IEnumerable<(string, byte[])>>(), @"C:\Reports"), Times.Once);
+    }
+
+    [Test]
+    public async Task Save_WhenCancelled_ShowsNoMessage()
+    {
+        await AnalyzeAsync();
+        _dialogService.Setup(x => x.SaveFilesWithDataAsync(
+                It.IsAny<string>(), It.IsAny<IEnumerable<(string, byte[])>>(), It.IsAny<string>()))
+            .ReturnsAsync((string)null);
+
+        await _viewModel.SaveCommand.ExecuteAsync(null);
+
+        _dialogService.Verify(x => x.ShowMessageDialog(
+            It.IsAny<string>(), It.IsAny<string>(), It.IsAny<MessageIcon>()), Times.Never);
+    }
+
+    [Test]
+    public async Task Save_WhenWritingFails_ShowsError()
+    {
+        await AnalyzeAsync();
+        var failure = new UnauthorizedAccessException("Read-only folder.");
+        _dialogService.Setup(x => x.SaveFilesWithDataAsync(
+                It.IsAny<string>(), It.IsAny<IEnumerable<(string, byte[])>>(), It.IsAny<string>()))
+            .ThrowsAsync(failure);
+
+        await _viewModel.SaveCommand.ExecuteAsync(null);
+
+        _dialogService.Verify(x => x.ShowExceptionDialog(It.IsAny<string>(), failure));
     }
 
     [Test]
