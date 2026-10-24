@@ -1,50 +1,49 @@
 namespace OSDPBench.CaptureAnalysis.ZBit;
 
 /// <summary>
-/// The platform's part of an OAuth sign-in: showing the sign-in page in the system browser and handing back what the
-/// redirect page passed to the app.
+/// The platform's part of an OAuth sign-in: showing the sign-in page in the system browser and handing back the
+/// parameters the issuer redirected to.
 /// </summary>
 /// <remarks>
-/// The site's redirect page opens <c>com.z-bitco.osdpbench://callback?code=…&amp;state=…</c> (or <c>error=…</c>), so
-/// an implementation registers that URI scheme and completes when the app is opened with it. Where that isn't
-/// possible, the page also shows the code for the user to paste in; return it with no state.
+/// Desktop apps use <see cref="LoopbackAuthorizationBroker"/>, which receives the redirect on 127.0.0.1. Apps that
+/// can't listen there, such as phone apps, can use the site's relay page instead
+/// (<see cref="ZBitCaptureAnalysisOptions.SiteRedirectUri"/>), which opens the app through <see cref="CallbackScheme"/>.
 /// </remarks>
 public interface IOAuthAuthorizationBroker
 {
     /// <summary>
-    /// The URI scheme the site's redirect page opens the app with.
+    /// The URI scheme the site's relay page opens the app with: <c>com.z-bitco.osdpbench://callback?code=…</c>.
     /// </summary>
     const string CallbackScheme = "com.z-bitco.osdpbench";
 
     /// <summary>
     /// Opens the sign-in page and waits for the result.
     /// </summary>
-    /// <param name="authorizeUri">The sign-in page to open.</param>
+    /// <param name="buildAuthorizeUri">Builds the sign-in page address for the redirect URI the broker receives on.
+    /// The same redirect URI is sent again when the code is exchanged.</param>
     /// <param name="cancellationToken">A token to stop waiting.</param>
-    /// <returns>The parameters the redirect page passed on.</returns>
-    Task<OAuthCallback> AuthorizeAsync(Uri authorizeUri, CancellationToken cancellationToken);
+    /// <returns>The parameters the issuer redirected with.</returns>
+    Task<OAuthCallback> AuthorizeAsync(Func<Uri, Uri> buildAuthorizeUri, CancellationToken cancellationToken);
 }
 
 /// <summary>
-/// The result of an OAuth sign-in as passed back by the redirect page.
+/// The result of an OAuth sign-in as passed back in the redirect.
 /// </summary>
 /// <param name="Code">The authorization code, when the sign-in succeeded.</param>
-/// <param name="State">The state sent with the request, or <see langword="null"/> when the user pasted the code.</param>
+/// <param name="State">The state sent with the request.</param>
 /// <param name="Error">The OAuth error code, when the sign-in failed.</param>
 /// <param name="ErrorDescription">A description of the error, if one was given.</param>
 public sealed record OAuthCallback(string? Code, string? State, string? Error, string? ErrorDescription)
 {
     /// <summary>
-    /// Creates a callback from a code the user pasted in.
+    /// Gets a value indicating whether the redirect carried a result, rather than being some other request.
     /// </summary>
-    /// <param name="code">The code.</param>
-    /// <returns>The callback.</returns>
-    public static OAuthCallback FromPastedCode(string code) => new(code.Trim(), null, null, null);
+    public bool HasResult => Code != null || Error != null;
 
     /// <summary>
-    /// Reads a callback from the URI the redirect page opened the app with.
+    /// Reads a callback from the redirect URI's query.
     /// </summary>
-    /// <param name="callbackUri">The URI, e.g. <c>com.z-bitco.osdpbench://callback?code=…&amp;state=…</c>.</param>
+    /// <param name="callbackUri">The URI, e.g. <c>http://127.0.0.1:50123/callback?code=…&amp;state=…</c>.</param>
     /// <returns>The callback.</returns>
     public static OAuthCallback FromUri(Uri callbackUri)
     {
@@ -64,13 +63,4 @@ public sealed record OAuthCallback(string? Code, string? State, string? Error, s
             parameters.GetValueOrDefault("error"),
             parameters.GetValueOrDefault("error_description"));
     }
-
-    /// <summary>
-    /// Determines whether a URI is a sign-in callback for this app.
-    /// </summary>
-    /// <param name="value">A command-line argument or URI.</param>
-    /// <returns>True when <paramref name="value"/> is a callback URI.</returns>
-    public static bool IsCallbackUri(string? value) =>
-        Uri.TryCreate(value, UriKind.Absolute, out var uri) &&
-        string.Equals(uri.Scheme, IOAuthAuthorizationBroker.CallbackScheme, StringComparison.OrdinalIgnoreCase);
 }

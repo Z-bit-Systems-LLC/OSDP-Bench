@@ -67,7 +67,7 @@ public class ZBitCaptureAnalysisServiceTests
         {
             Assert.That(_broker.AuthorizeUri.GetLeftPart(UriPartial.Path), Is.EqualTo("https://issuer.test/oauth/authorize"));
             Assert.That(authorize["client_id"], Is.EqualTo("client-1"));
-            Assert.That(authorize["redirect_uri"], Is.EqualTo("https://site.test/callback"));
+            Assert.That(authorize["redirect_uri"], Is.EqualTo(FakeBroker.RedirectUri.AbsoluteUri));
             Assert.That(authorize["code_challenge_method"], Is.EqualTo("S256"));
             Assert.That(authorize["scope"], Does.Contain("offline_access"));
         });
@@ -75,20 +75,20 @@ public class ZBitCaptureAnalysisServiceTests
         var form = FormOf(_handler.Requests.Single());
         Assert.That(form["grant_type"], Is.EqualTo("authorization_code"));
         Assert.That(form["code"], Is.EqualTo("the-code"));
-        Assert.That(form["redirect_uri"], Is.EqualTo("https://site.test/callback"));
+        Assert.That(form["redirect_uri"], Is.EqualTo(FakeBroker.RedirectUri.AbsoluteUri));
         Assert.That(form["code_verifier"], Has.Length.GreaterThanOrEqualTo(43));
         Assert.That(_tokenStore.Values.Single().Value, Does.Contain("refresh-1"));
     }
 
     [Test]
-    public async Task SignIn_WithPastedCode_IsAccepted()
+    public async Task SignIn_WithoutState_Fails()
     {
-        _broker.Respond = _ => OAuthCallback.FromPastedCode("  pasted  ");
-        _handler.Respond("POST", "https://issuer.test/oauth/token", Json(TokenJson("access-1", "refresh-1")));
+        _broker.Respond = _ => new OAuthCallback("the-code", null, null, null);
 
-        await _service.SignInAsync();
+        var exception = await Assert.ThrowsAsync<CaptureAnalysisException>(() => _service.SignInAsync());
 
-        Assert.That(FormOf(_handler.Requests.Single())["code"], Is.EqualTo("pasted"));
+        Assert.That(exception!.Kind, Is.EqualTo(CaptureAnalysisErrorKind.SignInFailed));
+        Assert.That(_handler.Requests, Is.Empty);
     }
 
     [Test]
@@ -343,7 +343,7 @@ public class ZBitCaptureAnalysisServiceTests
             Assert.That(ZBitCaptureAnalysisOptions.TryCreate(null, null, null), Is.Null);
             Assert.That(ZBitCaptureAnalysisOptions.TryCreate("https://a.test", "https://b.test", ""), Is.Null);
             Assert.That(ZBitCaptureAnalysisOptions.TryCreate("not a uri", "https://b.test", "id"), Is.Null);
-            Assert.That(ZBitCaptureAnalysisOptions.TryCreate("https://a.test", "https://b.test", "id")!.RedirectUri,
+            Assert.That(ZBitCaptureAnalysisOptions.TryCreate("https://a.test", "https://b.test", "id")!.SiteRedirectUri,
                 Is.EqualTo(new Uri("https://a.test/callback")));
         });
     }
@@ -351,12 +351,12 @@ public class ZBitCaptureAnalysisServiceTests
     [Test]
     public void Callback_IsReadFromUri()
     {
-        var callback = OAuthCallback.FromUri(new Uri("com.z-bitco.osdpbench://callback?code=a%2Bb&state=s1&iss=x"));
+        var callback = OAuthCallback.FromUri(new Uri("http://127.0.0.1:50123/callback?code=a%2Bb&state=s1&iss=x"));
 
         Assert.That(callback, Is.EqualTo(new OAuthCallback("a+b", "s1", null, null)));
-        Assert.That(OAuthCallback.IsCallbackUri("com.z-bitco.osdpbench://callback?code=1"), Is.True);
-        Assert.That(OAuthCallback.IsCallbackUri("https://site.test/callback"), Is.False);
-        Assert.That(OAuthCallback.IsCallbackUri("--some-flag"), Is.False);
+        Assert.That(callback.HasResult, Is.True);
+        Assert.That(OAuthCallback.FromUri(new Uri("http://127.0.0.1:50123/callback?error=access_denied")).HasResult, Is.True);
+        Assert.That(OAuthCallback.FromUri(new Uri("http://127.0.0.1:50123/callback?state=s1")).HasResult, Is.False);
     }
 
     private async Task SaveSessionAsync(string accessToken, DateTimeOffset expires, string refreshToken = "refresh-1")
@@ -459,13 +459,15 @@ public class ZBitCaptureAnalysisServiceTests
 
     private sealed class FakeBroker : IOAuthAuthorizationBroker
     {
+        public static readonly Uri RedirectUri = new("http://127.0.0.1:50123/callback");
+
         public Func<Uri, OAuthCallback> Respond { get; set; } = _ => new OAuthCallback(null, null, "access_denied", null);
         public Uri AuthorizeUri { get; private set; }
 
-        public Task<OAuthCallback> AuthorizeAsync(Uri authorizeUri, CancellationToken cancellationToken)
+        public Task<OAuthCallback> AuthorizeAsync(Func<Uri, Uri> buildAuthorizeUri, CancellationToken cancellationToken)
         {
-            AuthorizeUri = authorizeUri;
-            return Task.FromResult(Respond(authorizeUri));
+            AuthorizeUri = buildAuthorizeUri(RedirectUri);
+            return Task.FromResult(Respond(AuthorizeUri));
         }
     }
 

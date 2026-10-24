@@ -42,6 +42,16 @@ public partial class CaptureAnalysisViewModel : ObservableObject, IDisposable
     public bool IsSignedIn => _analysisService.RequiresSignIn && Account != null;
 
     /// <summary>
+    /// Gets a value indicating whether to offer signing in: the user needs to and isn't already doing so.
+    /// </summary>
+    public bool ShowSignInPrompt => NeedsSignIn && !IsSigningIn;
+
+    /// <summary>
+    /// Gets a value indicating whether an analysis or answer is in progress. Signing in shows its own progress.
+    /// </summary>
+    public bool IsWorking => IsBusy && !IsSigningIn;
+
+    /// <summary>
     /// Gets the text identifying the signed-in account.
     /// </summary>
     public string AccountText => Account == null
@@ -160,9 +170,18 @@ public partial class CaptureAnalysisViewModel : ObservableObject, IDisposable
     /// Gets a value indicating whether a sign-in, analysis or answer is in progress.
     /// </summary>
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsWorking))]
     [NotifyCanExecuteChangedFor(nameof(SignInCommand), nameof(SignOutCommand), nameof(AnalyzeCommand),
         nameof(AskCommand), nameof(StopCommand))]
     private bool _isBusy;
+
+    /// <summary>
+    /// Gets a value indicating whether the sign-in page is open and the user hasn't finished signing in yet.
+    /// <see cref="StopCommand"/> cancels it.
+    /// </summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ShowSignInPrompt), nameof(IsWorking))]
+    private bool _isSigningIn;
 
     /// <summary>
     /// Gets the message for the last failure, or <see langword="null"/>.
@@ -217,7 +236,16 @@ public partial class CaptureAnalysisViewModel : ObservableObject, IDisposable
     {
         await RunAsync(async cancellationToken =>
         {
-            Account = await _analysisService.SignInAsync(cancellationToken);
+            IsSigningIn = true;
+            try
+            {
+                Account = await _analysisService.SignInAsync(cancellationToken);
+            }
+            finally
+            {
+                IsSigningIn = false;
+            }
+
             Quota = await _analysisService.GetQuotaAsync(cancellationToken);
         });
     }
@@ -371,7 +399,7 @@ public partial class CaptureAnalysisViewModel : ObservableObject, IDisposable
         }
         catch (OperationCanceledException)
         {
-            // Stopped by the user, here or in the platform's sign-in window.
+            // Stopped by the user.
         }
         catch (CaptureAnalysisException exception)
         {
@@ -415,6 +443,7 @@ public partial class CaptureAnalysisViewModel : ObservableObject, IDisposable
         _ = value; // Required by source generator signature
         OnPropertyChanged(nameof(NeedsSignIn));
         OnPropertyChanged(nameof(IsSignedIn));
+        OnPropertyChanged(nameof(ShowSignInPrompt));
         OnPropertyChanged(nameof(AccountText));
     }
 

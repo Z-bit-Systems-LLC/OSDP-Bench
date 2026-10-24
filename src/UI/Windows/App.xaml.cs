@@ -99,7 +99,6 @@ public partial class App
     /// <param name="options">Where the analyzer and its sign-in live.</param>
     private static void AddCaptureAnalysis(IServiceCollection services, ZBitCaptureAnalysisOptions options)
     {
-        services.AddSingleton<SignInCallbackChannel>();
         services.AddSingleton<IOAuthAuthorizationBroker, WindowsOAuthAuthorizationBroker>();
         services.AddSingleton<ISecureTokenStore>(_ => new DpapiTokenStore(DpapiTokenStore.DefaultFolder));
         services.AddSingleton<ICaptureAnalysisService>(serviceProvider =>
@@ -131,15 +130,6 @@ public partial class App
     /// </summary>
     private void OnStartup(object sender, StartupEventArgs e)
     {
-        // Started by the browser to finish a sign-in: hand the result to the copy that's waiting for it. If no copy
-        // is waiting, start as usual; that sign-in can't be finished anyway.
-        var signInCallback = e.Args.FirstOrDefault(OAuthCallback.IsCallbackUri);
-        if (signInCallback != null && SignInCallbackChannel.TryForward(signInCallback, TimeSpan.FromSeconds(3)))
-        {
-            Shutdown();
-            return;
-        }
-
         // Register the localization provider for Guidelines XAML markup extensions
         // Must be set before Host.Start() which creates windows that use localization
         ZBitSystems.Wpf.UI.Localization.LocalizationService.Provider = new ResourceLocalizationProvider();
@@ -164,12 +154,6 @@ public partial class App
 
         _host.Services.GetService<ManageViewModel>();
         _host.Services.GetService<MonitorViewModel>();
-
-        if (_host.Services.GetService<SignInCallbackChannel>() is { } signInCallbackChannel)
-        {
-            SignInCallbackChannel.RegisterUriScheme();
-            signInCallbackChannel.Start();
-        }
 
         // Check for language mismatch after UI is initialized
         _ = Task.Run(async () =>

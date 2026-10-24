@@ -79,16 +79,19 @@ public sealed class ZBitCaptureAnalysisService : ICaptureAnalysisService, IDispo
     public async Task<CaptureAnalysisAccount> SignInAsync(CancellationToken cancellationToken = default)
     {
         var request = PkceRequest.Create();
-        var callback = await _authorizationBroker.AuthorizeAsync(_oauthClient.BuildAuthorizeUri(request), cancellationToken)
-            .ConfigureAwait(false);
+        Uri? redirectUri = null;
+        var callback = await _authorizationBroker.AuthorizeAsync(redirect =>
+        {
+            redirectUri = redirect;
+            return _oauthClient.BuildAuthorizeUri(request, redirect);
+        }, cancellationToken).ConfigureAwait(false);
 
         if (callback.Error != null)
         {
             throw SignInFailed(callback.ErrorDescription ?? callback.Error);
         }
 
-        // A pasted code comes without state; PKCE makes it useless to anyone but this request.
-        if (string.IsNullOrEmpty(callback.Code) || (callback.State != null && callback.State != request.State))
+        if (redirectUri == null || string.IsNullOrEmpty(callback.Code) || callback.State != request.State)
         {
             throw new CaptureAnalysisException(CaptureAnalysisErrorKind.SignInFailed,
                 CoreResources.GetString("CaptureAnalysis_Error_SignInMismatch"));
@@ -98,7 +101,7 @@ public sealed class ZBitCaptureAnalysisService : ICaptureAnalysisService, IDispo
         try
         {
             var tokens = await CallIssuerAsync(
-                () => _oauthClient.ExchangeCodeAsync(callback.Code, request.Verifier, cancellationToken),
+                () => _oauthClient.ExchangeCodeAsync(callback.Code, request.Verifier, redirectUri, cancellationToken),
                 exception => SignInFailed(exception.Message)).ConfigureAwait(false);
             var session = SignInSession.FromTokens(tokens, _timeProvider.GetUtcNow());
             await SaveSessionAsync(session, cancellationToken).ConfigureAwait(false);

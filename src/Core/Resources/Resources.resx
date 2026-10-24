@@ -1210,7 +1210,7 @@
   </data>
   <data name="CaptureAnalysis_Stop" xml:space="preserve">
     <value>Stop</value>
-    <comment>Button that stops a sign-in, analysis or answer in progress</comment>
+    <comment>Button that stops an analysis or answer in progress</comment>
   </data>
   <data name="CaptureAnalysis_Ask" xml:space="preserve">
     <value>Ask</value>
@@ -1222,7 +1222,7 @@
   </data>
   <data name="CaptureAnalysis_Working" xml:space="preserve">
     <value>Working…</value>
-    <comment>Shown while signing in or while the analysis is being written</comment>
+    <comment>Shown while the analysis or an answer is being written</comment>
   </data>
   <data name="CaptureAnalysis_PacketCount" xml:space="preserve">
     <value>{0} packets</value>
@@ -1280,33 +1280,29 @@
     <value>The capture is too large to analyze. Clear the trace and capture just the part you want analyzed.</value>
     <comment>Shown when the analysis service rejects the capture's size</comment>
   </data>
-  <data name="SignIn_Title" xml:space="preserve">
-    <value>Finish signing in</value>
-    <comment>Title of the window shown while the user signs in through the browser</comment>
+  <data name="CaptureAnalysis_WaitingForSignIn" xml:space="preserve">
+    <value>Finish signing in in your browser.</value>
+    <comment>Shown in the capture analysis window while the sign-in page is open in the browser</comment>
   </data>
-  <data name="SignIn_Instructions" xml:space="preserve">
-    <value>Finish signing in in your browser. OSDP Bench carries on by itself when you're done.</value>
-    <comment>Main instructions in the sign-in window</comment>
+  <data name="CaptureAnalysis_Error_NoBrowser" xml:space="preserve">
+    <value>Couldn't open a web browser to sign in. Check that a default browser is set, then try again.</value>
+    <comment>Shown when the sign-in page can't be opened in a browser</comment>
   </data>
-  <data name="SignIn_BrowserHint" xml:space="preserve">
-    <value>If the sign-in page didn't open, copy the link and paste it into your browser.</value>
-    <comment>Shown under the sign-in instructions</comment>
+  <data name="SignIn_Page_SignedIn" xml:space="preserve">
+    <value>You're signed in</value>
+    <comment>Heading of the browser page shown after signing in to OSDP Bench</comment>
   </data>
-  <data name="SignIn_CopyLink" xml:space="preserve">
-    <value>Copy link</value>
-    <comment>Button that copies the sign-in page address to the clipboard</comment>
+  <data name="SignIn_Page_ReturnToApp" xml:space="preserve">
+    <value>You can close this tab and go back to OSDP Bench.</value>
+    <comment>Text of the browser page shown after signing in to OSDP Bench</comment>
   </data>
-  <data name="SignIn_OpenBrowser" xml:space="preserve">
-    <value>Open browser again</value>
-    <comment>Button that opens the sign-in page in the browser again</comment>
+  <data name="SignIn_Page_NotSignedIn" xml:space="preserve">
+    <value>Signing in didn't finish</value>
+    <comment>Heading of the browser page shown when signing in to OSDP Bench failed or was refused</comment>
   </data>
-  <data name="SignIn_PasteCode" xml:space="preserve">
-    <value>If the browser shows a code instead, paste it here:</value>
-    <comment>Label for the box where the user pastes the sign-in code</comment>
-  </data>
-  <data name="SignIn_Continue" xml:space="preserve">
-    <value>Continue</value>
-    <comment>Button that finishes signing in with the pasted code</comment>
+  <data name="SignIn_Page_SeeApp" xml:space="preserve">
+    <value>Go back to OSDP Bench to see what happened.</value>
+    <comment>Text of the browser page shown when signing in to OSDP Bench failed or was refused</comment>
   </data>
   <data name="Common_Cancel" xml:space="preserve">
     <value>Cancel</value>

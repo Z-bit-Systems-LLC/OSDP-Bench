@@ -93,6 +93,32 @@ public class CaptureAnalysisViewModelTests
     }
 
     [Test]
+    public async Task SignIn_WhileWaitingForBrowser_ShowsProgressAndCanBeCancelled()
+    {
+        _service.WaitForSignIn = true;
+
+        var signingIn = _viewModel.SignInCommand.ExecuteAsync(null);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(_viewModel.IsSigningIn, Is.True);
+            Assert.That(_viewModel.ShowSignInPrompt, Is.False);
+            Assert.That(_viewModel.IsWorking, Is.False, "Signing in shows its own progress.");
+            Assert.That(_viewModel.StopCommand.CanExecute(null), Is.True);
+        });
+
+        _viewModel.StopCommand.Execute(null);
+        await signingIn;
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(_viewModel.IsSigningIn, Is.False);
+            Assert.That(_viewModel.ShowSignInPrompt, Is.True);
+            Assert.That(_viewModel.ErrorMessage, Is.Null);
+        });
+    }
+
+    [Test]
     public async Task Analyze_StreamsReportIntoOneExchange()
     {
         await SignInAsync();
@@ -267,6 +293,7 @@ public class CaptureAnalysisViewModelTests
     {
         public CaptureAnalysisAccount Account { get; set; }
         public Exception SignInFailure { get; set; }
+        public bool WaitForSignIn { get; set; }
         public Exception StreamFailure { get; set; }
         public bool WaitAfterEvents { get; set; }
         public TaskCompletionSource EventsSent { get; } = new();
@@ -288,11 +315,12 @@ public class CaptureAnalysisViewModelTests
         public Task<CaptureAnalysisAccount> GetAccountAsync(CancellationToken cancellationToken = default) =>
             Task.FromResult(Account);
 
-        public Task<CaptureAnalysisAccount> SignInAsync(CancellationToken cancellationToken = default)
+        public async Task<CaptureAnalysisAccount> SignInAsync(CancellationToken cancellationToken = default)
         {
-            if (SignInFailure != null) return Task.FromException<CaptureAnalysisAccount>(SignInFailure);
+            if (WaitForSignIn) await Task.Delay(Timeout.Infinite, cancellationToken);
+            if (SignInFailure != null) throw SignInFailure;
             Account = new CaptureAnalysisAccount("Pat", "pat@example.com");
-            return Task.FromResult(Account);
+            return Account;
         }
 
         public Task SignOutAsync(CancellationToken cancellationToken = default)

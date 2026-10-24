@@ -38,12 +38,12 @@ internal sealed class OAuthClient(HttpClient httpClient, ZBitCaptureAnalysisOpti
 {
     private Uri TokenEndpoint => new(options.Authority, "/oauth/token");
 
-    public Uri BuildAuthorizeUri(PkceRequest request)
+    public Uri BuildAuthorizeUri(PkceRequest request, Uri redirectUri)
     {
         var query = string.Join('&',
             "response_type=code",
             $"client_id={Uri.EscapeDataString(options.ClientId)}",
-            $"redirect_uri={Uri.EscapeDataString(options.RedirectUri.AbsoluteUri)}",
+            $"redirect_uri={Uri.EscapeDataString(redirectUri.AbsoluteUri)}",
             $"scope={Uri.EscapeDataString(options.Scopes)}",
             $"state={request.State}",
             $"code_challenge={request.Challenge}",
@@ -51,12 +51,13 @@ internal sealed class OAuthClient(HttpClient httpClient, ZBitCaptureAnalysisOpti
         return new Uri(options.Authority, $"/oauth/authorize?{query}");
     }
 
-    public Task<TokenResponse> ExchangeCodeAsync(string code, string verifier, CancellationToken cancellationToken) =>
+    public Task<TokenResponse> ExchangeCodeAsync(string code, string verifier, Uri redirectUri,
+        CancellationToken cancellationToken) =>
         PostAsync(new Dictionary<string, string>
         {
             ["grant_type"] = "authorization_code",
             ["code"] = code,
-            ["redirect_uri"] = options.RedirectUri.AbsoluteUri,
+            ["redirect_uri"] = redirectUri.AbsoluteUri,
             ["client_id"] = options.ClientId,
             ["code_verifier"] = verifier
         }, cancellationToken);

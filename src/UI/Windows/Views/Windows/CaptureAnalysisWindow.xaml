@@ -81,7 +81,7 @@
                         </TextBlock>
 
                         <WrapPanel Margin="{StaticResource Margin.Control}"
-                                   Visibility="{Binding ViewModel.NeedsSignIn, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                   Visibility="{Binding ViewModel.ShowSignInPrompt, Converter={StaticResource BooleanToVisibilityConverter}}">
                             <TextBlock Style="{StaticResource Text.Body}"
                                        VerticalAlignment="Center"
                                        Margin="0 0 12 0"
@@ -94,6 +94,22 @@
                                     <ui:SymbolIcon Symbol="Person24" />
                                 </ui:Button.Icon>
                             </ui:Button>
+                        </WrapPanel>
+
+                        <WrapPanel Margin="{StaticResource Margin.Control}"
+                                   Visibility="{Binding ViewModel.IsSigningIn, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <ui:ProgressRing IsIndeterminate="True"
+                                             VerticalAlignment="Center"
+                                             Margin="0 0 12 0"
+                                             Width="20" Height="20" />
+                            <TextBlock Style="{StaticResource Text.Body}"
+                                       VerticalAlignment="Center"
+                                       Margin="0 0 12 0"
+                                       Text="{localization:Localize CaptureAnalysis_WaitingForSignIn}" />
+                            <ui:Button x:Name="CancelSignInButton"
+                                       Style="{StaticResource Button.Secondary}"
+                                       Content="{localization:Localize Common_Cancel}"
+                                       Command="{Binding ViewModel.StopCommand}" />
                         </WrapPanel>
 
                         <WrapPanel Margin="{StaticResource Margin.Control}"
@@ -145,7 +161,7 @@
                                        Style="{StaticResource Button.Secondary}"
                                        Content="{localization:Localize CaptureAnalysis_Stop}"
                                        Command="{Binding ViewModel.StopCommand}"
-                                       Visibility="{Binding ViewModel.IsBusy, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                       Visibility="{Binding ViewModel.IsWorking, Converter={StaticResource BooleanToVisibilityConverter}}">
                                 <ui:Button.Icon>
                                     <ui:SymbolIcon Symbol="Stop24" />
                                 </ui:Button.Icon>
@@ -153,7 +169,7 @@
                             <TextBlock Style="{StaticResource Text.Caption}"
                                        VerticalAlignment="Center"
                                        Text="{localization:Localize CaptureAnalysis_Working}"
-                                       Visibility="{Binding ViewModel.IsBusy, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                                       Visibility="{Binding ViewModel.IsWorking, Converter={StaticResource BooleanToVisibilityConverter}}" />
                         </WrapPanel>
                     </StackPanel>
                 </ui:Card>

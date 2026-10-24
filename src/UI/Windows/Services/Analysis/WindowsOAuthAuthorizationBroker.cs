@@ -1,61 +1,61 @@
+using System.ComponentModel;
+using System.Diagnostics;
 using System.Windows;
 using OSDPBench.CaptureAnalysis.ZBit;
-using OSDPBench.Windows.Views.Windows;
+using OSDPBench.Core.Services.Analysis;
+using CoreResources = OSDPBench.Core.Resources.Resources;
 
 namespace OSDPBench.Windows.Services.Analysis;
 
 /// <summary>
-/// Signs in through the default browser. The result arrives either through the sign-in URI scheme (forwarded by
-/// <see cref="SignInCallbackChannel"/>) or as a code the user pastes into the sign-in window.
+/// Signs in through the default browser, receiving the result on 127.0.0.1 (<see cref="LoopbackAuthorizationBroker"/>),
+/// and brings OSDP Bench back in front of the browser once the user has signed in.
 /// </summary>
 public sealed class WindowsOAuthAuthorizationBroker : IOAuthAuthorizationBroker
 {
-    private readonly SignInCallbackChannel _callbackChannel;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="WindowsOAuthAuthorizationBroker"/> class.
-    /// </summary>
-    /// <param name="callbackChannel">Delivers callbacks from the copy of the app the browser starts.</param>
-    public WindowsOAuthAuthorizationBroker(SignInCallbackChannel callbackChannel)
-    {
-        _callbackChannel = callbackChannel ?? throw new ArgumentNullException(nameof(callbackChannel));
-    }
+    private readonly LoopbackAuthorizationBroker _loopbackBroker = new(OpenBrowser);
 
     /// <inheritdoc />
-    public async Task<OAuthCallback> AuthorizeAsync(Uri authorizeUri, CancellationToken cancellationToken)
+    public async Task<OAuthCallback> AuthorizeAsync(Func<Uri, Uri> buildAuthorizeUri, CancellationToken cancellationToken)
     {
-        var result = new TaskCompletionSource<OAuthCallback>(TaskCreationOptions.RunContinuationsAsynchronously);
-        _callbackChannel.CallbackReceived += OnCallbackReceived;
-        await using var registration = cancellationToken.Register(() => result.TrySetCanceled(cancellationToken));
-
         var dispatcher = Application.Current.Dispatcher;
-        var owner = await dispatcher.InvokeAsync(() =>
-            Application.Current.Windows.OfType<Window>().FirstOrDefault(window => window.IsActive) ??
-            Application.Current.MainWindow);
         var window = await dispatcher.InvokeAsync(() =>
-        {
-            var signInWindow = new SignInWindow(authorizeUri, result) { Owner = owner };
-            signInWindow.Show();
-            return signInWindow;
-        });
+            Application.Current.Windows.OfType<Window>().FirstOrDefault(candidate => candidate.IsActive) ??
+            Application.Current.MainWindow);
 
+        var callback = await _loopbackBroker.AuthorizeAsync(buildAuthorizeUri, cancellationToken);
+        await dispatcher.InvokeAsync(() => BringToFront(window));
+        return callback;
+    }
+
+    private static void OpenBrowser(Uri uri)
+    {
         try
         {
-            SignInWindow.OpenBrowser(authorizeUri);
-            return await result.Task;
+            Process.Start(new ProcessStartInfo(uri.AbsoluteUri) { UseShellExecute = true });
         }
-        finally
+        catch (Win32Exception exception)
         {
-            _callbackChannel.CallbackReceived -= OnCallbackReceived;
-            await dispatcher.InvokeAsync(() =>
-            {
-                window.CloseForResult();
+            throw new CaptureAnalysisException(CaptureAnalysisErrorKind.SignInFailed,
+                CoreResources.GetString("CaptureAnalysis_Error_NoBrowser"), innerException: exception);
+        }
+    }
 
-                // The browser has focus after signing in; bring the app back.
-                owner?.Activate();
-            });
+    /// <summary>
+    /// Puts the window back over the browser. Windows won't let an app take the focus from the browser, but it can
+    /// raise its window, which then shows the user they're signed in.
+    /// </summary>
+    private static void BringToFront(Window? window)
+    {
+        if (window == null) return;
+
+        if (window.WindowState == WindowState.Minimized)
+        {
+            window.WindowState = WindowState.Normal;
         }
 
-        void OnCallbackReceived(object? sender, Uri callbackUri) => result.TrySetResult(OAuthCallback.FromUri(callbackUri));
+        window.Topmost = true;
+        window.Topmost = false;
+        window.Activate();
     }
 }

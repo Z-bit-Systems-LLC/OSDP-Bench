@@ -7,7 +7,7 @@ namespace OSDPBench.CaptureAnalysis.ZBit;
 public sealed class ZBitCaptureAnalysisOptions
 {
     /// <summary>
-    /// Gets the web site that hosts the analyzer API and the OAuth redirect page, e.g. https://z-bitco.com.
+    /// Gets the web site that hosts the analyzer API, e.g. https://z-bitco.com.
     /// </summary>
     public required Uri SiteUri { get; init; }
 
@@ -32,9 +32,11 @@ public sealed class ZBitCaptureAnalysisOptions
     public string DisplayName { get; init; } = "Z-bit Capture Analyzer";
 
     /// <summary>
-    /// Gets the OAuth redirect URI: the web site's relay page, which hands the result to the app.
+    /// Gets the web site's sign-in relay page, which hands the result to the app through
+    /// <see cref="IOAuthAuthorizationBroker.CallbackScheme"/>. It is the redirect URI for apps that can't receive the
+    /// redirect on 127.0.0.1 (<see cref="LoopbackAuthorizationBroker"/>), such as phone apps.
     /// </summary>
-    public Uri RedirectUri => new(SiteUri, "/callback");
+    public Uri SiteRedirectUri => new(SiteUri, "/callback");
 
     /// <summary>
     /// Creates options from configuration values, or returns <see langword="null"/> if any value is missing or isn't
