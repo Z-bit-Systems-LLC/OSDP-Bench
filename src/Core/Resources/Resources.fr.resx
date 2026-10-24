@@ -1129,4 +1129,181 @@
     <value>Indisponible tant que le port série est en service. Déconnectez, ou annulez la découverte, pour effectuer un test de qualité de ligne.</value>
     <comment>Tooltip on the Line Quality navigation item while a connection, discovery sweep, or monitoring session holds the serial port</comment>
   </data>
+  <!-- Capture analysis -->
+  <data name="Monitor_SaveTraceFiles" xml:space="preserve">
+    <value>Save trace files</value>
+    <comment>Export drop-down item that saves the trace as .osdpcap and .txt files</comment>
+  </data>
+  <data name="Monitor_AnalyzeCapture" xml:space="preserve">
+    <value>Analyze capture…</value>
+    <comment>Export drop-down item that opens the capture analysis window for the current trace</comment>
+  </data>
+  <data name="CaptureAnalysis_Title" xml:space="preserve">
+    <value>Capture Analysis</value>
+    <comment>Title of the capture analysis window</comment>
+  </data>
+  <data name="CaptureAnalysis_CaptureLabel" xml:space="preserve">
+    <value>Capture</value>
+    <comment>Label before the file name of the capture being analyzed</comment>
+  </data>
+  <data name="CaptureAnalysis_SignInPrompt" xml:space="preserve">
+    <value>Sign in to analyze this capture.</value>
+    <comment>Shown in the capture analysis window when the analysis service needs the user to sign in</comment>
+  </data>
+  <data name="CaptureAnalysis_SignIn" xml:space="preserve">
+    <value>Sign in</value>
+    <comment>Button that starts signing in to the capture analysis service</comment>
+  </data>
+  <data name="CaptureAnalysis_SignOut" xml:space="preserve">
+    <value>Sign out</value>
+    <comment>Button that signs out of the capture analysis service</comment>
+  </data>
+  <data name="CaptureAnalysis_SignedInAs" xml:space="preserve">
+    <value>Signed in as {0}</value>
+    <comment>{0} is the account's email address or name</comment>
+  </data>
+  <data name="CaptureAnalysis_QuotaRemaining" xml:space="preserve">
+    <value>{0} of {1} analyses left</value>
+    <comment>{0} is the number of analyses left, {1} the number allowed per period</comment>
+  </data>
+  <data name="CaptureAnalysis_QuestionPlaceholder" xml:space="preserve">
+    <value>Optional: what should the analysis focus on?</value>
+    <comment>Placeholder for the optional question sent with a capture analysis</comment>
+  </data>
+  <data name="CaptureAnalysis_IncludeKey" xml:space="preserve">
+    <value>Send the Secure Channel key so encrypted traffic can be decoded</value>
+    <comment>Check box; the key is only sent when checked</comment>
+  </data>
+  <data name="CaptureAnalysis_IncludeCredentials" xml:space="preserve">
+    <value>Include card numbers and keypad entries</value>
+    <comment>Check box; credentials are left out of the analysis unless checked</comment>
+  </data>
+  <data name="CaptureAnalysis_Analyze" xml:space="preserve">
+    <value>Analyze</value>
+    <comment>Button that sends the capture for analysis</comment>
+  </data>
+  <data name="CaptureAnalysis_Stop" xml:space="preserve">
+    <value>Stop</value>
+    <comment>Button that stops an analysis or answer in progress</comment>
+  </data>
+  <data name="CaptureAnalysis_Ask" xml:space="preserve">
+    <value>Ask</value>
+    <comment>Button that sends a follow-up question</comment>
+  </data>
+  <data name="CaptureAnalysis_FollowUpPlaceholder" xml:space="preserve">
+    <value>Ask a follow-up question</value>
+    <comment>Placeholder for the follow-up question box</comment>
+  </data>
+  <data name="CaptureAnalysis_Working" xml:space="preserve">
+    <value>Working…</value>
+    <comment>Shown while the analysis or an answer is being written</comment>
+  </data>
+  <data name="CaptureAnalysis_PacketCount" xml:space="preserve">
+    <value>{0} packets</value>
+    <comment>{0} is the number of packets in the analyzed capture</comment>
+  </data>
+  <data name="CaptureAnalysis_ChecksPassed" xml:space="preserve">
+    <value>All automatic checks passed</value>
+    <comment>Shown when the analyzer's automatic checks found no problems</comment>
+  </data>
+  <data name="CaptureAnalysis_ChecksFound" xml:space="preserve">
+    <value>Automatic checks found: {0}</value>
+    <comment>{0} is a comma-separated list of problems with counts, as named by the analyzer</comment>
+  </data>
+  <data name="CaptureAnalysis_CaptureTruncated" xml:space="preserve">
+    <value>The capture was too long, so only part of it was analyzed.</value>
+    <comment>Shown when the analyzer only read part of the capture</comment>
+  </data>
+  <data name="CaptureAnalysis_AnswerTruncated" xml:space="preserve">
+    <value>This answer reached its length limit and was cut short.</value>
+    <comment>Shown under an answer that was cut off</comment>
+  </data>
+  <data name="CaptureAnalysis_AnswerStopped" xml:space="preserve">
+    <value>Stopped before the answer finished.</value>
+    <comment>Shown under an answer the user stopped</comment>
+  </data>
+  <data name="CaptureAnalysis_Error_Unreachable" xml:space="preserve">
+    <value>Couldn't reach {0}. Check the internet connection and try again.</value>
+    <comment>{0} is the host name of the analysis web site</comment>
+  </data>
+  <data name="CaptureAnalysis_Error_Unavailable" xml:space="preserve">
+    <value>The capture analyzer is unavailable right now. Try again later.</value>
+    <comment>Shown when the analysis service reports a server error</comment>
+  </data>
+  <data name="CaptureAnalysis_Error_SignInExpired" xml:space="preserve">
+    <value>Your sign-in has expired. Sign in again.</value>
+    <comment>Shown when the saved sign-in no longer works</comment>
+  </data>
+  <data name="CaptureAnalysis_Error_SignInFailed" xml:space="preserve">
+    <value>Signing in didn't finish: {0}</value>
+    <comment>{0} is the reason given by the sign-in service</comment>
+  </data>
+  <data name="CaptureAnalysis_Error_SignInMismatch" xml:space="preserve">
+    <value>The sign-in response didn't match this request. Try signing in again.</value>
+    <comment>Shown when the sign-in callback has no code or an unexpected state</comment>
+  </data>
+  <data name="CaptureAnalysis_Error_UnexpectedReply" xml:space="preserve">
+    <value>The analyzer sent a reply OSDP Bench couldn't read. Try again.</value>
+    <comment>Shown when the analysis service's reply can't be parsed</comment>
+  </data>
+  <data name="CaptureAnalysis_Error_Incomplete" xml:space="preserve">
+    <value>The analysis stopped before it finished. Try again.</value>
+    <comment>Shown when the connection closes before the answer is complete</comment>
+  </data>
+  <data name="CaptureAnalysis_Error_TooLarge" xml:space="preserve">
+    <value>The capture is too large to analyze. Clear the trace and capture just the part you want analyzed.</value>
+    <comment>Shown when the analysis service rejects the capture's size</comment>
+  </data>
+  <data name="CaptureAnalysis_WaitingForSignIn" xml:space="preserve">
+    <value>Finish signing in in your browser.</value>
+    <comment>Shown in the capture analysis window while the sign-in page is open in the browser</comment>
+  </data>
+  <data name="CaptureAnalysis_Error_NoBrowser" xml:space="preserve">
+    <value>Couldn't open a web browser to sign in. Check that a default browser is set, then try again.</value>
+    <comment>Shown when the sign-in page can't be opened in a browser</comment>
+  </data>
+  <data name="CaptureAnalysis_Save" xml:space="preserve">
+    <value>Save as Markdown</value>
+    <comment>Button in the capture analysis window that saves the report and follow-up answers as a Markdown file</comment>
+  </data>
+  <data name="CaptureAnalysis_SaveDestination" xml:space="preserve">
+    <value>Choose where to save the analysis</value>
+    <comment>Title of the dialog for picking where to save the capture analysis</comment>
+  </data>
+  <data name="CaptureAnalysis_Saved" xml:space="preserve">
+    <value>The analysis was saved as {0}.</value>
+    <comment>Shown after saving the capture analysis; {0} is the file name</comment>
+  </data>
+  <data name="CaptureAnalysis_AnalyzedBy" xml:space="preserve">
+    <value>Analyzed by {0} on {1}</value>
+    <comment>Line at the top of a saved capture analysis; {0} is the analysis service's name, {1} the date and time</comment>
+  </data>
+  <data name="CaptureAnalysis_QuestionLabel" xml:space="preserve">
+    <value>Question</value>
+    <comment>Label in a saved capture analysis for the question the analysis was asked to focus on</comment>
+  </data>
+  <data name="CaptureAnalysis_FollowUpLabel" xml:space="preserve">
+    <value>Follow-up question</value>
+    <comment>Label in a saved capture analysis for a follow-up question asked after the report</comment>
+  </data>
+  <data name="SignIn_Page_SignedIn" xml:space="preserve">
+    <value>You're signed in</value>
+    <comment>Heading of the browser page shown after signing in to OSDP Bench</comment>
+  </data>
+  <data name="SignIn_Page_ReturnToApp" xml:space="preserve">
+    <value>You can close this tab and go back to OSDP Bench.</value>
+    <comment>Text of the browser page shown after signing in to OSDP Bench</comment>
+  </data>
+  <data name="SignIn_Page_NotSignedIn" xml:space="preserve">
+    <value>Signing in didn't finish</value>
+    <comment>Heading of the browser page shown when signing in to OSDP Bench failed or was refused</comment>
+  </data>
+  <data name="SignIn_Page_SeeApp" xml:space="preserve">
+    <value>Go back to OSDP Bench to see what happened.</value>
+    <comment>Text of the browser page shown when signing in to OSDP Bench failed or was refused</comment>
+  </data>
+  <data name="Common_Cancel" xml:space="preserve">
+    <value>Cancel</value>
+    <comment>Generic cancel button</comment>
+  </data>
 </root>
