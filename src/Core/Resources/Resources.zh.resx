@@ -1129,4 +1129,181 @@
     <value>串口使用时不可用。断开连接或取消发现，以进行线路质量测试。</value>
     <comment>Tooltip on the Line Quality navigation item while a connection, discovery sweep, or monitoring session holds the serial port</comment>
   </data>
+  <!-- Capture analysis -->
+  <data name="Monitor_SaveTraceFiles" xml:space="preserve">
+    <value>保存追踪文件</value>
+    <comment>Export drop-down item that saves the trace as .osdpcap and .txt files</comment>
+  </data>
+  <data name="Monitor_AnalyzeCapture" xml:space="preserve">
+    <value>分析捕获…</value>
+    <comment>Export drop-down item that opens the capture analysis window for the current trace</comment>
+  </data>
+  <data name="CaptureAnalysis_Title" xml:space="preserve">
+    <value>捕获分析</value>
+    <comment>Title of the capture analysis window</comment>
+  </data>
+  <data name="CaptureAnalysis_CaptureLabel" xml:space="preserve">
+    <value>被捕</value>
+    <comment>Label before the file name of the capture being analyzed</comment>
+  </data>
+  <data name="CaptureAnalysis_SignInPrompt" xml:space="preserve">
+    <value>登录以分析此捕获。</value>
+    <comment>Shown in the capture analysis window when the analysis service needs the user to sign in</comment>
+  </data>
+  <data name="CaptureAnalysis_SignIn" xml:space="preserve">
+    <value>登录</value>
+    <comment>Button that starts signing in to the capture analysis service</comment>
+  </data>
+  <data name="CaptureAnalysis_SignOut" xml:space="preserve">
+    <value>签出</value>
+    <comment>Button that signs out of the capture analysis service</comment>
+  </data>
+  <data name="CaptureAnalysis_SignedInAs" xml:space="preserve">
+    <value>登录为 {0}</value>
+    <comment>{0} is the account's email address or name</comment>
+  </data>
+  <data name="CaptureAnalysis_QuotaRemaining" xml:space="preserve">
+    <value>{0} 关于 {1} 左侧分析</value>
+    <comment>{0} is the number of analyses left, {1} the number allowed per period</comment>
+  </data>
+  <data name="CaptureAnalysis_QuestionPlaceholder" xml:space="preserve">
+    <value>可选：分析应聚焦于哪些方面？</value>
+    <comment>Placeholder for the optional question sent with a capture analysis</comment>
+  </data>
+  <data name="CaptureAnalysis_IncludeKey" xml:space="preserve">
+    <value>发送安全通道密钥以便解码加密流量</value>
+    <comment>Check box; the key is only sent when checked</comment>
+  </data>
+  <data name="CaptureAnalysis_IncludeCredentials" xml:space="preserve">
+    <value>请包含卡号和按键输入</value>
+    <comment>Check box; credentials are left out of the analysis unless checked</comment>
+  </data>
+  <data name="CaptureAnalysis_Analyze" xml:space="preserve">
+    <value>分析</value>
+    <comment>Button that sends the capture for analysis</comment>
+  </data>
+  <data name="CaptureAnalysis_Stop" xml:space="preserve">
+    <value>停下</value>
+    <comment>Button that stops an analysis or answer in progress</comment>
+  </data>
+  <data name="CaptureAnalysis_Ask" xml:space="preserve">
+    <value>问</value>
+    <comment>Button that sends a follow-up question</comment>
+  </data>
+  <data name="CaptureAnalysis_FollowUpPlaceholder" xml:space="preserve">
+    <value>提出后续问题</value>
+    <comment>Placeholder for the follow-up question box</comment>
+  </data>
+  <data name="CaptureAnalysis_Working" xml:space="preserve">
+    <value>工作…</value>
+    <comment>Shown while the analysis or an answer is being written</comment>
+  </data>
+  <data name="CaptureAnalysis_PacketCount" xml:space="preserve">
+    <value>{0} 数据包</value>
+    <comment>{0} is the number of packets in the analyzed capture</comment>
+  </data>
+  <data name="CaptureAnalysis_ChecksPassed" xml:space="preserve">
+    <value>所有自动检查都通过了</value>
+    <comment>Shown when the analyzer's automatic checks found no problems</comment>
+  </data>
+  <data name="CaptureAnalysis_ChecksFound" xml:space="preserve">
+    <value>发现的自动检查： {0}</value>
+    <comment>{0} is a comma-separated list of problems with counts, as named by the analyzer</comment>
+  </data>
+  <data name="CaptureAnalysis_CaptureTruncated" xml:space="preserve">
+    <value>捕获时间太长，所以只分析了部分内容。</value>
+    <comment>Shown when the analyzer only read part of the capture</comment>
+  </data>
+  <data name="CaptureAnalysis_AnswerTruncated" xml:space="preserve">
+    <value>这个回答达到了长度限制后被缩短。</value>
+    <comment>Shown under an answer that was cut off</comment>
+  </data>
+  <data name="CaptureAnalysis_AnswerStopped" xml:space="preserve">
+    <value>还没等答案说完就停了下来。</value>
+    <comment>Shown under an answer the user stopped</comment>
+  </data>
+  <data name="CaptureAnalysis_Error_Unreachable" xml:space="preserve">
+    <value>够不着 {0}.检查一下网络连接，再试一次。</value>
+    <comment>{0} is the host name of the analysis web site</comment>
+  </data>
+  <data name="CaptureAnalysis_Error_Unavailable" xml:space="preserve">
+    <value>捕捉分析仪目前无法使用。稍后再试。</value>
+    <comment>Shown when the analysis service reports a server error</comment>
+  </data>
+  <data name="CaptureAnalysis_Error_SignInExpired" xml:space="preserve">
+    <value>您的登录已过期。请重新登录。</value>
+    <comment>Shown when the saved sign-in no longer works</comment>
+  </data>
+  <data name="CaptureAnalysis_Error_SignInFailed" xml:space="preserve">
+    <value>签到没完成： {0}</value>
+    <comment>{0} is the reason given by the sign-in service</comment>
+  </data>
+  <data name="CaptureAnalysis_Error_SignInMismatch" xml:space="preserve">
+    <value>登录回复与此请求不符。请尝试再次登录。</value>
+    <comment>Shown when the sign-in callback has no code or an unexpected state</comment>
+  </data>
+  <data name="CaptureAnalysis_Error_UnexpectedReply" xml:space="preserve">
+    <value>分析仪发送了OSDP台椅无法读取的回复。再试一次。</value>
+    <comment>Shown when the analysis service's reply can't be parsed</comment>
+  </data>
+  <data name="CaptureAnalysis_Error_Incomplete" xml:space="preserve">
+    <value>分析还没结束就停了。再试一次。</value>
+    <comment>Shown when the connection closes before the answer is complete</comment>
+  </data>
+  <data name="CaptureAnalysis_Error_TooLarge" xml:space="preserve">
+    <value>捕获面积太大，无法分析。清除痕迹，只捕捉你想分析的部分。</value>
+    <comment>Shown when the analysis service rejects the capture's size</comment>
+  </data>
+  <data name="CaptureAnalysis_WaitingForSignIn" xml:space="preserve">
+    <value>在浏览器中完成登录。</value>
+    <comment>Shown in the capture analysis window while the sign-in page is open in the browser</comment>
+  </data>
+  <data name="CaptureAnalysis_Error_NoBrowser" xml:space="preserve">
+    <value>无法打开网页浏览器登录。检查默认浏览器是否已设置，然后再试一次。</value>
+    <comment>Shown when the sign-in page can't be opened in a browser</comment>
+  </data>
+  <data name="CaptureAnalysis_Save" xml:space="preserve">
+    <value>以Markdown保存</value>
+    <comment>Button in the capture analysis window that saves the report and follow-up answers as a Markdown file</comment>
+  </data>
+  <data name="CaptureAnalysis_SaveDestination" xml:space="preserve">
+    <value>选择保存分析数据的位置</value>
+    <comment>Title of the dialog for picking where to save the capture analysis</comment>
+  </data>
+  <data name="CaptureAnalysis_Saved" xml:space="preserve">
+    <value>分析保存为 {0}.</value>
+    <comment>Shown after saving the capture analysis; {0} is the file name</comment>
+  </data>
+  <data name="CaptureAnalysis_AnalyzedBy" xml:space="preserve">
+    <value>分析对象 {0} 关于 {1}</value>
+    <comment>Line at the top of a saved capture analysis; {0} is the analysis service's name, {1} the date and time</comment>
+  </data>
+  <data name="CaptureAnalysis_QuestionLabel" xml:space="preserve">
+    <value>问题</value>
+    <comment>Label in a saved capture analysis for the question the analysis was asked to focus on</comment>
+  </data>
+  <data name="CaptureAnalysis_FollowUpLabel" xml:space="preserve">
+    <value>后续问题</value>
+    <comment>Label in a saved capture analysis for a follow-up question asked after the report</comment>
+  </data>
+  <data name="SignIn_Page_SignedIn" xml:space="preserve">
+    <value>你已登录</value>
+    <comment>Heading of the browser page shown after signing in to OSDP Bench</comment>
+  </data>
+  <data name="SignIn_Page_ReturnToApp" xml:space="preserve">
+    <value>你可以关闭这个标签页，回到OSDP Bench。</value>
+    <comment>Text of the browser page shown after signing in to OSDP Bench</comment>
+  </data>
+  <data name="SignIn_Page_NotSignedIn" xml:space="preserve">
+    <value>签到还没完成</value>
+    <comment>Heading of the browser page shown when signing in to OSDP Bench failed or was refused</comment>
+  </data>
+  <data name="SignIn_Page_SeeApp" xml:space="preserve">
+    <value>回去OSDP工作台看看发生了什么。</value>
+    <comment>Text of the browser page shown when signing in to OSDP Bench failed or was refused</comment>
+  </data>
+  <data name="Common_Cancel" xml:space="preserve">
+    <value>取消</value>
+    <comment>Generic cancel button</comment>
+  </data>
 </root>
