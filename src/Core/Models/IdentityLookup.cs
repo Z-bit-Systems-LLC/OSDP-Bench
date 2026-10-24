@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Globalization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using OSDP.Net.Model.ReplyData;
 
@@ -99,8 +100,9 @@ public partial class IdentityLookup : ObservableObject
             CanSendResetCommand = foundDevice.CanSendResetCommand;
         }
 
-        uint serialNumber = unchecked((uint)deviceIdentification.SerialNumber);
-        SerialNumber = $"{serialNumber} (0x{serialNumber:X8})";
+        // OSDP.Net exposes the serial number as a signed int, but it is an unsigned 32-bit value
+        SerialNumber = unchecked((uint)deviceIdentification.SerialNumber);
+        SerialNumberDisplay = string.Create(CultureInfo.InvariantCulture, $"{SerialNumber} (0x{SerialNumber:X8})");
 
         VersionNumber =
             $"{deviceIdentification.FirmwareMajor}.{deviceIdentification.FirmwareMinor}.{deviceIdentification.FirmwareBuild}";
@@ -114,7 +116,12 @@ public partial class IdentityLookup : ObservableObject
 
     [ObservableProperty] private string _versionNumber = string.Empty;
     
-    [ObservableProperty] private string _serialNumber = string.Empty;
+    [ObservableProperty] private uint _serialNumber;
+
+    /// <summary>
+    /// Gets the serial number formatted for display as unsigned decimal followed by hex, e.g. "4063516280 (0xF2345678)".
+    /// </summary>
+    [ObservableProperty] private string _serialNumberDisplay = string.Empty;
 
     /// <summary>
     /// Provides information and instructions for resetting a device.

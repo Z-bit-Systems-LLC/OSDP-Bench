@@ -78,7 +78,7 @@
                         Text="{Binding ViewModel.IdentityLookup.Model}"
                         d:Text="Reader"/>
                     
-                    <StackPanel Orientation="Horizontal"
+                    <WrapPanel Orientation="Horizontal"
                                 Margin="{StaticResource Margin.ContentCenter}"
                                 HorizontalAlignment="Center">
                         <TextBlock Style="{StaticResource Text.Subtitle}"
@@ -88,9 +88,9 @@
                         <TextBlock Style="{StaticResource Text.Subtitle}"
                             TextAlignment="Left"
                             TextWrapping="Wrap"
-                            Text="{Binding ViewModel.IdentityLookup.SerialNumber}"
-                            d:Text="0000"/> 
-                    </StackPanel>
+                            Text="{Binding ViewModel.IdentityLookup.SerialNumberDisplay}"
+                            d:Text="4063516280 (0xF2345678)"/>
+                    </WrapPanel>
 
                     <TextBlock Style="{StaticResource Text.Subtitle}"
                         Margin="{StaticResource Margin.ContentCenter}"
