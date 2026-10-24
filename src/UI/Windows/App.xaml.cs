@@ -1,11 +1,16 @@
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Windows;
 using System.Windows.Threading;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using OSDPBench.CaptureAnalysis.ZBit;
 using OSDPBench.Core.Services;
+using OSDPBench.Core.Services.Analysis;
 using OSDPBench.Core.ViewModels.Pages;
 using OSDPBench.Core.ViewModels.Windows;
 using OSDPBench.Windows.Services;
+using OSDPBench.Windows.Services.Analysis;
 using OSDPBench.Windows.Views.Pages;
 using OSDPBench.Windows.Views.Windows;
 using Wpf.Ui;
@@ -79,6 +84,35 @@ public partial class App
         services.AddSingleton<IUserSettingsService>(sp => sp.GetRequiredService<AppUserSettingsService>());
         services.AddSingleton<ILocalizationService, LocalizationService>();
         services.AddSingleton<ILanguageMismatchService, WindowsLanguageMismatchService>();
+
+        // Capture analysis is only built in when the build supplies the analyzer's settings
+        if (CaptureAnalysisSettings.Read(typeof(App).Assembly) is { } analysisOptions)
+        {
+            AddCaptureAnalysis(services, analysisOptions);
+        }
+    }
+
+    /// <summary>
+    /// Registers capture analysis through the Z-bit web site.
+    /// </summary>
+    /// <param name="services">The service collection to configure.</param>
+    /// <param name="options">Where the analyzer and its sign-in live.</param>
+    private static void AddCaptureAnalysis(IServiceCollection services, ZBitCaptureAnalysisOptions options)
+    {
+        services.AddSingleton<SignInCallbackChannel>();
+        services.AddSingleton<IOAuthAuthorizationBroker, WindowsOAuthAuthorizationBroker>();
+        services.AddSingleton<ISecureTokenStore>(_ => new DpapiTokenStore(DpapiTokenStore.DefaultFolder));
+        services.AddSingleton<ICaptureAnalysisService>(serviceProvider =>
+        {
+            var httpClient = new HttpClient();
+            httpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("OSDPBench",
+                typeof(App).Assembly.GetName().Version?.ToString(3)));
+            return new ZBitCaptureAnalysisService(httpClient, options,
+                serviceProvider.GetRequiredService<IOAuthAuthorizationBroker>(),
+                serviceProvider.GetRequiredService<ISecureTokenStore>());
+        });
+        services.AddSingleton<ICaptureAnalysisLauncher, WindowsCaptureAnalysisLauncher>();
+        services.AddTransient<CaptureAnalysisViewModel>();
     }
 
     /// <summary>
@@ -97,6 +131,15 @@ public partial class App
     /// </summary>
     private void OnStartup(object sender, StartupEventArgs e)
     {
+        // Started by the browser to finish a sign-in: hand the result to the copy that's waiting for it. If no copy
+        // is waiting, start as usual; that sign-in can't be finished anyway.
+        var signInCallback = e.Args.FirstOrDefault(OAuthCallback.IsCallbackUri);
+        if (signInCallback != null && SignInCallbackChannel.TryForward(signInCallback, TimeSpan.FromSeconds(3)))
+        {
+            Shutdown();
+            return;
+        }
+
         // Register the localization provider for Guidelines XAML markup extensions
         // Must be set before Host.Start() which creates windows that use localization
         ZBitSystems.Wpf.UI.Localization.LocalizationService.Provider = new ResourceLocalizationProvider();
@@ -121,6 +164,12 @@ public partial class App
 
         _host.Services.GetService<ManageViewModel>();
         _host.Services.GetService<MonitorViewModel>();
+
+        if (_host.Services.GetService<SignInCallbackChannel>() is { } signInCallbackChannel)
+        {
+            SignInCallbackChannel.RegisterUriScheme();
+            signInCallbackChannel.Start();
+        }
 
         // Check for language mismatch after UI is initialized
         _ = Task.Run(async () =>

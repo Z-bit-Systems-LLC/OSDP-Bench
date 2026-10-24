@@ -1,10 +1,11 @@
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using OSDP.Net.Messages;
 using OSDP.Net.Tracing;
 using OSDPBench.Core.Models;
 using OSDPBench.Core.Services;
+using OSDPBench.Core.Services.Analysis;
 using OSDPBench.Core.Services.Export;
 using static OSDP.Net.Tracing.TraceDirection;
 
@@ -20,6 +21,7 @@ public partial class MonitorViewModel : ObservableObject
 
     private readonly IDeviceManagementService _deviceManagementService;
     private readonly IDialogService _dialogService;
+    private readonly ICaptureAnalysisLauncher? _captureAnalysisLauncher;
     private readonly PacketTraceEntryBuilder _traceEntryBuilder = new();
     private readonly IPacketExporter[] _exporters;
     private readonly List<PacketTraceEntry> _allTraceEntries = [];
@@ -30,12 +32,20 @@ public partial class MonitorViewModel : ObservableObject
     private bool _sessionActive;
     private long _currentBufferSizeBytes;
 
-    /// <inheritdoc />
-    public MonitorViewModel(IDeviceManagementService deviceManagementService, IDialogService dialogService)
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MonitorViewModel"/> class.
+    /// </summary>
+    /// <param name="deviceManagementService">The service that manages the device connection.</param>
+    /// <param name="dialogService">The service that shows dialogs.</param>
+    /// <param name="captureAnalysisLauncher">Opens the capture analysis view, or <see langword="null"/> when this
+    /// build has no capture analysis service.</param>
+    public MonitorViewModel(IDeviceManagementService deviceManagementService, IDialogService dialogService,
+        ICaptureAnalysisLauncher? captureAnalysisLauncher = null)
     {
         _deviceManagementService = deviceManagementService ??
                                    throw new ArgumentNullException(nameof(deviceManagementService));
         _dialogService = dialogService ?? throw new ArgumentNullException(nameof(dialogService));
+        _captureAnalysisLauncher = captureAnalysisLauncher;
 
         _exporters =
         [
@@ -118,6 +128,8 @@ public partial class MonitorViewModel : ObservableObject
         OnPropertyChanged(nameof(BufferUsagePercentage));
         OnPropertyChanged(nameof(TotalPacketsCaptured));
         ExportTraceCommand.NotifyCanExecuteChanged();
+        AnalyzeCaptureCommand.NotifyCanExecuteChanged();
+        OnPropertyChanged(nameof(CanExport));
     }
 
     private void OnDeviceManagementServiceOnTraceEntryReceived(object? _, TraceEntry traceEntry)
@@ -322,6 +334,8 @@ public partial class MonitorViewModel : ObservableObject
         if (_allTraceEntries.Count == 1)
         {
             ExportTraceCommand.NotifyCanExecuteChanged();
+            AnalyzeCaptureCommand.NotifyCanExecuteChanged();
+            OnPropertyChanged(nameof(CanExport));
         }
         OnPropertyChanged(nameof(BufferUsagePercentage));
         OnPropertyChanged(nameof(TotalPacketsCaptured));
@@ -399,9 +413,45 @@ public partial class MonitorViewModel : ObservableObject
         }
     }
 
+    /// <summary>
+    /// Gets a value indicating whether this build can analyze captures.
+    /// </summary>
+    public bool IsCaptureAnalysisAvailable => _captureAnalysisLauncher != null;
+
+    private bool CanAnalyzeCapture() => IsCaptureAnalysisAvailable && CanExport;
+
+    /// <summary>
+    /// Opens the capture analysis view for everything captured so far.
+    /// </summary>
+    [RelayCommand(CanExecute = nameof(CanAnalyzeCapture))]
+    private async Task AnalyzeCaptureAsync()
+    {
+        if (_captureAnalysisLauncher == null || _allTraceEntries.Count == 0) return;
+
+        try
+        {
+            var capture = await new OsdpCaptureExporter().ExportAsync(_allTraceEntries);
+            var fileName = $"osdp-trace-{DateTime.Now:yyyyMMdd-HHmmss}.osdpcap";
+
+            // A custom key is offered to the analyzer, and only sent if the user agrees; the analyzer tries the
+            // default key by itself
+            var securityKey = UsingSecureChannel && !UsesDefaultSecurityKey
+                ? _deviceManagementService.SecurityKey
+                : null;
+
+            await _captureAnalysisLauncher.OpenAsync(new CaptureForAnalysis(fileName, capture, securityKey));
+        }
+        catch (Exception ex)
+        {
+            await _dialogService.ShowExceptionDialog(Resources.Resources.GetString("Monitor_AnalyzeCapture"), ex);
+        }
+    }
+
     partial void OnTraceEntriesViewChanged(ObservableCollection<PacketTraceEntry> value)
     {
         _ = value; // Required by source generator signature
         ExportTraceCommand.NotifyCanExecuteChanged();
+        AnalyzeCaptureCommand.NotifyCanExecuteChanged();
+        OnPropertyChanged(nameof(CanExport));
     }
 }

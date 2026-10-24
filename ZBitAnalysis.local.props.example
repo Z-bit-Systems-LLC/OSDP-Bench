@@ -1,0 +1,12 @@
+<!--
+  Copy to ZBitAnalysis.local.props (git-ignored) to build OSDP Bench with capture analysis through the Z-bit web site.
+  Ask a maintainer for the values; they differ between the test and production sites. The pipeline sets the same
+  properties as variables instead.
+-->
+<Project>
+  <PropertyGroup>
+    <ZBitAnalysisSiteUrl>https://site.example</ZBitAnalysisSiteUrl>
+    <ZBitAnalysisAuthority>https://issuer.example</ZBitAnalysisAuthority>
+    <ZBitAnalysisClientId>client-id</ZBitAnalysisClientId>
+  </PropertyGroup>
+</Project>

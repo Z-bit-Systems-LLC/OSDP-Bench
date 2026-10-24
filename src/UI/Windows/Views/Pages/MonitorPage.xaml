@@ -114,16 +114,48 @@
 									           Text="{Binding ViewModel.BufferUsagePercentage, StringFormat={}{0:F0}%, Mode=OneWay}"/>
 								</WrapPanel>
 
-								<!-- Export Button - writes both .osdpcap and .txt files -->
+								<!-- Export Button - writes both .osdpcap and .txt files; builds without capture analysis -->
 								<ui:Button Grid.Column="1"
 								           x:Name="ExportButton"
 								           Content="{localization:Localize Monitor_Export}"
 								           ToolTip="{localization:Localize Export_TraceFilesToolTip}"
-								           Command="{Binding ViewModel.ExportTraceCommand}">
+								           Command="{Binding ViewModel.ExportTraceCommand}"
+								           Visibility="{Binding ViewModel.IsCaptureAnalysisAvailable, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=Invert}">
 									<ui:Button.Icon>
 										<ui:SymbolIcon Symbol="ArrowDownload24"/>
 									</ui:Button.Icon>
 								</ui:Button>
+
+								<!-- Export drop-down - saving the trace files, or analyzing the capture -->
+								<ui:DropDownButton Grid.Column="1"
+								                   x:Name="ExportMenuButton"
+								                   Content="{localization:Localize Monitor_Export}"
+								                   IsEnabled="{Binding ViewModel.CanExport}"
+								                   Visibility="{Binding ViewModel.IsCaptureAnalysisAvailable, Converter={StaticResource BooleanToVisibilityConverter}}">
+									<ui:DropDownButton.Icon>
+										<ui:SymbolIcon Symbol="ArrowDownload24"/>
+									</ui:DropDownButton.Icon>
+									<ui:DropDownButton.Flyout>
+										<ContextMenu DataContext="{Binding PlacementTarget.(FrameworkElement.DataContext), RelativeSource={RelativeSource Self}}"
+										             d:DataContext="{d:DesignInstance local:MonitorPage, IsDesignTimeCreatable=False}">
+											<MenuItem x:Name="SaveTraceFilesMenuItem"
+											          Header="{localization:Localize Monitor_SaveTraceFiles}"
+											          ToolTip="{localization:Localize Export_TraceFilesToolTip}"
+											          Command="{Binding ViewModel.ExportTraceCommand}">
+												<MenuItem.Icon>
+													<ui:SymbolIcon Symbol="Save24"/>
+												</MenuItem.Icon>
+											</MenuItem>
+											<MenuItem x:Name="AnalyzeCaptureMenuItem"
+											          Header="{localization:Localize Monitor_AnalyzeCapture}"
+											          Command="{Binding ViewModel.AnalyzeCaptureCommand}">
+												<MenuItem.Icon>
+													<ui:SymbolIcon Symbol="DocumentSearch24"/>
+												</MenuItem.Icon>
+											</MenuItem>
+										</ContextMenu>
+									</ui:DropDownButton.Flyout>
+								</ui:DropDownButton>
 							</Grid>
 						</StackPanel>
 					</Border>

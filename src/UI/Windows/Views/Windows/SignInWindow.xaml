@@ -1,0 +1,78 @@
+<ui:FluentWindow x:Class="OSDPBench.Windows.Views.Windows.SignInWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+        xmlns:localization="clr-namespace:ZBitSystems.Wpf.UI.Localization;assembly=ZBitSystems.Wpf.UI"
+        Title="{localization:Localize SignIn_Title}"
+        ExtendsContentIntoTitleBar="True"
+        WindowCornerPreference="Round"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize"
+        ShowInTaskbar="False"
+        SizeToContent="Height"
+        Width="460">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <ui:TitleBar Grid.Row="0"
+                     Title="{localization:Localize SignIn_Title}"
+                     ShowMinimize="False"
+                     ShowMaximize="False" />
+
+        <StackPanel Grid.Row="1" Margin="{StaticResource Margin.Card}">
+            <TextBlock Style="{StaticResource Text.BodyLarge}"
+                       TextWrapping="Wrap"
+                       Text="{localization:Localize SignIn_Instructions}" />
+            <TextBlock Style="{StaticResource Text.Caption}"
+                       Margin="{StaticResource Margin.Control}"
+                       TextWrapping="Wrap"
+                       Text="{localization:Localize SignIn_BrowserHint}" />
+
+            <WrapPanel Margin="{StaticResource Margin.Control}">
+                <ui:Button x:Name="CopyLinkButton"
+                           Style="{StaticResource Button.Secondary}"
+                           Content="{localization:Localize SignIn_CopyLink}"
+                           Click="OnCopyLinkClick">
+                    <ui:Button.Icon>
+                        <ui:SymbolIcon Symbol="Copy24" />
+                    </ui:Button.Icon>
+                </ui:Button>
+                <ui:Button x:Name="OpenBrowserButton"
+                           Style="{StaticResource Button.Secondary}"
+                           Content="{localization:Localize SignIn_OpenBrowser}"
+                           Click="OnOpenBrowserClick">
+                    <ui:Button.Icon>
+                        <ui:SymbolIcon Symbol="Open24" />
+                    </ui:Button.Icon>
+                </ui:Button>
+            </WrapPanel>
+
+            <TextBlock Style="{StaticResource Text.Body}"
+                       Margin="{StaticResource Margin.Section}"
+                       TextWrapping="Wrap"
+                       Text="{localization:Localize SignIn_PasteCode}" />
+            <ui:TextBox x:Name="CodeTextBox"
+                        Margin="{StaticResource Margin.Control}"
+                        TextChanged="OnCodeTextChanged" />
+
+            <StackPanel Orientation="Horizontal"
+                        HorizontalAlignment="Right"
+                        Margin="{StaticResource Margin.Section}">
+                <ui:Button x:Name="ContinueButton"
+                           Style="{StaticResource Button.Primary}"
+                           Content="{localization:Localize SignIn_Continue}"
+                           IsEnabled="False"
+                           IsDefault="True"
+                           Click="OnContinueClick" />
+                <ui:Button x:Name="CancelButton"
+                           Style="{StaticResource Button.Secondary}"
+                           Content="{localization:Localize Common_Cancel}"
+                           IsCancel="True"
+                           Click="OnCancelClick" />
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+</ui:FluentWindow>

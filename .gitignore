@@ -39,3 +39,6 @@ BundleArtifacts/
 
 .claude
 results.sarif
+
+# Capture analysis service settings (OAuth client ID, issuer, site), supplied per machine or by the pipeline
+ZBitAnalysis.local.props

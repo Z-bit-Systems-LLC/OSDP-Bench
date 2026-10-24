@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AssemblyName>OSDPBench.CaptureAnalysis.ZBit</AssemblyName>
+    <RootNamespace>OSDPBench.CaptureAnalysis.ZBit</RootNamespace>
+    <Title>OSDP Bench Z-bit Capture Analyzer</Title>
+    <Description>Capture analysis through the Z-bit web site, signing members in with OAuth.</Description>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <LangVersion>default</LangVersion>
+    <Platforms>AnyCPU;ARM64;x64</Platforms>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Update="Microsoft.SourceLink.GitHub" Version="10.0.402" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Core\Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="OSDPBench.Core.Tests" />
+  </ItemGroup>
+
+</Project>

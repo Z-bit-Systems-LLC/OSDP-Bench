@@ -1,10 +1,12 @@
 using System.Windows;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Moq;
 using OSDP.Net.LineQuality;
 using OSDPBench.Core.Models;
 using OSDPBench.Core.Services;
+using OSDPBench.Core.Services.Analysis;
 using OSDPBench.Windows;
 using OSDPBench.Windows.Services;
 
@@ -142,6 +144,9 @@ public class TestApp : App
             services.AddSingleton(MockUserSettings.Object);
             services.AddSingleton(MockLocalization.Object);
             services.AddSingleton(MockLineQuality.Object);
+
+            // Test the app as the default build has it, without capture analysis, whatever this build was given
+            services.RemoveAll<ICaptureAnalysisLauncher>();
         });
 
         _testHost.Start();

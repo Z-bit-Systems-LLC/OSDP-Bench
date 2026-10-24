@@ -29,6 +29,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Core\Core.csproj" />
+    <ProjectReference Include="..\..\src\CaptureAnalysis.ZBit\CaptureAnalysis.ZBit.csproj" />
   </ItemGroup>
 
 </Project>
