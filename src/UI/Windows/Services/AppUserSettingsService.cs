@@ -15,9 +15,18 @@ public class AppUserSettingsService : IUserSettingsService
     /// <summary>
     /// Initializes a new instance of the AppUserSettingsService
     /// </summary>
-    public AppUserSettingsService()
+    public AppUserSettingsService() : this("OSDPBench")
     {
-        _inner = new JsonUserSettingsService<AppSettings>("OSDPBench");
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the AppUserSettingsService that keeps its settings under the
+    /// given application name, so a test run cannot read or overwrite the user's own settings.
+    /// </summary>
+    /// <param name="appName">The settings folder name under <c>%LOCALAPPDATA%</c>.</param>
+    public AppUserSettingsService(string appName)
+    {
+        _inner = new JsonUserSettingsService<AppSettings>(appName);
     }
 
     /// <summary>

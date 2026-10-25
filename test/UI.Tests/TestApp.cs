@@ -1,3 +1,4 @@
+using System.IO;
 using System.Windows;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -19,14 +20,14 @@ namespace OSDPBench.UI.Tests;
 /// </summary>
 public class TestApp : App
 {
-    public Mock<IDeviceManagementService> MockDeviceManagement { get; } = new();
-    public Mock<ISerialPortConnectionService> MockSerialPortConnection { get; } = new();
-    public Mock<IUsbDeviceMonitorService> MockUsbDeviceMonitor { get; } = new();
-    public Mock<IDialogService> MockDialog { get; } = new();
-    public Mock<ILanguageMismatchService> MockLanguageMismatch { get; } = new();
-    public Mock<IUserSettingsService> MockUserSettings { get; } = new();
-    public Mock<ILocalizationService> MockLocalization { get; } = new();
-    public Mock<ILineQualityService> MockLineQuality { get; } = new();
+    public Mock<IDeviceManagementService> MockDeviceManagement { get; private set; } = new();
+    public Mock<ISerialPortConnectionService> MockSerialPortConnection { get; private set; } = new();
+    public Mock<IUsbDeviceMonitorService> MockUsbDeviceMonitor { get; private set; } = new();
+    public Mock<IDialogService> MockDialog { get; private set; } = new();
+    public Mock<ILanguageMismatchService> MockLanguageMismatch { get; private set; } = new();
+    public Mock<IUserSettingsService> MockUserSettings { get; private set; } = new();
+    public Mock<ILocalizationService> MockLocalization { get; private set; } = new();
+    public Mock<ILineQualityService> MockLineQuality { get; private set; } = new();
 
     private IHost? _testHost;
 
@@ -38,9 +39,50 @@ public class TestApp : App
         return (_testHost!.Services.GetService(typeof(T)) as T)!;
     }
 
+    /// <summary>
+    /// The settings folder the test app reads and writes in place of the user's own, so window
+    /// state saved by one run cannot change the layout the next run starts from.
+    /// </summary>
+    private const string SettingsAppName = "OSDPBench.UITests";
+
     public TestApp()
     {
+        ShutdownMode = ShutdownMode.OnExplicitShutdown;
         ConfigureMockDefaults();
+    }
+
+    /// <summary>
+    /// Replaces every mock with a fresh one, so nothing a previous fixture set up or subscribed
+    /// carries over into the next host.
+    /// </summary>
+    private void ReplaceMocks()
+    {
+        MockDeviceManagement = new Mock<IDeviceManagementService>();
+        MockSerialPortConnection = new Mock<ISerialPortConnectionService>();
+        MockUsbDeviceMonitor = new Mock<IUsbDeviceMonitorService>();
+        MockDialog = new Mock<IDialogService>();
+        MockLanguageMismatch = new Mock<ILanguageMismatchService>();
+        MockUserSettings = new Mock<IUserSettingsService>();
+        MockLocalization = new Mock<ILocalizationService>();
+        MockLineQuality = new Mock<ILineQualityService>();
+
+        ConfigureMockDefaults();
+    }
+
+    /// <summary>
+    /// Closes the main window and discards the host behind it, then starts a new host with fresh
+    /// mocks and a new main window. Every singleton view model is rebuilt along with it.
+    /// </summary>
+    public async Task RestartTestApp()
+    {
+        foreach (var window in Windows.OfType<Window>().ToList())
+        {
+            window.Close();
+        }
+
+        await StopTestApp();
+        ReplaceMocks();
+        StartTestApp();
     }
 
     /// <summary>
@@ -132,6 +174,7 @@ public class TestApp : App
             new ResourceLocalizationProvider();
 
         LoadResources();
+        ClearSettings();
 
         _testHost = BuildHost(services =>
         {
@@ -145,11 +188,37 @@ public class TestApp : App
             services.AddSingleton(MockLocalization.Object);
             services.AddSingleton(MockLineQuality.Object);
 
+            // The main window restores and saves its size and position through this service
+            services.RemoveAll<AppUserSettingsService>();
+            services.AddSingleton(new AppUserSettingsService(SettingsAppName));
+
             // Test the app as the default build has it, without capture analysis, whatever this build was given
             services.RemoveAll<ICaptureAnalysisLauncher>();
         });
 
         _testHost.Start();
+
+        // A window shown after the first one is not made the main window on its own
+        MainWindow = Windows.OfType<OSDPBench.Windows.Views.Windows.MainWindow>().Single();
+    }
+
+    /// <summary>
+    /// Deletes the test settings, so every host starts from the default window size and position
+    /// whatever an earlier run saved.
+    /// </summary>
+    private static void ClearSettings()
+    {
+        var folder = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), SettingsAppName);
+
+        try
+        {
+            if (Directory.Exists(folder)) Directory.Delete(folder, true);
+        }
+        catch (IOException)
+        {
+            // A settings file left from an earlier run only changes where the window opens
+        }
     }
 
     /// <summary>
@@ -161,6 +230,7 @@ public class TestApp : App
         {
             await _testHost.StopAsync();
             _testHost.Dispose();
+            _testHost = null;
         }
     }
 }

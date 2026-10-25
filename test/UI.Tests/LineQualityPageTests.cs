@@ -76,7 +76,7 @@ public class LineQualityPageTests : UiTestBase
 
     private void OpenPicker(AutomationElement toggle)
     {
-        toggle.Click();
+        ClickInView(toggle);
         Assert.That(AssemblySetup.Retry(() => PickerIsOpen() ? "open" : null, TimeSpan.FromSeconds(2)),
             Is.EqualTo("open"), "The picker should open.");
     }
@@ -85,7 +85,7 @@ public class LineQualityPageTests : UiTestBase
     {
         if (!PickerIsOpen()) return;
 
-        toggle.Click();
+        ClickInView(toggle);
         AssemblySetup.Retry(() => PickerIsOpen() ? null : "closed", TimeSpan.FromSeconds(2));
     }
 
@@ -100,8 +100,12 @@ public class LineQualityPageTests : UiTestBase
 
         try
         {
+            ScrollIntoView("LineQuality_BaudRateTags");
+            Assert.That(MainWindow!.BoundingRectangle.Contains(tags!.BoundingRectangle), Is.True,
+                "The tag list should lie within the main window, so a click lands on it.");
+
             // Only chosen rates have a tag, so the first remove button belongs to the first rate.
-            var removeFirst = tags!.FindAllDescendants(cf => cf.ByControlType(ControlType.Button))[0];
+            var removeFirst = tags.FindAllDescendants(cf => cf.ByControlType(ControlType.Button))[0];
             removeFirst.Click();
 
             Assert.That(AssemblySetup.Retry(
@@ -131,7 +135,7 @@ public class LineQualityPageTests : UiTestBase
         {
             OpenPicker(toggle!);
 
-            toggle!.Click();
+            ClickInView(toggle!);
             Assert.That(AssemblySetup.Retry(
                     () => PickerIsOpen() ? null : "closed", TimeSpan.FromSeconds(2)),
                 Is.EqualTo("closed"), "Clicking again should close the picker rather than reopen it.");
