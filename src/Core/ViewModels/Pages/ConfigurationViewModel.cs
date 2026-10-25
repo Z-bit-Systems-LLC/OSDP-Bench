@@ -14,7 +14,7 @@ namespace OSDPBench.Core.ViewModels.Pages;
 public partial class ConfigurationViewModel : ObservableObject, IDisposable
 {
     // Default baud rates available for connection
-    private static readonly IReadOnlyList<int> DefaultBaudRates = [9600, 19200, 38400, 57600, 115200, 230400];
+    private static readonly IReadOnlyList<int> DefaultBaudRates = [9600, 19200, 38400, 57600, 115200, 230400, 460800];
     
     private readonly IDialogService _dialogService;
     private readonly IDeviceManagementService _deviceManagementService;

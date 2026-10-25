@@ -206,7 +206,7 @@ public partial class ManageViewModel : ObservableObject
     }
 
     [ObservableProperty] private IReadOnlyList<int> _availableBaudRates =
-        [9600, 19200, 38400, 57600, 115200, 230400];
+        [9600, 19200, 38400, 57600, 115200, 230400, 460800];
 
     [ObservableProperty] private string _lastCardNumberRead;
         

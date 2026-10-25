@@ -49,7 +49,7 @@ public class ConfigurationViewModelTests
     public void ConfigurationViewModel_InitializedAvailableBaudRates()
     {
         // Arrange
-        var expectedBaudRates = new[] { 9600, 19200, 38400, 57600, 115200, 230400 };
+        var expectedBaudRates = new[] { 9600, 19200, 38400, 57600, 115200, 230400, 460800 };
         
         // Assert
         Assert.That(expectedBaudRates.Length, Is.EqualTo(_viewModel.AvailableBaudRates.Count));
