@@ -50,13 +50,13 @@ public partial class ConfigurationPage : INavigableView<ConfigurationViewModel>
     /// </summary>
     private void SecurityKeyTextBox_OnPasting(object sender, DataObjectPastingEventArgs e)
     {
-        if (!e.DataObject.GetDataPresent(typeof(string)))
+        // Some clipboard sources report text as present but hand back a stream instead
+        if (e.DataObject.GetData(DataFormats.UnicodeText) is not string original)
         {
             e.CancelCommand();
             return;
         }
 
-        var original = (string)e.DataObject.GetData(typeof(string))!;
         var hexOnly = HexConverter.NormalizeHexInput(original);
         if (hexOnly.Length == 0)
         {
