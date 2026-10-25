@@ -83,6 +83,41 @@ internal class WindowsDialogService : IDialogService
         return dialog.FolderName;
     }
 
+    /// <inheritdoc/>
+    public async Task<string?> SaveFileWithDataAsync(string title, string fileName, byte[] data,
+        string? initialLocation = null)
+    {
+        var extension = Path.GetExtension(fileName);
+        var dialog = new SaveFileDialog
+        {
+            Title = title,
+            FileName = fileName,
+            DefaultExt = extension,
+            AddExtension = true,
+            OverwritePrompt = true
+        };
+        if (extension.Length > 0)
+        {
+            dialog.Filter = $"*{extension}|*{extension}";
+        }
+
+        // The location handed back is the last file saved, so the dialog reopens in its folder
+        var initialDirectory = string.IsNullOrWhiteSpace(initialLocation) ? null : Path.GetDirectoryName(initialLocation);
+        if (initialDirectory != null && Directory.Exists(initialDirectory))
+        {
+            dialog.InitialDirectory = initialDirectory;
+        }
+
+        if (dialog.ShowDialog() != true)
+        {
+            return null;
+        }
+
+        await File.WriteAllBytesAsync(dialog.FileName, data);
+
+        return dialog.FileName;
+    }
+
     private static string FormatExceptionMessage(Exception exception)
     {
         return $"{exception.Message}\n\nDetails: {exception.GetType().Name}";

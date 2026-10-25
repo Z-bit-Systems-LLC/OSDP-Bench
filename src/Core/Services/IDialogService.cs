@@ -49,6 +49,25 @@ public interface IDialogService
     /// </returns>
     Task<string?> SaveFilesWithDataAsync(string title, IEnumerable<(string FileName, byte[] Data)> files,
         string? initialDirectory = null);
+
+    /// <summary>
+    /// Saves a single file using the platform's preferred mechanism, letting the user choose the
+    /// file's name and location. A platform without its own single file picker falls back to
+    /// <see cref="SaveFilesWithDataAsync"/>.
+    /// </summary>
+    /// <param name="title">The title of the save dialog.</param>
+    /// <param name="fileName">The suggested file name, whose extension sets the file type.</param>
+    /// <param name="data">The content of the file.</param>
+    /// <param name="initialLocation">
+    /// A value this method returned before, so the dialog opens where it left off, or null for the
+    /// platform's own choice. A location that no longer exists is ignored rather than treated as an error.
+    /// </param>
+    /// <returns>
+    /// An identifier for where the file was written that is suitable to show the user, such as its
+    /// path, or null if the user cancelled.
+    /// </returns>
+    Task<string?> SaveFileWithDataAsync(string title, string fileName, byte[] data, string? initialLocation = null) =>
+        SaveFilesWithDataAsync(title, [(fileName, data)], initialLocation);
 }
 
 /// <summary>

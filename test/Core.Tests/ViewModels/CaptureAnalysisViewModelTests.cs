@@ -237,18 +237,18 @@ public class CaptureAnalysisViewModelTests
         _viewModel.FollowUpQuestion = "Which command?";
         await _viewModel.AskCommand.ExecuteAsync(null);
 
-        List<(string FileName, byte[] Data)> saved = null;
-        _dialogService.Setup(x => x.SaveFilesWithDataAsync(
-                It.IsAny<string>(), It.IsAny<IEnumerable<(string, byte[])>>(), It.IsAny<string>()))
-            .Callback<string, IEnumerable<(string, byte[])>, string>((_, files, _) => saved = files.ToList())
-            .ReturnsAsync(@"C:\Reports");
+        string savedName = null;
+        byte[] savedData = null;
+        _dialogService.Setup(x => x.SaveFileWithDataAsync(
+                It.IsAny<string>(), It.IsAny<string>(), It.IsAny<byte[]>(), It.IsAny<string>()))
+            .Callback<string, string, byte[], string>((_, fileName, data, _) => (savedName, savedData) = (fileName, data))
+            .ReturnsAsync(@"C:\Reports\analysis.md");
 
         Assert.That(_viewModel.SaveCommand.CanExecute(null), Is.True);
         await _viewModel.SaveCommand.ExecuteAsync(null);
 
-        Assert.That(saved, Has.Count.EqualTo(1));
-        Assert.That(saved[0].FileName, Does.StartWith("trace-analysis-").And.EndWith(".md"));
-        var lines = Encoding.UTF8.GetString(saved[0].Data).Split(Environment.NewLine);
+        Assert.That(savedName, Does.StartWith("trace-analysis-").And.EndWith(".md"));
+        var lines = Encoding.UTF8.GetString(savedData).Split(Environment.NewLine);
         Assert.That(lines, Is.SupersetOf((string[])
         [
             "# Capture Analysis: trace.osdpcap",
@@ -264,20 +264,20 @@ public class CaptureAnalysisViewModelTests
         Assert.That(lines, Has.Some.Contains("NAK replies (3)"));
         Assert.That(Array.IndexOf(lines, "## Verdict"), Is.LessThan(Array.IndexOf(lines, "Because.")));
         _dialogService.Verify(x => x.ShowMessageDialog(
-            It.IsAny<string>(), It.Is<string>(message => message.Contains(saved[0].FileName)), MessageIcon.Information));
+            It.IsAny<string>(), It.Is<string>(message => message.Contains(@"C:\Reports\analysis.md")), MessageIcon.Information));
 
         await _viewModel.SaveCommand.ExecuteAsync(null);
 
-        _dialogService.Verify(x => x.SaveFilesWithDataAsync(
-            It.IsAny<string>(), It.IsAny<IEnumerable<(string, byte[])>>(), @"C:\Reports"), Times.Once);
+        _dialogService.Verify(x => x.SaveFileWithDataAsync(
+            It.IsAny<string>(), It.IsAny<string>(), It.IsAny<byte[]>(), @"C:\Reports\analysis.md"), Times.Once);
     }
 
     [Test]
     public async Task Save_WhenCancelled_ShowsNoMessage()
     {
         await AnalyzeAsync();
-        _dialogService.Setup(x => x.SaveFilesWithDataAsync(
-                It.IsAny<string>(), It.IsAny<IEnumerable<(string, byte[])>>(), It.IsAny<string>()))
+        _dialogService.Setup(x => x.SaveFileWithDataAsync(
+                It.IsAny<string>(), It.IsAny<string>(), It.IsAny<byte[]>(), It.IsAny<string>()))
             .ReturnsAsync((string)null);
 
         await _viewModel.SaveCommand.ExecuteAsync(null);
@@ -291,8 +291,8 @@ public class CaptureAnalysisViewModelTests
     {
         await AnalyzeAsync();
         var failure = new UnauthorizedAccessException("Read-only folder.");
-        _dialogService.Setup(x => x.SaveFilesWithDataAsync(
-                It.IsAny<string>(), It.IsAny<IEnumerable<(string, byte[])>>(), It.IsAny<string>()))
+        _dialogService.Setup(x => x.SaveFileWithDataAsync(
+                It.IsAny<string>(), It.IsAny<string>(), It.IsAny<byte[]>(), It.IsAny<string>()))
             .ThrowsAsync(failure);
 
         await _viewModel.SaveCommand.ExecuteAsync(null);

@@ -1130,13 +1130,9 @@
     <comment>Tooltip on the Line Quality navigation item while a connection, discovery sweep, or monitoring session holds the serial port</comment>
   </data>
   <!-- Capture analysis -->
-  <data name="Monitor_SaveTraceFiles" xml:space="preserve">
-    <value>セーブトレースファイル</value>
-    <comment>Export drop-down item that saves the trace as .osdpcap and .txt files</comment>
-  </data>
   <data name="Monitor_AnalyzeCapture" xml:space="preserve">
     <value>キャプチャ解析…</value>
-    <comment>Export drop-down item that opens the capture analysis window for the current trace</comment>
+    <comment>Monitor page button that opens the capture analysis window for the current trace</comment>
   </data>
   <data name="CaptureAnalysis_Title" xml:space="preserve">
     <value>キャプチャ解析</value>
@@ -1272,7 +1268,7 @@
   </data>
   <data name="CaptureAnalysis_Saved" xml:space="preserve">
     <value>解析は次のように保存されました {0}.</value>
-    <comment>Shown after saving the capture analysis; {0} is the file name</comment>
+    <comment>Shown after saving the capture analysis; {0} is where the file was saved, such as its path</comment>
   </data>
   <data name="CaptureAnalysis_AnalyzedBy" xml:space="preserve">
     <value>分析対象 {0} オン {1}</value>

@@ -337,14 +337,14 @@ public partial class CaptureAnalysisViewModel : ObservableObject, IDisposable
         var fileName = $"{(baseName.Length > 0 ? baseName : "capture")}-analysis-{DateTime.Now:yyyyMMdd-HHmmss}.md";
         try
         {
-            var destination = await _dialogService.SaveFilesWithDataAsync(
+            var destination = await _dialogService.SaveFileWithDataAsync(
                 Resources.Resources.GetString("CaptureAnalysis_SaveDestination"),
-                [(fileName, Encoding.UTF8.GetBytes(ToMarkdown()))], _saveDestination);
+                fileName, Encoding.UTF8.GetBytes(ToMarkdown()), _saveDestination);
             if (destination == null) return; // User cancelled
 
             _saveDestination = destination;
             await _dialogService.ShowMessageDialog(title,
-                Resources.Resources.GetString("CaptureAnalysis_Saved").Replace("{0}", fileName), MessageIcon.Information);
+                Resources.Resources.GetString("CaptureAnalysis_Saved").Replace("{0}", destination), MessageIcon.Information);
         }
         catch (Exception exception)
         {
