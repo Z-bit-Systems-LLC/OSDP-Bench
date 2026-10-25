@@ -45,7 +45,7 @@ namespace OSDPBench.Core.Tests.ViewModels
         public void ManageViewModel_Constructor_InitializesProperties()
         {
             // Assert
-            Assert.That(_viewModel.AvailableBaudRates, Has.Count.EqualTo(6));
+            Assert.That(_viewModel.AvailableBaudRates, Has.Count.EqualTo(7));
             Assert.That(_viewModel.AvailableDeviceActions, Has.Count.EqualTo(8));
             Assert.That(_viewModel.LastCardNumberRead, Is.EqualTo(string.Empty));
             Assert.That(_viewModel.KeypadReadData, Is.EqualTo(string.Empty));
