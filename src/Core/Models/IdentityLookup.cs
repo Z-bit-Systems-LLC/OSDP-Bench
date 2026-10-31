@@ -1,4 +1,3 @@
-﻿using System.Collections;
 using System.Globalization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using OSDP.Net.Model.ReplyData;
@@ -7,71 +6,24 @@ namespace OSDPBench.Core.Models;
 
 public partial class IdentityLookup : ObservableObject
 {
-    private readonly dynamic _lookup = new[]
-    {
-        new {
-            VendorCode = "9C-F6-1A",
-            Name = "LenelS2",
-            Models = new[]
-            {
-                new {Number = 1, Name = "BlueDiamond Reader"}
-            },
-            ResetInstructions = "Use supplied card to enable secure channel pairing.",
-            CanSendResetCommand = false
-        },
-        new {
-            VendorCode = "CA-44-6C",
-            Name = "Cypress Computer Systems, Inc.",
-            Models = new[]
-            {
-                new {Number = 1, Name = "OSM-1000"}
-            },
-            ResetInstructions = "The reset command should be sent right after powering on the device. Do you want to continue?",
-            CanSendResetCommand = true
-        },
-        new {
-            VendorCode = "DA-0D-38",
-            Name = "Farpointe Data, Inc.",
-            Models = new[]
-            {
-                new {Number = 1, Name = "Reader"}
-            },
-            ResetInstructions = "The reset command should be sent right after powering on the device. Do you want to continue?",
-            CanSendResetCommand = true
-        },
-        new {
-            VendorCode = "00-06-8E", 
-            Name = "HID Corporation", 
-            Models = new[]
-            {
-                new {Number = 1, Name = "Signo Reader"}
-            },
-            ResetInstructions = "Use HID Reader Manager mobile application to reset settings.",
-            CanSendResetCommand = false
-        },
-        new {
-            VendorCode = "00-75-32",
-            Name = "INID BV",
-            Models = new[]
-            {
-                new {Number = 2, Name = "MultiSmart XS"}
-            },
-            ResetInstructions = "Use INID RF-DISTIFLEX mobile application to reset settings.",
-            CanSendResetCommand = false
-        },
-        new {
-            VendorCode = "5C-26-23",
-            Name = "WaveLynx Technologies Corporation",
-            Models = new[]
-            {
-                new {Number = 10, Name = "Ethos ET10"},
-                new {Number = 20, Name = "Ethos ET20"},
-                new {Number = 25, Name = "Ethos ET25"}
-            },
-            ResetInstructions = "To return to OSDP auto-detect mode (default mode), tilt the reader 45 degrees to simulate tamper and cycle power in this state. The power up sequence should indicate OSDP auto-detect with 4 beeps.",
-            CanSendResetCommand = false
-        }
-    };
+    // Typed rather than dynamic: the runtime binder needs reflection, which trimming (the browser app) breaks
+    private static readonly KnownVendor[] KnownVendors =
+    [
+        new("9C-F6-1A", "LenelS2", [new KnownModel(1, "BlueDiamond Reader")],
+            "Use supplied card to enable secure channel pairing.", false),
+        new("CA-44-6C", "Cypress Computer Systems, Inc.", [new KnownModel(1, "OSM-1000")],
+            "The reset command should be sent right after powering on the device. Do you want to continue?", true),
+        new("DA-0D-38", "Farpointe Data, Inc.", [new KnownModel(1, "Reader")],
+            "The reset command should be sent right after powering on the device. Do you want to continue?", true),
+        new("00-06-8E", "HID Corporation", [new KnownModel(1, "Signo Reader")],
+            "Use HID Reader Manager mobile application to reset settings.", false),
+        new("00-75-32", "INID BV", [new KnownModel(2, "MultiSmart XS")],
+            "Use INID RF-DISTIFLEX mobile application to reset settings.", false),
+        new("5C-26-23", "WaveLynx Technologies Corporation",
+            [new KnownModel(10, "Ethos ET10"), new KnownModel(20, "Ethos ET20"), new KnownModel(25, "Ethos ET25")],
+            "To return to OSDP auto-detect mode (default mode), tilt the reader 45 degrees to simulate tamper and cycle power in this state. The power up sequence should indicate OSDP auto-detect with 4 beeps.",
+            false)
+    ];
 
     /// <summary>
     /// Represents an identity lookup for a device.
@@ -84,19 +36,18 @@ public partial class IdentityLookup : ObservableObject
         Model = "Unknown Model";
         VendorCode = BitConverter.ToString(deviceIdentification.VendorCode.ToArray());
 
-        var foundDevice = ((IEnumerable) _lookup).Cast<dynamic>().FirstOrDefault(device =>
-            device.VendorCode.ToString() == BitConverter.ToString(deviceIdentification.VendorCode.ToArray()));
+        var foundDevice = KnownVendors.FirstOrDefault(device => device.VendorCode == VendorCode);
         if (foundDevice != null)
         {
-            VendorName = foundDevice.Name.ToString();
-            var foundModel = ((IEnumerable)foundDevice.Models).Cast<dynamic>().FirstOrDefault(model =>
+            VendorName = foundDevice.Name;
+            var foundModel = foundDevice.Models.FirstOrDefault(model =>
                 model.Number == deviceIdentification.ModelNumber);
             if (foundModel != null)
             {
-                Model = foundModel.Name.ToString();
+                Model = foundModel.Name;
             }
 
-            ResetInstructions = foundDevice.ResetInstructions.ToString();
+            ResetInstructions = foundDevice.ResetInstructions;
             CanSendResetCommand = foundDevice.CanSendResetCommand;
         }
 
@@ -139,4 +90,9 @@ public partial class IdentityLookup : ObservableObject
     /// </remarks>
     // ReSharper disable once UnusedAutoPropertyAccessor.Global
     public virtual bool CanSendResetCommand { get; }
+
+    private sealed record KnownVendor(string VendorCode, string Name, KnownModel[] Models, string ResetInstructions,
+        bool CanSendResetCommand);
+
+    private sealed record KnownModel(int Number, string Name);
 }
