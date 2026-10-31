@@ -7,6 +7,31 @@ public partial class FileTransferParameters : ObservableObject
     [ObservableProperty]
     private string? _filePath;
 
+    /// <summary>
+    /// Gets or sets the file's contents, for a platform that has no file paths to read from, such as a browser.
+    /// When set, these bytes are sent and <see cref="FilePath"/> only names the file.
+    /// </summary>
+    [ObservableProperty]
+    private byte[]? _fileData;
+
+    /// <summary>
+    /// Gets the bytes to transfer: <see cref="FileData"/> when set, or else the contents of the file at
+    /// <see cref="FilePath"/>.
+    /// </summary>
+    /// <returns>The file's contents.</returns>
+    /// <exception cref="InvalidOperationException">No file has been selected.</exception>
+    public async Task<byte[]> ReadFileDataAsync()
+    {
+        if (FileData != null) return FileData;
+
+        if (string.IsNullOrEmpty(FilePath))
+        {
+            throw new InvalidOperationException("No file selected");
+        }
+
+        return await File.ReadAllBytesAsync(FilePath);
+    }
+
     private int _progressPercentage;
 
     /// <summary>

@@ -23,12 +23,7 @@ public class FileTransferAction : IDeviceAction
             throw new ArgumentException(@"Invalid parameter type for file transfer", nameof(parameter));
         }
 
-        if (string.IsNullOrEmpty(transferParams.FilePath))
-        {
-            throw new InvalidOperationException("No file selected");
-        }
-
-        byte[] fileData = await File.ReadAllBytesAsync(transferParams.FilePath);
+        byte[] fileData = await transferParams.ReadFileDataAsync();
         var cts = new CancellationTokenSource();
 
         transferParams.IsBusy = true;
