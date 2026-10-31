@@ -230,6 +230,18 @@ public class OsdpCaptureExporterTests
         Assert.That(json.RootElement.TryGetProperty("data", out _), Is.True);
     }
 
+    [Test]
+    public async Task ExportAsync_WritesFieldsInTheFormatsOrder()
+    {
+        var packets = new[] { CreateTestPacketTraceEntry(TraceDirection.Output) };
+
+        var result = await _exporter.ExportAsync(packets);
+
+        Assert.That(Encoding.UTF8.GetString(result), Does.Match(
+            "^\\{\"timeSec\":\"\\d+\",\"timeNano\":\"\\d{9}\",\"io\":\"output\",\"data\":\"53-00-08-00-04-60-03-1D\"," +
+            "\"osdpTraceVersion\":\"1\",\"osdpSource\":\"OSDP-Bench\"\\}\\r?\\n$"));
+    }
+
     #endregion
 
     #region Helper Methods

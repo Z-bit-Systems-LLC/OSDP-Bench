@@ -38,20 +38,33 @@ public class OsdpCaptureExporter : IPacketExporter
                 _ => "unknown"
             };
 
-            var entry = new
-            {
-                timeSec = timeSec.ToString("F0"),
-                timeNano = timeNano.ToString("000000000"),
-                io = ioValue,
-                data = BitConverter.ToString(packet.RawData),
-                osdpTraceVersion = "1",
-                osdpSource = SourceIdentifier
-            };
-
-            string json = JsonSerializer.Serialize(entry);
-            builder.AppendLine(json);
+            builder.AppendLine(WriteEntry(
+                timeSec.ToString("F0"),
+                timeNano.ToString("000000000"),
+                ioValue,
+                BitConverter.ToString(packet.RawData)));
         }
 
         return Task.FromResult(Encoding.UTF8.GetBytes(builder.ToString()));
+    }
+
+    // Written field by field rather than serialized from an object, so it needs no reflection and still works in a
+    // trimmed build, such as the web version's
+    private static string WriteEntry(string timeSec, string timeNano, string io, string data)
+    {
+        using var stream = new MemoryStream();
+        using (var writer = new Utf8JsonWriter(stream))
+        {
+            writer.WriteStartObject();
+            writer.WriteString("timeSec", timeSec);
+            writer.WriteString("timeNano", timeNano);
+            writer.WriteString("io", io);
+            writer.WriteString("data", data);
+            writer.WriteString("osdpTraceVersion", "1");
+            writer.WriteString("osdpSource", SourceIdentifier);
+            writer.WriteEndObject();
+        }
+
+        return Encoding.UTF8.GetString(stream.ToArray());
     }
 }
