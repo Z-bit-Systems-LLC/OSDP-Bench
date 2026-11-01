@@ -144,5 +144,14 @@ namespace OSDPBench.Core.Tests.Services
                 _innerMock.Verify(inner => inner.Dispose(), Times.Once);
             });
         }
+
+        [Test]
+        public void ToString_NamesTheWrappedConnection()
+        {
+            // OSDP.Net names the connection in its messages, such as when no line quality responder answers
+            _innerMock.Setup(inner => inner.ToString()).Returns("COM4");
+
+            Assert.That(_connection.ToString(), Is.EqualTo("COM4"));
+        }
     }
 }

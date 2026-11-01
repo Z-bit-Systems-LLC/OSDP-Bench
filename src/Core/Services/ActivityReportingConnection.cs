@@ -117,6 +117,16 @@ public sealed class ActivityReportingConnection : IRetunableOsdpConnection
     public void Dispose() => _connection.Dispose();
 
     /// <summary>
+    /// Returns the wrapped connection's description, normally its port name.
+    /// </summary>
+    /// <remarks>
+    /// OSDP.Net names the connection this way in its messages, such as the line quality test's "no
+    /// responder answered on COM4", so the wrapper must not show its own type name in its place.
+    /// </remarks>
+    /// <returns>The wrapped connection's description.</returns>
+    public override string ToString() => _connection.ToString() ?? string.Empty;
+
+    /// <summary>
     /// Reports activity in one direction unless that direction has reported recently.
     /// </summary>
     /// <remarks>
